@@ -1,89 +1,89 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-		<title>Panolens.js panorama infospot</title>
-		<style>
-			body {
-				margin: 0;
-				width: 100%;
-				height: 100%;
-				overflow: hidden;
-			}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>Panolens.js panorama infospot</title>
+    <style>
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
 
-			a:link, a:visited{
-				color: #bdc3c7;
-			}
+      a:link, a:visited{
+        color: #bdc3c7;
+      }
 
-			.credit{
-				position: absolute;
-				text-align: center;
-				width: 100%;
-				padding: 20px;
-				color: #fff;
-			}
+      .credit{
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        padding: 20px;
+        color: #fff;
+      }
 
-			#desc-container {
-				max-width: 500px;
-				max-height: 500px;
-				min-width: 200px;
-				min-height: 250px;
-				background: #fff;
-				color: #000;
-				border-radius: 3px;
-				overflow: auto;
-				-webkit-overflow-scrolling: touch;
-			}
+      #desc-container {
+        max-width: 500px;
+        max-height: 500px;
+        min-width: 200px;
+        min-height: 250px;
+        background: #fff;
+        color: #000;
+        border-radius: 3px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+      }
 
-			#desc-container > iframe {
-				border: none;
-				width:100%;
-			}
+      #desc-container > iframe {
+        border: none;
+        width:100%;
+      }
 
-			.title {
-				font-size: 1.5em;
-				text-align: center;
-				padding: 5px;
-			}
+      .title {
+        font-size: 1.5em;
+        text-align: center;
+        padding: 5px;
+      }
 
-			.text {
-				padding: 0 20px 20px 20px;
-			}
-		</style>
-	</head>
+      .text {
+        padding: 0 20px 20px 20px;
+      }
+    </style>
+  </head>
 
-	<body>
+  <body>
 
-		<div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> infospot example. Images from Google Streetview API</div>
-		
-		<div id="desc-container" style="display:none">
-				<iframe src="https://www.youtube.com/embed/D7icsuamx5E"></iframe>
-				<div class="title">China's Forgotten War</div>
-				<div class="text">WWII came to the small town of Tai’erzhuang in central China – and it was never the same again. The town was strategically placed, on the north-south transport railway corridor and the ancient Grand Canal, and so was a focus of the Japanese Imperial army as it advanced. Li Jing Shan was only a child when his family fled the fighting. They returned to find their home, and most of the town, in ruins.</div>
-		</div>
+    <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> infospot example. Images from Google Streetview API</div>
+    
+    <div id="desc-container" style="display:none">
+        <iframe src="https://www.youtube.com/embed/D7icsuamx5E"></iframe>
+        <div class="title">China's Forgotten War</div>
+        <div class="text">WWII came to the small town of Tai’erzhuang in central China – and it was never the same again. The town was strategically placed, on the north-south transport railway corridor and the ancient Grand Canal, and so was a focus of the Japanese Imperial army as it advanced. Li Jing Shan was only a child when his family fled the fighting. They returned to find their home, and most of the town, in ruins.</div>
+    </div>
 
-		<script src="../build/panolens.min.js"></script>
+    <script src="../build/panolens.min.js"></script>
 
-		<script>
+    <script>
 
-			var infospot, infospot2, panorama, viewer;
+      var infospot, infospot2, panorama, viewer;
 
-			infospot = new PANOLENS.Infospot( 7, PANOLENS.InfoIcon );
-			infospot.position.set( 78.5, -14.25, 60.07 );
-			infospot.addHoverText( 'The Where Is Bar' );
+      infospot = new PANOLENS.Infospot( 7, PANOLENS.InfoIcon );
+      infospot.position.set( 78.5, -14.25, 60.07 );
+      infospot.addHoverText( 'The Where Is Bar' );
 
-			infospot2 = new PANOLENS.Infospot( 7, '' );
-			infospot2.position.set( -94.37, -32.29, -4.19 );
-			infospot2.addHoverElement( document.getElementById( 'desc-container' ) );
+      infospot2 = new PANOLENS.Infospot( 7, '' );
+      infospot2.position.set( -94.37, -32.29, -4.19 );
+      infospot2.addHoverElement( document.getElementById( 'desc-container' ) );
 
-			panorama = new PANOLENS.GoogleStreetviewPanorama( 'rY5ZW6S3sFUAAAAGOzOdpg' );
-			panorama.add( infospot );
-			panorama.add( infospot2 );
+      panorama = new PANOLENS.GoogleStreetviewPanorama( 'rY5ZW6S3sFUAAAAGOzOdpg' );
+      panorama.add( infospot );
+      panorama.add( infospot2 );
 
-			viewer = new PANOLENS.Viewer();
-			viewer.add( panorama );
+      viewer = new PANOLENS.Viewer();
+      viewer.add( panorama );
 
-		</script>
+    </script>
 
-	</body>
+  </body>
