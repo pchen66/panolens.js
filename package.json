@@ -1,0 +1,33 @@
+{
+  "name": "panolens.js",
+  "version": "0.0.1",
+  "description": "Javascript panorama viewer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pchen66/panolens.js.git"
+  },
+  "keywords": [
+    "panorama",
+    "viewer",
+    "javascript",
+    "html5",
+    "3d"
+  ],
+  "author": "Ray Chen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pchen66/panolens.js/issues"
+  },
+  "homepage": "https://github.com/pchen66/panolens.js#readme",
+  "devDependencies": {
+    "bower": "^1.6.5",
+    "gulp": "^3.9.0",
+    "gulp-closure-compiler": "^0.3.1",
+    "gulp-jsdoc": "^0.1.5",
+    "run-sequence": "^1.1.5"
+  }
+}

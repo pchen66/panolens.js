@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: viewer/Viewer.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: viewer/Viewer.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>( function () {
+
+	var container,
+		camera,
+		scene,
+		renderer,
+		controls,
+		OrbitControls,
+		DeviceOrientationControls,
+		userMouse,
+		raycaster,
+		panorama,
+		hoveringObject,
+		widget,
+		renderableObjectList = [],
+		DEBUG = false;
+
+	/**
+	 * Viewer contains pre-defined scene, camera and renderer
+	 * @constructor
+	 * @param {object} [options] - Use custom or default config options
+	 * @param {HTMLElement} [options.container] - A HTMLElement to host the canvas
+	 * @param {THREE.Scene} [options.scene=THREE.Scene] - A THREE.Scene which contains panorama and 3D objects
+	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
+	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
+	 */
+	PANOLENS.Viewer = function ( options ) {
+
+		THREE.EventDispatcher.call( this );
+		
+		if ( !THREE ) {
+
+			console.error('Three.JS not found');
+
+			return;
+		}
+
+		options = options || {};
+
+		// Container
+		if ( options.container ) {
+
+			container = options.container;
+
+		} else {
+
+			container = document.createElement('div');
+			document.body.appendChild( container );
+
+		}
+		container.addEventListener( 'mousedown', onMouseDown, false );
+		container.addEventListener( 'mousemove', onMouseMove, false );
+		container.addEventListener( 'mouseup', onMouseUp, false );
+		container.addEventListener( 'touchstart', onMouseDown, false );
+		container.addEventListener( 'touchend', onMouseUp, false );
+
+		// Scene
+		scene = options.scene || new THREE.Scene();
+
+		// Camera
+		camera = options.camera || new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 10000 );
+
+		// Renderer
+		if ( options.renderer ) {
+
+			renderer = options.renderer;
+
+		} else {
+
+			renderer = new THREE.WebGLRenderer();
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+
+		}
+
+		// Append Renderer Element to container
+		renderer.domElement.classList.add( 'panolens-canvas' );
+		container.appendChild( renderer.domElement );
+
+		// Utility
+		raycaster = new THREE.Raycaster();
+		userMouse = new THREE.Vector2();
+
+		// Orbit and Deviceorientation Camera Controls
+		OrbitControls = new THREE.OrbitControls( camera, container );
+		OrbitControls.name = 'orbit';
+		OrbitControls.minDistance = 1;
+		OrbitControls.noPan = true;
+		DeviceOrientationControls = new THREE.DeviceOrientationControls( camera );
+		DeviceOrientationControls.name = 'device-orientation';
+
+		controls = [ OrbitControls, DeviceOrientationControls ];
+		this.control = OrbitControls;
+
+		// Add Control UI
+		widget = new PANOLENS.Widget( container );
+		widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+		widget.addDefaultControlBar();
+
+		// Resize Event
+		window.addEventListener( 'resize', this.onWindowResize.bind( this ), false );
+
+		// Keyboard Event
+		window.addEventListener( 'keydown', onKeyDown, false );
+		window.addEventListener( 'keyup', onKeyUp, false );
+
+		// Animate
+		animate.call( this );
+
+	}
+
+	PANOLENS.Viewer.prototype = {
+
+		constructor : PANOLENS.Viewer,
+
+		control : {},
+
+		add : function ( object ) {
+
+			if ( arguments.length > 1 ) {
+
+				for ( var i = 0; i &lt; arguments.length; i ++ ) {
+
+					this.add( arguments[ i ] );
+
+				}
+
+				return this;
+
+			}
+
+			scene.add( object );
+
+			// All object added to scene has 'panolens-viewer-handler' event to handle viewer communication
+			if ( object.addEventListener ) {
+
+				object.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+
+			}
+
+			if ( object.type === 'panorama' ) {
+
+				this.addPanoramaEventListener( object );
+
+				if ( !panorama ) {
+
+					this.setPanorama( object );
+
+				}
+
+			}
+
+
+		},
+
+		setPanorama : function ( pano ) {
+
+			if ( pano.type === 'panorama' ) {
+				
+				// Reset Current Panorama
+				panorama &amp;&amp; panorama.onLeave();
+
+				// Assign and enter panorama
+				( panorama = pano ).onEnter();
+				
+			}
+
+		},
+
+		eventHandler : function ( event ) {
+
+			if ( event.method &amp;&amp; this[ event.method ] ) {
+
+				this[ event.method ]( event.data );
+
+			}
+
+		},
+
+		toggleVideoPlay: function () {
+
+			if ( panorama instanceof PANOLENS.VideoPanorama ) {
+
+				panorama.dispatchEvent( { type: 'video-toggle' } );
+
+			}
+
+		},
+
+		setVideoCurrentTime: function ( percentage ) {
+
+			if ( panorama instanceof PANOLENS.VideoPanorama ) {
+
+				panorama.dispatchEvent( { type: 'video-time', percentage: percentage } );
+
+			}
+
+		},
+
+		onVideoUpdate: function ( percentage ) {
+
+			widget.dispatchEvent( { type: 'video-update', percentage: percentage } );
+
+		},
+
+		addRenderableObject : function ( object ) {
+
+			if ( object ) {
+
+				renderableObjectList.push( object );
+
+			}
+
+		},
+
+		showVideoWidget: function () {
+
+			widget.dispatchEvent( { type: 'video-control-show' } );
+
+		},
+
+		hideVideoWidget: function () {
+
+			widget.dispatchEvent( { type: 'video-control-hide' } );
+
+		},
+
+		addPanoramaEventListener: function ( pano ) {
+
+			// Every panorama
+			pano.addEventListener( 'enter-start', this.setCameraControl );
+
+			// VideoPanorama
+			if ( pano instanceof PANOLENS.VideoPanorama ) {
+
+				pano.addEventListener( 'enter', this.showVideoWidget );
+				pano.addEventListener( 'leave', this.hideVideoWidget );
+
+			}
+
+
+		},
+
+		setCameraControl: function () {
+
+			camera.position.copy( panorama.position );
+			camera.position.z -= panorama.orbitRadius / 2;
+			OrbitControls.target.copy( panorama.position );
+			OrbitControls.maxDistance = panorama.orbitRadius * 0.95;
+
+		},
+
+		getControl: function () {
+
+			return this.control;
+
+		},
+
+		getScene : function () {
+
+			return scene;
+
+		},
+
+		getRenderer : function () {
+
+			return renderer;
+
+		},
+
+		getControlName : function () {
+
+			return this.control.name;
+
+		},
+
+		getNextControlName : function () {
+
+			return controls[ this.getNextControlIndex() ].name;
+
+		},
+
+		getNextControlIndex : function () {
+
+			return ( controls.indexOf( this.control ) + 1 >= controls.length ) ? 0 : controls.indexOf( this.control ) + 1;
+
+		},
+
+		enableControl : function ( index ) {
+
+			index = ( index >= 0 &amp;&amp; index &lt; controls.length ) ? index : 0;
+
+			this.control.enabled = false;
+
+			this.control = controls[ index ];
+
+			this.control.enabled = true;
+
+		},
+
+		toggleNextControl : function () {
+
+			this.enableControl( this.getNextControlIndex() );
+
+		},
+
+		onWindowResize : function () {
+
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		},
+
+		render : function () {
+
+			if ( renderableObjectList.length > 0 ) {
+
+				for( var i = 0 ; i &lt; renderableObjectList.length ; i++ ) {
+
+					if ( renderableObjectList[i].update &amp;&amp; renderableObjectList[i].target === panorama ) {
+					
+						renderableObjectList[i].update();
+					
+					}
+
+				}
+
+			}
+
+			TWEEN.update();
+
+			if ( this.control ) {
+
+				this.control.update();
+
+			}
+
+			if ( scene &amp;&amp; camera ) {
+
+				renderer.render( scene, camera );
+
+			}
+		}
+
+	};
+
+	function select ( event, isSelect ) {
+
+		var point = {}, object, intersects;
+
+		point.x = ( event.clientX / container.clientWidth ) * 2 - 1;
+		point.y = - ( event.clientY / container.clientHeight ) * 2 + 1;
+
+		raycaster.setFromCamera( point, camera );
+
+		if ( !panorama ) { return; }
+
+		// For Adding Infospot
+		if ( DEBUG ) {
+
+			intersects = raycaster.intersectObject( panorama );
+
+			if ( intersects.length > 0 ) {
+
+				intersects[0].point.applyAxisAngle( new THREE.Vector3( -1, 0, 0 ), panorama.rotation.x );
+				intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, -1, 0 ), panorama.rotation.y );
+				intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, 0, -1 ), panorama.rotation.z );
+
+				intersects[0].point.sub( panorama.position );
+
+				console.info('{ ' + (-intersects[0].point.x).toFixed(2) + 
+					', ' + (intersects[0].point.y).toFixed(2) +
+					', ' + (intersects[0].point.z).toFixed(2) + ' }'
+				);
+
+			}
+			
+		}
+
+		intersects = raycaster.intersectObjects( panorama.children, true );
+
+		if ( intersects.length > 0 ) {
+
+			object = intersects[ 0 ].object;
+
+			if ( object.onHover ) {
+
+				hoveringObject = object;
+
+				container.style.cursor = 'pointer';
+
+				object.onHover( event.clientX, event.clientY );
+
+				//return true;
+
+			}
+
+			if ( isSelect &amp;&amp; object.onClick ) {
+
+				object.onClick();
+
+				return true;
+
+			}
+
+			
+
+		} else {
+
+			container.style.cursor = 'default';
+
+			hideHoveringObject();
+
+		}
+
+	}
+
+	function onMouseDown ( event ) {
+
+		event.preventDefault();
+
+		userMouse.x = ( event.clientX ) ? event.clientX : event.touches[0].clientX;
+		userMouse.y = ( event.clientY ) ? event.clientY : event.touches[0].clientY;
+
+	}
+
+	function onMouseMove ( event ) {
+
+		event.preventDefault();
+		select( event );
+
+	}
+
+	function onMouseUp ( event ) {
+
+		var onTarget = false;
+
+		// Event should happen on canvas
+		if ( event &amp;&amp; event.target &amp;&amp; !event.target.classList.contains( 'panolens-canvas' ) ) { return; }
+
+		event.preventDefault();
+
+		if ( event.changedTouches &amp;&amp; event.changedTouches.length === 1 ) {
+
+			onTarget = select( { clientX : event.changedTouches[0].clientX, clientY : event.changedTouches[0].clientY }, true );
+		
+		} else {
+
+			onTarget = select( event, true );
+
+		}
+
+		if ( onTarget ) { 
+
+			return; 
+
+		}
+
+		if ( ( userMouse.x === event.clientX &amp;&amp; userMouse.y === event.clientY ) || ( event.changedTouches &amp;&amp; userMouse.x === event.changedTouches[0].clientX &amp;&amp; userMouse.y === event.changedTouches[0].clientY )) {
+
+			panorama &amp;&amp; panorama.toggleChildrenVisibility();
+			toggleControlBar();
+
+		}
+
+	}
+
+	function hideHoveringObject () {
+
+		if ( hoveringObject ) {
+
+			hoveringObject.onHoverEnd();
+
+			hoveringObject = undefined;
+
+		}
+
+	}
+
+	function toggleControlBar () {
+
+		widget.dispatchEvent( { type: 'control-bar-toggle' } );
+
+	}
+
+	function onKeyDown ( event ) {
+
+		if ( event.keyCode === 17 || event.keyIdentifier === 'Control' ) {
+
+			DEBUG = true;
+
+		}
+
+	}
+
+	function onKeyUp () {
+
+		DEBUG = false;
+
+	}
+
+	function animate(){
+
+        window.requestAnimationFrame( animate.bind( this ) );
+
+        this.render();
+
+    }
+
+} )();</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="PANOLENS.CubePanorama.html">CubePanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImagePanorama.html">ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">Infospot</a></li><li><a href="PANOLENS.Panorama.html">Panorama</a></li><li><a href="PANOLENS.Viewer.html">Viewer</a></li><li><a href="PANOLENS.Widget.html">Widget</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Tue Nov 24 2015 08:21:20 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
