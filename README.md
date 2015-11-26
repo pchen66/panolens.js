@@ -4,7 +4,7 @@
 
 This project aims to provide a tool for anyone wants to see panorama, photo-based or virtually created, in a simple and painless way. It's built on top of [Three.JS](https://github.com/mrdoob/three.js). 
 
-![Panorama Video Demo](http://pchen66.github.io/Panolens/images/panolens_video_demo_480p.gif)
+![Panorama Video Demo](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_video_demo_480p.gif?raw=true)
 
 ###Demo
 1.	[Panorama Basic](http://pchen66.github.io/Panolens/examples/panorama_basic.html)
