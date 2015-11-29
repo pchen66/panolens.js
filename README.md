@@ -13,6 +13,7 @@ This project aims to provide a tool for anyone wants to see panorama, photo-base
 4.	[Panorama Video](http://pchen66.github.io/Panolens/examples/panorama_video.html)
 5.	[Panorama Infospot](http://pchen66.github.io/Panolens/examples/panorama_infospot.html)
 6.	[Panorama Linking](http://pchen66.github.io/Panolens/examples/panorama_linking.html)
+7.	[Panorama Match 3 Game](http://pchen66.github.io/Panolens/examples/XDiamond/)
 
 ###Features
 
@@ -61,4 +62,3 @@ The minified version includes these libraries:
 
 ###Future
 1.	Add AR/VR support
-2.	Add panorama 3D game example
