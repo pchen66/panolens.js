@@ -5,9 +5,8 @@
 	 * @constructor
 	 * @param {THREE.Geometry} [geometry=THREE.SphereGeometry] - The geometry for this panorama
 	 * @param {THREE.Material} [material=new THREE.MeshBasicMaterial] - The material for this panorama
-	 * @param {number} [orbitRadius=100] - The minimum radius for this panoram
 	 */
-	PANOLENS.Panorama = function ( geometry, material, orbitRadius ) {
+	PANOLENS.Panorama = function ( geometry, material ) {
 
 		THREE.Mesh.call( this );
 
@@ -19,29 +18,29 @@
 		this.ImageQualityHigh = 4;
 		this.ImageQualitySuperHigh = 5;
 
-		this.MaxCacheTextureNumber = 5;
-
 		this.animationDuration = 500;
 
 		this.defaultInfospotSize = 7;
 
 		this.loaded = false;
 
-		this.orbitRadius = orbitRadius || 100;
-
 		this.linkedSpots = [];
 
 		this.isChildrenVisible = false;
+		
 		this.linkingImageURL = undefined;
 
-		this.geometry = geometry || new THREE.SphereGeometry( this.orbitRadius, 60, 40 );
-		this.material = material || new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
+		this.geometry = geometry;
 
+		this.material = material;
 		this.material.side = THREE.DoubleSide;
+		this.material.visible = false;
 
-		this.material.depthWrite = false;
-		this.material.depthTest = false;
 		this.scale.x *= -1;
+
+		this.orbitRadius = ( geometry.parameter && geometry.parameter.radius ) 
+			? geometry.parameter.radius
+			: 100;
 
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
 
@@ -239,6 +238,7 @@
 			}
 
 			this.visible = true;
+			this.material.visible = true;
 		} )
 		.delay( this.animationDuration )
 		.start();
@@ -261,6 +261,7 @@
 		.onComplete( function () {
 
 			this.visible = false;
+			this.material.visible = true;
 
 		} )
 		.start();

@@ -23,6 +23,7 @@
 	 * @param {THREE.Scene} [options.scene=THREE.Scene] - A THREE.Scene which contains panorama and 3D objects
 	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
 	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
+	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -67,7 +68,7 @@
 
 		} else {
 
-			renderer = new THREE.WebGLRenderer();
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( window.innerWidth, window.innerHeight );
 
@@ -93,10 +94,12 @@
 		this.control = OrbitControls;
 
 		// Add Control UI
-		widget = new PANOLENS.Widget( container );
-		widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
-		widget.addDefaultControlBar();
-
+		if ( options.controlBar !== false ) {
+			widget = new PANOLENS.Widget( container );
+			widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+			widget.addDefaultControlBar();
+		}
+		
 		// Resize Event
 		window.addEventListener( 'resize', this.onWindowResize.bind( this ), false );
 
@@ -199,7 +202,7 @@
 
 		onVideoUpdate: function ( percentage ) {
 
-			widget.dispatchEvent( { type: 'video-update', percentage: percentage } );
+			widget && widget.dispatchEvent( { type: 'video-update', percentage: percentage } );
 
 		},
 
@@ -215,13 +218,13 @@
 
 		showVideoWidget: function () {
 
-			widget.dispatchEvent( { type: 'video-control-show' } );
+			widget && widget.dispatchEvent( { type: 'video-control-show' } );
 
 		},
 
 		hideVideoWidget: function () {
 
-			widget.dispatchEvent( { type: 'video-control-hide' } );
+			widget && widget.dispatchEvent( { type: 'video-control-hide' } );
 
 		},
 
@@ -246,7 +249,7 @@
 			camera.position.copy( panorama.position );
 			camera.position.z -= panorama.orbitRadius / 2;
 			OrbitControls.target.copy( panorama.position );
-			OrbitControls.maxDistance = panorama.orbitRadius * 0.95;
+			OrbitControls.maxDistance = panorama.orbitRadius * 0.9;
 
 		},
 
@@ -259,6 +262,12 @@
 		getScene : function () {
 
 			return scene;
+
+		},
+
+		getCamera : function () {
+
+			return camera;
 
 		},
 
@@ -295,6 +304,18 @@
 			this.control = controls[ index ];
 
 			this.control.enabled = true;
+
+			switch ( this.control.name ) {
+				case 'orbit':
+					camera.position.copy( panorama.position );
+					camera.position.z -= panorama.orbitRadius / 2;
+					break;
+				case 'device-orientation':
+					camera.position.copy( panorama.position );
+					break;
+				default:
+					break;
+			}
 
 		},
 
@@ -349,8 +370,8 @@
 
 		var point = {}, object, intersects;
 
-		point.x = ( event.clientX / container.clientWidth ) * 2 - 1;
-		point.y = - ( event.clientY / container.clientHeight ) * 2 + 1;
+		point.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		point.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
 		raycaster.setFromCamera( point, camera );
 
@@ -391,8 +412,6 @@
 				container.style.cursor = 'pointer';
 
 				object.onHover( event.clientX, event.clientY );
-
-				//return true;
 
 			}
 
@@ -480,7 +499,7 @@
 
 	function toggleControlBar () {
 
-		widget.dispatchEvent( { type: 'control-bar-toggle' } );
+		widget && widget.dispatchEvent( { type: 'control-bar-toggle' } );
 
 	}
 

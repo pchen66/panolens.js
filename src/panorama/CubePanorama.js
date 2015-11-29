@@ -20,9 +20,10 @@
 
 		PANOLENS.Panorama.call( this, 
 			new THREE.BoxGeometry( edgeLength, edgeLength, edgeLength ), 
-			new THREE.MeshFaceMaterial( materials ),
-			edgeLength / 2
+			new THREE.MeshFaceMaterial( materials )
 		);
+
+		this.orbitRadius = edgeLength / 2;
 
 		this.urls = urls || [];
 

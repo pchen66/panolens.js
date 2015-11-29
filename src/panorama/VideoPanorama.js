@@ -7,10 +7,16 @@
 	 * @param {HTMLCanvasElement} [options.videoCanvas] - HTML5 canvas element for drawing the video
 	 * @param {boolean} [options.muted=false] - Mute the video or not
 	 * @param {boolean} [options.loop=true] - Specify if the video should loop in the end
+	 * @param {number} [radius=100] - The minimum radius for this panoram
 	 */
-	PANOLENS.VideoPanorama = function ( src, options ) {
+	PANOLENS.VideoPanorama = function ( src, options, radius ) {
 
-		PANOLENS.Panorama.call( this );
+		radius = radius || 100;
+
+		var geometry = new THREE.SphereGeometry( radius, 60, 40 ),
+			material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
+
+		PANOLENS.Panorama.call( this, geometry, material );
 
 		this.src = src;
 		this.options = options;
@@ -78,7 +84,7 @@
 
 		videoTexture = new THREE.Texture( canvas );
 		videoTexture.minFilter = THREE.LinearFilter;
-		videoTexture.magFilter = THREE.LinearFilter;
+		videoTexture.maxFilter = THREE.LinearFilter;
 
 		videoRenderObject = {
 

@@ -78,7 +78,30 @@
 
 			var fullscreenElement;
 
-			document.fullscreenElement||document.mozFullScreenElement||document.webkitFullscreenElement||document.msFullscreenElement?document.exitFullscreen?document.exitFullscreen():document.msExitFullscreen?document.msExitFullscreen():document.mozCancelFullScreen?document.mozCancelFullScreen():document.webkitExitFullscreen&&document.webkitExitFullscreen():document.documentElement.requestFullscreen?document.documentElement.requestFullscreen():document.documentElement.msRequestFullscreen?document.documentElement.msRequestFullscreen():document.documentElement.mozRequestFullScreen?document.documentElement.mozRequestFullScreen():document.documentElement.webkitRequestFullscreen&&document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+			if (!document.fullscreenElement &&
+			    !document.mozFullScreenElement &&
+			    !document.webkitFullscreenElement &&
+			    !document.msFullscreenElement ) {
+			  if (document.documentElement.requestFullscreen) {
+			    document.documentElement.requestFullscreen();
+			  } else if (document.documentElement.msRequestFullscreen) {
+			    document.documentElement.msRequestFullscreen();
+			  } else if (document.documentElement.mozRequestFullScreen) {
+			    document.documentElement.mozRequestFullScreen();
+			  } else if (document.documentElement.webkitRequestFullscreen) {
+			    document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+			  }
+			} else {
+			  if (document.exitFullscreen) {
+			    document.exitFullscreen();
+			  } else if (document.msExitFullscreen) {
+			    document.msExitFullscreen();
+			  } else if (document.mozCancelFullScreen) {
+			    document.mozCancelFullScreen();
+			  } else if (document.webkitExitFullscreen) {
+			    document.webkitExitFullscreen();
+			  }
+			}
 
 			fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
 

@@ -5,10 +5,16 @@
 	 * @constructor
 	 * @param {string} imageType - Image type for panorama ( currently only support 'equirectangular')
 	 * @param {string} src - Image url
+	 * @param {number} [radius=100] - The minimum radius for this panorama
 	 */
-	PANOLENS.ImagePanorama = function ( imageType, src ) {
+	PANOLENS.ImagePanorama = function ( imageType, src, radius ) {
 
-		PANOLENS.Panorama.call( this );
+		radius = radius || 100;
+
+		var geometry = new THREE.SphereGeometry( radius, 60, 40 ),
+			material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
+
+		PANOLENS.Panorama.call( this, geometry, material );
 
 		this.src = src;
 		this.imageType = imageType;

@@ -59,6 +59,8 @@
 			texture.repeat.x = -1;
 
 			scope.material.map = texture;
+			scope.material.depthWrite = false;
+			scope.material.depthTest = false;
 
 			ratio = texture.image.width / texture.image.height;
 
