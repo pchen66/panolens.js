@@ -32,7 +32,7 @@ Get the minified library (includes libraries already)
 ```html
 <script src="js/panolens.min.js"></script>
 ```
-This code creates a 360 video panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use `panorama.link( other_panorama )` to connect the two. See `examples` for more details.
+This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use `panorama.link( other_panorama )` to connect the two. See `examples` for more details.
 
 ```html
 <script>
