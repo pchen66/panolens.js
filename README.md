@@ -14,6 +14,7 @@ This project aims to provide a tool for anyone wants to see panorama, photo-base
 5.	[Panorama Infospot](http://pchen66.github.io/Panolens/examples/panorama_infospot.html)
 6.	[Panorama Linking](http://pchen66.github.io/Panolens/examples/panorama_linking.html)
 7.	[Panorama Match 3 Game](http://pchen66.github.io/Panolens/examples/XDiamond/)
+8.	[Panorama Interactive](http://pchen66.github.io/Panolens/examples/panorama_interactive.html)
 
 ###Features
 
@@ -24,6 +25,11 @@ This project aims to provide a tool for anyone wants to see panorama, photo-base
 5.	Support text/image/domElement annotations (Infospot)
 6.	Built-in Orbit / DeviceOrientation camera controls
 7.	Built-in fullscreen and video control widgets
+
+###Tips
+
+1.	Click on Infospot to "Lock" the hovering element/text
+2.	When adding 3D object to panorama, it will automatically create an empty THREE.Object3D to counter the negative scale effect
 
 ###Usage
 
@@ -54,6 +60,7 @@ Simply run it with local server ( or check out three.js [How to run things local
 ###How to add infospot (aka hotspot)
 
 Move cursor on a specific point in a panorama and press `Ctrl` with mouse clicking or hovering, which will generate position (x, y, z) in the console. See [Panorama Infospot](http://pchen66.github.io/Panolens/examples/panorama_infospot.html) example for creating and attaching infospots.
+
 ![Panorama Finding Infospot Position](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_add_infospot_480p.gif?raw=true)
 
 ###Dependency
