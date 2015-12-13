@@ -34,25 +34,25 @@
 
     <script>
 
-    var panorama1, panorama2, viewer;
+      var panorama1, panorama2, viewer;
 
-    panorama1 = new PANOLENS.GoogleStreetviewPanorama( 'y0rbkep4RBcAAAQqZe0GiQ' );
+      panorama1 = new PANOLENS.GoogleStreetviewPanorama( 'y0rbkep4RBcAAAQqZe0GiQ' );
 
-    panorama2 = new PANOLENS.ImagePanorama( 'equirectangular', 'asset/equirectangular.jpg' );
-    panorama2.position.set( -74.56, -58.83, 31.10 );
+      panorama2 = new PANOLENS.ImagePanorama( 'equirectangular', 'asset/textures/equirectangular/field.jpg' );
+      panorama2.position.set( -74.56, -58.83, 31.10 );
 
-    panorama3 = new PANOLENS.VideoPanorama( 'asset/1941-battle-medium.mp4' );
-    panorama3.setLinkingImage( 'asset/1941-battle-thumb.jpg' );
-    panorama3.position.set( -54.77, -10.57, 82.75 );
+      panorama3 = new PANOLENS.VideoPanorama( 'asset/textures/video/1941-battle-medium.mp4' );
+      panorama3.setLinkingImage( 'asset/textures/1941-battle-thumb.jpg' );
+      panorama3.position.set( -54.77, -10.57, 82.75 );
 
-    viewer = new PANOLENS.Viewer();
-    viewer.add( panorama1 );
-    viewer.add( panorama2 );
-    viewer.add( panorama3 );
+      viewer = new PANOLENS.Viewer();
+      viewer.add( panorama1 );
+      viewer.add( panorama2 );
+      viewer.add( panorama3 );
 
-    // Auto adding infospots to each linked panorama
-    panorama1.link( panorama2 );
-    panorama2.link( panorama3 );
+      // Auto adding infospots to each linked panorama
+      panorama1.link( panorama2 );
+      panorama2.link( panorama3 );
 
     </script>
 

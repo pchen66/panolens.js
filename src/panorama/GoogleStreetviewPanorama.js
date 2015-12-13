@@ -28,9 +28,13 @@
 
 		panoId = ( panoId || this.panoId ) || {};
 
-		if ( panoId ) {
+		if ( panoId && this.gsvLoader ) {
 
 			this.loadGSVLoader( panoId );
+
+		} else {
+
+			this.gsvLoader = {};
 
 		}
 
@@ -51,6 +55,12 @@
 
 		this.gsvLoader = new GSVPANO.PanoLoader();
 
+		if ( this.gsvLoader === {} ) {
+
+			this.load();
+
+		}
+
 	};
 
 	PANOLENS.GoogleStreetviewPanorama.prototype.getGSVLoader = function () {
@@ -68,6 +78,8 @@
 		this.gsvLoader.setZoom( this.getZoomLevel() );
 
 		this.gsvLoader.load( panoId );
+
+		this.gsvLoader.loaded = true;
 	};
 
 	PANOLENS.GoogleStreetviewPanorama.prototype.onLoad = function ( canvas ) {

@@ -247,9 +247,8 @@
 		setCameraControl: function () {
 
 			camera.position.copy( panorama.position );
-			camera.position.z -= panorama.orbitRadius / 2;
+			camera.position.z -= 1;
 			OrbitControls.target.copy( panorama.position );
-			OrbitControls.maxDistance = panorama.orbitRadius * 0.9;
 
 		},
 
@@ -339,7 +338,7 @@
 
 				for( var i = 0 ; i < renderableObjectList.length ; i++ ) {
 
-					if ( renderableObjectList[i].update && renderableObjectList[i].target === panorama ) {
+					if ( renderableObjectList[i].update ) {
 					
 						renderableObjectList[i].update();
 					
@@ -380,7 +379,7 @@
 		// For Adding Infospot
 		if ( DEBUG ) {
 
-			intersects = raycaster.intersectObject( panorama );
+			intersects = raycaster.intersectObject( panorama, true );
 
 			if ( intersects.length > 0 ) {
 
@@ -400,6 +399,12 @@
 		}
 
 		intersects = raycaster.intersectObjects( panorama.children, true );
+
+		if ( isSelect ) {
+
+			panorama.dispatchEvent( { type: 'click', intersects: intersects, mouseEvent: event } );
+
+		}
 
 		if ( intersects.length > 0 ) {
 
@@ -422,8 +427,6 @@
 				return true;
 
 			}
-
-			
 
 		} else {
 
@@ -453,7 +456,12 @@
 
 	function onMouseUp ( event ) {
 
-		var onTarget = false;
+		var onTarget = false, isClick = false;
+
+		isClick = ( userMouse.x === event.clientX && userMouse.y === event.clientY ) || 
+			( event.changedTouches && 
+			userMouse.x === event.changedTouches[0].clientX && 
+			userMouse.y === event.changedTouches[0].clientY );
 
 		// Event should happen on canvas
 		if ( event && event.target && !event.target.classList.contains( 'panolens-canvas' ) ) { return; }
@@ -462,11 +470,11 @@
 
 		if ( event.changedTouches && event.changedTouches.length === 1 ) {
 
-			onTarget = select( { clientX : event.changedTouches[0].clientX, clientY : event.changedTouches[0].clientY }, true );
+			onTarget = select( { clientX : event.changedTouches[0].clientX, clientY : event.changedTouches[0].clientY }, isClick );
 		
 		} else {
 
-			onTarget = select( event, true );
+			onTarget = select( event, isClick );
 
 		}
 
@@ -476,7 +484,7 @@
 
 		}
 
-		if ( ( userMouse.x === event.clientX && userMouse.y === event.clientY ) || ( event.changedTouches && userMouse.x === event.changedTouches[0].clientX && userMouse.y === event.changedTouches[0].clientY )) {
+		if ( isClick ) {
 
 			panorama && panorama.toggleChildrenVisibility();
 			toggleControlBar();

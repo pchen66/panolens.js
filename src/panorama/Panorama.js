@@ -29,6 +29,7 @@
 		this.isChildrenVisible = false;
 		
 		this.linkingImageURL = undefined;
+		this.linkingImageScale = undefined;
 
 		this.geometry = geometry;
 
@@ -52,6 +53,8 @@
 
 	PANOLENS.Panorama.prototype.add = function ( object ) {
 
+		var invertedObject;
+
 		if ( arguments.length > 1 ) {
 
 			for ( var i = 0; i < arguments.length; i ++ ) {
@@ -64,13 +67,19 @@
 
 		}
 
-		THREE.Object3D.prototype.add.call( this, object );
+		// Counter scale.x = -1 effect
+		invertedObject = new THREE.Object3D();
+		invertedObject.scale.x = -1;
+		invertedObject.add( object );
 
-		object.traverse( function ( obj ) {
+		// Ignore infospots
+		if ( object instanceof PANOLENS.Infospot ) {
 
-			obj.scale.x *= -1;
+			invertedObject = object;
 
-		});
+		}
+
+		THREE.Object3D.prototype.add.call( this, invertedObject );
 
 	};
 
@@ -147,15 +156,18 @@
 
 	};
 
-	PANOLENS.Panorama.prototype.setLinkingImage = function ( url ) {
+	PANOLENS.Panorama.prototype.setLinkingImage = function ( url, scale ) {
 
 		this.linkingImageURL = url;
+		this.linkingImageScale = scale;
 
 	};
 
 	PANOLENS.Panorama.prototype.link = function ( pano, ended ) {
 
 		var scope = this, spot, raycaster, intersect, point;
+
+		this.visible = true;
 
 		raycaster = new THREE.Raycaster();
 		raycaster.set( this.position, pano.position.clone().sub( this.position ).normalize() );
@@ -172,7 +184,10 @@
 
 		}
 
-		spot = new PANOLENS.Infospot( this.defaultInfospotSize, pano.linkingImageURL || PANOLENS.ArrowIcon );
+		spot = new PANOLENS.Infospot( 
+			pano.linkingImageScale !== undefined ? pano.linkingImageScale : this.defaultInfospotSize, 
+			pano.linkingImageURL !== undefined ? pano.linkingImageURL : PANOLENS.ArrowIcon 
+		);
         spot.position.copy( point );
         spot.toPanorama = pano;
         spot.addEventListener( 'click', function () {
@@ -184,6 +199,8 @@
         this.linkedSpots.push( spot );
 
         this.add( spot );
+
+        this.visible = false;
 
         if ( !ended ) {
 

@@ -62,9 +62,13 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.minPolarAngle = 0; // radians
 	this.maxPolarAngle = Math.PI; // radians
 
+	// Momentum
   	this.momentumDampingFactor = 0.90;
   	this.momentumScalingFactor = 0.005;
 
+  	// Fov
+  	this.minFov = 30;
+  	this.maxFov = 120;
 
 	// How far you can orbit horizontally, upper and lower limits.
 	// If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
@@ -556,11 +560,19 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		if ( delta > 0 ) {
 
-			scope.dollyOut();
+			//scope.dollyOut();
+			scope.object.fov = ( scope.object.fov < scope.maxFov ) 
+				? scope.object.fov + 1
+				: scope.maxFov;
+			scope.object.updateProjectionMatrix();
 
 		} else if ( delta < 0 ) {
 
-			scope.dollyIn();
+			//scope.dollyIn();
+			scope.object.fov = ( scope.object.fov > scope.minFov ) 
+				? scope.object.fov - 1
+				: scope.minFov;
+			scope.object.updateProjectionMatrix();
 
 		}
 
@@ -628,7 +640,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 				var distance = Math.sqrt( dx * dx + dy * dy );
-				dollyStart.set( 0, distance );
+				//dollyStart.set( 0, distance );
 				break;
 
 			case 3: // three-fingered touch: pan
@@ -698,7 +710,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 				var distance = Math.sqrt( dx * dx + dy * dy );
 
-				dollyEnd.set( 0, distance );
+				/*dollyEnd.set( 0, distance );
 				dollyDelta.subVectors( dollyEnd, dollyStart );
 
 				if ( dollyDelta.y > 0 ) {
@@ -711,7 +723,25 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 				}
 
-				dollyStart.copy( dollyEnd );
+				dollyStart.copy( dollyEnd );*/
+
+				if ( event.scale < 1 ) {
+
+					scope.object.fov = ( scope.object.fov < scope.maxFov ) 
+						? scope.object.fov + 1
+						: scope.maxFov;
+					scope.object.updateProjectionMatrix();
+
+				} else if ( event.scale > 1 ) {
+
+					scope.object.fov = ( scope.object.fov > scope.minFov ) 
+						? scope.object.fov - 1
+						: scope.minFov;
+					scope.object.updateProjectionMatrix();
+
+				}
+
+				console.log(distance, event);
 
 				scope.update();
 				break;

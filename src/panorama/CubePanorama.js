@@ -12,7 +12,7 @@
 
 		var materials = [], material;
 
-		material = new THREE.MeshBasicMaterial( { color: 0x000000, transparent: true, opacity: 0, depthTest: false, depthWrite: false } );
+		material = new THREE.MeshBasicMaterial( { color: 0x000000, transparent: true, opacity: 0 } );
 		
 		for ( var i = 0; i < 6; i++ ) {
 			materials.push( material );
@@ -54,7 +54,7 @@
 		// Bind url string to this variable
 		function onEachTextureLoad ( texture ) {
 
-			var material = new THREE.MeshBasicMaterial( { map: texture, opacity: 0, transparent: true, depthTest: false, depthWrite: false } );
+			var material = new THREE.MeshBasicMaterial( { map: texture, opacity: 0, transparent: true } );
 
 			materials.splice( materials.indexOf( this.toString() ), 1, material );
 

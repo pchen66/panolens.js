@@ -36,21 +36,21 @@
 
       var panorama, viewer, renderableObject;
 
-    panorama = new PANOLENS.GoogleStreetviewPanorama( 'JmSoPsBPhqWvaBmOqfFzgA' );
-    panorama.position.set( 0, 0, 0 );
+      panorama = new PANOLENS.GoogleStreetviewPanorama( 'JmSoPsBPhqWvaBmOqfFzgA' );
+      panorama.position.set( 0, 0, 0 );
 
-    // Speficy target (panorama) and update function to be renderable every frame
-    renderableObject = {};
-    renderableObject.target = panorama;
-    renderableObject.update = function () {
-      
-      panorama.rotation.y += 0.005;
+      // Speficy target (panorama) and update function to be renderable every frame
+      renderableObject = {};
+      renderableObject.target = panorama;
+      renderableObject.update = function () {
+        
+        panorama.rotation.y += 0.005;
 
-    }
+      }
 
-    viewer = new PANOLENS.Viewer();
-    viewer.addRenderableObject( renderableObject );
-    viewer.add( panorama );
+      viewer = new PANOLENS.Viewer();
+      viewer.addRenderableObject( renderableObject );
+      viewer.add( panorama );
 
     </script>
 
