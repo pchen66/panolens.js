@@ -307,7 +307,7 @@
 			switch ( this.control.name ) {
 				case 'orbit':
 					camera.position.copy( panorama.position );
-					camera.position.z -= panorama.orbitRadius / 2;
+					camera.position.z -= 1;
 					break;
 				case 'device-orientation':
 					camera.position.copy( panorama.position );
