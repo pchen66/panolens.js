@@ -33,9 +33,10 @@ This project aims to provide a tool for anyone wants to see panorama, photo-base
 
 ###Usage
 
-Get the minified library (includes libraries already)
+Get the minified library (include three.js as a dependency)
 
 ```html
+<script src="js/three.min.js"></script>
 <script src="js/panolens.min.js"></script>
 ```
 This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use `panorama.link( other_panorama )` to connect the two. See `examples` for more details.
@@ -45,7 +46,7 @@ This code creates a 360 image panorama. The first panorama added to the viewer w
 
 	var panorama, viewer;
 
-	panorama = new PANOLENS.ImagePanorama( 'equirectangular', 'asset/equirectangular.jpg' );
+	panorama = new PANOLENS.ImagePanorama( 'asset/equirectangular.jpg' );
 
 	viewer = new PANOLENS.Viewer();
 	viewer.add( panorama );
@@ -67,10 +68,12 @@ Move cursor on a specific point in a panorama and press `Ctrl` with mouse clicki
 
 The minified version includes these libraries:
 
-1. [Three.JS](https://github.com/mrdoob/three.js)
-	1. [OrbitControls.js](https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js)
-	2. [DeviceOrientationControl.js](https://github.com/mrdoob/three.js/blob/master/examples/js/controls/DeviceOrientationControls.js)
+1. Three JS Controls
+	(1) [OrbitControls.js](https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js)
+	(2) [DeviceOrientationControl.js](https://github.com/mrdoob/three.js/blob/master/examples/js/controls/DeviceOrientationControls.js)
+	(3) [WebVR-Boilerplate](https://github.com/borismus/webvr-boilerplate)
 2. [Tween.js](https://github.com/tweenjs/tween.js/)
 
 ###Future
-1.	Add AR/VR support
+1.	More VR support
+2.	Add AR capability

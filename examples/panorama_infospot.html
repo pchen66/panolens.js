@@ -63,13 +63,14 @@
       <div class="text">WWII came to the small town of Tai’erzhuang in central China – and it was never the same again. The town was strategically placed, on the north-south transport railway corridor and the ancient Grand Canal, and so was a focus of the Japanese Imperial army as it advanced. Li Jing Shan was only a child when his family fled the fighting. They returned to find their home, and most of the town, in ruins.</div>
     </div>
 
+    <script src="js/three.min.js"></script>
     <script src="../build/panolens.min.js"></script>
 
     <script>
 
       var infospot, infospot2, panorama, viewer;
 
-      infospot = new PANOLENS.Infospot( 7, PANOLENS.InfoIcon );
+      infospot = new PANOLENS.Infospot( 7, PANOLENS.DataIcon.Info );
       infospot.position.set( 78.5, -14.25, 60.07 );
       infospot.addHoverText( 'The Where Is Bar' );
 

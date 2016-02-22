@@ -3,21 +3,19 @@
 	/**
 	 * Image-based panorama
 	 * @constructor
-	 * @param {string} imageType - Image type for panorama ( currently only support 'equirectangular')
-	 * @param {string} src - Image url
-	 * @param {number} [radius=100] - The minimum radius for this panorama
+	 * @param {string} image - Image url or HTMLImageElement
+	 * @param {number} [radius=5000] - Radius of panorama
 	 */
-	PANOLENS.ImagePanorama = function ( imageType, src, radius ) {
+	PANOLENS.ImagePanorama = function ( image, radius ) {
 
-		radius = radius || 100;
+		radius = radius || 5000;
 
 		var geometry = new THREE.SphereGeometry( radius, 60, 40 ),
 			material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
 		PANOLENS.Panorama.call( this, geometry, material );
 
-		this.src = src;
-		this.imageType = imageType;
+		this.src = image;
 
 	}
 
@@ -34,25 +32,23 @@
 			console.warn( 'Image source undefined' );
 
 			return; 
+
+		} else if ( typeof src === 'string' ) {
+
+			PANOLENS.Utils.TextureLoader.load( src, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
+
+		} else if ( src instanceof HTMLImageElement ) {
+
+			this.onLoad( new THREE.Texture( src ) );
+
 		}
 
-		var textureLoader = new THREE.TextureLoader();
-
-		textureLoader.load( src, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
-
+		
 	};
 
 	PANOLENS.ImagePanorama.prototype.onLoad = function ( texture ) {
 
-		switch ( this.imageType ) {
-
-			case 'equirectangular':
-
-				texture.minFilter = texture.maxFilter = THREE.LinearFilter;
-
-				break;
-
-		}
+		texture.minFilter = texture.maxFilter = THREE.LinearFilter;
 
 		texture.needsUpdate = true;
 

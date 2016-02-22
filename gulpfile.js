@@ -1,45 +1,58 @@
 var gulp = require('gulp');
-var closureCompiler = require('gulp-closure-compiler');
-var jsdoc = require("gulp-jsdoc");
-var runSequence = require('run-sequence');
+var jsdoc = require('gulp-jsdoc');
+var concat = require('gulp-concat');
+var stripDebug = require('gulp-strip-debug');
+var uglify = require('gulp-uglify');
 
 var _libfiles = [
-	'src/lib/three.min.js',
+	'node_modules/three/examples/js/controls/DeviceOrientationControls.js',
+	'node_modules/three/examples/js/controls/VRControls.js',
+	'node_modules/three/examples/js/effects/VREffect.js',
+	'node_modules/webvr-polyfill/build/webvr-polyfill.js',
+	'node_modules/webvr-boilerplate/build/webvr-manager.js',
+	'node_modules/tween.js/src/Tween.js',
 	'src/lib/OrbitControls.js',
-	'src/lib/DeviceOrientationControls.js',
 	'src/lib/GSVPano.js',
-	'src/lib/Tween.js'
+	'src/lib/modifier/BendModifier.js',
 ];
 
 var _panolensfiles = [
 	'src/Panolens.js',
+	'src/util/DataIcon.js',
+	'src/util/TextureLoader.js',
 	'src/panorama/Panorama.js',
 	'src/panorama/ImagePanorama.js',
 	'src/panorama/GoogleStreetviewPanorama.js',
 	'src/panorama/CubePanorama.js',
+	'src/panorama/BasicPanorama.js',
 	'src/panorama/VideoPanorama.js',
+	'src/panorama/EmptyPanorama.js',
+	'src/interface/Tile.js',
+	'src/interface/TileGroup.js',
+	'src/interface/SpriteText.js',
 	'src/widget/*.js',
 	'src/infospot/*.js',
-	'src/viewer/*.js'
+	'src/viewer/*.js',
+	'src/util/font/Bmfont.js'
 ];
 
-gulp.task( 'default', [ 'gulp-closure-compiler', 'gulp-jsdoc' ] );
+var _readme = [
+	'README.md'
+];
 
-gulp.task( 'gulp-closure-compiler', function() {
+gulp.task( 'default', [ 'minify', 'docs' ] );
+
+gulp.task( 'minify', function() {
   return gulp.src( _libfiles.concat( _panolensfiles ) )
-    .pipe( closureCompiler ( {
-      compilerPath: 'bower_components/closure-compiler/compiler.jar',
-      fileName: 'build/panolens.min.js',
-      compilerFlags: {
-      	language_in: 'ECMASCRIPT6',
-      	language_out: 'ECMASCRIPT5_STRICT'
-      }
-    } ) )
-    .pipe( gulp.dest( 'build' ) )
+  	.pipe( concat( 'panolens.js', { newLine: ';' } ) )
+  	.pipe( stripDebug() )
+  	.pipe( gulp.dest( './build/' ) )
+  	.pipe( concat( 'panolens.min.js' ) )
+    .pipe( uglify() )
+    .pipe( gulp.dest( './build/' ) );
 });
 
-gulp.task( 'gulp-jsdoc', function() {
-  return gulp.src( _panolensfiles )
-    .pipe( jsdoc('docs' ) )
-    .pipe( gulp.dest( 'build' ) )
+gulp.task( 'docs', function() {
+  return gulp.src( _panolensfiles.concat( _readme ) )
+    .pipe( jsdoc( 'docs' ) );
 });

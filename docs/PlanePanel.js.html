@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: interface/PlanePanel.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: interface/PlanePanel.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>( function () {
+	
+	/**
+	 * Creates a plane panel with bent capability
+	 * @constructor
+	 * @param {number}  [width=10]                      - Width along the X axis
+	 * @param {number}  [height=5]                      - Height along the Y axis
+	 * @param {number}  [widthSegments=20]              - Width segments
+	 * @param {number}  [heightSegments=20]             - Height segments
+	 * @param {object}  [options]                       - Options
+	 * @param {boolean} [options.outline=false]         - Show outline
+	 * @param {value}   [options.outlineColor=0xffffff] - Color value such as "#ff0000", "#f00", or "red"
+	 */
+	PANOLENS.PlanePanel = function ( width, height, widthSegments, heightSegments, options ) {
+
+		var scope = this;
+
+		this.parameters = {
+			width: width,
+			height: height,
+			widthSegments: widthSegments,
+			heightSegments: heightSegments,
+			options: options
+		};
+
+		width = width || 10;
+		height = height || 5;
+		widthSegments = widthSegments || 20;
+		heightSegments = heightSegments || 20;
+
+		options = options || {};
+		options.outline = options.outline || false;
+		options.outlineColor = options.outlineColor || 0xffffff;
+
+		this.outline = undefined;
+
+		THREE.Mesh.call( this, 
+			new THREE.PlaneGeometry( width, height, widthSegments, heightSegments ),
+			new THREE.MeshBasicMaterial( { color: 0xffffff } )
+		);
+
+		this.renderOrder = 1;
+
+		if ( options.outline ) { 
+
+			this.addOutline( options.outlineColor ); 
+
+		}
+
+	}
+
+	PANOLENS.PlanePanel.prototype = Object.create( THREE.Mesh.prototype );
+
+	PANOLENS.PlanePanel.prototype.constructor = PANOLENS.PlanePanel;
+
+	PANOLENS.PlanePanel.prototype.clone = function (){
+
+		var parameters = this.parameters;
+
+		return new PANOLENS.PlanePanel(
+			parameters.width,
+			parameters.height,
+			parameters.widthSegments,
+			parameters.heightSegments,
+			parameters.options
+		);
+
+	};
+
+	/**
+	 * Bend panel with direction, axis, and angle
+	 * @param  {THREE.Vector3} [direction = THREE.Vector3( 0, 0, 1 )] - Force direction
+	 * @param  {THREE.Vector3} [axis = THREE.Vector3( 0, 1, 0 )] - Along this axis
+	 * @param  {number} [angle = Math.PI/12] - Angle to bend in radians
+	 */
+	PANOLENS.PlanePanel.prototype.bend = function ( direction, axis, angle ) {
+
+		var modifier = new THREE.BendModifier();
+
+		direction = direction || new THREE.Vector3( 0, 0, 1 );
+		axis = axis || new THREE.Vector3( 0, 1, 0 );
+		angle = angle !== undefined ? angle : Math.PI / 12;
+
+		modifier.set( direction, axis, angle ).modify( this.geometry );
+
+		this.updateOutline();
+
+	};
+
+	PANOLENS.PlanePanel.prototype.addOutline = function ( color ) {
+
+		this.outline = this.generateOutline( color );
+
+		this.add( this.outline );
+
+	};
+
+	PANOLENS.PlanePanel.prototype.generateOutline = function ( color ) {
+
+		color = color || 0xffffff;
+
+		var outlineGeometry, 
+			outlineMaterial, 
+			outline, 
+			ws, 
+			hs,
+			top = [],
+			right = [],
+			bottom = [],
+			left = [];
+
+		ws = this.geometry.parameters.widthSegments;
+		hs = this.geometry.parameters.heightSegments;
+
+		outlineGeometry = new THREE.Geometry();
+
+		for ( var i = 0; i &lt;= ws; i++ ) {
+
+			top.push( this.geometry.vertices[ i ].clone() );
+			bottom.push( this.geometry.vertices[ ( ws + 1 ) * ( hs + 1 ) - i - 1 ].clone() );
+
+		}
+
+		for ( var j = 0; j &lt;= hs; j++ ) {
+
+			right.push( this.geometry.vertices[ ws * ( j + 1 ) + j ].clone() );
+			left.push( this.geometry.vertices[ ( ws + 1 ) * hs - ws * j - j ].clone() );
+		}
+
+		outlineGeometry.vertices = top.concat( right, bottom, left );
+
+		outlineMaterial = new THREE.LineBasicMaterial({ color: color });
+		outline = new THREE.Line( outlineGeometry, outlineMaterial );
+		outline.frustumCulled = false;
+
+		return outline;
+
+	};
+
+	PANOLENS.PlanePanel.prototype.updateOutline = function ( color ) {
+
+		color = color || 0xffffff;
+
+		if ( this.outline ) {
+
+			this.remove( this.outline );
+			this.addOutline( color );
+
+		}
+
+	};
+
+	/**
+	 * Animate iteration of line drawing
+	 * @param  {number} [duration=3000ms] - Duration from first vertex to the last one
+	 * @param  {number} [delay=0ms] - Any delay to start the animation
+	 * @param  {number} [easing=TWEEN.Easing.Linear.None] - Easing function
+	 */
+	PANOLENS.PlanePanel.prototype.animateOutline = function ( duration, delay, easing ) {
+
+		if ( this.outline ) {
+
+			duration = duration !== undefined ? duration : 3000;
+			delay = delay !== undefined ? delay : 0;
+			easing = easing || TWEEN.Easing.Linear.None;
+
+			var scope = this,
+				geometry = this.outline.geometry.clone(),
+				tween = new TWEEN.Tween( this ).to( {} , 0 ).delay( delay ),
+				nextTween = tween;
+
+			// Move vertices to starting point
+			this.outline.geometry.vertices.map( function ( vertex, index ) {
+
+				vertex.copy( geometry.vertices[ 0 ] );
+
+				if ( index > 0 ) {
+					var _tween = new TWEEN.Tween( vertex )
+					.to({ x: geometry.vertices[ index ].x,
+						  y: geometry.vertices[ index ].y,
+						  z: geometry.vertices[ index ].z}, duration / geometry.vertices.length )
+					.easing( easing )
+					.onUpdate( function () {
+						scope.outline.geometry.verticesNeedUpdate = true;
+					})
+					.onComplete( function () {
+						for ( var i = index; i &lt; geometry.vertices.length; i++ ) {
+							scope.outline.geometry.vertices[ i ].copy( this );
+						}
+					});
+
+					nextTween.chain( _tween );
+					nextTween = _tween;
+				}
+				
+			});
+
+			tween.start();
+
+		}
+
+	};
+
+} )();</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="PANOLENS.CubePanorama.html">CubePanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImagePanorama.html">ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">Infospot</a></li><li><a href="PANOLENS.Panorama.html">Panorama</a></li><li><a href="PANOLENS.PlanePanel.html">PlanePanel</a></li><li><a href="PANOLENS.VectorText.html">VectorText</a></li><li><a href="PANOLENS.Viewer.html">Viewer</a></li><li><a href="PANOLENS.Widget.html">Widget</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sat Jan 16 2016 00:10:53 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

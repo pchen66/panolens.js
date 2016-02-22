@@ -7,11 +7,11 @@
 	 * @param {HTMLCanvasElement} [options.videoCanvas] - HTML5 canvas element for drawing the video
 	 * @param {boolean} [options.muted=false] - Mute the video or not
 	 * @param {boolean} [options.loop=true] - Specify if the video should loop in the end
-	 * @param {number} [radius=100] - The minimum radius for this panoram
+	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
 	PANOLENS.VideoPanorama = function ( src, options, radius ) {
 
-		radius = radius || 100;
+		radius = radius || 5000;
 
 		var geometry = new THREE.SphereGeometry( radius, 60, 40 ),
 			material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
@@ -73,7 +73,7 @@
 
 	PANOLENS.VideoPanorama.prototype.setVideoTexture = function ( video, canvas ) {
 
-		var videoTexture, videoRenderObject, videoContext, scene;
+		var videoTexture, videoRenderObject, videoContext, scene, updateCallback;
 
 		if ( !video || !canvas ) return;
 
@@ -111,7 +111,7 @@
 				this.pano_paused = true;
 
 			};
-			videoRenderObject.update = function () {
+			updateCallback = function () {
 
 				if ( this.video.pano_paused ) { return; }
 
@@ -133,7 +133,7 @@
 
 		} else {
 
-			videoRenderObject.update = function () {
+			updateCallback = function () {
 
 				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
 
@@ -156,7 +156,7 @@
 		this.videoRenderObject = videoRenderObject;
 
 		// Notify Viewer to render object
-		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'addRenderableObject', data: videoRenderObject } );
+		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'addUpdateCallback', data: updateCallback.bind( videoRenderObject ) } );
 		
 	};
 

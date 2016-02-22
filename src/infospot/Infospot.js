@@ -4,51 +4,31 @@
 	 * Information spot attached to panorama
 	 * @constructor
 	 * @param {number} [scale=1] - Infospot scale
-	 * @param {imageurl} [imageurl=DEFAULT_INFO_ICON] - Image overlay info
+	 * @param {imageSrc} [imageSrc=PANOLENS.DataIcon.Info] - Image overlay info
 	 */
-	PANOLENS.Infospot = function ( scale, imageurl ) {
+	PANOLENS.Infospot = function ( scale, imageSrc ) {
 		
-		var scope = this, textureLoader = undefined, ratio = undefined;
-
-		var DEFAULT_INFO_ICON = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjQ4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSI0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz4KICAgIDxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0xIDE1aC0ydi02aDJ2NnptMC04aC0yVjdoMnYyeiIvPgo8L3N2Zz4=',
-			DEFAULT_ARROW_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAwAAAAMADO7oxXAAACB0lEQVRo3u2ZP0vDQBjGnzf4B+pYx4KDoB9ABGc/hf0O/QCOioN+AaGLm2OX0l3c1clJwUFacFAncYiDj0OuEC7XeM1dcqTND7o0uZffcy13yXtAQ8NyIz6KkIwA7AM4BLAHYAdAB8CGuuUbwATAM4AHADcA7kTkN2h6kh2SFyTHnJ+xGtsJIb5J8pJkXEBcJ1a1NquS75J89yCu806yW6b4Ksl+CeI6fZIrvuVbJEcVyE8ZkWz5nPlhhfJThiRXfQSo4m8zi76r/FFA+SlHeY6SI98G8ASg7eW/WJxPALsi8mm6GOUMPPMgf6o+LrSViz1MdljXTeokVe/EsVbMeXZskue+5D2GOLeVj1js2WamvKcQYyYPjf8GOChD3lOIA5sAx2XJewhxbFN8UKa8Y4iBTeHHsuUdQjzaFP2oQr5giA+bgrbrv7N8gRCxPlYMxWIAa0VlRCT3PZskHbL+iMh6+gvTuvrlPKXlkXEzBXgLbZlDxs0U4Cm0ZQ4ZN1OA+9CWOWTcTAFuQ1vmkHEzrUIRgFcknbW5KXEVmgDY0rt5mV9A3XDta8o8cm1qRRpni8nLwwsc9gPP/ADYFpGJfsH4fK1uvAptneLKJA8s8ku9GtALLA8AvVnyVrDOjS0VoN6tRRWivs3dVIgV1rW9rgWp5wGHFqK+R0xakOCHfMt9zNrQsAD8AdNVkHeWQ1RrAAAAAElFTkSuQmCC';
+		var scope = this, ratio;
 
 		THREE.Sprite.call( this );
 
 		this.type = 'infospot';
 
 		this.isHovering = false;
-		this.element = undefined;
-		this.toPanorama = undefined;
+		this.element;
+		this.toPanorama;
 
 		this.container = document.body;
 
 		// Default is not visible until panorama is loaded
 		this.visible = false;
 
-		this.defaultOpacity = 1;
-
 		scale = scale || 1;
+		imageSrc = imageSrc || PANOLENS.DataIcon.Info;
 
 		this.scale.set( scale, scale, 1 );
 
-		if ( typeof( imageurl ) === 'string' ) {
-
-			if ( imageurl === 'info' ) {
-
-				imageurl = DEFAULT_INFO_ICON;
-
-			} else if ( imageurl === 'arrow' ) {
-
-				imageurl = DEFAULT_ARROW_ICON;
-
-			}
-
-		}
-
-		textureLoader = new THREE.TextureLoader();
-
-		textureLoader.load( imageurl || DEFAULT_INFO_ICON, postLoad );		
+		PANOLENS.Utils.TextureLoader.load( imageSrc, postLoad );		
 
 		function postLoad ( texture ) {
 
@@ -79,7 +59,7 @@
 				.easing( TWEEN.Easing.Elastic.Out );
 
 			scope.showAnimation = new TWEEN.Tween( scope.material )
-				.to( { opacity: scope.defaultOpacity }, scope.animationDuration )
+				.to( { opacity: 1 }, scope.animationDuration )
 				.onStart( function () { scope.visible = true; } )
 				.easing( TWEEN.Easing.Quartic.Out );
 

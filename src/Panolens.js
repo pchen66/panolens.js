@@ -4,8 +4,10 @@
 
 window.PANOLENS = {
 
-	InfoIcon: 'info',
-
-	ArrowIcon: 'arrow'
+	// Placeholder for async bmfont texture loading
+	Utils: {
+		loadBMFont: function(){},
+		textureLoader: function(){}
+	}
 
 };

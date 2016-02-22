@@ -741,7 +741,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 				}
 
-				console.log(distance, event);
+				//console.log(distance, event);
 
 				scope.update();
 				break;

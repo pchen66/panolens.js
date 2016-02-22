@@ -1,7 +1,0 @@
-{
-  "name": "panolens.js",
-  "version": "0.0.1",
-  "dependencies": {
-    "closure-compiler": "http://dl.google.com/closure-compiler/compiler-latest.zip"
-  }
-}

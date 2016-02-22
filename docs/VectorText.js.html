@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: interface/VectorText.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: interface/VectorText.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>( function () {
+	
+	/**
+	 * Vector based 2D text
+	 * @constructor
+	 * @param {string} text    						- Displayed text
+	 * @param {object} [options] 					- Options
+	 * @param {number} [options.size=1] 			- Size of text
+	 * @param {string} [options.font='helvetiker'] 	- Font style
+	 * @param {number} [options.spacing=0] 			- Spacing of each character
+	 * @param {value}  [options.color=0xffffff] 	- Text color
+	 * @param {number} [options.maxWidth=Infinity]  - Max width of the paragraph
+	 */
+	PANOLENS.VectorText = function ( text, options ) {
+
+		var scope = this, totalWidth = 0, totalHeight = 0, lineHeight = 1.5, lines = [], vectorText;
+
+		options = options || {};
+
+		this.parameters = {
+			text: text,
+			options: options
+		};
+
+		this.text = text || '';
+		this.options = {};
+
+		this.options.size = options.size || 1;
+		this.options.font = options.font || 'helvetiker';
+		this.options.spacing = options.spacing !== undefined ? options.spacing : 0;
+		this.options.color = options.color || 0xffffff;
+		this.options.maxWidth = options.maxWidth || 50;
+
+		this.textGroup = new THREE.Object3D();
+		this.textGroupLine = new THREE.Object3D();
+
+		lineHeight *= this.options.size;
+
+		text.split(' ').map(function(w, index){
+			var word = new THREE.Object3D(), wordWidth = 0;
+			w.split('').map(function(character){
+
+				var group = new THREE.Object3D(), append;
+
+				scope.group = group;
+
+				scope.textShapes = scope.generateShapes( character );
+				scope.addSolidShapes();
+
+				if ( group.width &lt; scope.options.size * 0.5 ) {
+					group.width = scope.options.size * 0.5;
+				}
+
+				group.position.x = totalWidth + group.width / 2 + scope.options.spacing;
+				group.position.y = group.height / 2;
+
+				totalWidth += group.width + scope.options.spacing;
+				totalHeight = ( totalHeight &lt; group.height ) ? group.height : totalHeight;
+				
+				wordWidth += group.width + scope.options.spacing;
+
+				if ( character === 'i' ) {
+					append = group.children[1].clone();
+					append.scale.y = 0.2;
+					append.position.y = group.height * 2 / 3;
+					group.add( append );
+				} else if ( character === ':' ) {
+					append = group.children[1].clone();
+					append.position.y = ( scope.options.size - group.height ) / 2;
+					group.add( append );
+				}
+
+				word.add( group );
+
+			});
+
+			if ( totalWidth > scope.options.maxWidth ) {
+
+				lines.push( scope.textGroupLine );
+				scope.textGroupLine = new THREE.Object3D();
+				word.position.x = -totalWidth + wordWidth;
+				scope.textGroupLine.add( word );
+				totalWidth = wordWidth;
+				totalHeight = 0;
+
+			} else {
+
+				if ( index !== 0 ) {
+					word.position.x += scope.options.size * 0.5 + scope.options.spacing;
+				}
+				totalWidth += word.position.x;
+
+				scope.textGroupLine.add( word );
+
+			}
+
+			word.position.y = -scope.options.size;
+
+		});
+
+		lines.push( scope.textGroupLine );
+
+		lines.map(function(line, index){
+			line.position.y = index * -lineHeight;
+			scope.textGroup.add( line );
+
+		});
+
+		var bbox = new THREE.Box3().setFromObject( this.textGroup );
+		var w = bbox.max.x - bbox.min.x; 
+		var h = bbox.max.y - bbox.min.y;
+
+		this.textGroup.position.x = - w / 2;
+		this.textGroup.position.y = h / 2;
+
+		vectorText = new THREE.Object3D();
+		vectorText.width = w;
+		vectorText.height = h;
+		vectorText.add( this.textGroup );
+
+		return vectorText;
+
+	}
+
+	PANOLENS.VectorText.prototype.constructor = PANOLENS.VectorText;
+
+	PANOLENS.VectorText.prototype.generateShapes = function ( text, options ) {
+
+		text = text !== undefined ? text : this.text;
+		options = options !== undefined ? options : this.options;
+
+		return THREE.FontUtils.generateShapes( text, options );
+
+	};
+
+	PANOLENS.VectorText.prototype.addSolidShapes = function () {
+
+		var subshape,
+			pts,
+			pts2,
+			convexhullShape,
+			solidShape,
+			s, 
+			i,
+			p, 
+			hole,
+			color,
+			convexhullShapeGroup = [], 
+			solidShapeGroup = [],
+			beziers = [],
+			invert = [],
+			process,
+			geometry,
+			bezierGeometry,
+			material,
+			vertexShader,
+			fragmentShader,
+			bezierMesh,
+			solidMesh;
+
+		for ( s = 0; s &lt; this.textShapes.length; s++ ) {
+
+			subshape = this.textShapes[ s ];
+
+			process = this.processShape( subshape.curves );
+
+			pts = process.pts;
+			pts2 = process.pts2;
+			beziers = beziers.concat( process.beziers );
+			invert = invert.concat( process.invert );
+
+			convexhullShape = new THREE.Shape( pts );
+			solidShape = new THREE.Shape( pts2 );
+			
+			convexhullShapeGroup.push( convexhullShape );
+			solidShapeGroup.push( solidShape );
+
+			for ( i = 0; i &lt; subshape.holes.length; i++ ) {
+
+				hole = subshape.holes[ i ];
+
+				process = this.processShape( hole.curves, true );
+
+				pts = process.pts;
+				pts2 = process.pts2;
+				
+				beziers = beziers.concat( process.beziers );
+				invert = invert.concat( process.invert );
+
+				convexhullShape.holes.push( new THREE.Shape( pts ) );
+				solidShape.holes.push( new THREE.Shape( pts2 ) );
+
+			}
+
+		} // end of subshape
+
+		bezierGeometry = new THREE.Geometry();
+
+		for ( i = 0; i &lt; beziers.length; i++ ) {
+			p = beziers[i];
+			bezierGeometry.vertices.push( new THREE.Vector3( p.x, p.y, 0 ) );			
+		}
+
+		for ( i = 0; i &lt; beziers.length; i += 3 ) {
+			bezierGeometry.faces.push( new THREE.Face3( i, i+1, i+2 ) );
+			bezierGeometry.faceVertexUvs[ 0 ].push( [
+				new THREE.Vector2( 0, 0 ),
+				new THREE.Vector2( 0.5, 0 ),
+				new THREE.Vector2( 1, 1 )
+			] );
+		}
+
+		geometry = new THREE.ShapeGeometry( solidShapeGroup );
+		geometry.computeBoundingBox();
+
+		color = new THREE.Color( this.options.color );
+
+		fragmentShader = [
+
+			"varying vec2 vUv;",
+			"varying float flip;",
+			"uniform vec3 color;",
+			
+			"float inCurve(vec2 uv) {",
+				"return uv.x * uv.x - uv.y;",
+			"}",
+
+			"float delta = 0.1;",
+
+			"void main() {",
+				"float x = inCurve(vUv);",
+
+				"if (x * flip > 0.) discard;",
+				"gl_FragColor = vec4(color, 1.);",
+			"}"
+
+		].join('\n');
+
+		vertexShader = [
+
+			"varying vec2 vUv;",
+			"attribute float invert;",
+			"varying float flip;",
+
+			"void main() {",
+
+				"vUv = uv;",
+				"flip = invert;",
+				"vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+				"gl_Position = projectionMatrix * mvPosition;",
+
+			"}"
+
+		].join('\n');
+
+		// Quad bezier segments
+
+		material = new THREE.ShaderMaterial({
+			uniforms: { color: { type: 'c', value: color } },
+			vertexShader: vertexShader,
+			fragmentShader: fragmentShader,
+			side: THREE.DoubleSide
+		});
+
+		bezierGeometry.computeBoundingBox();
+		bezierGeometry.computeFaceNormals();
+		bezierGeometry.computeVertexNormals();
+
+		bezierGeometry = new THREE.BufferGeometry().fromGeometry( bezierGeometry );
+		bezierGeometry.addAttribute( 'invert', new THREE.Float32Attribute( invert, 1 ) );
+
+		bezierMesh = new THREE.Mesh( bezierGeometry, material );
+
+		bezierMesh.position.x = -0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
+		bezierMesh.position.y = -0.5 * ( geometry.boundingBox.max.y - geometry.boundingBox.min.y );
+		bezierMesh.position.z = 0;
+
+		this.group.add( bezierMesh );
+
+		// Solid subsets
+
+		geometry = new THREE.ShapeGeometry( solidShape );
+		geometry.computeBoundingBox();
+		
+		solidMesh = new THREE.Mesh( 
+			geometry, 
+			new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide })
+		);
+		solidMesh.position.x = -0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
+		solidMesh.position.y = -0.5 * ( geometry.boundingBox.max.y - geometry.boundingBox.min.y );
+		solidMesh.position.z = 0;
+
+		this.group.add( solidMesh );
+
+		this.group.width = geometry.boundingBox.max.x - geometry.boundingBox.min.x;
+		this.group.height = geometry.boundingBox.max.y - geometry.boundingBox.min.y;
+
+	};
+
+	PANOLENS.VectorText.prototype.processShape = function ( path, reverse ) {
+
+		var pts = [], // bigger area (convex hull)
+			pts2 = [], // smaller area (full solid shapes)
+			beziers = [], // quad bezier points
+			invert = [],
+			curve,
+			wind,
+			z,
+			vA = new THREE.Vector2(),
+			vB = new THREE.Vector2(),
+			vDot = new THREE.Vector2();
+
+		pts.push( path[0].getPoint(0) );
+		pts2.push( path[0].getPoint(0) );
+
+		for (var i=0; i &lt; path.length; i++) {
+			curve = path[i];
+			if (curve instanceof THREE.LineCurve) {
+				pts.push( curve.v2 );
+				pts2.push( curve.v2 );
+			} else if (curve instanceof THREE.QuadraticBezierCurve) {
+				vA = vA.subVectors( curve.v1, curve.v0 ); // .normalize()
+				vB = vB.subVectors( curve.v2, curve.v1 );
+				z = vA.x * vB.y - vA.y * vB.x; // z component of cross Production
+				wind = z &lt; 0; // clockwise/anticlock wind
+
+				if (wind) {
+					pts.push( curve.v1 );
+					pts.push( curve.v2 );
+					pts2.push( curve.v2 );
+				} else {
+					pts.push( curve.v2 );
+					pts2.push( curve.v1 );
+					pts2.push( curve.v2 );
+				}
+
+				var flip = wind ? 1 : -1;
+				//if (reverse) flip *= -1;
+
+				invert.push(flip, flip, flip);
+				beziers.push( curve.v0, curve.v1, curve.v2);
+
+			}
+		}
+
+		return {
+			pts: pts,
+			pts2: pts2,
+			beziers: beziers,
+			invert: invert
+		};
+
+	};
+
+} )();</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="PANOLENS.CubePanorama.html">CubePanorama</a></li><li><a href="PANOLENS.EmptyPanorama.html">EmptyPanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImagePanorama.html">ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">Infospot</a></li><li><a href="PANOLENS.Panorama.html">Panorama</a></li><li><a href="PANOLENS.TextTile.html">TextTile</a></li><li><a href="PANOLENS.Tile.html">Tile</a></li><li><a href="PANOLENS.VectorText.html">VectorText</a></li><li><a href="PANOLENS.Viewer.html">Viewer</a></li><li><a href="PANOLENS.Widget.html">Widget</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Mon Jan 25 2016 18:36:55 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

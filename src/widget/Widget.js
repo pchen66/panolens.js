@@ -3,7 +3,7 @@
 	/**
 	 * Widget for controls
 	 * @constructor
-	 * @param {domElement} container - A domElement where default control widget will be attached to
+	 * @param {HTMLElement} container - A domElement where default control widget will be attached to
 	 */
 	PANOLENS.Widget = function ( container ) {
 
@@ -30,7 +30,7 @@
 		bar = document.createElement( 'div' );
 		bar.style.width = '100%';
 		bar.style.height = '44px';
-		bar.style.position = 'absolute';
+		bar.style.position = 'fixed';
 		bar.style.bottom = '0';
 		bar.style.background = 'rgba( 0, 0, 0, 0.3 )';
 		bar.style.transition = 'all 0.5s ease';
@@ -43,6 +43,7 @@
 		// Add Control Items
 		bar.appendChild( this.createFullscreenButton() );
 		bar.appendChild( this.createCameraControlButton() );
+		bar.appendChild( this.createVRButton() );
 		bar.appendChild( this.createVideoControl() );
 
 		this.container.appendChild( bar );
@@ -54,27 +55,37 @@
 
 	};
 
-	PANOLENS.Widget.prototype.createFullscreenButton = function () {
+	PANOLENS.Widget.prototype.createVRButton = function () {
 
-		var item,
-			FULLSCREENICON = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz4KICAgIDxwYXRoIGQ9Ik03IDE0SDV2NWg1di0ySDd2LTN6bS0yLTRoMlY3aDNWNUg1djV6bTEyIDdoLTN2Mmg1di01aC0ydjN6TTE0IDV2MmgzdjNoMlY1aC01eiIvPgo8L3N2Zz4=',
-			FULLSCREENEXITICON = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTE0LDE0SDE5VjE2SDE2VjE5SDE0VjE0TTUsMTRIMTBWMTlIOFYxNkg1VjE0TTgsNUgxMFYxMEg1VjhIOFY1TTE5LDhWMTBIMTRWNUgxNlY4SDE5WiIgLz48L3N2Zz4=';
+		var scope = this, item;
+
+		function onTap () {
+
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVR' } );
+
+		}
 
 		item = this.createCustomItem( { 
 
 			style : { 
 
-				backgroundImage : 'url("' + FULLSCREENICON + '")' 
+				backgroundImage : 'url("' + PANOLENS.DataIcon.Cardboard + '")' 
 
-			}
+			},
+
+			onTap : onTap
 
 		} );
 
-		[ 'click', 'touchend' ].forEach( function( event ) {
-			item.addEventListener( event, onTap, false );
-		} );
+		return item;
 
-		function onTap(){
+	}
+
+	PANOLENS.Widget.prototype.createFullscreenButton = function () {
+
+		var scope = this, item;
+
+		function onTap () {
 
 			var fullscreenElement;
 
@@ -105,9 +116,23 @@
 
 			fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
 
-			this.style.backgroundImage = ( fullscreenElement !== null ) ? 'url("' + FULLSCREENEXITICON + '")' : 'url("' + FULLSCREENICON + '")';
+			this.style.backgroundImage = ( fullscreenElement !== null ) 
+				? 'url("' + PANOLENS.DataIcon.FullscreenLeave + '")' 
+				: 'url("' + PANOLENS.DataIcon.FullscreenEnter + '")';
 
 		}
+
+		item = this.createCustomItem( { 
+
+			style : { 
+
+				backgroundImage : 'url("' + PANOLENS.DataIcon.FullscreenEnter + '")' 
+
+			},
+
+			onTap : onTap
+
+		} );
 
 		return item;
 
@@ -115,26 +140,7 @@
 
 	PANOLENS.Widget.prototype.createCameraControlButton = function () {
 
-		var scope = this,
-			item,
-			ORBITICON = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTEyLDVDMTYuOTcsNSAyMSw3LjY5IDIxLDExQzIxLDEyLjY4IDE5Ljk2LDE0LjIgMTguMjksMTUuMjlDMTkuMzYsMTQuNDIgMjAsMTMuMzIgMjAsMTIuMTNDMjAsOS4yOSAxNi40Miw3IDEyLDdWMTBMOCw2TDEyLDJWNU0xMiwxOUM3LjAzLDE5IDMsMTYuMzEgMywxM0MzLDExLjMyIDQuMDQsOS44IDUuNzEsOC43MUM0LjY0LDkuNTggNCwxMC42OCA0LDExLjg4QzQsMTQuNzEgNy41OCwxNyAxMiwxN1YxNEwxNiwxOEwxMiwyMlYxOVoiIC8+PC9zdmc+', 
-			DEVICEORIENTICON = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTE0LjE5LDE0LjE5TDYsMThMOS44MSw5LjgxTDE4LDZNMTIsMkExMCwxMCAwIDAsMCAyLDEyQTEwLDEwIDAgMCwwIDEyLDIyQTEwLDEwIDAgMCwwIDIyLDEyQTEwLDEwIDAgMCwwIDEyLDJNMTIsMTAuOUExLjEsMS4xIDAgMCwwIDEwLjksMTJBMS4xLDEuMSAwIDAsMCAxMiwxMy4xQTEuMSwxLjEgMCAwLDAgMTMuMSwxMkExLjEsMS4xIDAgMCwwIDEyLDEwLjlaIiAvPjwvc3ZnPg==';
-
-		item = this.createCustomItem( {
-
-			style: {
-
-				backgroundImage: 'url("' + DEVICEORIENTICON + '")'
-
-			}
-
-		} );
-
-		item.controlName = 'orbit';
-
-		[ 'click', 'touchend' ].forEach( function( event ) {
-			item.addEventListener( event, onTap, false );
-		} );
+		var scope = this, item;
 
 		function onTap(){
 
@@ -142,9 +148,25 @@
 
 			this.controlName = ( this.controlName === 'orbit' ) ? 'device-orientation' : 'orbit';
 
-			this.style.backgroundImage = 'url("' + ( this.controlName === 'orbit' ? DEVICEORIENTICON : ORBITICON ) + '")';
+			this.style.backgroundImage = 'url("' + ( this.controlName === 'orbit' 
+				? PANOLENS.DataIcon.Gyro 
+				: PANOLENS.DataIcon.Orbit ) + '")';
 
 		}
+
+		item = this.createCustomItem( {
+
+			style: {
+
+				backgroundImage: 'url("' + PANOLENS.DataIcon.Gyro + '")'
+
+			},
+
+			onTap : onTap
+
+		} );
+
+		item.controlName = 'orbit';
 
 		return item;
 
@@ -185,33 +207,7 @@
 
 	PANOLENS.Widget.prototype.createVideoControlButton = function () {
 
-		var scope = this,
-			item,
-			VIDEOPLAYICON = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTgsNS4xNFYxOS4xNEwxOSwxMi4xNEw4LDUuMTRaIiAvPjwvc3ZnPg==',
-			VIDEOPAUSEICON = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTE0LDE5LjE0SDE4VjUuMTRIMTRNNiwxOS4xNEgxMFY1LjE0SDZWMTkuMTRaIiAvPjwvc3ZnPg==';
-
-		item = this.createCustomItem( { 
-
-			style : { 
-
-				float : 'left',
-				backgroundImage : 'url("' + VIDEOPLAYICON + '")'
-
-			}
-
-		} );
-
-		item.paused = true;
-
-		item.update = function () {
-
-			this.style.backgroundImage = 'url("' + ( this.paused ? VIDEOPLAYICON : VIDEOPAUSEICON ) + '")';
-
-		};
-
-		[ 'click', 'touchend' ].forEach( function( event ) {
-			item.addEventListener( event, onTap, false );
-		} );
+		var scope = this, item;
 
 		function onTap () {
 
@@ -223,6 +219,29 @@
 
 		};
 
+		item = this.createCustomItem( { 
+
+			style : { 
+
+				float : 'left',
+				backgroundImage : 'url("' + PANOLENS.DataIcon.VideoPlay + '")'
+
+			},
+
+			onTap : onTap
+
+		} );
+
+		item.paused = true;
+
+		item.update = function () {
+
+			this.style.backgroundImage = 'url("' + ( this.paused 
+				? PANOLENS.DataIcon.VideoPlay 
+				: PANOLENS.DataIcon.VideoPause ) + '")';
+
+		};
+
 		return item;
 
 	};
@@ -231,20 +250,6 @@
 
 		var scope = this, item, progressElement, progressElementControl,
 			isDragging = false, mouseX, percentageNow, percentageNext;
-
-		item = this.createCustomItem( {
-
-			style : { 
-
-				float : 'left',
-				width : '30%',
-				height : '4px',
-				marginTop : '20px',
-				backgroundColor : 'rgba(188,188,188,0.8)'
-
-			}
-
-		} );
 
 		progressElement = document.createElement( 'div' );
 		progressElement.style.width = '0%';
@@ -314,20 +319,6 @@
 
 		}
 
-		progressElement.appendChild( progressElementControl );
-
-		item.appendChild( progressElement );
-
-		item.setProgress = function( percentage ) {
-
-			progressElement.style.width = percentage * 100 + '%';
-
-		};
-
-		[ 'click', 'touchend' ].forEach( function( event ) {
-			item.addEventListener( event, onTap, false );
-		} );
-
 		function onTap ( event ) {
 
 			var percentage;
@@ -343,6 +334,32 @@
 			item.setProgress( event.offsetX / this.clientWidth );
 
 		};
+
+		progressElement.appendChild( progressElementControl );
+
+		item = this.createCustomItem( {
+
+			style : { 
+
+				float : 'left',
+				width : '30%',
+				height : '4px',
+				marginTop : '20px',
+				backgroundColor : 'rgba(188,188,188,0.8)'
+
+			},
+
+			onTap : onTap
+
+		} );
+
+		item.appendChild( progressElement );
+
+		item.setProgress = function( percentage ) {
+
+			progressElement.style.width = percentage * 100 + '%';
+
+		};		
 
 		this.addEventListener( 'video-update', function ( event ) { 
 
@@ -368,8 +385,21 @@
 		item.style.backgroundRepeat = 'no-repeat';
 		item.style.backgroundPosition = 'center';
 
+		item.addEventListener('mouseenter', function(e) {
+			item.style.filter = item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
+		});
+		item.addEventListener('mouseleave', function(e) {
+			item.style.filter = item.style.webkitFilter = '';
+		});
+
 		item = this.mergeStyleOptions( item, options.style );
 
+		if ( options.onTap ) {
+			[ 'click', 'touchend' ].forEach( function( event ) {
+				item.addEventListener( event, options.onTap, false );
+			} );
+		}
+		
 		return item;
 
 	};

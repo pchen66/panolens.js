@@ -145,8 +145,9 @@
 
     <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> panorama interactive example</div>
     
-    <script src="../build/panolens.min.js"></script>
+    <script src="js/three.min.js"></script>
     <script src="js/ColladaLoader.js"></script>
+    <script src="../build/panolens.min.js"></script>
 
     <script>
 
@@ -230,17 +231,17 @@
 
       function addInfospots () {
 
-        var infospot = new PANOLENS.Infospot( 1.5, PANOLENS.InfoIcon );
+        var infospot = new PANOLENS.Infospot( 1.5, PANOLENS.DataIcon.Info );
         infospot.position.set( -28.20, 5.23, 6.67 );
         infospot.addHoverText( 'Dell - E2414HM 24" LED HD Monitor - Black - $149.00' );
         panorama.add( infospot );
 
-        infospot = new PANOLENS.Infospot( 1, PANOLENS.InfoIcon );
+        infospot = new PANOLENS.Infospot( 1, PANOLENS.DataIcon.Info );
         infospot.position.set( -22.09, -3.09, 12.89 );
         infospot.addHoverText( 'Razer - BlackWidow Mechanical Keyboard - Black - $156.99' );
         panorama.add( infospot );
 
-        infospot = new PANOLENS.Infospot( 1, PANOLENS.InfoIcon );
+        infospot = new PANOLENS.Infospot( 1, PANOLENS.DataIcon.Info );
         infospot.position.set( -13.50, -8.95, 6.37 );
         infospot.addHoverElement( document.getElementById( 'chair-container' ) );
         panorama.add( infospot );

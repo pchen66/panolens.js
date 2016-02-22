@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title>Panolens.js panorama basic</title>
+    <title>Panolens.js panorama image panorama</title>
     <style>
       body {
         margin: 0;
@@ -28,15 +28,16 @@
 
   <body>
 
-    <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> panorama cube example. Image from <a href="http://adaptivesamples.com/tag/equirectangular/">Adaptive Samples</a></div>
+    <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> image panorama example. Image from <a href="http://adaptivesamples.com/tag/equirectangular/">Adaptive Samples</a></div>
     
+    <script src="js/three.min.js"></script>
     <script src="../build/panolens.min.js"></script>
 
     <script>
 
       var panorama, viewer;
 
-      panorama = new PANOLENS.ImagePanorama( 'equirectangular', 'asset/textures/equirectangular/field.jpg' );
+      panorama = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
 
       viewer = new PANOLENS.Viewer();
       viewer.add( panorama );

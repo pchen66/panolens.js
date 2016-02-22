@@ -30,6 +30,7 @@
     
     <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> panorama linking example. 360 Video from <a href="http://worldoftanks.com/">World of Tanks</a>. Image from <a href="http://adaptivesamples.com/tag/equirectangular/">Adaptive Samples</a> and Google Streetview API</div>
 
+    <script src="js/three.min.js"></script>
     <script src="../build/panolens.min.js"></script>
 
     <script>
@@ -38,7 +39,7 @@
 
       panorama1 = new PANOLENS.GoogleStreetviewPanorama( 'y0rbkep4RBcAAAQqZe0GiQ' );
 
-      panorama2 = new PANOLENS.ImagePanorama( 'equirectangular', 'asset/textures/equirectangular/field.jpg' );
+      panorama2 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
       panorama2.position.set( -74.56, -58.83, 31.10 );
 
       panorama3 = new PANOLENS.VideoPanorama( 'asset/textures/video/1941-battle-medium.mp4' );

@@ -6,11 +6,11 @@
 	 * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
 	 * @constructor
 	 * @param {string} panoId - Panorama id from Google Streetview 
-	 * @param {number} [radius=100] - The minimum radius for this panoram
+	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
 	PANOLENS.GoogleStreetviewPanorama = function ( panoId, radius ) {
 
-		PANOLENS.ImagePanorama.call( this, 'equirectangular', undefined, radius );
+		PANOLENS.ImagePanorama.call( this, undefined, radius );
 
 		this.panoId = panoId;
 

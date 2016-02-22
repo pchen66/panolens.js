@@ -3,8 +3,8 @@
 	/**
 	 * Skeleton panorama derived from THREE.Mesh
 	 * @constructor
-	 * @param {THREE.Geometry} [geometry=THREE.SphereGeometry] - The geometry for this panorama
-	 * @param {THREE.Material} [material=new THREE.MeshBasicMaterial] - The material for this panorama
+	 * @param {THREE.Geometry} geometry - The geometry for this panorama
+	 * @param {THREE.Material} material - The material for this panorama
 	 */
 	PANOLENS.Panorama = function ( geometry, material ) {
 
@@ -20,7 +20,7 @@
 
 		this.animationDuration = 500;
 
-		this.defaultInfospotSize = 7;
+		this.defaultInfospotSize = 350;
 
 		this.loaded = false;
 
@@ -81,6 +81,12 @@
 
 		THREE.Object3D.prototype.add.call( this, invertedObject );
 
+	};
+
+	PANOLENS.Panorama.prototype.load = function () {
+
+		this.onLoad();
+		
 	};
 
 	PANOLENS.Panorama.prototype.onLoad = function () {
@@ -186,7 +192,7 @@
 
 		spot = new PANOLENS.Infospot( 
 			pano.linkingImageScale !== undefined ? pano.linkingImageScale : this.defaultInfospotSize, 
-			pano.linkingImageURL !== undefined ? pano.linkingImageURL : PANOLENS.ArrowIcon 
+			pano.linkingImageURL !== undefined ? pano.linkingImageURL : PANOLENS.DataIcon.Arrow 
 		);
         spot.position.copy( point );
         spot.toPanorama = pano;
