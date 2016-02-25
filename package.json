@@ -30,8 +30,6 @@
     "gulp-strip-debug": "^1.1.0",
     "gulp-uglify": "^1.5.2",
     "three": "^0.74.0",
-    "tween.js": "^16.3.4",
-    "webvr-boilerplate": "^0.3.7",
-    "webvr-polyfill": "^0.2.7"
+    "tween.js": "^16.3.4"
   }
 }

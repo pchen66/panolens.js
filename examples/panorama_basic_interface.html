@@ -12,18 +12,6 @@
         overflow: hidden;
       }
 
-      a:link, a:visited{
-        color: #bdc3c7;
-      }
-
-      .credit{
-        position: absolute;
-        text-align: center;
-        width: 100%;
-        padding: 20px 0;
-        color: #fff;
-      }
-
       #yt-iframe{
         width: 1280px;
         height: 720px;
@@ -38,14 +26,15 @@
     <script src="js/three.min.js"></script>
     <script src="js/CSS3DRenderer.js"></script>
     <script src="js/themoviedb.min.js"></script>
-    <script src="../build/panolens.min.js"></script>
+    <script src="../build/panolens.js"></script>
+    <script src="js/CSS3DStereoRenderer.js"></script>
 
     <iframe id="yt-iframe" src="" type="text/html" frameborder="0"></iframe>
 
     <script>
 
-      var tileLength = 30, border = 1, radius = 100, movies = { 'All': { 'results': [] } }, loaded = {}, youtubeIFrame; 
-      var introPanorama, categoryPanorama, viewer, videoWall, renderer;
+      var tileLength = 30, border = 1, radius = 100, movies = { 'All': { 'results': [] } }, loaded = {}, css3dWidget; 
+      var entryPanorama, moviePanorama, viewer, videoWall, renderer;
 
       var categories = [
         { id: 28,    size: '1x1', position: { x: -2.5, y: 0.5  }, name: "Action"          },
@@ -68,145 +57,60 @@
       }, init);
 
       // Initialize Viewer
-      viewer = new PANOLENS.Viewer( { controlBar: false });
-      viewer.getRenderer().setClearColor( 0x000000, 0.9 );
+      viewer = new PANOLENS.Viewer();
+      viewer.getRenderer().setClearColor( 0x000000, 0 );
 
       function init(){
-        youtubeIFrame = generateCSS3DVideoElement();
-        introPanorama = getIntroPanorama();
-        categoryPanorama = getCategoryPanorama();
+        css3dWidget = generateCSS3DVideoElement();
+        entryPanorama = getEntryPanorama();
+        moviePanorama = getMoviePanorama();
         videoWall = getSpiralMovieWall();
         
-        introPanorama.add( videoWall );
-        viewer.add( introPanorama, categoryPanorama );
-        viewer.getContainer().style.position = 'absolute';
+        entryPanorama.add( videoWall );
+        viewer.add( entryPanorama, moviePanorama );
+        viewer.getContainer().style.position = 'fixed';
         viewer.getContainer().style.top = 0;
       }
 
-      function getIntroPanorama(){
+      function getEntryPanorama(){
 
-        var panorama, tiles, tile, text, shade, shadeHeight = 5, menu_classified, menu_all, text_classified, text_all, left_hs_geo, right_hs_geo, left_hs_matrix, right_hs_matrix, scale = 1.1, duration = 500, menu_color = 0x34495e;
+        var panorama, tiles, tile, text, shade, shadeHeight, menu_classified, menu_all;
+
+        shadeHeight = 5;
 
         panorama = new PANOLENS.EmptyPanorama();
         panorama.addEventListener( 'click', function ( event ) {
           if(event.intersects.length > 0) {
             var intersect = event.intersects[0].object;
             if( intersect.category ){
-              categoryPanorama.movieData = movies[ intersect.category ];
-              categoryPanorama.movie = categoryPanorama.movieData.results[ 0 ];
-              categoryPanorama.category = intersect.category;
-              categoryPanorama.movieIndex = 0;
-              setPanorama( categoryPanorama );
+              moviePanorama.movieData = movies[ intersect.category ];
+              moviePanorama.movie = moviePanorama.movieData.results[ 0 ];
+              moviePanorama.category = intersect.category;
+              moviePanorama.movieIndex = 0;
+              setPanorama( moviePanorama );
             }
           }
         } );
 
-        tiles = new THREE.Object3D();
-        tiles.position.y = 10;
-        tiles.position.z = -radius;
+        tiles = generateClassifiedWall( categories );
         panorama.add( tiles );
 
-        menu_classified = new PANOLENS.Tile( 28, 6 );
-        menu_classified.tween( 'colorEnter', menu_classified.material.color, { r: 24/256, g: 39/256, b: 53/256 }, duration );
-        menu_classified.tween( 'colorLeave', menu_classified.material.color, { r: 52/256, g: 73/256, b: 94/256 }, duration );
-        menu_classified.tween( 'translateFront', menu_classified.position, { z: tiles.position.z } );
-        menu_classified.tween( 'translateBack', menu_classified.position, { z: tiles.position.z - 2 } );
-        menu_classified.material.color.set( menu_color );
-        menu_classified.position.set( -18, tiles.position.y + 38,tiles.position.z );
-        left_hs_geo = new THREE.CircleGeometry( 3, 32, Math.PI / 2, Math.PI );
-        left_hs_matrix = new THREE.Matrix4().makeTranslation( -28 / 2, 0, 0 );
-        right_hs_geo = new THREE.CircleGeometry( 3, 32, -Math.PI / 2, Math.PI );
-        right_hs_matrix = new THREE.Matrix4().makeTranslation( 28 / 2, 0, 0 );
-        menu_classified.geometry.merge( left_hs_geo, left_hs_matrix );
-        menu_classified.geometry.merge( right_hs_geo, right_hs_matrix );
-        menu_classified.addEventListener( 'hoverenter', function(){
-          if ( panorama.selection === this ) { return; }
-          this.tweens[ 'colorLeave' ].stop();
-          this.tweens[ 'colorEnter' ].start();
-        } );
-        menu_classified.addEventListener( 'hoverleave', function(){
-          if ( panorama.selection === this ) { return; }
-          this.tweens[ 'colorEnter' ].stop();
-          this.tweens[ 'colorLeave' ].start();
-        } );
-        menu_classified.addEventListener('pressstart', function(){
-          this.tweens[ 'translateFront' ].stop();
-          this.tweens[ 'translateBack' ].start();
-        });
-        menu_classified.addEventListener('pressstop', function(){
-          this.tweens[ 'translateBack' ].stop();
-          this.tweens[ 'translateFront' ].start();
-        });
+        menu_classified = generateMenuItem ( 'CLASSIFIED', 360, 28, 6, tiles );
+        menu_classified.position.set( -18, tiles.position.y + 38, tiles.position.z );
         menu_classified.addEventListener('click-entity', function(){
           if ( panorama.selection === this ) { return; }
-          tiles.children.map(function(tile, index){
-            tile.tweens['moveBack'].stop();
-            tile.tweens['fadeOut'].stop();
-            tile.shade.tweens['fadeOut'].stop();
-            tile.shade.text.tweens['fadeOut'].stop();
-            tile.tweens['moveFront'].start();
-            tile.tweens['fadeIn'].start();
-            tile.shade.tweens['fadeIn'].start();
-            tile.shade.text.tweens['fadeIn'].start();
-          });
+          tiles.show();
           videoWall.hide();
           panorama.selection.tweens[ 'colorLeave' ].start();
           panorama.selection = this;
         });
-        text_classified = new PANOLENS.SpriteText( 'CLASSIFIED', 360 );
-        text_classified.setEntity( menu_classified );
-        text_classified.passThrough = true;
-        text_classified.position.set( 1, 2, 1 );
-        text_classified.scale.multiplyScalar( 1.2 );
-        text_classified.rotation.y = Math.PI;
-        text_classified.renderOrder = 2;
-        menu_classified.add( text_classified );
         panorama.add( menu_classified );
 
-        menu_all = new PANOLENS.Tile( 11, 6 );
-        menu_all.tween( 'colorEnter', menu_all.material.color, { r: 24/256, g: 39/256, b: 53/256 }, duration );
-        menu_all.tween( 'colorLeave', menu_all.material.color, { r: 52/256, g: 73/256, b: 94/256 }, duration );
-        menu_all.tween( 'translateFront', menu_all.position, { z: tiles.position.z } );
-        menu_all.tween( 'translateBack', menu_all.position, { z: tiles.position.z - 2 } );
-        menu_all.material.color.set( menu_color );
+        menu_all = generateMenuItem ( 'ALL', 140, 11, 6, tiles );
         menu_all.position.set( 15, tiles.position.y + 38,tiles.position.z );
-        left_hs_geo = new THREE.CircleGeometry( 3, 32, Math.PI / 2, Math.PI );
-        left_hs_matrix = new THREE.Matrix4().makeTranslation( -11 / 2, 0, 0 );
-        right_hs_geo = new THREE.CircleGeometry( 3, 32, -Math.PI / 2, Math.PI );
-        right_hs_matrix = new THREE.Matrix4().makeTranslation( 11 / 2, 0, 0 );
-        menu_all.geometry.merge( left_hs_geo, left_hs_matrix );
-        menu_all.geometry.merge( right_hs_geo, right_hs_matrix );
-        menu_all.addEventListener( 'hoverenter', function(){
-          if ( panorama.selection === this ) { return; }
-          this.tweens[ 'colorLeave' ].stop();
-          this.tweens[ 'colorEnter' ].start();
-        } );
-        menu_all.addEventListener( 'hoverleave', function(){
-          if ( panorama.selection === this ) { return; }
-          this.tweens[ 'colorEnter' ].stop();
-          this.tweens[ 'colorLeave' ].start();
-        } );
-        menu_all.addEventListener('pressstart', function(){
-          this.tweens[ 'translateFront' ].stop();
-          this.tweens[ 'translateBack' ].start();
-        });
-        menu_all.addEventListener('pressstop-entity', function(){
-          this.tweens[ 'translateBack' ].stop();
-          this.tweens[ 'translateFront' ].start();
-        });
         menu_all.addEventListener('click-entity', function(){
           if ( panorama.selection === this ) { return; }
-          tiles.children.map(function(tile, index){
-            tile.tweens['moveFront'].stop();
-            tile.tweens['fadeIn'].stop();
-            tile.shade.tweens['fadeIn'].stop();
-            tile.shade.text.tweens['fadeIn'].stop();
-            tile.tweens['moveBack'].start();
-            tile.tweens['fadeOut'].start();
-            tile.shade.tweens['fadeOut'].start();
-            tile.shade.text.tweens['fadeOut'].start();
-          });
-          
+          tiles.hide();
           if ( !videoWall.finished ) {
             new TWEEN.Tween( this )
             .to({}, ( tiles.children.length + 5 ) * 50)
@@ -222,171 +126,62 @@
           panorama.selection.tweens[ 'colorLeave' ].start();
           panorama.selection = this;
         });
-        text_all = new PANOLENS.SpriteText( 'ALL', 120 );
-        text_all.setEntity( menu_all );
-        text_all.passThrough = true;
-        text_all.position.set( 0.5, 2, 1 );
-        text_all.scale.multiplyScalar( 1.2 );
-        text_all.rotation.y = Math.PI;
-        text_all.renderOrder = 2;
-        menu_all.add( text_all );
+
         panorama.add( menu_all );
         panorama.selection = menu_classified;
         menu_classified.tweens[ 'colorEnter' ].start();
-
-        for ( var i = 0; i < categories.length; i++ ) {
-
-          var wUnit, hUnit, width, height, size, position;
-
-          size = categories[ i ].size.split( 'x' );
-          position = categories[ i ].position;
-
-          wUnit = parseFloat( size[ 0 ] );
-          hUnit = parseFloat( size[ 1 ] );
-
-          width = tileLength * wUnit - 2 * border;
-          height = tileLength * hUnit - 2 * border;
-
-          tile = new PANOLENS.Tile( width, height );
-          tile.position.set( position.x * tileLength, position.y * tileLength, 0 );
-          tile.material.polygonOffset = true;
-          tile.material.polygonOffsetFactor = 1;
-          tile.material.polygonOffsetUnits = 1;
-          tile.category = categories[ i ].name;
-          tile.categoryId = categories[ i ].id;
-          tile.scrollAnimationId = undefined;
-          tile.renderOrder = 1;
-          tile.tween( 'moveBack', tile.position, { z: -30 }, 1000, undefined, i * 50 );
-          tile.tween( 'moveFront', tile.position, { z: 0 }, 1000, undefined, i * 50 );
-          tile.tween( 'fadeOut', tile.material, { opacity: 0 }, 1000, undefined, i * 50, null, null, onComplete.bind( tile ) );
-          tile.tween( 'fadeIn', tile.material, { opacity: 1 }, 1000, undefined, i * 50, onStart.bind( tile ), null, null );
-
-          shade = new PANOLENS.Tile( width, shadeHeight );
-          shade.position.set( 0, (shadeHeight - height) / 2, 0 );
-          shade.material.polygonOffset = true;
-          shade.material.polygonOffsetFactor = -1;
-          shade.material.polygonOffsetUnits = 1;
-          shade.material.opacity = 0.7;
-          shade.material.color.set( 0x000000 );
-          shade.renderOrder = 2;
-          shade.passThrough = true;
-          shade.tween( 'fadeOut', shade.material, { opacity: 0 }, 1000, undefined, i * 50, null, null, onComplete.bind( shade ) );
-          shade.tween( 'fadeIn', shade.material, { opacity: 0.7 }, 1000, undefined, i * 50, onStart.bind( shade ), null, null );
-          tile.shade = shade;
-          tile.add( shade );
-
-          text = new PANOLENS.SpriteText( categories[ i ].name, 500 * wUnit );
-          text.rotation.y = Math.PI;
-          text.position.set( 0, (hUnit < 2 ? 2.2 : 1.2) * hUnit, 1 );
-          text.renderOrder = 3;
-          text.passThrough = true;
-          text.tween( 'fadeOut', text.mesh.material.uniforms.opacity, { value: 0 }, 300, undefined, i * 50, null, null, onComplete.bind( text ) );
-          text.tween( 'fadeIn', text.mesh.material.uniforms.opacity, { value: 1 }, 300, undefined, i * 50, onStart.bind( text ), null, null );
-          shade.text = text;
-          shade.add( text );
-
-          tile.addEventListener( 'hoverenter', function( event ){
-
-            if ( !this.material.map ) { return; }
-
-            var scope = this, offset = this.material.map.offset;
-
-            window.cancelAnimationFrame( this.scrollAnimationId );
-            scrollDown();
-
-            function scrollDown(){
-
-              if ( offset.y <= 0 ) {
-
-                offset.y = 0;
-
-              } else {
-
-                offset.y -= ( offset.y >= 0.01 ) ? 0.01 : offset.y;
-                scope.scrollAnimationId = window.requestAnimationFrame( scrollDown );
-
-              }
-
-            }
-
-          } );
-
-          tile.addEventListener( 'hoverleave', function( event ){
-
-            if ( !this.material.map ) { return; }
-
-            var scope = this, offset = this.material.map.offset;
-
-            window.cancelAnimationFrame( this.scrollAnimationId );
-            scrollUp();
-
-            function scrollUp(){
-
-              if ( offset.y >= offset._y ) {
-
-                offset.y = offset._y;
-
-              } else {
-
-                offset.y += ( offset._y - offset.y <= 0.01 ) ? offset._y - offset.y : 0.01;
-                scope.scrollAnimationId = window.requestAnimationFrame( scrollUp );
-
-              }
-
-            }
-
-          } );
-
-          getMovies( tile );
-          tiles.add( tile );
-
-        }
 
         return panorama;
 
       }
 
-      function getCategoryPanorama () {
+      function getMoviePanorama () {
 
-        var panorama, poster, still, placeholder, overview, title, movie, release, rating, pagination, backButton, backText, rightButton,leftButton, rightPoster, leftPoster, rightText, leftText, noImageURL, gap = 8;
+        var panorama, poster, still, placeholder, overview, title, movie, release, release_edge, rating, pagination, backButton, backText, rightButton, leftButton, backdrops, noImageURL, gap = 8;
 
         panorama = new PANOLENS.EmptyPanorama();
         panorama.movieIndex = 0;
 
         noImageURL = 'asset/textures/no-image.jpg';
 
+        // Go back button
         backButton = new PANOLENS.Tile( 6, 6 );
         backButton.rotation.y = Math.PI;
         backButton.scale.multiplyScalar( 1/2 );
         backButton.position.set( 28, 5, 0 );
         backButton.material.transparent = true;
+        backButton.tween( 'translateBack', backButton.position, { z: 2 } );
+        backButton.tween( 'translateFront', backButton.position, { z: 0 } );
         backButton.addEventListener('pressstart', function(){
-            this.tweenTranslation({z: 2});
+            this.tweens[ 'translateFront' ].stop();
+            this.tweens[ 'translateBack' ].start();
         });
-        backButton.addEventListener('pressstop-entity', function(){
-            this.tweenTranslation({z: 0});
+        backButton.addEventListener('pressstop', function(){
+            this.tweens[ 'translateBack' ].stop();
+            this.tweens[ 'translateFront' ].start();
         });
-        PANOLENS.Utils.TextureLoader.load( 'asset/textures/back.png', setClampTexture.bind( backButton ) );
-
-        backText = new PANOLENS.SpriteText( 'back', 300 );
-        backText.rotation.y = Math.PI;
-        backText.scale.multiplyScalar( 1.5 );
-        backText.position.set( 18, 3.5, 0 );
-        backButton.add( backText );
-
-        backText.addEventListener( 'click', back );
         backButton.addEventListener( 'click', function(){
           this.ripple();
           back();
         } );
 
+        backText = new PANOLENS.SpriteText( 'back', 300 );
+        backText.rotation.y = Math.PI;
+        backText.scale.multiplyScalar( 1.5 );
+        backText.position.set( 18, 3.5, 0 );
+        backText.addEventListener( 'click', back );
+        backButton.add( backText );
+
+        PANOLENS.Utils.TextureLoader.load( 'asset/textures/back.png', setClampTexture.bind( backButton ) );
+
+        // Movie poster
         poster = new PANOLENS.Tile( tileLength * 1.2 / 1.5, tileLength * 1.2 );
         poster.material.opacity = 0;
         poster.position.set( 0, -20, -30 );
         poster.scale.multiplyScalar( 1/2 );
         poster.rotation.y = Math.PI;
         poster.tween( 'fadeIn', poster.material, { opacity: 1 }, 1000 );
-        poster.tween( 'translateTop', poster.position, { y: 10, z: 0 }, 2000, TWEEN.Easing.Cubic.Out, 1000 );
+        poster.tween( 'translateTop', poster.position, { y: 10, z: 0 }, 2000, TWEEN.Easing.Cubic.Out, 1000, null, null, function(){ loadVideoSource( panorama.movie.trailer.youtube[0].source ); } );
         poster.moveTop = function () {
           this.tweens[ 'fadeIn' ].start();
           this.tweens[ 'translateTop' ].start();
@@ -397,26 +192,25 @@
           this.position.set( 0, -20, -30 );
         };
 
+        // Movie mask for movie trailer
         still = new PANOLENS.Tile( tileLength * 4, tileLength * 2 );
         still.position.set( radius * Math.cos( Math.PI / 2 ), 0, -radius * Math.sin( Math.PI / 2 ));
         still.material.color = new THREE.Color( 0x000000 );
         still.material.opacity = 0;
         still.material.blending = THREE.NoBlending;
         still.addEventListener( 'click-entity', function(e){
-          youtubeIFrame.paused = !youtubeIFrame.paused;
-          youtubeIFrame.contentWindow.postMessage(JSON.stringify({
-              'event': 'command',
-              'func': youtubeIFrame.paused ? "pauseVideo" : "playVideo",
-              'args': []
-          }), "*");
-          if ( !youtubeIFrame.paused ) {
+          css3dWidget.paused = !css3dWidget.paused;
+          css3dWidget.update();
+          if ( !css3dWidget.paused ) {
             placeholder.tweens[ 'fadeOut' ].start();
           } else {
             placeholder.tweens[ 'fadeIn' ].start();
           }
         });
 
+        // Video play icon placeholder
         placeholder = new PANOLENS.Tile( tileLength / 2, tileLength / 2 );
+        placeholder.material.opacity = 0;
         placeholder.setEntity( still );
         placeholder.passThrough = true;
         placeholder.position.set( 0, 0, 1 );
@@ -428,108 +222,65 @@
         PANOLENS.Utils.TextureLoader.load( 'asset/textures/video-play.png', setClampTexture.bind( placeholder ) );
         still.add( placeholder );
 
-        rightButton = new PANOLENS.Tile( tileLength / 4, tileLength / 2 );
-        rightButton.material.opacity = 0.5;
+        // Navigation buttons
+        rightButton = generateNavigationButton();
         rightButton.position.set( tileLength * 2.5, 0, 0 );
         rightButton.addEventListener( 'click-entity', function(){ 
-          this.ripple(); 
-          panorama.movieIndex = panorama.movieIndex + 1 > movies[ panorama.category ].results.length - 1 ? 0 : panorama.movieIndex + 1;
+          panorama.movieIndex = panorama.movieIndex + 1 > movies[ panorama.category ].results.length - 1 
+            ? 0 
+            : panorama.movieIndex + 1;
           panorama.updateMovie( movies[ panorama.category ].results[ panorama.movieIndex ] );
         } );
-        rightButton.addEventListener('pressstart', function(){ this.tweenTranslation({z: -2}); });
-        rightButton.addEventListener('pressstop-entity', function(){ this.tweenTranslation({z: 0}); });
-        rightButton.tween( 'fadeOut', rightButton.material, { opacity: 0.5 } );
-        rightButton.tween( 'fadeIn', rightButton.material, { opacity: 1 } );
-        rightPoster = new PANOLENS.Tile( tileLength * 4 / 3, tileLength * 2 );
-        rightPoster.material.opacity = 0.5;
-        rightPoster.position.set(tileLength, 0, 0);
-        rightPoster.entity = rightButton;
-        rightPoster.tween( 'fadeOut', rightPoster.material, { opacity: 0.5 } );
-        rightPoster.tween( 'fadeIn', rightPoster.material, { opacity: 1 } );
-        rightButton.add( rightPoster );
-        rightText = new PANOLENS.SpriteText( 'right', 800 );
-        rightText.mesh.material.uniforms.opacity.value = 0.5;
-        rightText.tween( 'fadeOut', rightText.mesh.material.uniforms.opacity, { value: 0.5 } );
-        rightText.tween( 'fadeIn', rightText.mesh.material.uniforms.opacity, { value: 1 } );
-        rightText.position.y = tileLength + gap;
-        rightText.rotation.y = Math.PI;
-        rightPoster.add( rightText );
-        rightButton.addEventListener( 'hoverenter', function(){
-          rightButton.tweens[ 'fadeIn' ].start();
-          rightPoster.tweens[ 'fadeIn' ].start();
-          rightText.tweens[ 'fadeIn' ].start();
-        } );
-        rightButton.addEventListener( 'hoverleave', function(){
-          rightButton.tweens[ 'fadeOut' ].start();
-          rightPoster.tweens[ 'fadeOut' ].start();
-          rightText.tweens[ 'fadeOut' ].start();
-        } );
+        rightButton.poster.position.set( tileLength, 0, 0 );
 
-        leftButton = new PANOLENS.Tile( tileLength / 4, tileLength / 2 );
-        leftButton.material.opacity = 0.5;
+        leftButton = generateNavigationButton();
         leftButton.position.set( -tileLength * 2.5, 0, 0 );
-        leftButton.addEventListener( 'click-entity', function(){ 
-          this.ripple(); 
-          panorama.movieIndex = panorama.movieIndex - 1 < 0 ? movies[ panorama.category ].results.length - 1 : panorama.movieIndex - 1;
+        leftButton.addEventListener( 'click-entity', function(){  
+          panorama.movieIndex = panorama.movieIndex - 1 < 0 
+            ? movies[ panorama.category ].results.length - 1 
+            : panorama.movieIndex - 1;
           panorama.updateMovie( movies[ panorama.category ].results[ panorama.movieIndex ] );
         } );
-        leftButton.addEventListener('pressstart', function(){ this.tweenTranslation({z: -2}); });
-        leftButton.addEventListener('pressstop-entity', function(){ this.tweenTranslation({z: 0}); });
-        leftButton.tween( 'fadeOut', leftButton.material, { opacity: 0.5 } );
-        leftButton.tween( 'fadeIn', leftButton.material, { opacity: 1 } );
-        leftPoster = rightPoster.clone();
-        leftPoster.material.opacity = 0.5;
-        leftPoster.position.set( -tileLength, 0, 0 );
-        leftPoster.entity = leftButton;
-        leftPoster.tween( 'fadeOut', leftPoster.material, { opacity: 0.5 } );
-        leftPoster.tween( 'fadeIn', leftPoster.material, { opacity: 1 } );
-        leftButton.add( leftPoster );
-        leftText = new PANOLENS.SpriteText( 'left', 800 );
-        leftText.mesh.material.uniforms.opacity.value = 0.5;
-        leftText.tween( 'fadeOut', leftText.mesh.material.uniforms.opacity, { value: 0.5 } );
-        leftText.tween( 'fadeIn', leftText.mesh.material.uniforms.opacity, { value: 1 } );
-        leftText.position.y = tileLength + gap;
-        leftText.rotation.y = Math.PI;
-        leftPoster.add( leftText );
-        leftButton.addEventListener( 'hoverenter', function(){
-          leftButton.tweens[ 'fadeIn' ].start();
-          leftPoster.tweens[ 'fadeIn' ].start();
-          leftText.tweens[ 'fadeIn' ].start();
-        } );
-        leftButton.addEventListener( 'hoverleave', function(){
-          leftButton.tweens[ 'fadeOut' ].start();
-          leftPoster.tweens[ 'fadeOut' ].start();
-          leftText.tweens[ 'fadeOut' ].start();
-        } );
+        leftButton.poster.position.set( -tileLength, 0, 0 );
 
-        PANOLENS.Utils.TextureLoader.load( 'asset/textures/arrow-right.png', setClampTexture.bind(rightButton) );
-        PANOLENS.Utils.TextureLoader.load( 'asset/textures/arrow-left.png', setClampTexture.bind(leftButton) );
+        PANOLENS.Utils.TextureLoader.load( 'asset/textures/arrow-right.png', setClampTexture.bind( rightButton ) );
+        PANOLENS.Utils.TextureLoader.load( 'asset/textures/arrow-left.png', setClampTexture.bind( leftButton ) );
 
-        var backdrops = this.generateBackdropWall();
+        // Backdrop wall
+        backdrops = this.generateBackdropWall();
         backdrops.position.z = -radius;
 
+        // Movie title
         title = new PANOLENS.SpriteText( 'title', tileLength * 4 * 10 );
         title.rotation.y = Math.PI;
         title.scale.multiplyScalar( 2 );
         title.position.set(0, 38, 1);
 
+        // Movie release date widget
         release = this.generateDateWidget( 10, 12 );
         release.scale.multiplyScalar( 1/2 );
         release.rotation.y = Math.PI;
         release.position.set( -18, 5, 0 );
+        release_edge = new THREE.EdgesHelper( 
+          new THREE.Mesh( 
+            new THREE.PlaneGeometry( 10, 12, 1, 1 ), 
+            new THREE.MeshBasicMaterial()), 
+          0xffffff 
+        );
+        release.add( release_edge );
 
-        var edge = new THREE.EdgesHelper( new THREE.Mesh( new THREE.PlaneGeometry( 10, 12, 1, 1 ), new THREE.MeshBasicMaterial() ), 0xffffff );
-        release.add(edge);
-
+        // Movie rating widget
         rating = this.generateRatingWidget( 10, 10, 5, 6 );
-        rating.scale.multiplyScalar( 1/2 );
+        rating.scale.multiplyScalar( 1 / 2 );
         rating.position.set( -26, 5, 0 );
 
+        // Movie overview
         overview = new PANOLENS.SpriteText( 'overview', tileLength * 4 * 24.8 );
         overview.rotation.y = Math.PI;
         overview.scale.multiplyScalar( 0.8 );
         overview.position.set( 0, -35, 1 );
 
+        // Movie trailer pagination
         pagination = this.generatePaginationWidget();
         pagination.position.set( 0, -33, 1 );
 
@@ -561,8 +312,8 @@
           lists = movies[ this.category ].results;
           rightIndex = this.movieIndex + 1 > lists.length - 1 ? 0 : this.movieIndex + 1;
           leftIndex = this.movieIndex - 1 < 0 ? lists.length - 1 : this.movieIndex - 1;
-          rightText.update( { text: lists[ rightIndex ].title } );
-          leftText.update( { text: lists[ leftIndex ].title } );
+          rightButton.text.update( { text: lists[ rightIndex ].title } );
+          leftButton.text.update( { text: lists[ leftIndex ].title } );
 
           // Adjustment
           this.adjustComponents();
@@ -576,9 +327,10 @@
           l_posterURL = lists[ rightIndex ].poster_path ? addMovieDBImagePrefix( lists[ rightIndex ].poster_path ).replace( '/w185/', '/w500/' ) : noImageURL;
           r_posterURL = lists[ leftIndex ].poster_path ? addMovieDBImagePrefix( lists[ leftIndex ].poster_path ).replace( '/w185/', '/w500/' ) : noImageURL;
           PANOLENS.Utils.TextureLoader.load( posterURL, setClampTexture.bind( poster ) );
-          PANOLENS.Utils.TextureLoader.load( l_posterURL, setClampTexture.bind( rightPoster ) );
-          PANOLENS.Utils.TextureLoader.load( r_posterURL, setClampTexture.bind( leftPoster ) );
+          PANOLENS.Utils.TextureLoader.load( l_posterURL, setClampTexture.bind( rightButton.poster ) );
+          PANOLENS.Utils.TextureLoader.load( r_posterURL, setClampTexture.bind( leftButton.poster ) );
 
+          // Get movie information
           getMovieImages( this, { id: movie.id } );
           getMovieTrailers( this, { id: movie.id } );
 
@@ -586,22 +338,21 @@
 
         panorama.adjustComponents = function () {
 
-          title.position.y = leftText.position.y = rightText.position.y = tileLength + gap;
+          title.position.y = leftButton.text.position.y = rightButton.text.position.y = tileLength + gap;
           backdrops.position.y = -5;
 
           title.position.y += Math.floor( title.getLayout().height / 70 ) * 5;
-          leftText.position.y += Math.floor( leftText.getLayout().height / 70 ) * 1.8;
-          rightText.position.y += Math.floor( rightText.getLayout().height / 70 ) * 1.8;
+          rightButton.text.position.y += Math.floor( rightButton.text.getLayout().height / 70 ) * 1.8;
+          leftButton.text.position.y += Math.floor( leftButton.text.getLayout().height / 70 ) * 1.8;
           backdrops.position.y -= ( Math.floor( overview.getLayout().height / 70 ) - 2 ) * 1.5;
         };
 
         panorama.resetMovie = function () {
 
-          // Reset pause flag
-          youtubeIFrame.paused = true;
+          css3dWidget && css3dWidget.reset();
           poster && poster.reset();
-          placeholder && placeholder.reset();
-          backdrops && backdrops.resetAll();
+          placeholder && placeholder.reset( true );
+          backdrops && backdrops.reset();
           rating && rating.reset();
 
         };
@@ -751,7 +502,7 @@
           source = trailer.youtube[0].source;
         }
 
-        loadVideoSource( source );
+        //loadVideoSource( source );
         this.movie.trailer = trailer;
         this.pagination && this.pagination.update( trailer && trailer.youtube || [] );
 
@@ -785,14 +536,209 @@
       function loadVideoSource ( videoId ) {
         var url;
         if ( videoId ) {
-          url = 'http://www.youtube.com/embed/' + videoId + '?rel=0&autoplay=0&controls=0&showinfo=0&enablejsapi=1';
-          categoryPanorama && categoryPanorama.placeholder && categoryPanorama.placeholder.reset();
+          url = 'http://www.youtube.com/embed/' + videoId + '?rel=0&autoplay=0&controls=0&showinfo=0&enablejsapi=1&iv_load_policy=3&playsinline=true';
+          moviePanorama && moviePanorama.placeholder && moviePanorama.placeholder.reset();
         } else {
           url = 'asset/textures/no-video.jpg';
-          categoryPanorama && categoryPanorama.placeholder && categoryPanorama.placeholder.reset( true );
+          moviePanorama && moviePanorama.placeholder && moviePanorama.placeholder.reset( true );
         }
-        youtubeIFrame.src = url;
-        youtubeIFrame.paused = true;
+        css3dWidget.load( url );
+        css3dWidget.paused = true;
+      }
+
+      function generateMenuItem ( text, textLength, width, height, tiles ) {
+
+        var item, title, menu_color, duration, left_hs_geo, right_hs_geo, left_hs_matrix, right_hs_matrix;
+
+        menu_color = 0x34495e;
+        duration = 500;
+
+        item = new PANOLENS.Tile( width, height );
+        item.tween( 'colorEnter', item.material.color, { r: 24/256, g: 39/256, b: 53/256 }, duration );
+        item.tween( 'colorLeave', item.material.color, { r: 52/256, g: 73/256, b: 94/256 }, duration );
+        item.tween( 'translateFront', item.position, { z: tiles.position.z } );
+        item.tween( 'translateBack', item.position, { z: tiles.position.z - 2 } );
+        item.material.color.set( menu_color );
+
+        left_hs_geo = new THREE.CircleGeometry( 3, 32, Math.PI / 2, Math.PI );
+        left_hs_matrix = new THREE.Matrix4().makeTranslation( -width / 2, 0, 0 );
+        right_hs_geo = new THREE.CircleGeometry( 3, 32, -Math.PI / 2, Math.PI );
+        right_hs_matrix = new THREE.Matrix4().makeTranslation( width / 2, 0, 0 );
+        item.geometry.merge( left_hs_geo, left_hs_matrix );
+        item.geometry.merge( right_hs_geo, right_hs_matrix );
+
+        item.addEventListener( 'hoverenter', function(){
+          if ( entryPanorama.selection === this ) { return; }
+          this.tweens[ 'colorLeave' ].stop();
+          this.tweens[ 'colorEnter' ].start();
+        } );
+        item.addEventListener( 'hoverleave', function(){
+          if ( entryPanorama.selection === this ) { return; }
+          this.tweens[ 'colorEnter' ].stop();
+          this.tweens[ 'colorLeave' ].start();
+        } );
+        item.addEventListener('pressstart', function(){
+          this.tweens[ 'translateFront' ].stop();
+          this.tweens[ 'translateBack' ].start();
+        });
+        item.addEventListener('pressstop', function(){
+          this.tweens[ 'translateBack' ].stop();
+          this.tweens[ 'translateFront' ].start();
+        });
+
+        title = new PANOLENS.SpriteText( text, textLength );
+        title.setEntity( item );
+        title.passThrough = true;
+        title.position.set( 1, 2, 1 );
+        title.scale.multiplyScalar( 1.2 );
+        title.rotation.y = Math.PI;
+        title.renderOrder = 2;
+        item.add( title );
+
+        return item;
+      }
+
+      function generateClassifiedWall ( categories ) {
+
+        var tiles = new THREE.Object3D(), shadeHeight = 5;
+
+        tiles.position.y = 10;
+        tiles.position.z = -radius;
+        tiles.show = function () {
+          this.children.forEach(function(tile, index){
+            tile.tweens['moveBack'].stop();
+            tile.tweens['fadeOut'].stop();
+            tile.shade.tweens['fadeOut'].stop();
+            tile.shade.text.tweens['fadeOut'].stop();
+            tile.tweens['moveFront'].start();
+            tile.tweens['fadeIn'].start();
+            tile.shade.tweens['fadeIn'].start();
+            tile.shade.text.tweens['fadeIn'].start();
+          });
+        };
+        tiles.hide = function () {
+          this.children.forEach(function(tile, index){
+            tile.tweens['moveFront'].stop();
+            tile.tweens['fadeIn'].stop();
+            tile.shade.tweens['fadeIn'].stop();
+            tile.shade.text.tweens['fadeIn'].stop();
+            tile.tweens['moveBack'].start();
+            tile.tweens['fadeOut'].start();
+            tile.shade.tweens['fadeOut'].start();
+            tile.shade.text.tweens['fadeOut'].start();
+          });
+        };
+
+        for ( var i = 0; i < categories.length; i++ ) {
+
+          var wUnit, hUnit, width, height, size, position, tile, text, shade;
+
+          size = categories[ i ].size.split( 'x' );
+          position = categories[ i ].position;
+
+          wUnit = parseFloat( size[ 0 ] );
+          hUnit = parseFloat( size[ 1 ] );
+
+          width = tileLength * wUnit - 2 * border;
+          height = tileLength * hUnit - 2 * border;
+
+          tile = new PANOLENS.Tile( width, height );
+          tile.position.set( position.x * tileLength, position.y * tileLength, 0 );
+          tile.material.polygonOffset = true;
+          tile.material.polygonOffsetFactor = 1;
+          tile.material.polygonOffsetUnits = 1;
+          tile.category = categories[ i ].name;
+          tile.categoryId = categories[ i ].id;
+          tile.scrollAnimationId = undefined;
+          tile.renderOrder = 1;
+          tile.tween( 'moveBack', tile.position, { z: -30 }, 1000, undefined, i * 50 );
+          tile.tween( 'moveFront', tile.position, { z: 0 }, 1000, undefined, i * 50 );
+          tile.tween( 'fadeOut', tile.material, { opacity: 0 }, 1000, undefined, i * 50, null, null, makeInvisible.bind( tile ) );
+          tile.tween( 'fadeIn', tile.material, { opacity: 1 }, 1000, undefined, i * 50, makeVisible.bind( tile ), null, null );
+
+          shade = new PANOLENS.Tile( width, shadeHeight );
+          shade.position.set( 0, (shadeHeight - height) / 2, 0.1 );
+          shade.material.polygonOffset = true;
+          shade.material.polygonOffsetFactor = -1;
+          shade.material.polygonOffsetUnits = 1;
+          shade.material.opacity = 0.7;
+          shade.material.color.set( 0x000000 );
+          shade.renderOrder = 2;
+          shade.passThrough = true;
+          shade.tween( 'fadeOut', shade.material, { opacity: 0 }, 1000, undefined, i * 50, null, null, makeInvisible.bind( shade ) );
+          shade.tween( 'fadeIn', shade.material, { opacity: 0.7 }, 1000, undefined, i * 50, makeVisible.bind( shade ), null, null );
+          tile.shade = shade;
+          tile.add( shade );
+
+          text = new PANOLENS.SpriteText( categories[ i ].name, 500 * wUnit );
+          text.rotation.y = Math.PI;
+          text.position.set( 0, (hUnit < 2 ? 2.2 : 1.2) * hUnit, 0.2 );
+          text.renderOrder = 3;
+          text.passThrough = true;
+          text.tween( 'fadeOut', text.mesh.material.uniforms.opacity, { value: 0 }, 300, undefined, i * 50, null, null, makeInvisible.bind( text ) );
+          text.tween( 'fadeIn', text.mesh.material.uniforms.opacity, { value: 1 }, 300, undefined, i * 50, makeVisible.bind( text ), null, null );
+          shade.text = text;
+          shade.add( text );
+
+          tile.addEventListener( 'hoverenter', function( event ){
+
+            if ( !this.material.map ) { return; }
+
+            var scope = this, offset = this.material.map.offset;
+
+            window.cancelAnimationFrame( this.scrollAnimationId );
+            scrollDown();
+
+            function scrollDown(){
+
+              if ( offset.y <= 0 ) {
+
+                offset.y = 0;
+
+              } else {
+
+                offset.y -= ( offset.y >= 0.01 ) ? 0.01 : offset.y;
+                scope.scrollAnimationId = window.requestAnimationFrame( scrollDown );
+
+              }
+
+            }
+
+          } );
+
+          tile.addEventListener( 'hoverleave', function( event ){
+
+            if ( !this.material.map ) { return; }
+
+            var scope = this, offset = this.material.map.offset;
+
+            window.cancelAnimationFrame( this.scrollAnimationId );
+            scrollUp();
+
+            function scrollUp(){
+
+              if ( offset.y >= offset._y ) {
+
+                offset.y = offset._y;
+
+              } else {
+
+                offset.y += ( offset._y - offset.y <= 0.01 ) ? offset._y - offset.y : 0.01;
+                scope.scrollAnimationId = window.requestAnimationFrame( scrollUp );
+
+              }
+
+            }
+
+          } );
+
+          getMovies( tile );
+          tiles.add( tile );
+
+        }
+
+        return tiles;
+
       }
 
       function generatePaginationWidget () {
@@ -1088,9 +1034,64 @@
           }
         } );
 
-       
-
         return rating;
+
+      }
+
+      function generateNavigationButton () {
+
+        var button, poster, title, gap;
+
+        gap = 8;
+
+        button = new PANOLENS.Tile( tileLength / 4, tileLength / 2 );
+        button.material.opacity = 0.5;
+        button.tween( 'translateBack', button.position, { z: -5 } );
+        button.tween( 'translateFront', button.position, { z: 0 } );
+        button.tween( 'fadeOut', button.material, { opacity: 0.5 } );
+        button.tween( 'fadeIn', button.material, { opacity: 1 } );
+        button.addEventListener( 'click-entity', function(){ 
+          this.ripple(); 
+        } );
+        button.addEventListener( 'pressstart-entity', function(){
+            this.tweens[ 'translateFront' ].stop();
+            this.tweens[ 'translateBack' ].start();
+        } );
+        button.addEventListener( 'pressstop-entity', function(){
+            this.tweens[ 'translateBack' ].stop();
+            this.tweens[ 'translateFront' ].start();
+        } );
+        button.addEventListener( 'hoverenter', function(){
+          button.tweens[ 'fadeIn' ].start();
+          poster.tweens[ 'fadeIn' ].start();
+          title.tweens[ 'fadeIn' ].start();
+        } );
+        button.addEventListener( 'hoverleave', function(){
+          button.tweens[ 'fadeOut' ].start();
+          poster.tweens[ 'fadeOut' ].start();
+          title.tweens[ 'fadeOut' ].start();
+        } );
+
+        poster = new PANOLENS.Tile( tileLength * 4 / 3, tileLength * 2 );
+        poster.material.opacity = 0.5;
+        poster.setEntity( button );
+        poster.tween( 'fadeOut', poster.material, { opacity: 0.5 } );
+        poster.tween( 'fadeIn', poster.material, { opacity: 1 } );
+
+        title = new PANOLENS.SpriteText( 'Movie', 800 );
+        title.mesh.material.uniforms.opacity.value = 0.5;
+        title.tween( 'fadeOut', title.mesh.material.uniforms.opacity, { value: 0.5 } );
+        title.tween( 'fadeIn', title.mesh.material.uniforms.opacity, { value: 1 } );
+        title.position.y = tileLength + gap;
+        title.rotation.y = Math.PI;
+
+        poster.add( title );
+        button.add( poster );
+
+        button.text = title;
+        button.poster = poster;
+        
+        return button;        
 
       }
 
@@ -1129,7 +1130,7 @@
           backdrop.addEventListener( 'click', function(){
             var scope = this;
             if ( backdrops.selection === this ) { 
-              backdrops.resetAll();
+              backdrops.reset();
               return; 
             } 
             else if ( backdrops.selection ) {
@@ -1158,7 +1159,7 @@
         }
 
         backdrops.selection = undefined;
-        backdrops.resetAll = function ( instant ) {
+        backdrops.reset = function ( instant ) {
           if ( this.selection ) {
             this.selection.tweens[ 'moveFront' ].stop();
             if ( instant ) {
@@ -1178,34 +1179,163 @@
 
       function generateCSS3DVideoElement () {
 
-        var scene = new THREE.Scene();
+        var widget, scene, stereoscene, renderer, stereorenderer, iframe, object, stereoobject;
 
-        var renderer = new THREE.CSS3DRenderer();
+        widget = { currentTime: 0 };
+        scene = new THREE.Scene();
+        stereoscene = new THREE.Scene();
 
+        renderer = new THREE.CSS3DRenderer();
         renderer.setSize( window.innerWidth, window.innerHeight );
         renderer.domElement.style.position = 'absolute';
         renderer.domElement.style.top = 0;
         renderer.domElement.style.backgroundColor = '#000';
         document.body.insertBefore( renderer.domElement, document.body.children[0] );
 
-        var iframe = document.getElementById( 'yt-iframe' );
+        stereorenderer = new THREE.CSS3DStereoRenderer();
+        stereorenderer.setSize( window.innerWidth, window.innerHeight );
+        stereorenderer.domElement.style.position = 'absolute';
+        stereorenderer.domElement.style.top = 0;
+        stereorenderer.domElement.style.backgroundColor = '#000';
+        document.body.insertBefore( stereorenderer.domElement, document.body.children[0] );
+
+        iframe = document.getElementById( 'yt-iframe' );
         iframe.paused = true;
 
-        var object = new THREE.CSS3DObject( iframe );
+        object = new THREE.CSS3DObject( iframe );
         object.position.z = -radius;
         object.scale.x = tileLength * 3.2 / window.innerWidth;
         object.scale.y = tileLength * 2.25 / window.innerHeight;
         scene.add( object );
 
+        stereoobject = new THREE.CSS3DStereoObject( iframe );
+        stereoobject.position.z = -radius;
+        stereoobject.scale.x = tileLength * 3.2 / window.innerWidth;
+        stereoobject.scale.y = tileLength * 2.25 / window.innerHeight;
+        stereoscene.add( stereoobject );
+
+        // Pre-render
+        renderer.render( scene, viewer.getCamera() );
+        stereorenderer.render( stereoscene, viewer.getCamera() );
+
+        viewer.addEventListener( 'VR-toggle', function( event ){ 
+          if ( event.mode === PANOLENS.Modes.NORMAL ) {
+            widget.pause( PANOLENS.Modes.VR );
+            if ( document.body.children[ 0 ] === renderer.domElement ) {
+              document.body.insertBefore( stereorenderer.domElement, renderer.domElement );
+            }
+            sendYTCommand( object.element, 'seekTo', [widget.currentTime, true] );
+            
+          } else {
+            widget.pause( PANOLENS.Modes.NORMAL );
+            if ( document.body.children[ 0 ] === stereorenderer.domElement ) {
+              document.body.insertBefore( renderer.domElement, stereorenderer.domElement );
+            }
+            syncYT();
+          }
+          widget.update();
+        });
+
         viewer.addUpdateCallback( function(){
+          if ( viewer.mode === PANOLENS.Modes.NORMAL ) {
             renderer.render( scene, viewer.getCamera() );
-        } );
+          } else {
+            stereorenderer.render( stereoscene, viewer.getCamera() );
+          }
+        });
 
         viewer.addEventListener( 'window-resize', function(){
+          object.scale.x = tileLength * 3.2 / window.innerWidth;
+          object.scale.y = tileLength * 2.25 / window.innerHeight;
           renderer.setSize( window.innerWidth, window.innerHeight );
         } );
 
-        return iframe;
+        widget.paused = true;
+        widget.load = function ( url ) {
+          this.pause();
+          object.element.src = stereoobject.elementL.src = stereoobject.elementR.src = url;
+        };
+        widget.reset = function () {
+          this.pause();
+          this.paused = true;
+          this.currentTime = 0;
+          object.element.src = stereoobject.elementL.src = stereoobject.elementR.src = '';
+        };
+        widget.pause = function ( mode ) {
+          if ( mode === PANOLENS.Modes.NORMAL ) {
+            sendYTCommand( object.element, "pauseVideo" );
+          } else {
+            sendYTCommand( stereoobject.elementL, "pauseVideo" );
+            sendYTCommand( stereoobject.elementR, "pauseVideo" );
+            syncYT();
+          }
+        };
+        widget.play = function ( mode ) {
+          if ( mode === PANOLENS.Modes.NORMAL ) {
+            sendYTCommand( object.element, "playVideo" );
+          } else {
+            sendYTCommand( stereoobject.elementL, "playVideo" );
+            sendYTCommand( stereoobject.elementR, "playVideo" );
+            syncYT();
+          }
+        };
+        widget.update = function () {
+          if ( this.paused ) {
+            sendYTCommand( object.element, "pauseVideo" );
+            sendYTCommand( stereoobject.elementL, "pauseVideo" );
+            sendYTCommand( stereoobject.elementR, "pauseVideo" );
+          } else {
+            this.play( viewer.mode );
+          }
+        };
+
+        window.addEventListener("message", function(event){
+
+          var data;
+
+          data = JSON.parse(event.data);
+
+          if ( data && data.info && data.info.currentTime && data.info.currentTime > widget.currentTime ) {
+
+            widget.currentTime = data.info.currentTime;
+
+          }
+
+          if ( data && data.event === 'onReady' ) {
+
+            syncYT();
+
+          }
+          
+        }, false);
+
+        object.element.addEventListener('load', function(){
+          object.element.contentWindow.postMessage('{"event":"listening"}','*');
+        });
+        
+        stereoobject.elementL.addEventListener('load', function(){
+          stereoobject.elementL.contentWindow.postMessage('{"event":"listening"}','*');
+          !widget.paused && syncYT();
+        });
+        
+        function sendYTCommand ( element, command, arg ) {
+          element.contentWindow.postMessage(JSON.stringify({
+            'event': 'command',
+            'func': command || '',
+            'args': arg || []
+          }), "*");
+
+        }
+
+        function syncYT () {
+          if ( viewer.mode === PANOLENS.Modes.VR ) {
+            sendYTCommand( stereoobject.elementR, "mute" );
+            sendYTCommand( stereoobject.elementR, 'seekTo', [widget.currentTime, true] );
+            sendYTCommand( stereoobject.elementL, 'seekTo', [widget.currentTime, true] );
+          }
+        }
+
+        return widget;
 
       }
 
@@ -1242,9 +1372,9 @@
               tile.material.opacity = initialOpacity;
               tile.tileIndex = scope.movieIndex;
               tile.position.set( 
+                ( Math.random() - 0.5 ) * radius * 4,
                 ( Math.random() - 0.5 ) * radius * 2,
-                ( Math.random() - 0.5 ) * radius * 2,
-                Math.random() * -radius * 10
+                ( Math.random() ) * radius * 4
               );
               tile.spiralPosition = new THREE.Vector3( 
                 radius * 2 * Math.sin( theta ),
@@ -1260,23 +1390,23 @@
                 this.title.mesh.material.uniforms.opacity.value = initialOpacity;
               } );
               tile.addEventListener( 'click-entity', function(){
-                categoryPanorama.movieData = movies[ 'All' ];
-                categoryPanorama.movie = movie;
-                categoryPanorama.category = 'All';
-                categoryPanorama.movieIndex = categoryPanorama.movieData.results.indexOf( movie );
-                setPanorama( categoryPanorama );
+                moviePanorama.movieData = movies[ 'All' ];
+                moviePanorama.movie = movie;
+                moviePanorama.category = 'All';
+                moviePanorama.movieIndex = moviePanorama.movieData.results.indexOf( movie );
+                setPanorama( moviePanorama );
               } );
               tile.visible = false;
-              tile.tween( 'show', tile.material, { opacity: initialOpacity }, duration, easing, 0, onStart.bind( tile ));
-              tile.tween( 'hide', tile.material, { opacity: 0 }, duration, easing, 0, null, null, onComplete.bind( tile ));
+              tile.tween( 'show', tile.material, { opacity: initialOpacity }, duration, easing, 0, makeVisible.bind( tile ));
+              tile.tween( 'hide', tile.material, { opacity: 0 }, duration, easing, 0, null, null, makeInvisible.bind( tile ));
               makeTranslationAnimation();
               PANOLENS.Utils.TextureLoader.load( addMovieDBImagePrefix( movie.poster_path ), setClampTexture.bind( tile ) );
               
               title = new PANOLENS.SpriteText( movie.title, 600 );
               title.rotation.y = Math.PI;
               title.position.y = -23;
-              title.tween( 'show', title.mesh.material.uniforms.opacity, { value: initialOpacity }, duration, easing, 0, onStart.bind( title ) );
-              title.tween( 'hide', title.mesh.material.uniforms.opacity, { value: 0 }, duration, easing, 0, null, null, onComplete.bind( title ) );
+              title.tween( 'show', title.mesh.material.uniforms.opacity, { value: initialOpacity }, duration, easing, 0, makeVisible.bind( title ) );
+              title.tween( 'hide', title.mesh.material.uniforms.opacity, { value: 0 }, duration, easing, 0, null, null, makeInvisible.bind( title ) );
               tile.title = title;
               tile.add( title );
 
@@ -1359,27 +1489,36 @@
 
       function back () {
 
-        setPanorama( introPanorama );
-        categoryPanorama.backdrops && categoryPanorama.backdrops.resetAll( true );
-        youtubeIFrame.src = '';
+        setPanorama( entryPanorama );
+        moviePanorama.backdrops && moviePanorama.backdrops.reset( true );
+        css3dWidget.reset();
+        viewer.widget.vrElement.style.visibility = 'visible';
 
       }
 
       function dispose ( object ) {
+
         object.geometry && object.geometry.dispose();
         object.material && object.material.dispose();
+
       }
 
-      function onStart () {
+      function makeVisible () {
+
         this.visible = true;
+
       }
 
-      function onComplete () {
+      function makeInvisible () {
+
         this.visible = false;
+
       }
 
       function lookAtVector ( vector ) {
+
         this.lookAt( vector );
+
       }
 
     </script>

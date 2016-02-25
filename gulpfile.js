@@ -6,10 +6,7 @@ var uglify = require('gulp-uglify');
 
 var _libfiles = [
 	'node_modules/three/examples/js/controls/DeviceOrientationControls.js',
-	'node_modules/three/examples/js/controls/VRControls.js',
-	'node_modules/three/examples/js/effects/VREffect.js',
-	'node_modules/webvr-polyfill/build/webvr-polyfill.js',
-	'node_modules/webvr-boilerplate/build/webvr-manager.js',
+	'node_modules/three/examples/js/effects/CardboardEffect.js',
 	'node_modules/tween.js/src/Tween.js',
 	'src/lib/OrbitControls.js',
 	'src/lib/GSVPano.js',
@@ -19,6 +16,7 @@ var _libfiles = [
 var _panolensfiles = [
 	'src/Panolens.js',
 	'src/util/DataIcon.js',
+	'src/util/Modes.js',
 	'src/util/TextureLoader.js',
 	'src/panorama/Panorama.js',
 	'src/panorama/ImagePanorama.js',

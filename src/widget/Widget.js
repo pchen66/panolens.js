@@ -11,6 +11,12 @@
 
 		this.container = container;
 
+		this.barElement;
+		this.fullscreenElement;
+		this.navigationElement;
+		this.vrElement;
+		this.videoElement;
+
 	}
 
 	PANOLENS.Widget.prototype = Object.create( THREE.EventDispatcher.prototype );
@@ -40,18 +46,23 @@
 
 		};
 
+		this.fullscreenElement = this.createFullscreenButton();
+		this.navigationElement = this.createCameraControlButton();
+		this.vrElement = this.createVRButton();
+		this.videoElement = this.createVideoControl();
+
 		// Add Control Items
-		bar.appendChild( this.createFullscreenButton() );
-		bar.appendChild( this.createCameraControlButton() );
-		bar.appendChild( this.createVRButton() );
-		bar.appendChild( this.createVideoControl() );
+		bar.appendChild( this.fullscreenElement );
+		bar.appendChild( this.navigationElement );
+		bar.appendChild( this.vrElement );
+		bar.appendChild( this.videoElement );
 
 		this.container.appendChild( bar );
 
 		// Event listener
 		this.addEventListener( 'control-bar-toggle', bar.toggle );
 
-		return bar;
+		this.barElement = bar;
 
 	};
 

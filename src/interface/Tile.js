@@ -151,21 +151,4 @@
 
     };
 
-    PANOLENS.Tile.prototype.tweenTranslation = function ( position, duration, easing ) {
-
-    	position = position || {};
-    	duration = duration || 200;
-    	easing = easing || TWEEN.Easing.Cubic.Out;
-
-    	if ( this.animationTranslation ) {
-    		this.animationTranslation.stop();
-    	}
-
-    	this.animationTranslation = new TWEEN.Tween( this.position )
-        .to( position, duration )
-        .easing( easing )
-        .start();
-
-    };
-
 } )();

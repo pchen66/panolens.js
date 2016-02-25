@@ -14,7 +14,7 @@
 	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
 	 * @param {boolean} [options.autoHideInfospot=false] - Auto hide infospots when click on non-active area
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
-	 * @param {object}  [options.WebVRConfig] - WebVR configuration
+	 * @param {number}  [options.clickTolerance] - Distance tolerance to tigger click / tap event
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -32,36 +32,20 @@
 		options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
 		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
-		options.WebVRConfig = options.WebVRConfig || { FORCE_ENABLE_VR: true, FORCE_DISTORTION: true };
 		options.clickTolerance = options.clickTolerance || 10;
-
-		// WebVR Configuration
-		if ( options.WebVRConfig ) {
-			
-			for ( var config in options.WebVRConfig ) {
-
-				if ( options.WebVRConfig.hasOwnProperty( config ) ) {
-
-					window.WebVRConfig[ config ] = options.WebVRConfig[ config ];
-
-				}
-
-			}
-
-		}
 		
 		this.options = options;
 
 		this.camera = options.camera || new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
-		this.VREffect;
-		this.VRManager;
+		this.effect;
 		this.container;
+
+		this.mode = PANOLENS.Modes.NORMAL;
 
 		this.OrbitControls;
 		this.DeviceOrientationControls;
-		this.VRControls;
 
 		this.controls;
 		this.panorama;
@@ -80,6 +64,7 @@
 		// Renderer
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.renderer.setClearColor( 0x000000, 1 );
 
 		// Container
 		if ( options.container ) {
@@ -104,14 +89,10 @@
 		this.OrbitControls.noPan = true;
 		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera );
 		this.DeviceOrientationControls.name = 'device-orientation';
-		this.VRControls = new THREE.VRControls( this.camera );
 
-        // Apply VR stereo rendering to renderer.
-        this.VREffect = new THREE.VREffect( this.renderer );
-        this.VREffect.setSize( window.innerWidth, window.innerHeight );
-
-        this.VRManager = new WebVRManager( this.renderer, this.VREffect, { 
-            hideButton: true, isUndistorted: false } );
+		// Cardboard effect
+        this.effect = new THREE.CardboardEffect( this.renderer );
+        this.effect.setSize( window.innerWidth, window.innerHeight );
 
 		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
 		this.control = this.OrbitControls;
@@ -228,12 +209,39 @@
 
 	PANOLENS.Viewer.prototype.toggleVR = function () {
 
-		if ( this.VRManager ) {
-			if ( this.VRManager.mode !== WebVRManager.Modes.VR ) {
-				this.VRManager.onVRClick_();
+		if ( this.effect ) {
+
+			if ( this.mode !== PANOLENS.Modes.VR ) {
+
+				this.enableVR();
+
 			} else {
-				this.VRManager.onBackClick_();
+
+				this.disableVR();
+
 			}
+		}
+
+		this.dispatchEvent( { type: 'VR-toggle', mode: this.mode } );
+
+	};
+
+	PANOLENS.Viewer.prototype.enableVR = function () {
+
+		if ( this.effect && this.mode !== PANOLENS.Modes.VR ) {
+
+			this.mode = PANOLENS.Modes.VR;
+
+		}
+
+	};
+
+	PANOLENS.Viewer.prototype.disableVR = function () {
+
+		if ( this.effect && this.mode !== PANOLENS.Modes.NORMAL ) {
+
+			this.mode = PANOLENS.Modes.NORMAL;
+
 		}
 
 	};
@@ -415,8 +423,16 @@
 		TWEEN.update();
 		this.updateCallbacks.forEach( function( callback ){ callback(); } );
 		this.control && this.control.update();
-		this.VRManager && this.VRControls && this.VRManager.Mode === WebVRManager.Modes.VR && this.VRControls.update(); 
-		this.VRManager.render( this.scene, this.camera );
+		
+		if ( this.mode === PANOLENS.Modes.VR ) {
+
+			this.effect.render( this.scene, this.camera );
+
+		} else {
+
+			this.renderer.render( this.scene, this.camera );
+
+		}
 
 	};
 
@@ -630,10 +646,6 @@
 
 					}
 
-				}
-
-				if ( this.userMouse.type === 'mousemove' ) {
-
 					if ( this.pressObject && this.pressObject.dispatchEvent ) {
 
 						this.pressObject.dispatchEvent( { type: 'pressmove', mouseEvent: event } );
@@ -641,6 +653,22 @@
 					}
 
 				}
+
+			}
+
+			if ( !intersect_entity && this.pressEntityObject && this.pressEntityObject.dispatchEvent ) {
+
+				this.pressEntityObject.dispatchEvent( { type: 'pressstop-entity', mouseEvent: event } );
+
+				this.pressEntityObject = undefined;
+
+			}
+
+			if ( !intersect && this.pressObject && this.pressObject.dispatchEvent ) {
+
+				this.pressObject.dispatchEvent( { type: 'pressstop', mouseEvent: event } );
+
+				this.pressObject = undefined;
 
 			}
 
