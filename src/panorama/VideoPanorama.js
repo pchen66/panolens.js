@@ -1,6 +1,9 @@
 (function(){
 
+	'use strict';
+
 	/**
+	 * Video Panorama
 	 * @param {string} src - Equirectangular video url
 	 * @param {object} [options] - Option for video settings
 	 * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video

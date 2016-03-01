@@ -4,7 +4,7 @@
 	 * Information spot attached to panorama
 	 * @constructor
 	 * @param {number} [scale=1] - Infospot scale
-	 * @param {imageSrc} [imageSrc=PANOLENS.DataIcon.Info] - Image overlay info
+	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
 	 */
 	PANOLENS.Infospot = function ( scale, imageSrc ) {
 		
@@ -24,7 +24,7 @@
 		this.visible = false;
 
 		scale = scale || 1;
-		imageSrc = imageSrc || PANOLENS.DataIcon.Info;
+		imageSrc = imageSrc || PANOLENS.DataImage.Info;
 
 		this.scale.set( scale, scale, 1 );
 

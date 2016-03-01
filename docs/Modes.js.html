@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Panolens.js</title>
+    <title>JSDoc: Source: util/Modes.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: Panolens.js</h1>
+    <h1 class="page-title">Source: util/Modes.js</h1>
 
     
 
@@ -25,20 +25,23 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * @author pchen66
- */
+            <pre class="prettyprint source linenums"><code>(function(){
 
-window.PANOLENS = {
+	'use strict';
 
-	// Placeholder for async bmfont texture loading
-	Utils: {
-		loadBMFont: function(){},
-		textureLoader: function(){}
-	}
+	/**
+	 * Modes
+	 * @type {Object}
+	 */
+	PANOLENS.Modes = {
 
-};
-</code></pre>
+		UNKNOWN: 0,
+		NORMAL: 1,
+		VR: 2
+
+	};
+
+})();</code></pre>
         </article>
     </section>
 

@@ -44,19 +44,38 @@
         <article><h1 id="panolens-js">Panolens.js</h1>
 <p>###Javascript Panorama Viewer</p>
 <p>This project aims to provide a tool for anyone wants to see panorama, photo-based or virtually created, in a simple and painless way. It&#39;s built on top of <a href="https://github.com/mrdoob/three.js">Three.JS</a>. </p>
+<p>###Usage</p>
+<p>Include <code>three.min.js</code> and <code>panolens.min.js</code></p>
+<pre><code class="lang-html">&lt;script src=&quot;js/three.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/panolens.min.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p>This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use <code>panorama.link( other_panorama )</code> to connect the two. See <a href="http://pchen66.github.io/Panolens/">examples</a> for more details.</p>
+<pre><code class="lang-html">&lt;script&gt;
+
+    var panorama, viewer;
+
+    panorama = new PANOLENS.ImagePanorama( &#39;asset/equirectangular.jpg&#39; );
+
+    viewer = new PANOLENS.Viewer();
+    viewer.add( panorama );
+
+&lt;/script&gt;
+</code></pre>
 <p><img src="https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_video_demo_480p.gif?raw=true" alt="Panorama Video Demo"></p>
 <p>###Demo </p>
-<p>####<a href="https://github.com/pchen66/pchen66.github.io/tree/master/Panolens/examples">source</a></p>
 <ol>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_basic.html">Panorama Basic</a></li>
+<li><a href="http://pchen66.github.io/Panolens/examples/panorama_image.html">Panorama Image</a></li>
 <li><a href="http://pchen66.github.io/Panolens/examples/panorama_cube.html">Panorama Cube</a></li>
+<li><a href="http://pchen66.github.io/Panolens/examples/panorama_basic.html">Panorama Basic</a></li>
 <li><a href="http://pchen66.github.io/Panolens/examples/panorama_googlestreetview.html">Panorama Google Streetview</a></li>
 <li><a href="http://pchen66.github.io/Panolens/examples/panorama_video.html">Panorama Video</a></li>
 <li><a href="http://pchen66.github.io/Panolens/examples/panorama_infospot.html">Panorama Infospot</a></li>
 <li><a href="http://pchen66.github.io/Panolens/examples/panorama_linking.html">Panorama Linking</a></li>
 <li><a href="http://pchen66.github.io/Panolens/examples/XDiamond/">Panorama Match 3 Game</a></li>
 <li><a href="http://pchen66.github.io/Panolens/examples/panorama_interactive.html">Panorama Interactive</a></li>
+<li><a href="http://pchen66.github.io/PanoTheater">Pano Theater</a></li>
 </ol>
+<p>####<a href="https://github.com/pchen66/pchen66.github.io/tree/master/Panolens/examples">source</a></p>
 <p>###Features</p>
 <ol>
 <li>Support equirectangular image</li>
@@ -72,36 +91,20 @@
 <li>Click on Infospot to &quot;Lock&quot; the hovering element/text</li>
 <li>When adding 3D object to panorama, it will automatically create an empty THREE.Object3D to counter the negative scale effect</li>
 </ol>
-<p>###Usage</p>
-<p>Get the minified library (include three.js as a dependency)</p>
-<pre><code class="lang-html">&lt;script src=&quot;js/three.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;js/panolens.min.js&quot;&gt;&lt;/script&gt;
-</code></pre>
-<p>This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use <code>panorama.link( other_panorama )</code> to connect the two. See <code>examples</code> for more details.</p>
-<pre><code class="lang-html">&lt;script&gt;
-
-    var panorama, viewer;
-
-    panorama = new PANOLENS.ImagePanorama( &#39;asset/equirectangular.jpg&#39; );
-
-    viewer = new PANOLENS.Viewer();
-    viewer.add( panorama );
-
-&lt;/script&gt;
-</code></pre>
 <p>###Try it</p>
 <p>Simply run it with local server ( or check out three.js <a href="https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally">How to run things locally</a> )</p>
-<p>###How to add infospot (aka hotspot)</p>
+<p>###How to add an infospot (aka hotspot)</p>
 <p>Move cursor on a specific point in a panorama and press <code>Ctrl</code> with mouse clicking or hovering, which will generate position (x, y, z) in the console. See <a href="http://pchen66.github.io/Panolens/examples/panorama_infospot.html">Panorama Infospot</a> example for creating and attaching infospots.</p>
 <p><img src="https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_add_infospot_480p.gif?raw=true" alt="Panorama Finding Infospot Position"></p>
 <p>###Dependency</p>
 <p>The minified version includes these libraries:</p>
 <ol>
-<li>Three JS Controls
- (1) <a href="https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js">OrbitControls.js</a>
- (2) <a href="https://github.com/mrdoob/three.js/blob/master/examples/js/controls/DeviceOrientationControls.js">DeviceOrientationControl.js</a>
- (3) <a href="https://github.com/borismus/webvr-boilerplate">WebVR-Boilerplate</a></li>
-<li><a href="https://github.com/tweenjs/tween.js/">Tween.js</a></li>
+<li><p><a href="https://github.com/mrdoob/three.js">Three.JS</a> and Controls</p>
+<p> (1) <a href="https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js">OrbitControls.js</a></p>
+<p> (2) <a href="https://github.com/mrdoob/three.js/blob/master/examples/js/controls/DeviceOrientationControls.js">DeviceOrientationControl.js</a></p>
+</li>
+<li><p><a href="https://github.com/tweenjs/tween.js/">Tween.js</a></p>
+</li>
 </ol>
 <p>###Future</p>
 <ol>
@@ -119,13 +122,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="PANOLENS.CubePanorama.html">CubePanorama</a></li><li><a href="PANOLENS.EmptyPanorama.html">EmptyPanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImagePanorama.html">ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">Infospot</a></li><li><a href="PANOLENS.Panorama.html">Panorama</a></li><li><a href="PANOLENS.Tile.html">Tile</a></li><li><a href="PANOLENS.Viewer.html">Viewer</a></li><li><a href="PANOLENS.Widget.html">Widget</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="PANOLENS.BasicPanorama.html">BasicPanorama</a></li><li><a href="PANOLENS.CubePanorama.html">CubePanorama</a></li><li><a href="PANOLENS.EmptyPanorama.html">EmptyPanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImagePanorama.html">ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">Infospot</a></li><li><a href="PANOLENS.Panorama.html">Panorama</a></li><li><a href="PANOLENS.SpriteText.html">SpriteText</a></li><li><a href="PANOLENS.Tile.html">Tile</a></li><li><a href="PANOLENS.TileGroup.html">TileGroup</a></li><li><a href="PANOLENS.Viewer.html">Viewer</a></li><li><a href="PANOLENS.Widget.html">Widget</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Feb 28 2016 16:55:56 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Tue Mar 01 2016 00:20:27 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>

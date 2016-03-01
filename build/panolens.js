@@ -2288,7 +2288,11 @@ window.PANOLENS = {
 
 	'use strict';
 
-	PANOLENS.DataIcon = {
+	/**
+	 * Data Image
+	 * @type {Object}
+	 */
+	PANOLENS.DataImage = {
 
 		Info: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEzLDlIMTFWN0gxM00xMywxN0gxMVYxMUgxM00xMiwyQTEwLDEwIDAgMCwwIDIsMTJBMTAsMTAgMCAwLDAgMTIsMjJBMTAsMTAgMCAwLDAgMjIsMTJBMTAsMTAgMCAwLDAgMTIsMloiIC8+PC9zdmc+',
 		Arrow: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDIyQTEwLDEwIDAgMCwxIDIsMTJBMTAsMTAgMCAwLDEgMTIsMkExMCwxMCAwIDAsMSAyMiwxMkExMCwxMCAwIDAsMSAxMiwyMk0xMiw3TDcsMTJIMTBWMTZIMTRWMTJIMTdMMTIsN1oiIC8+PC9zdmc+',
@@ -2298,7 +2302,8 @@ window.PANOLENS = {
 		Gyro: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOC4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNjRweCIgaGVpZ2h0PSI2NHB4IiB2aWV3Qm94PSIxMjAgMTIwIDI2MCAyNjAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDUwMCA1MDAiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPGc+DQoJCTxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0xOTUuNiwyNjAuMWMxLjksMi43LDUuMSw0LjYsOC42LDQuNmM0LjQsMCw4LjctMy40LDguNy04LjRjMC00LjgtNC04LjUtOS4xLTguNWMtMS45LDAtMy44LDAuNS01LjYsMS4zDQoJCQl2LTUuM2w4LjctMTAuM2gtMTUuNXYtOGgyOC4ydjUuM2wtOC40LDEwLjNjNi40LDIuNSwxMC43LDgsMTAuNywxNWMwLDkuOC03LjcsMTYuNC0xNy4zLDE2LjRjLTUuOCwwLTExLjMtMi42LTE1LjQtNy4yDQoJCQlMMTk1LjYsMjYwLjF6Ii8+DQoJCTxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yNTMuOSwyMjUuNmwtOC43LDE0LjhoMC42YzguOCwwLDE2LjIsNi43LDE2LjIsMTZjMCw5LTcuNSwxNi4zLTE2LjUsMTYuM2MtOC43LDAtMTctNi4yLTE3LTE1LjgNCgkJCWMwLTQuNiwyLjEtOC43LDQuNi0xMi44bDEwLjktMTguNEgyNTMuOXogTTIzNy4xLDI1Ni44YzAsNC40LDMuNyw3LjksOC4yLDcuOWM0LjYsMCw3LjgtMy42LDcuOC04LjFjMC00LjQtMy4zLTguMy04LjMtOC4zDQoJCQljLTEuNywwLTMuMiwwLjMtNSwxLjFDMjM4LjcsMjUxLjIsMjM3LjEsMjUzLjcsMjM3LjEsMjU2Ljh6Ii8+DQoJCTxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yODQuNiwyMjVjMTEuOSwwLDE2LjIsMTAuNywxNi4yLDIzLjljMCwxMy4yLTQuNCwyMy45LTE2LjIsMjMuOWMtMTEuOSwwLTE2LjItMTAuNy0xNi4yLTIzLjkNCgkJCUMyNjguMywyMzUuNiwyNzIuNywyMjUsMjg0LjYsMjI1eiBNMjg0LjYsMjMyLjljLTUuNCwwLTcuMyw3LjItNy4zLDE1LjljMCw4LjcsMS45LDE1LjksNy4zLDE1LjljNS40LDAsNy4zLTcuMiw3LjMtMTUuOQ0KCQkJQzI5MS44LDI0MC4xLDI4OS45LDIzMi45LDI4NC42LDIzMi45eiIvPg0KCQk8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMzE2LjQsMjIxLjZjNCwwLDcuMywzLjIsNy4zLDcuM2MwLDQtMy4yLDcuMy03LjMsNy4zYy00LDAtNy4zLTMuMi03LjMtNy4zDQoJCQlDMzA5LjEsMjI0LjksMzEyLjMsMjIxLjYsMzE2LjQsMjIxLjZ6IE0zMTYuNCwyMzAuOWMxLjEsMCwyLTAuOSwyLTJjMC0xLjEtMC45LTItMi0yYy0xLjEsMC0yLDAuOS0yLDINCgkJCUMzMTQuNCwyMzAuMSwzMTUuMywyMzAuOSwzMTYuNCwyMzAuOXoiLz4NCgk8L2c+DQoJPGc+DQoJCTxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yNTAuNSwzNzYuNWMtNzAsMC0xMjctNTctMTI3LTEyN3M1Ny0xMjcsMTI3LTEyN2MyOC44LDAsNTYsOS40LDc4LjYsMjcuMmwtNy43LDkuOA0KCQkJYy0yMC40LTE2LTQ0LjktMjQuNS03MC44LTI0LjVDMTg3LjMsMTM1LDEzNiwxODYuMywxMzYsMjQ5LjVTMTg3LjMsMzY0LDI1MC41LDM2NGM2My4yLDAsMTE0LjUtNTEuNCwxMTQuNS0xMTQuNQ0KCQkJYzAtMjYuNy05LjQtNTIuNy0yNi41LTczLjNsOS42LThjMTguOSwyMi43LDI5LjQsNTEuNiwyOS40LDgxLjJDMzc3LjUsMzE5LjUsMzIwLjUsMzc2LjUsMjUwLjUsMzc2LjV6Ii8+DQoJCTxwb2x5Z29uIGZpbGw9IiNmZmYiIHBvaW50cz0iMzMxLjgsMTYwLjEgMzM1LjgsMTk4LjggMzY5LjcsMTcyLjYgCQkiLz4NCgk8L2c+DQo8L2c+DQo8L3N2Zz4NCg==',
 		VideoPlay: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTgsNS4xNFYxOS4xNEwxOSwxMi4xNEw4LDUuMTRaIiAvPjwvc3ZnPg==',
 		VideoPause: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTE0LDE5LjE0SDE4VjUuMTRIMTRNNiwxOS4xNEgxMFY1LjE0SDZWMTkuMTRaIiAvPjwvc3ZnPg==',
-		Cardboard: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI0ZGRkZGRiI+CiAgICA8cGF0aCBkPSJNMjAuNzQgNkgzLjIxQzIuNTUgNiAyIDYuNTcgMiA3LjI4djEwLjQ0YzAgLjcuNTUgMS4yOCAxLjIzIDEuMjhoNC43OWMuNTIgMCAuOTYtLjMzIDEuMTQtLjc5bDEuNC0zLjQ4Yy4yMy0uNTkuNzktMS4wMSAxLjQ0LTEuMDFzMS4yMS40MiAxLjQ1IDEuMDFsMS4zOSAzLjQ4Yy4xOS40Ni42My43OSAxLjExLjc5aDQuNzljLjcxIDAgMS4yNi0uNTcgMS4yNi0xLjI4VjcuMjhjMC0uNy0uNTUtMS4yOC0xLjI2LTEuMjh6TTcuNSAxNC42MmMtMS4xNyAwLTIuMTMtLjk1LTIuMTMtMi4xMiAwLTEuMTcuOTYtMi4xMyAyLjEzLTIuMTMgMS4xOCAwIDIuMTIuOTYgMi4xMiAyLjEzcy0uOTUgMi4xMi0yLjEyIDIuMTJ6bTkgMGMtMS4xNyAwLTIuMTMtLjk1LTIuMTMtMi4xMiAwLTEuMTcuOTYtMi4xMyAyLjEzLTIuMTNzMi4xMi45NiAyLjEyIDIuMTMtLjk1IDIuMTItMi4xMiAyLjEyeiIvPgogICAgPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAgMGgyNHYyNEgwVjB6Ii8+Cjwvc3ZnPgo='
+		Cardboard: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI0ZGRkZGRiI+CiAgICA8cGF0aCBkPSJNMjAuNzQgNkgzLjIxQzIuNTUgNiAyIDYuNTcgMiA3LjI4djEwLjQ0YzAgLjcuNTUgMS4yOCAxLjIzIDEuMjhoNC43OWMuNTIgMCAuOTYtLjMzIDEuMTQtLjc5bDEuNC0zLjQ4Yy4yMy0uNTkuNzktMS4wMSAxLjQ0LTEuMDFzMS4yMS40MiAxLjQ1IDEuMDFsMS4zOSAzLjQ4Yy4xOS40Ni42My43OSAxLjExLjc5aDQuNzljLjcxIDAgMS4yNi0uNTcgMS4yNi0xLjI4VjcuMjhjMC0uNy0uNTUtMS4yOC0xLjI2LTEuMjh6TTcuNSAxNC42MmMtMS4xNyAwLTIuMTMtLjk1LTIuMTMtMi4xMiAwLTEuMTcuOTYtMi4xMyAyLjEzLTIuMTMgMS4xOCAwIDIuMTIuOTYgMi4xMiAyLjEzcy0uOTUgMi4xMi0yLjEyIDIuMTJ6bTkgMGMtMS4xNyAwLTIuMTMtLjk1LTIuMTMtMi4xMiAwLTEuMTcuOTYtMi4xMyAyLjEzLTIuMTNzMi4xMi45NiAyLjEyIDIuMTMtLjk1IDIuMTItMi4xMiAyLjEyeiIvPgogICAgPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAgMGgyNHYyNEgwVjB6Ii8+Cjwvc3ZnPgo=',
+		WhiteTile: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIABAMAAAAGVsnJAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAB1WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOkNvbXByZXNzaW9uPjE8L3RpZmY6Q29tcHJlc3Npb24+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgICAgIDx0aWZmOlBob3RvbWV0cmljSW50ZXJwcmV0YXRpb24+MjwvdGlmZjpQaG90b21ldHJpY0ludGVycHJldGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KAtiABQAAACRQTFRFAAAAAAAABgYGBwcHHh4eKysrx8fHy8vLzMzM7OzsAAAABgYG+q7SZgAAAAp0Uk5TAP7+/v7+/v7+/iJx/a8AAAOwSURBVHja7d0hbsNAEAVQo6SFI6XEcALDcgNLvUBvEBQVhpkWVYWlhSsVFS7t5QIshRt695lEASZP+8c7a1kzDL1fz+/zyuvzp6FbvoddrL6uDd1yGZ5eXldeb18N3fIx7A+58prmhm65DfvDcd0952lu6JabFbD/zVprZj1lzcys+fj9z8xTZtbT8rv8yWlu6BYAIgAAAAAAAAAAAABAM6QXEAEAAAAAAAAAgJ2gnaAIiIA3Q2qAGgAAAAAAAAAAAAAAAAAAAAAAAAAAQJsADkVFAAAAAAA8Bj0GRUAEREAEREAEREAEREAEAAAAAAAAAAB2gnaCIiACPplRA9QANUAERAAAAEVQERQBERCBVlfAcZ3aeZobusUKMGBhV6KUElHGKBERJR6/fxExRkQZl9/lT8S1oVsuhqyYMmPKjCkzvfcCpsxohrwY0Q06EAEAAAAAAAAAAACgGdILiAAAAAAAAAAAwE7QTlAERMCbITVADQAAAAAAAAAAAAAAAAAAAAAAAAAAwKmwQ1ERAAAAAACPQY9BERABERABERABERABERABAAAAAAAAAICdoJ2gCIiAT2bUADVADRABEQAAQBFUBEVABERgEyvAlJm+V4ApM6bMmDJjyowpM6bMdN0LmDKjGfJiRDfoQAQAAAAAAAAAAACAZkgvIAIAAAAAAAAAADtBO0EREAFvhtQANQAAAAAAAAAAAAAAAAAAAAAAAAAAAKfCDkVFAAAAAAA8Bj0GRUAEREAEREAEREAEREAEAAAAAAAAAAB2gnaCIiACPplRA9QANUAERAAAAEVQERQBERCBTawAU2b6XgGmzJgyY8qMKTOmzJgy03UvYMqMZsiLEd2gAxEAAAAAAAAAAAAAmiG9gAgAAAAAAAAAAOwE7QRFQAS8GVID1AAAAAAAAAAAAAAAAAAAAAAAAAAAAJwKOxQVAQAAAADwGPQYFAEREAEREAEREAEREAERAAAAAAAAAADYCdoJioAI+GRGDVAD1AAREAEAABRBRVAEREAENrECTJnpewWYMmPKjCkzpsyYMmPKTNe9gCkzmiEvRnSDDkQAAAAAAAAAAAAAaIb0AiIAAAAAAAAAALATtBMUARHwZkgNUAMAAAAAAAAAAAAAAAAAAAAAAAAAAHAq7FBUBAAAAADAY9BjUAREQAREQAREQAREQAREAAAAAAAAAABgJ2gnKAIi4JMZNUANUANEQAQAAFAEFUEREAER2MQKMGWm7xVgyowpM50PWen9ugNGXz1XaocAFgAAAABJRU5ErkJggg=='
 	
 	};
 
@@ -2306,6 +2311,10 @@ window.PANOLENS = {
 
 	'use strict';
 
+	/**
+	 * Modes
+	 * @type {Object}
+	 */
 	PANOLENS.Modes = {
 
 		UNKNOWN: 0,
@@ -2318,12 +2327,17 @@ window.PANOLENS = {
 	
 	'use strict';
 
+	/**
+	 * General texture loader
+	 */
 	var loader = new THREE.TextureLoader();
 	loader.crossOrigin = '';
 
 	PANOLENS.Utils.TextureLoader = loader;
 
 })();;( function () {
+
+	'use strict';
 
 	/**
 	 * Skeleton panorama derived from THREE.Mesh
@@ -2517,7 +2531,7 @@ window.PANOLENS = {
 
 		spot = new PANOLENS.Infospot( 
 			pano.linkingImageScale !== undefined ? pano.linkingImageScale : this.defaultInfospotSize, 
-			pano.linkingImageURL !== undefined ? pano.linkingImageURL : PANOLENS.DataIcon.Arrow 
+			pano.linkingImageURL !== undefined ? pano.linkingImageURL : PANOLENS.DataImage.Arrow 
 		);
         spot.position.copy( point );
         spot.toPanorama = pano;
@@ -2620,8 +2634,10 @@ window.PANOLENS = {
 
 } )();;(function(){
 	
+	'use strict';
+	
 	/**
-	 * Image-based panorama
+	 * Equirectangular based image panorama
 	 * @constructor
 	 * @param {string} image - Image url or HTMLImageElement
 	 * @param {number} [radius=5000] - Radius of panorama
@@ -2686,8 +2702,10 @@ window.PANOLENS = {
 
 })();;(function(){
 
+	'use strict';
+	
 	/**
-	 * Google streetview (tile-based) panorama
+	 * Google streetview panorama
 	 * 
 	 * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
 	 * @constructor
@@ -2786,6 +2804,8 @@ window.PANOLENS = {
 
 })();;(function(){
 	
+	'use strict';
+	
 	/**
 	 * Cubemap-based panorama
 	 * @constructor
@@ -2837,10 +2857,11 @@ window.PANOLENS = {
 
 	/**
 	 * Basic panorama with 6 faces tile images
+	 * @constructor
 	 */
 	PANOLENS.BasicPanorama = function () {
 		
-		var tile = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIABAMAAAAGVsnJAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAB1WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOkNvbXByZXNzaW9uPjE8L3RpZmY6Q29tcHJlc3Npb24+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgICAgIDx0aWZmOlBob3RvbWV0cmljSW50ZXJwcmV0YXRpb24+MjwvdGlmZjpQaG90b21ldHJpY0ludGVycHJldGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KAtiABQAAACRQTFRFAAAAAAAABgYGBwcHHh4eKysrx8fHy8vLzMzM7OzsAAAABgYG+q7SZgAAAAp0Uk5TAP7+/v7+/v7+/iJx/a8AAAOwSURBVHja7d0hbsNAEAVQo6SFI6XEcALDcgNLvUBvEBQVhpkWVYWlhSsVFS7t5QIshRt695lEASZP+8c7a1kzDL1fz+/zyuvzp6FbvoddrL6uDd1yGZ5eXldeb18N3fIx7A+58prmhm65DfvDcd0952lu6JabFbD/zVprZj1lzcys+fj9z8xTZtbT8rv8yWlu6BYAIgAAAAAAAAAAAABAM6QXEAEAAAAAAAAAgJ2gnaAIiIA3Q2qAGgAAAAAAAAAAAAAAAAAAAAAAAAAAQJsADkVFAAAAAAA8Bj0GRUAEREAEREAEREAEREAEAAAAAAAAAAB2gnaCIiACPplRA9QANUAERAAAAEVQERQBERCBVlfAcZ3aeZobusUKMGBhV6KUElHGKBERJR6/fxExRkQZl9/lT8S1oVsuhqyYMmPKjCkzvfcCpsxohrwY0Q06EAEAAAAAAAAAAACgGdILiAAAAAAAAAAAwE7QTlAERMCbITVADQAAAAAAAAAAAAAAAAAAAAAAAAAAwKmwQ1ERAAAAAACPQY9BERABERABERABERABERABAAAAAAAAAICdoJ2gCIiAT2bUADVADRABEQAAQBFUBEVABERgEyvAlJm+V4ApM6bMmDJjyowpM6bMdN0LmDKjGfJiRDfoQAQAAAAAAAAAAACAZkgvIAIAAAAAAAAAADtBO0EREAFvhtQANQAAAAAAAAAAAAAAAAAAAAAAAAAAAKfCDkVFAAAAAAA8Bj0GRUAEREAEREAEREAEREAEAAAAAAAAAAB2gnaCIiACPplRA9QANUAERAAAAEVQERQBERCBTawAU2b6XgGmzJgyY8qMKTOmzJgy03UvYMqMZsiLEd2gAxEAAAAAAAAAAAAAmiG9gAgAAAAAAAAAAOwE7QRFQAS8GVID1AAAAAAAAAAAAAAAAAAAAAAAAAAAAJwKOxQVAQAAAADwGPQYFAEREAEREAEREAEREAERAAAAAAAAAADYCdoJioAI+GRGDVAD1AAREAEAABRBRVAEREAENrECTJnpewWYMmPKjCkzpsyYMmPKTNe9gCkzmiEvRnSDDkQAAAAAAAAAAAAAaIb0AiIAAAAAAAAAALATtBMUARHwZkgNUAMAAAAAAAAAAAAAAAAAAAAAAAAAAHAq7FBUBAAAAADAY9BjUAREQAREQAREQAREQAREAAAAAAAAAABgJ2gnKAIi4JMZNUANUANEQAQAAFAEFUEREAER2MQKMGWm7xVgyowpM50PWen9ugNGXz1XaocAFgAAAABJRU5ErkJggg==';
+		var tile = PANOLENS.DataImage.WhiteTile;
 
 		PANOLENS.CubePanorama.call( this, [ tile, tile, tile, tile, tile, tile ] );
 
@@ -2852,7 +2873,10 @@ window.PANOLENS = {
 
 })();;(function(){
 
+	'use strict';
+
 	/**
+	 * Video Panorama
 	 * @param {string} src - Equirectangular video url
 	 * @param {object} [options] - Option for video settings
 	 * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video
@@ -3271,6 +3295,15 @@ window.PANOLENS = {
 	
 	'use strict';
 
+    /**
+     * Group consists of tile array
+     * @constructor
+     * @param {array}  tileArray         - Tile array of PANOLENS.Tile 
+     * @param {number} verticalGap       - Vertical gap between each tile
+     * @param {number} depthGap          - Depth gap between each tile
+     * @param {number} animationDuration - Animation duration
+     * @param {number} offset            - Offset index
+     */
 	PANOLENS.TileGroup = function ( tileArray, verticalGap, depthGap, animationDuration, offset ) {
 
 		var scope = this, textureLoader;
@@ -3513,6 +3546,15 @@ window.PANOLENS = {
 	var sharedFont, sharedTexture;
 	var pendingQueue = [];
 
+	/**
+	 * Sprite text based on https://github.com/Jam3/three-bmfont-text
+	 * @constructor
+	 * @param {string} text     - Text to be displayed
+	 * @param {number} maxWidth	- Max width
+	 * @param {number} color    - Color in hexadecimal
+	 * @param {number} opacity  - Text opacity
+	 * @param {object} options  - Options to create text geometry
+	 */
 	PANOLENS.SpriteText = function ( text, maxWidth, color, opacity, options ) {
 
 		THREE.Object3D.call( this );
@@ -3736,7 +3778,7 @@ window.PANOLENS = {
 
 			style : { 
 
-				backgroundImage : 'url("' + PANOLENS.DataIcon.Cardboard + '")' 
+				backgroundImage : 'url("' + PANOLENS.DataImage.Cardboard + '")' 
 
 			},
 
@@ -3784,8 +3826,8 @@ window.PANOLENS = {
 			fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
 
 			this.style.backgroundImage = ( fullscreenElement !== null ) 
-				? 'url("' + PANOLENS.DataIcon.FullscreenLeave + '")' 
-				: 'url("' + PANOLENS.DataIcon.FullscreenEnter + '")';
+				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
+				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
 
 		}
 
@@ -3793,7 +3835,7 @@ window.PANOLENS = {
 
 			style : { 
 
-				backgroundImage : 'url("' + PANOLENS.DataIcon.FullscreenEnter + '")' 
+				backgroundImage : 'url("' + PANOLENS.DataImage.FullscreenEnter + '")' 
 
 			},
 
@@ -3816,8 +3858,8 @@ window.PANOLENS = {
 			this.controlName = ( this.controlName === 'orbit' ) ? 'device-orientation' : 'orbit';
 
 			this.style.backgroundImage = 'url("' + ( this.controlName === 'orbit' 
-				? PANOLENS.DataIcon.Gyro 
-				: PANOLENS.DataIcon.Orbit ) + '")';
+				? PANOLENS.DataImage.Gyro 
+				: PANOLENS.DataImage.Orbit ) + '")';
 
 		}
 
@@ -3825,7 +3867,7 @@ window.PANOLENS = {
 
 			style: {
 
-				backgroundImage: 'url("' + PANOLENS.DataIcon.Gyro + '")'
+				backgroundImage: 'url("' + PANOLENS.DataImage.Gyro + '")'
 
 			},
 
@@ -3891,7 +3933,7 @@ window.PANOLENS = {
 			style : { 
 
 				float : 'left',
-				backgroundImage : 'url("' + PANOLENS.DataIcon.VideoPlay + '")'
+				backgroundImage : 'url("' + PANOLENS.DataImage.VideoPlay + '")'
 
 			},
 
@@ -3904,8 +3946,8 @@ window.PANOLENS = {
 		item.update = function () {
 
 			this.style.backgroundImage = 'url("' + ( this.paused 
-				? PANOLENS.DataIcon.VideoPlay 
-				: PANOLENS.DataIcon.VideoPause ) + '")';
+				? PANOLENS.DataImage.VideoPlay 
+				: PANOLENS.DataImage.VideoPause ) + '")';
 
 		};
 
@@ -4095,7 +4137,7 @@ window.PANOLENS = {
 	 * Information spot attached to panorama
 	 * @constructor
 	 * @param {number} [scale=1] - Infospot scale
-	 * @param {imageSrc} [imageSrc=PANOLENS.DataIcon.Info] - Image overlay info
+	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
 	 */
 	PANOLENS.Infospot = function ( scale, imageSrc ) {
 		
@@ -4115,7 +4157,7 @@ window.PANOLENS = {
 		this.visible = false;
 
 		scale = scale || 1;
-		imageSrc = imageSrc || PANOLENS.DataIcon.Info;
+		imageSrc = imageSrc || PANOLENS.DataImage.Info;
 
 		this.scale.set( scale, scale, 1 );
 

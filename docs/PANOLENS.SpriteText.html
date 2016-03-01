@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: GoogleStreetviewPanorama</title>
+    <title>JSDoc: Class: SpriteText</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: GoogleStreetviewPanorama</h1>
+    <h1 class="page-title">Class: SpriteText</h1>
 
     
 
@@ -27,7 +27,7 @@
 
 <header>
     <h2>
-    GoogleStreetviewPanorama
+    SpriteText
     </h2>
     
 </header>
@@ -39,7 +39,7 @@
     
         
 <dt>
-    <h4 class="name" id="GoogleStreetviewPanorama"><span class="type-signature"></span>new GoogleStreetviewPanorama<span class="signature">(panoId, <span class="optional">radius</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="SpriteText"><span class="type-signature"></span>new SpriteText<span class="signature">(text, maxWidth, color, opacity, options)</span><span class="type-signature"></span></h4>
 
     
 </dt>
@@ -47,9 +47,7 @@
 
     
     <div class="description">
-        Google streetview panorama
-
-<a href="http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id">How to get Panorama ID</a>
+        Sprite text based on https://github.com/Jam3/three-bmfont-text
     </div>
     
 
@@ -71,11 +69,7 @@
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -87,7 +81,7 @@
 
         <tr>
             
-                <td class="name"><code>panoId</code></td>
+                <td class="name"><code>text</code></td>
             
 
             <td class="type">
@@ -100,29 +94,17 @@
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last">Panorama id from Google Streetview</td>
+            <td class="description last">Text to be displayed</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>radius</code></td>
+                <td class="name"><code>maxWidth</code></td>
             
 
             <td class="type">
@@ -135,26 +117,79 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
 
-                
+            
 
+            <td class="description last">Max width</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>color</code></td>
+            
+
+            <td class="type">
+            
                 
-                </td>
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
             
 
             
-                <td class="default">
-                
-                    5000
-                
-                </td>
+
+            <td class="description last">Color in hexadecimal</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opacity</code></td>
             
 
-            <td class="description last">The minimum radius for this panoram</td>
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Text opacity</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Options to create text geometry</td>
         </tr>
 
     
@@ -185,7 +220,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="GoogleStreetviewPanorama.js.html">panorama/GoogleStreetviewPanorama.js</a>, <a href="GoogleStreetviewPanorama.js.html#line13">line 13</a>
+        <a href="SpriteText.js.html">interface/SpriteText.js</a>, <a href="SpriteText.js.html#line17">line 17</a>
     </li></ul></dd>
     
 

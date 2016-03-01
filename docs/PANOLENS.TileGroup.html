@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: GoogleStreetviewPanorama</title>
+    <title>JSDoc: Class: TileGroup</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: GoogleStreetviewPanorama</h1>
+    <h1 class="page-title">Class: TileGroup</h1>
 
     
 
@@ -27,7 +27,7 @@
 
 <header>
     <h2>
-    GoogleStreetviewPanorama
+    TileGroup
     </h2>
     
 </header>
@@ -39,7 +39,7 @@
     
         
 <dt>
-    <h4 class="name" id="GoogleStreetviewPanorama"><span class="type-signature"></span>new GoogleStreetviewPanorama<span class="signature">(panoId, <span class="optional">radius</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="TileGroup"><span class="type-signature"></span>new TileGroup<span class="signature">(tileArray, verticalGap, depthGap, animationDuration, offset)</span><span class="type-signature"></span></h4>
 
     
 </dt>
@@ -47,9 +47,7 @@
 
     
     <div class="description">
-        Google streetview panorama
-
-<a href="http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id">How to get Panorama ID</a>
+        Group consists of tile array
     </div>
     
 
@@ -71,11 +69,7 @@
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -87,42 +81,30 @@
 
         <tr>
             
-                <td class="name"><code>panoId</code></td>
+                <td class="name"><code>tileArray</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">array</span>
 
 
             
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last">Panorama id from Google Streetview</td>
+            <td class="description last">Tile array of PANOLENS.Tile</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>radius</code></td>
+                <td class="name"><code>verticalGap</code></td>
             
 
             <td class="type">
@@ -135,26 +117,79 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
 
-                
+            
 
+            <td class="description last">Vertical gap between each tile</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>depthGap</code></td>
+            
+
+            <td class="type">
+            
                 
-                </td>
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
             
 
             
-                <td class="default">
-                
-                    5000
-                
-                </td>
+
+            <td class="description last">Depth gap between each tile</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>animationDuration</code></td>
             
 
-            <td class="description last">The minimum radius for this panoram</td>
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Animation duration</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>offset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Offset index</td>
         </tr>
 
     
@@ -185,7 +220,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="GoogleStreetviewPanorama.js.html">panorama/GoogleStreetviewPanorama.js</a>, <a href="GoogleStreetviewPanorama.js.html#line13">line 13</a>
+        <a href="TileGroup.js.html">interface/TileGroup.js</a>, <a href="TileGroup.js.html#line14">line 14</a>
     </li></ul></dd>
     
 

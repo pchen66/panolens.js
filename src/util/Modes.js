@@ -2,6 +2,10 @@
 
 	'use strict';
 
+	/**
+	 * Modes
+	 * @type {Object}
+	 */
 	PANOLENS.Modes = {
 
 		UNKNOWN: 0,

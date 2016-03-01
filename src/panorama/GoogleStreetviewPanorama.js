@@ -1,7 +1,9 @@
 (function(){
 
+	'use strict';
+	
 	/**
-	 * Google streetview (tile-based) panorama
+	 * Google streetview panorama
 	 * 
 	 * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
 	 * @constructor

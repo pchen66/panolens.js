@@ -1,5 +1,7 @@
 (function(){
 	
+	'use strict';
+	
 	/**
 	 * Cubemap-based panorama
 	 * @constructor

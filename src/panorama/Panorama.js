@@ -1,5 +1,7 @@
 ( function () {
 
+	'use strict';
+
 	/**
 	 * Skeleton panorama derived from THREE.Mesh
 	 * @constructor
@@ -192,7 +194,7 @@
 
 		spot = new PANOLENS.Infospot( 
 			pano.linkingImageScale !== undefined ? pano.linkingImageScale : this.defaultInfospotSize, 
-			pano.linkingImageURL !== undefined ? pano.linkingImageURL : PANOLENS.DataIcon.Arrow 
+			pano.linkingImageURL !== undefined ? pano.linkingImageURL : PANOLENS.DataImage.Arrow 
 		);
         spot.position.copy( point );
         spot.toPanorama = pano;

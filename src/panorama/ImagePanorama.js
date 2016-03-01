@@ -1,7 +1,9 @@
 (function(){
 	
+	'use strict';
+	
 	/**
-	 * Image-based panorama
+	 * Equirectangular based image panorama
 	 * @constructor
 	 * @param {string} image - Image url or HTMLImageElement
 	 * @param {number} [radius=5000] - Radius of panorama

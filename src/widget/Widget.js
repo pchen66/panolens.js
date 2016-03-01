@@ -80,7 +80,7 @@
 
 			style : { 
 
-				backgroundImage : 'url("' + PANOLENS.DataIcon.Cardboard + '")' 
+				backgroundImage : 'url("' + PANOLENS.DataImage.Cardboard + '")' 
 
 			},
 
@@ -128,8 +128,8 @@
 			fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
 
 			this.style.backgroundImage = ( fullscreenElement !== null ) 
-				? 'url("' + PANOLENS.DataIcon.FullscreenLeave + '")' 
-				: 'url("' + PANOLENS.DataIcon.FullscreenEnter + '")';
+				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
+				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
 
 		}
 
@@ -137,7 +137,7 @@
 
 			style : { 
 
-				backgroundImage : 'url("' + PANOLENS.DataIcon.FullscreenEnter + '")' 
+				backgroundImage : 'url("' + PANOLENS.DataImage.FullscreenEnter + '")' 
 
 			},
 
@@ -160,8 +160,8 @@
 			this.controlName = ( this.controlName === 'orbit' ) ? 'device-orientation' : 'orbit';
 
 			this.style.backgroundImage = 'url("' + ( this.controlName === 'orbit' 
-				? PANOLENS.DataIcon.Gyro 
-				: PANOLENS.DataIcon.Orbit ) + '")';
+				? PANOLENS.DataImage.Gyro 
+				: PANOLENS.DataImage.Orbit ) + '")';
 
 		}
 
@@ -169,7 +169,7 @@
 
 			style: {
 
-				backgroundImage: 'url("' + PANOLENS.DataIcon.Gyro + '")'
+				backgroundImage: 'url("' + PANOLENS.DataImage.Gyro + '")'
 
 			},
 
@@ -235,7 +235,7 @@
 			style : { 
 
 				float : 'left',
-				backgroundImage : 'url("' + PANOLENS.DataIcon.VideoPlay + '")'
+				backgroundImage : 'url("' + PANOLENS.DataImage.VideoPlay + '")'
 
 			},
 
@@ -248,8 +248,8 @@
 		item.update = function () {
 
 			this.style.backgroundImage = 'url("' + ( this.paused 
-				? PANOLENS.DataIcon.VideoPlay 
-				: PANOLENS.DataIcon.VideoPause ) + '")';
+				? PANOLENS.DataImage.VideoPlay 
+				: PANOLENS.DataImage.VideoPause ) + '")';
 
 		};
 
