@@ -9,7 +9,7 @@
 
 		THREE.EventDispatcher.call( this );
 
-		this.container = container;
+		this.container = container || document.body;
 
 		this.barElement;
 		this.fullscreenElement;
@@ -31,19 +31,22 @@
 			return; 
 		}
 
-		var scope = this, bar;
+		var scope = this, bar, styleTranslate, styleOpacity;
 
 		bar = document.createElement( 'div' );
 		bar.style.width = '100%';
 		bar.style.height = '44px';
-		bar.style.position = 'fixed';
-		bar.style.bottom = '0';
+		bar.style.float = 'left';
+		bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = 'translateY(-100%)';
 		bar.style.background = 'rgba( 0, 0, 0, 0.3 )';
 		bar.style.transition = 'all 0.5s ease';
+		bar.isHidden = false;
 		bar.toggle = function () {
-
-			bar.style.transform = ( bar.style.transform !== 'translateY(100%)' ) ? 'translateY(100%)' : 'translateY(0)';
-
+			bar.isHidden = !bar.isHidden;
+			styleTranslate = bar.isHidden ? 'translateY(0)' : 'translateY(-100%)';
+			styleOpacity = bar.isHidden ? 0 : 1;
+			bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = styleTranslate;
+			bar.style.opacity = styleOpacity;
 		};
 
 		this.fullscreenElement = this.createFullscreenButton();
@@ -94,42 +97,47 @@
 
 	PANOLENS.Widget.prototype.createFullscreenButton = function () {
 
-		var scope = this, item;
+		var scope = this, item, isFullscreen = false;
 
 		function onTap () {
 
-			var fullscreenElement;
-
-			if (!document.fullscreenElement &&
-			    !document.mozFullScreenElement &&
-			    !document.webkitFullscreenElement &&
-			    !document.msFullscreenElement ) {
-			  if (document.documentElement.requestFullscreen) {
-			    document.documentElement.requestFullscreen();
-			  } else if (document.documentElement.msRequestFullscreen) {
-			    document.documentElement.msRequestFullscreen();
-			  } else if (document.documentElement.mozRequestFullScreen) {
-			    document.documentElement.mozRequestFullScreen();
-			  } else if (document.documentElement.webkitRequestFullscreen) {
-			    document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-			  }
+			if ( !isFullscreen ) {
+			    scope.container.requestFullscreen && scope.container.requestFullscreen();
+			    scope.container.msRequestFullscreen && scope.container.msRequestFullscreen();
+			    scope.container.mozRequestFullScreen && scope.container.mozRequestFullScreen();
+			    scope.container.webkitRequestFullscreen && scope.container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+				isFullscreen = true;
+				attachInfospotsToContainer();
 			} else {
-			  if (document.exitFullscreen) {
-			    document.exitFullscreen();
-			  } else if (document.msExitFullscreen) {
-			    document.msExitFullscreen();
-			  } else if (document.mozCancelFullScreen) {
-			    document.mozCancelFullScreen();
-			  } else if (document.webkitExitFullscreen) {
-			    document.webkitExitFullscreen();
-			  }
+			    document.exitFullscreen && document.exitFullscreen();
+			    document.msExitFullscreen && document.msExitFullscreen();
+			    document.mozCancelFullScreen && document.mozCancelFullScreen();
+			    document.webkitExitFullscreen && document.webkitExitFullscreen();
+				isFullscreen = false;
 			}
 
-			fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
-
-			this.style.backgroundImage = ( fullscreenElement !== null ) 
+			this.style.backgroundImage = ( isFullscreen ) 
 				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
 				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
+
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
+
+		}
+
+		// Attach infospot to container when fullscreen
+		function attachInfospotsToContainer () {
+
+			var infospotElements = document.querySelectorAll( '.panolens-infospot' );
+
+			for ( var i = 0; i < infospotElements.length; i++ ) {
+
+				if ( infospotElements[ i ].parentElement !== scope.container ) {
+
+					scope.container.appendChild( infospotElements[ i ] );
+
+				}
+				
+			}
 
 		}
 

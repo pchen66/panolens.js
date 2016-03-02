@@ -5,8 +5,9 @@
 	 * @constructor
 	 * @param {number} [scale=1] - Infospot scale
 	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
+	 * @param {HTMLElement} [container=document.body] - The dom element contains infospot elements
 	 */
-	PANOLENS.Infospot = function ( scale, imageSrc ) {
+	PANOLENS.Infospot = function ( scale, imageSrc, container ) {
 		
 		var scope = this, ratio;
 
@@ -18,7 +19,7 @@
 		this.element;
 		this.toPanorama;
 
-		this.container = document.body;
+		this.container = container || document.body;
 
 		// Default is not visible until panorama is loaded
 		this.visible = false;
@@ -169,6 +170,7 @@
 			this.element.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
 			this.element.style.position = 'absolute';
 			this.element.style.display = 'none';
+			this.element.classList.add( 'panolens-infospot' );
 
 			this.container.appendChild( this.element );
 
@@ -186,6 +188,7 @@
 			this.element.style.top = 0;
 			this.element.style.position = 'absolute';
 			this.element.style.display = 'none';
+			this.element.classList.add( 'panolens-infospot' );
 
 			this.container.appendChild( this.element );
 
@@ -229,8 +232,8 @@
 
 		delay = delay || 0;
 
-		this.hideAnimation.stop();
-		this.showAnimation.delay( delay ).start();
+		this.hideAnimation && this.hideAnimation.stop();
+		this.showAnimation && this.showAnimation.delay( delay ).start();
 
 	};
 
@@ -238,8 +241,8 @@
 
 		delay = delay || 0;
 
-		this.showAnimation.stop();
-		this.hideAnimation.delay( delay ).start();
+		this.showAnimation && this.showAnimation.stop();
+		this.hideAnimation && this.hideAnimation.delay( delay ).start();
 		
 	};
 

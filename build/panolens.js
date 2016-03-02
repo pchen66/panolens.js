@@ -2406,15 +2406,17 @@ window.PANOLENS = {
 
 		}
 
-		// Counter scale.x = -1 effect
-		invertedObject = new THREE.Object3D();
-		invertedObject.scale.x = -1;
-		invertedObject.add( object );
-
-		// Ignore infospots
+		// In case of infospots
 		if ( object instanceof PANOLENS.Infospot ) {
 
 			invertedObject = object;
+
+		} else {
+
+			// Counter scale.x = -1 effect
+			invertedObject = new THREE.Object3D();
+			invertedObject.scale.x = -1;
+			invertedObject.add( object );
 
 		}
 
@@ -2454,7 +2456,7 @@ window.PANOLENS = {
 
 		var zoomLevel;
 
-		if ( window.innerWidth > 800 && window.innerWidth < 1920 ) {
+		if ( window.innerWidth > 1280 && window.innerWidth < 1920 ) {
 
 			zoomLevel = this.ImageQualityHigh;
 
@@ -3707,7 +3709,7 @@ window.PANOLENS = {
 
 		THREE.EventDispatcher.call( this );
 
-		this.container = container;
+		this.container = container || document.body;
 
 		this.barElement;
 		this.fullscreenElement;
@@ -3729,19 +3731,22 @@ window.PANOLENS = {
 			return; 
 		}
 
-		var scope = this, bar;
+		var scope = this, bar, styleTranslate, styleOpacity;
 
 		bar = document.createElement( 'div' );
 		bar.style.width = '100%';
 		bar.style.height = '44px';
-		bar.style.position = 'fixed';
-		bar.style.bottom = '0';
+		bar.style.float = 'left';
+		bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = 'translateY(-100%)';
 		bar.style.background = 'rgba( 0, 0, 0, 0.3 )';
 		bar.style.transition = 'all 0.5s ease';
+		bar.isHidden = false;
 		bar.toggle = function () {
-
-			bar.style.transform = ( bar.style.transform !== 'translateY(100%)' ) ? 'translateY(100%)' : 'translateY(0)';
-
+			bar.isHidden = !bar.isHidden;
+			styleTranslate = bar.isHidden ? 'translateY(0)' : 'translateY(-100%)';
+			styleOpacity = bar.isHidden ? 0 : 1;
+			bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = styleTranslate;
+			bar.style.opacity = styleOpacity;
 		};
 
 		this.fullscreenElement = this.createFullscreenButton();
@@ -3792,42 +3797,47 @@ window.PANOLENS = {
 
 	PANOLENS.Widget.prototype.createFullscreenButton = function () {
 
-		var scope = this, item;
+		var scope = this, item, isFullscreen = false;
 
 		function onTap () {
 
-			var fullscreenElement;
-
-			if (!document.fullscreenElement &&
-			    !document.mozFullScreenElement &&
-			    !document.webkitFullscreenElement &&
-			    !document.msFullscreenElement ) {
-			  if (document.documentElement.requestFullscreen) {
-			    document.documentElement.requestFullscreen();
-			  } else if (document.documentElement.msRequestFullscreen) {
-			    document.documentElement.msRequestFullscreen();
-			  } else if (document.documentElement.mozRequestFullScreen) {
-			    document.documentElement.mozRequestFullScreen();
-			  } else if (document.documentElement.webkitRequestFullscreen) {
-			    document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-			  }
+			if ( !isFullscreen ) {
+			    scope.container.requestFullscreen && scope.container.requestFullscreen();
+			    scope.container.msRequestFullscreen && scope.container.msRequestFullscreen();
+			    scope.container.mozRequestFullScreen && scope.container.mozRequestFullScreen();
+			    scope.container.webkitRequestFullscreen && scope.container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+				isFullscreen = true;
+				attachInfospotsToContainer();
 			} else {
-			  if (document.exitFullscreen) {
-			    document.exitFullscreen();
-			  } else if (document.msExitFullscreen) {
-			    document.msExitFullscreen();
-			  } else if (document.mozCancelFullScreen) {
-			    document.mozCancelFullScreen();
-			  } else if (document.webkitExitFullscreen) {
-			    document.webkitExitFullscreen();
-			  }
+			    document.exitFullscreen && document.exitFullscreen();
+			    document.msExitFullscreen && document.msExitFullscreen();
+			    document.mozCancelFullScreen && document.mozCancelFullScreen();
+			    document.webkitExitFullscreen && document.webkitExitFullscreen();
+				isFullscreen = false;
 			}
 
-			fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
-
-			this.style.backgroundImage = ( fullscreenElement !== null ) 
+			this.style.backgroundImage = ( isFullscreen ) 
 				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
 				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
+
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
+
+		}
+
+		// Attach infospot to container when fullscreen
+		function attachInfospotsToContainer () {
+
+			var infospotElements = document.querySelectorAll( '.panolens-infospot' );
+
+			for ( var i = 0; i < infospotElements.length; i++ ) {
+
+				if ( infospotElements[ i ].parentElement !== scope.container ) {
+
+					scope.container.appendChild( infospotElements[ i ] );
+
+				}
+				
+			}
 
 		}
 
@@ -4138,8 +4148,9 @@ window.PANOLENS = {
 	 * @constructor
 	 * @param {number} [scale=1] - Infospot scale
 	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
+	 * @param {HTMLElement} [container=document.body] - The dom element contains infospot elements
 	 */
-	PANOLENS.Infospot = function ( scale, imageSrc ) {
+	PANOLENS.Infospot = function ( scale, imageSrc, container ) {
 		
 		var scope = this, ratio;
 
@@ -4151,7 +4162,7 @@ window.PANOLENS = {
 		this.element;
 		this.toPanorama;
 
-		this.container = document.body;
+		this.container = container || document.body;
 
 		// Default is not visible until panorama is loaded
 		this.visible = false;
@@ -4302,6 +4313,7 @@ window.PANOLENS = {
 			this.element.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
 			this.element.style.position = 'absolute';
 			this.element.style.display = 'none';
+			this.element.classList.add( 'panolens-infospot' );
 
 			this.container.appendChild( this.element );
 
@@ -4319,6 +4331,7 @@ window.PANOLENS = {
 			this.element.style.top = 0;
 			this.element.style.position = 'absolute';
 			this.element.style.display = 'none';
+			this.element.classList.add( 'panolens-infospot' );
 
 			this.container.appendChild( this.element );
 
@@ -4362,8 +4375,8 @@ window.PANOLENS = {
 
 		delay = delay || 0;
 
-		this.hideAnimation.stop();
-		this.showAnimation.delay( delay ).start();
+		this.hideAnimation && this.hideAnimation.stop();
+		this.showAnimation && this.showAnimation.delay( delay ).start();
 
 	};
 
@@ -4371,8 +4384,8 @@ window.PANOLENS = {
 
 		delay = delay || 0;
 
-		this.showAnimation.stop();
-		this.hideAnimation.delay( delay ).start();
+		this.showAnimation && this.showAnimation.stop();
+		this.hideAnimation && this.hideAnimation.delay( delay ).start();
 		
 	};
 
@@ -4412,13 +4425,35 @@ window.PANOLENS = {
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
 		options.clickTolerance = options.clickTolerance || 10;
 		
+		this.container;
+
+		// Container
+		if ( options.container ) {
+
+			this.container = options.container;
+
+		} else {
+
+			this.container = document.createElement( 'div' );
+			this.container.style.width = window.innerWidth + 'px';
+			this.container.style.height = window.innerHeight + 'px';
+			document.body.appendChild( this.container );
+
+			// For matching body's width and height dynamically on the next tick to 
+			// avoid 0 height in the beginning
+			setTimeout( function () {
+				this.container.style.width = '100%';
+				this.container.style.height = '100%';
+			}.bind( this ), 0 );
+
+		}
+
 		this.options = options;
 
-		this.camera = options.camera || new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 10000 );
+		this.camera = options.camera || new THREE.PerspectiveCamera( 60, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
 		this.effect;
-		this.container;
 
 		this.mode = PANOLENS.Modes.NORMAL;
 
@@ -4441,23 +4476,12 @@ window.PANOLENS = {
 
 		// Renderer
 		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.renderer.setClearColor( 0x000000, 1 );
-
-		// Container
-		if ( options.container ) {
-
-			this.container = options.container;
-
-		} else {
-
-			this.container = document.createElement('div');
-			document.body.appendChild( this.container );
-
-		}
 
 		// Append Renderer Element to container
 		this.renderer.domElement.classList.add( 'panolens-canvas' );
+		this.renderer.domElement.style.display = 'block';
 		this.container.appendChild( this.renderer.domElement );
 
 		// Camera Controls
@@ -4470,7 +4494,7 @@ window.PANOLENS = {
 
 		// Cardboard effect
         this.effect = new THREE.CardboardEffect( this.renderer );
-        this.effect.setSize( window.innerWidth, window.innerHeight );
+        this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
 
 		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
 		this.control = this.OrbitControls;
@@ -4532,6 +4556,7 @@ window.PANOLENS = {
 
 		}
 
+		// Hookup default panorama event listeners
 		if ( object.type === 'panorama' ) {
 
 			this.addPanoramaEventListener( object );
@@ -4786,14 +4811,29 @@ window.PANOLENS = {
 
 	};
 
+	PANOLENS.Viewer.prototype.toggleFullscreen = function ( isFullscreen ) {
+
+		if ( isFullscreen ) {
+			this.container._width = this.container.clientWidth;
+			this.container._height = this.container.clientHeight;
+			this.container.style.width = '100%';
+			this.container.style.height = '100%';
+		} else {
+			this.container._width && ( this.container.style.width = this.container._width + 'px' );
+			this.container._height && ( this.container.style.height = this.container._height + 'px' );
+		}
+		void 0;
+
+	};
+
 	PANOLENS.Viewer.prototype.onWindowResize = function () {
 
-		this.camera.aspect = window.innerWidth / window.innerHeight;
+		this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
 		this.camera.updateProjectionMatrix();
 
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 
-		this.dispatchEvent( { type: 'window-resize', width: window.innerWidth, height: window.innerHeight })
+		this.dispatchEvent( { type: 'window-resize', width: this.container.clientWidth, height: this.container.clientHeight })
 	};
 
 	PANOLENS.Viewer.prototype.render = function () {
@@ -4876,7 +4916,7 @@ window.PANOLENS = {
 		if ( type === 'click' ) {
 
 			this.options.autoHideInfospot && this.panorama && this.panorama.toggleChildrenVisibility();
-			this.options.autoHideControlBar && toggleControlBar();
+			this.options.autoHideControlBar && this.toggleControlBar();
 
 		}
 
@@ -4886,8 +4926,8 @@ window.PANOLENS = {
 
 		var point = {}, object, intersects, intersect_entity, intersect;
 
-		point.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-		point.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+		point.x = ( ( event.clientX - this.renderer.domElement.offsetLeft ) / this.renderer.domElement.clientWidth ) * 2 - 1;
+    	point.y = - ( ( event.clientY - this.renderer.domElement.offsetTop ) / this.renderer.domElement.clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( point, this.camera );
 
@@ -5121,7 +5161,7 @@ window.PANOLENS = {
 
 	PANOLENS.Viewer.prototype.toggleControlBar = function () {
 
-		widget && widget.dispatchEvent( { type: 'control-bar-toggle' } );
+		this.widget && this.widget.dispatchEvent( { type: 'control-bar-toggle' } );
 
 	};
 

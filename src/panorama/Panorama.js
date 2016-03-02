@@ -69,15 +69,17 @@
 
 		}
 
-		// Counter scale.x = -1 effect
-		invertedObject = new THREE.Object3D();
-		invertedObject.scale.x = -1;
-		invertedObject.add( object );
-
-		// Ignore infospots
+		// In case of infospots
 		if ( object instanceof PANOLENS.Infospot ) {
 
 			invertedObject = object;
+
+		} else {
+
+			// Counter scale.x = -1 effect
+			invertedObject = new THREE.Object3D();
+			invertedObject.scale.x = -1;
+			invertedObject.add( object );
 
 		}
 
@@ -117,7 +119,7 @@
 
 		var zoomLevel;
 
-		if ( window.innerWidth > 800 && window.innerWidth < 1920 ) {
+		if ( window.innerWidth > 1280 && window.innerWidth < 1920 ) {
 
 			zoomLevel = this.ImageQualityHigh;
 
