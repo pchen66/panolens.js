@@ -34,13 +34,35 @@
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
 		options.clickTolerance = options.clickTolerance || 10;
 		
+		this.container;
+
+		// Container
+		if ( options.container ) {
+
+			this.container = options.container;
+
+		} else {
+
+			this.container = document.createElement( 'div' );
+			this.container.style.width = window.innerWidth + 'px';
+			this.container.style.height = window.innerHeight + 'px';
+			document.body.appendChild( this.container );
+
+			// For matching body's width and height dynamically on the next tick to 
+			// avoid 0 height in the beginning
+			setTimeout( function () {
+				this.container.style.width = '100%';
+				this.container.style.height = '100%';
+			}.bind( this ), 0 );
+
+		}
+
 		this.options = options;
 
-		this.camera = options.camera || new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 10000 );
+		this.camera = options.camera || new THREE.PerspectiveCamera( 60, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
 		this.effect;
-		this.container;
 
 		this.mode = PANOLENS.Modes.NORMAL;
 
@@ -63,23 +85,12 @@
 
 		// Renderer
 		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.renderer.setClearColor( 0x000000, 1 );
-
-		// Container
-		if ( options.container ) {
-
-			this.container = options.container;
-
-		} else {
-
-			this.container = document.createElement('div');
-			document.body.appendChild( this.container );
-
-		}
 
 		// Append Renderer Element to container
 		this.renderer.domElement.classList.add( 'panolens-canvas' );
+		this.renderer.domElement.style.display = 'block';
 		this.container.appendChild( this.renderer.domElement );
 
 		// Camera Controls
@@ -92,7 +103,7 @@
 
 		// Cardboard effect
         this.effect = new THREE.CardboardEffect( this.renderer );
-        this.effect.setSize( window.innerWidth, window.innerHeight );
+        this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
 
 		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
 		this.control = this.OrbitControls;
@@ -154,6 +165,7 @@
 
 		}
 
+		// Hookup default panorama event listeners
 		if ( object.type === 'panorama' ) {
 
 			this.addPanoramaEventListener( object );
@@ -408,14 +420,29 @@
 
 	};
 
+	PANOLENS.Viewer.prototype.toggleFullscreen = function ( isFullscreen ) {
+
+		if ( isFullscreen ) {
+			this.container._width = this.container.clientWidth;
+			this.container._height = this.container.clientHeight;
+			this.container.style.width = '100%';
+			this.container.style.height = '100%';
+		} else {
+			this.container._width && ( this.container.style.width = this.container._width + 'px' );
+			this.container._height && ( this.container.style.height = this.container._height + 'px' );
+		}
+		console.log(this.container);
+
+	};
+
 	PANOLENS.Viewer.prototype.onWindowResize = function () {
 
-		this.camera.aspect = window.innerWidth / window.innerHeight;
+		this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
 		this.camera.updateProjectionMatrix();
 
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 
-		this.dispatchEvent( { type: 'window-resize', width: window.innerWidth, height: window.innerHeight })
+		this.dispatchEvent( { type: 'window-resize', width: this.container.clientWidth, height: this.container.clientHeight })
 	};
 
 	PANOLENS.Viewer.prototype.render = function () {
@@ -498,7 +525,7 @@
 		if ( type === 'click' ) {
 
 			this.options.autoHideInfospot && this.panorama && this.panorama.toggleChildrenVisibility();
-			this.options.autoHideControlBar && toggleControlBar();
+			this.options.autoHideControlBar && this.toggleControlBar();
 
 		}
 
@@ -508,8 +535,8 @@
 
 		var point = {}, object, intersects, intersect_entity, intersect;
 
-		point.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-		point.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+		point.x = ( ( event.clientX - this.renderer.domElement.offsetLeft ) / this.renderer.domElement.clientWidth ) * 2 - 1;
+    	point.y = - ( ( event.clientY - this.renderer.domElement.offsetTop ) / this.renderer.domElement.clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( point, this.camera );
 
@@ -746,7 +773,7 @@
 
 	PANOLENS.Viewer.prototype.toggleControlBar = function () {
 
-		widget && widget.dispatchEvent( { type: 'control-bar-toggle' } );
+		this.widget && this.widget.dispatchEvent( { type: 'control-bar-toggle' } );
 
 	};
 
