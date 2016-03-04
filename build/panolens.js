@@ -2456,17 +2456,25 @@ window.PANOLENS = {
 
 		var zoomLevel;
 
-		if ( window.innerWidth > 1280 && window.innerWidth < 1920 ) {
+		if ( window.innerWidth <= 800 ) {
+
+			zoomLevel = this.ImageQualityFair;
+
+		} else if ( window.innerWidth > 800 &&  window.innerWidth <= 1280 ) {
+
+			zoomLevel = this.ImageQualityMedium;
+
+		} else if ( window.innerWidth > 1280 && window.innerWidth <= 1920 ) {
 
 			zoomLevel = this.ImageQualityHigh;
 
-		} else if ( window.innerWidth >= 1920 ) {
+		} else if ( window.innerWidth > 1920 ) {
 
 			zoomLevel = this.ImageQualitySuperHigh;
 
 		} else {
 
-			zoomLevel = this.ImageQualityMedium;
+			zoomLevel = this.ImageQualityLow;
 
 		}
 
@@ -3028,6 +3036,10 @@ window.PANOLENS = {
 			};
 
 		}
+
+		// Draw the first frame
+		videoContext.drawImage( video, 0, 0 );
+		videoTexture.needsUpdate = true;
 
 		this.updatePanoObjectTexture( videoTexture );
 

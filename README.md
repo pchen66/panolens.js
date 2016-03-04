@@ -4,6 +4,7 @@
 
 This project aims to provide a tool for anyone wants to see panorama, photo-based or virtually created, in a simple and painless way. It's built on top of [Three.JS](https://github.com/mrdoob/three.js). 
 
+![Panorama Video Demo](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_video_demo_480p.gif?raw=true)
 
 ###Usage
 
@@ -13,7 +14,7 @@ Include `three.min.js` and `panolens.min.js`
 <script src="js/three.min.js"></script>
 <script src="js/panolens.min.js"></script>
 ```
-This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use `panorama.link( other_panorama )` to connect the two. See [examples](http://pchen66.github.io/Panolens/) for more details.
+This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use `panorama.link( other_panorama )` to connect the two. See [examples](http://pchen66.github.io/Panolens/) and [documentation](http://pchen66.github.io/Panolens/docs/index.html) for more details.
 
 ```html
 <script>
@@ -27,8 +28,6 @@ This code creates a 360 image panorama. The first panorama added to the viewer w
 
 </script>
 ```
-
-![Panorama Video Demo](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_video_demo_480p.gif?raw=true)
 
 ###Demo 
 1.	[Panorama Image](http://pchen66.github.io/Panolens/examples/panorama_image.html)

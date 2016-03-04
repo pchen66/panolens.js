@@ -154,6 +154,10 @@
 
 		}
 
+		// Draw the first frame
+		videoContext.drawImage( video, 0, 0 );
+		videoTexture.needsUpdate = true;
+
 		this.updatePanoObjectTexture( videoTexture );
 
 		this.videoRenderObject = videoRenderObject;
