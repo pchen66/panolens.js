@@ -4417,7 +4417,9 @@ window.PANOLENS = {
 	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
 	 * @param {boolean} [options.autoHideInfospot=false] - Auto hide infospots when click on non-active area
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
-	 * @param {number}  [options.clickTolerance] - Distance tolerance to tigger click / tap event
+	 * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
+	 * @param {number}  [options.cameraFov=60] - Camera field of view value
+	 * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -4436,7 +4438,10 @@ window.PANOLENS = {
 		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
 		options.clickTolerance = options.clickTolerance || 10;
+		options.cameraFov = options.cameraFov || 60;
+		options.reverseDragging = options.reverseDragging || false;
 		
+		this.options = options;
 		this.container;
 
 		// Container
@@ -4460,9 +4465,7 @@ window.PANOLENS = {
 
 		}
 
-		this.options = options;
-
-		this.camera = options.camera || new THREE.PerspectiveCamera( 60, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
+		this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
 		this.effect;
@@ -4520,6 +4523,11 @@ window.PANOLENS = {
 		// Add Control UI
 		if ( this.options.controlBar !== false ) {
 			this.addDefaultControlBar();
+		}
+
+		// Reverse dragging direction
+		if ( this.options.reverseDragging ) {
+			this.reverseDraggingDirection();
 		}
 		
 		// Mouse / Touch Event
@@ -4793,6 +4801,13 @@ window.PANOLENS = {
 
 	};
 
+	PANOLENS.Viewer.prototype.setCameraFov = function ( fov ) {
+
+		this.camera.fov = fov;
+		this.camera.updateProjectionMatrix();
+
+	};
+
 	PANOLENS.Viewer.prototype.enableControl = function ( index ) {
 
 		index = ( index >= 0 && index < this.controls.length ) ? index : 0;
@@ -4834,7 +4849,13 @@ window.PANOLENS = {
 			this.container._width && ( this.container.style.width = this.container._width + 'px' );
 			this.container._height && ( this.container.style.height = this.container._height + 'px' );
 		}
-		void 0;
+
+	};
+
+	PANOLENS.Viewer.prototype.reverseDraggingDirection = function () {
+
+		this.OrbitControls.rotateSpeed *= -1;
+		this.OrbitControls.momentumScalingFactor *= -1;
 
 	};
 
