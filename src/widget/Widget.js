@@ -429,7 +429,7 @@
 
 		for ( var property in options ){
 
-			if ( options.hasOwnProperty( property ) && element.style.hasOwnProperty( property ) ) {
+			if ( options.hasOwnProperty( property ) ) {
 
 				element.style[ property ] = options[ property ];
 
