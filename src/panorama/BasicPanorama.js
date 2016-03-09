@@ -5,12 +5,13 @@
 	/**
 	 * Basic panorama with 6 faces tile images
 	 * @constructor
+	 * @param {number} [edgeLength=10000] - The length of cube's edge
 	 */
-	PANOLENS.BasicPanorama = function () {
+	PANOLENS.BasicPanorama = function ( edgeLength ) {
 		
 		var tile = PANOLENS.DataImage.WhiteTile;
 
-		PANOLENS.CubePanorama.call( this, [ tile, tile, tile, tile, tile, tile ] );
+		PANOLENS.CubePanorama.call( this, [ tile, tile, tile, tile, tile, tile ], edgeLength );
 
 	}
 

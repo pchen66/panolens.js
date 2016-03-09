@@ -1320,7 +1320,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 		} else {
 
 			// camera neither orthographic or perspective
-			void 0;
+			console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
 
 		}
 
@@ -1360,7 +1360,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		} else {
 
-			void 0;
+			console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
 
 		}
 
@@ -1386,7 +1386,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		} else {
 
-			void 0;
+			console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
 
 		}
 
@@ -1950,7 +1950,7 @@ GSVPANO.PanoLoader = function (parameters) {
 		if (this.onError) {
 			this.onError(message);
 		} else {
-			void 0;
+			console.error(message);
 		}
 		
 	};
@@ -2328,12 +2328,183 @@ window.PANOLENS = {
 	'use strict';
 
 	/**
-	 * General texture loader
+	 * Image loader with progress based on https://github.com/mrdoob/three.js/blob/master/src/loaders/ImageLoader.js
+	 * @type {object}
 	 */
-	var loader = new THREE.TextureLoader();
-	loader.crossOrigin = '';
+	PANOLENS.Utils.ImageLoader = {};
 
-	PANOLENS.Utils.TextureLoader = loader;
+	PANOLENS.Utils.ImageLoader.checkDataURL = function ( url ) {
+		return !!url.match( /^\s*data:([a-z]+\/[a-z0-9\-\+]+(;[a-z\-]+\=[a-z0-9\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i );
+	};
+
+	PANOLENS.Utils.ImageLoader.load = function ( url, onLoad, onProgress, onError ) {
+
+		var cached, request, arrayBufferView, blob, urlCreator, image;
+		
+		// Cached
+		cached = THREE.Cache.get( url );
+
+		if ( cached !== undefined ) {
+
+			if ( onLoad ) {
+
+				setTimeout( function () {
+
+					onLoad( cached );
+
+				}, 0 );
+
+			}
+
+			return cached;
+
+		}
+		
+		// Construct a new XMLHttpRequest
+		urlCreator = window.URL || window.webkitURL;
+		image = document.createElement( 'img' );
+		image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
+
+		// Add to cache
+		THREE.Cache.add( url, image );
+
+		function onImageLoaded () {
+
+			onLoad && onLoad( image );
+
+		}
+
+		if ( this.checkDataURL( url ) ) {
+
+			image.addEventListener( 'load', onImageLoaded, false );
+			image.src = url;
+			return image;
+		}
+
+		request = new XMLHttpRequest();
+		request.responseType = 'arraybuffer';
+		request.open( 'GET', url, true );
+		request.onprogress = function ( event ) {
+
+		    if ( event.lengthComputable ) {
+
+		      onProgress && onProgress( { loaded: event.loaded, total: event.total } );
+
+		    }
+
+		};
+		request.onload = function( event ) {
+
+		    arrayBufferView = new Uint8Array( this.response );
+		    blob = new Blob( [ arrayBufferView ] );
+		    
+		    image.addEventListener( 'load', onImageLoaded, false );
+			image.src = urlCreator.createObjectURL( blob );
+
+		};
+
+		request.send(null);
+
+	};
+
+	// Enable cache
+	THREE.Cache.enabled = true;
+
+})();;(function(){
+	
+	'use strict';
+
+	/**
+	 * Texture loader based on https://github.com/mrdoob/three.js/blob/master/src/loaders/TextureLoader.js
+	 * @type {object}
+	 */
+	
+	PANOLENS.Utils.TextureLoader = {};
+
+	PANOLENS.Utils.TextureLoader.load = function ( url, onLoad, onProgress, onError ) {
+
+		var texture = new THREE.Texture(); 
+
+		PANOLENS.Utils.ImageLoader.load( url, function ( image ) {
+
+			texture.image = image;
+			texture.needsUpdate = true;
+
+			onLoad && onLoad( texture );
+
+		}, onProgress, onError );
+
+		return texture;
+
+	};
+
+})();;(function(){
+	
+	'use strict';
+
+	/**
+	 * Cube Texture Loader based on https://github.com/mrdoob/three.js/blob/master/src/loaders/CubeTextureLoader.js
+	 * @type {object}
+	 */
+	PANOLENS.Utils.CubeTextureLoader = {};
+
+	PANOLENS.Utils.CubeTextureLoader.load = function ( urls, onLoad, onProgress, onError ) {
+
+		var texture, loaded, progress, all, loadings;
+
+		texture = new THREE.CubeTexture( [] );
+
+		loaded = 0;
+		progress = {};
+		all = {};
+
+		urls.map( function ( url, index ) {
+
+			PANOLENS.Utils.ImageLoader.load( url, function ( image ) {
+
+				texture.images[ index ] = image;
+
+				loaded++;
+
+				if ( loaded === 6 ) {
+
+					texture.needsUpdate = true;
+
+					onLoad && onLoad( texture );
+
+				}
+
+			}, function ( event ) {
+
+				progress[ index ] = { loaded: event.loaded, total: event.total };
+
+				all.loaded = 0;
+				all.total = 0;
+				loadings = 0;
+
+				for ( var i in progress ) {
+
+					loadings++;
+					all.loaded += progress[ i ].loaded;
+					all.total += progress[ i ].total;
+
+				}
+
+				if ( loadings < 6 ) {
+
+					all.total = all.total / loadings * 6;
+
+				}
+
+				onProgress && onProgress( all );
+
+			}, onError );
+
+		} );
+
+		return texture;
+
+	};
 
 })();;( function () {
 
@@ -2534,7 +2705,7 @@ window.PANOLENS = {
 
 		} else {
 
-			void 0;
+			console.warn( 'Panoramas should be at different position' );
 			return;
 
 		}
@@ -2675,7 +2846,7 @@ window.PANOLENS = {
 
 		if ( !src ) { 
 
-			void 0;
+			console.warn( 'Image source undefined' );
 
 			return; 
 
@@ -2824,13 +2995,15 @@ window.PANOLENS = {
 	 */
 	PANOLENS.CubePanorama = function ( images, edgeLength ){
 
-		var shader, material;
+		var shader, geometry, material;
+
+		this.images = images || [];
+		this.orbitRadius = edgeLength / 2;
 
 		edgeLength = edgeLength || 10000;
+		shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
 
-		shader = JSON.parse(JSON.stringify(THREE.ShaderLib[ "cube" ]));
-		shader.uniforms[ "tCube" ].value = new THREE.CubeTextureLoader().load( images );
-
+		geometry = new THREE.BoxGeometry( edgeLength, edgeLength, edgeLength );
 		material = new THREE.ShaderMaterial( {
 
 			fragmentShader: shader.fragmentShader,
@@ -2840,14 +3013,7 @@ window.PANOLENS = {
 
 		} );
 
-		PANOLENS.Panorama.call( this, 
-			new THREE.BoxGeometry( edgeLength, edgeLength, edgeLength ), 
-			material
-		);
-
-		this.orbitRadius = edgeLength / 2;
-
-		this.images = images || [];
+		PANOLENS.Panorama.call( this, geometry, material );
 
 	}
 
@@ -2855,8 +3021,24 @@ window.PANOLENS = {
 
 	PANOLENS.CubePanorama.prototype.constructor = PANOLENS.CubePanorama;
 
-	PANOLENS.CubePanorama.prototype.onLoad = function () {
+	PANOLENS.CubePanorama.prototype.load = function () {
+
+		PANOLENS.Utils.CubeTextureLoader.load( 	
+
+			this.images, 
+
+			this.onLoad.bind( this ), 
+			this.onProgress.bind( this ), 
+			this.onError.bind( this ) 
+
+		);
+
+	};
+
+	PANOLENS.CubePanorama.prototype.onLoad = function ( texture ) {
 		
+		this.material.uniforms[ 'tCube' ].value = texture;
+
 		PANOLENS.Panorama.prototype.onLoad.call( this );
 
 	};
@@ -2868,12 +3050,13 @@ window.PANOLENS = {
 	/**
 	 * Basic panorama with 6 faces tile images
 	 * @constructor
+	 * @param {number} [edgeLength=10000] - The length of cube's edge
 	 */
-	PANOLENS.BasicPanorama = function () {
+	PANOLENS.BasicPanorama = function ( edgeLength ) {
 		
 		var tile = PANOLENS.DataImage.WhiteTile;
 
-		PANOLENS.CubePanorama.call( this, [ tile, tile, tile, tile, tile, tile ] );
+		PANOLENS.CubePanorama.call( this, [ tile, tile, tile, tile, tile, tile ], edgeLength );
 
 	}
 
@@ -3735,11 +3918,11 @@ window.PANOLENS = {
 
 	PANOLENS.Widget.prototype.constructor = PANOLENS.Widget;
 
-	PANOLENS.Widget.prototype.addDefaultControlBar = function () {
+	PANOLENS.Widget.prototype.addControlBar = function () {
 
 		if ( !this.container ) {
 
-			void 0; 
+			console.warn( 'Widget container not set' ); 
 			return; 
 		}
 
@@ -3761,23 +3944,27 @@ window.PANOLENS = {
 			bar.style.opacity = styleOpacity;
 		};
 
-		this.fullscreenElement = this.createFullscreenButton();
-		this.navigationElement = this.createCameraControlButton();
-		this.vrElement = this.createVRButton();
-		this.videoElement = this.createVideoControl();
-
-		// Add Control Items
-		bar.appendChild( this.fullscreenElement );
-		bar.appendChild( this.navigationElement );
-		bar.appendChild( this.vrElement );
-		bar.appendChild( this.videoElement );
-
 		this.container.appendChild( bar );
 
 		// Event listener
 		this.addEventListener( 'control-bar-toggle', bar.toggle );
 
 		this.barElement = bar;
+
+	};
+
+	PANOLENS.Widget.prototype.addControlButton = function ( name ) {
+
+		this.fullscreenElement = name === 'fullscreen' ? this.createFullscreenButton() : this.fullscreenElement;
+		this.navigationElement = name === 'navigation' ? this.createCameraControlButton() : this.navigationElement;
+		this.vrElement = name === 'vr' ? this.createVRButton() : this.vrElement;
+		this.videoElement = name === 'video' ? this.createVideoControl() : this.videoElement;
+
+		// Add Control Items
+		this.fullscreenElement && this.barElement.appendChild( this.fullscreenElement );
+		this.navigationElement && this.barElement.appendChild( this.navigationElement );
+		this.vrElement && this.barElement.appendChild( this.vrElement );
+		this.videoElement && this.barElement.appendChild( this.videoElement );
 
 	};
 
@@ -4226,21 +4413,16 @@ window.PANOLENS = {
 
 		}
 
+		// Lock element if there's one
+		this.addEventListener( 'click', function () {
+
+			this.element && this.lockHoverElement();
+
+		} );
+
 	}
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
-
-	PANOLENS.Infospot.prototype.onClick = function () {
-
-		if ( this.element ) {
-
-			this.lockHoverElement();
-
-		}
-
-		this.dispatchEvent( { type: 'click' } );
-
-	};
 
 	PANOLENS.Infospot.prototype.onHover = function ( x, y ) {
 
@@ -4414,6 +4596,7 @@ window.PANOLENS = {
 	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
 	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
 	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
+	 * @param {array}   [options.controlButtons=[ 'fullscreen', 'navigation', 'vr', 'video' ]] - Button names to mount on controlBar if controlBar exists
 	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
 	 * @param {boolean} [options.autoHideInfospot=false] - Auto hide infospots when click on non-active area
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
@@ -4427,13 +4610,14 @@ window.PANOLENS = {
 		
 		if ( !THREE ) {
 
-			void 0;
+			console.error('Three.JS not found');
 
 			return;
 		}
 
 		options = options || {};
 		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
+		options.controlButtons = options.controlButtons || [ 'fullscreen', 'navigation', 'vr', 'video' ];
 		options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
 		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
@@ -4522,7 +4706,7 @@ window.PANOLENS = {
 
 		// Add Control UI
 		if ( this.options.controlBar !== false ) {
-			this.addDefaultControlBar();
+			this.addDefaultControlBar( this.options.controlButtons );
 		}
 
 		// Reverse dragging direction
@@ -4591,18 +4775,25 @@ window.PANOLENS = {
 
 	};
 
-	PANOLENS.Viewer.prototype.addDefaultControlBar = function () {
+	PANOLENS.Viewer.prototype.addDefaultControlBar = function ( array ) {
+
+		var scope = this;
 
 		if ( this.widget ) {
 
-			void 0;
+			console.warn( 'Default control bar exists' );
 			return;
 
 		}
 
 		this.widget = new PANOLENS.Widget( this.container );
 		this.widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
-		this.widget.addDefaultControlBar();
+		this.widget.addControlBar();
+		array.forEach( function( buttonName ){
+
+			scope.widget.addControlButton( buttonName );
+
+		} );
 
 	};
 
@@ -4979,7 +5170,10 @@ window.PANOLENS = {
 
 				intersects[0].point.sub( this.panorama.position );
 
-				void 0;
+				console.info('{ ' + (-intersects[0].point.x).toFixed(2) + 
+					', ' + (intersects[0].point.y).toFixed(2) +
+					', ' + (intersects[0].point.z).toFixed(2) + ' }'
+				);
 
 			}
 			
@@ -5136,9 +5330,7 @@ window.PANOLENS = {
 
 			}
 
-			if ( type === 'click' && object.onClick ) {
-
-				object.onClick();
+			if ( type === 'click' ) {
 
 				return true;
 
@@ -5327,7 +5519,9 @@ window.PANOLENS = {
 	  }
 	  utils.computeSphere(positions, this.boundingSphere)
 	  if (isNaN(this.boundingSphere.radius)) {
-	    void 0
+	    console.error('THREE.BufferGeometry.computeBoundingSphere(): ' +
+	      'Computed radius is NaN. The ' +
+	      '"position" attribute is likely to have NaN values.')
 	  }
 	}
 

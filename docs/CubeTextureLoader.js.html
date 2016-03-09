@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: panorama/BasicPanorama.js</title>
+    <title>JSDoc: Source: util/CubeTextureLoader.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: panorama/BasicPanorama.js</h1>
+    <h1 class="page-title">Source: util/CubeTextureLoader.js</h1>
 
     
 
@@ -26,25 +26,72 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>(function(){
-
+	
 	'use strict';
 
 	/**
-	 * Basic panorama with 6 faces tile images
-	 * @constructor
-	 * @param {number} [edgeLength=10000] - The length of cube's edge
+	 * Cube Texture Loader based on https://github.com/mrdoob/three.js/blob/master/src/loaders/CubeTextureLoader.js
+	 * @type {object}
 	 */
-	PANOLENS.BasicPanorama = function ( edgeLength ) {
-		
-		var tile = PANOLENS.DataImage.WhiteTile;
+	PANOLENS.Utils.CubeTextureLoader = {};
 
-		PANOLENS.CubePanorama.call( this, [ tile, tile, tile, tile, tile, tile ], edgeLength );
+	PANOLENS.Utils.CubeTextureLoader.load = function ( urls, onLoad, onProgress, onError ) {
 
-	}
+		var texture, loaded, progress, all, loadings;
 
-	PANOLENS.BasicPanorama.prototype = Object.create( PANOLENS.CubePanorama.prototype );
+		texture = new THREE.CubeTexture( [] );
 
-	PANOLENS.BasicPanorama.prototype.constructor = PANOLENS.BasicPanorama;
+		loaded = 0;
+		progress = {};
+		all = {};
+
+		urls.map( function ( url, index ) {
+
+			PANOLENS.Utils.ImageLoader.load( url, function ( image ) {
+
+				texture.images[ index ] = image;
+
+				loaded++;
+
+				if ( loaded === 6 ) {
+
+					texture.needsUpdate = true;
+
+					onLoad &amp;&amp; onLoad( texture );
+
+				}
+
+			}, function ( event ) {
+
+				progress[ index ] = { loaded: event.loaded, total: event.total };
+
+				all.loaded = 0;
+				all.total = 0;
+				loadings = 0;
+
+				for ( var i in progress ) {
+
+					loadings++;
+					all.loaded += progress[ i ].loaded;
+					all.total += progress[ i ].total;
+
+				}
+
+				if ( loadings &lt; 6 ) {
+
+					all.total = all.total / loadings * 6;
+
+				}
+
+				onProgress &amp;&amp; onProgress( all );
+
+			}, onError );
+
+		} );
+
+		return texture;
+
+	};
 
 })();</code></pre>
         </article>

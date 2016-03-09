@@ -10,13 +10,15 @@
 	 */
 	PANOLENS.CubePanorama = function ( images, edgeLength ){
 
-		var shader, material;
+		var shader, geometry, material;
+
+		this.images = images || [];
+		this.orbitRadius = edgeLength / 2;
 
 		edgeLength = edgeLength || 10000;
+		shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
 
-		shader = JSON.parse(JSON.stringify(THREE.ShaderLib[ "cube" ]));
-		shader.uniforms[ "tCube" ].value = new THREE.CubeTextureLoader().load( images );
-
+		geometry = new THREE.BoxGeometry( edgeLength, edgeLength, edgeLength );
 		material = new THREE.ShaderMaterial( {
 
 			fragmentShader: shader.fragmentShader,
@@ -26,14 +28,7 @@
 
 		} );
 
-		PANOLENS.Panorama.call( this, 
-			new THREE.BoxGeometry( edgeLength, edgeLength, edgeLength ), 
-			material
-		);
-
-		this.orbitRadius = edgeLength / 2;
-
-		this.images = images || [];
+		PANOLENS.Panorama.call( this, geometry, material );
 
 	}
 
@@ -41,8 +36,24 @@
 
 	PANOLENS.CubePanorama.prototype.constructor = PANOLENS.CubePanorama;
 
-	PANOLENS.CubePanorama.prototype.onLoad = function () {
+	PANOLENS.CubePanorama.prototype.load = function () {
+
+		PANOLENS.Utils.CubeTextureLoader.load( 	
+
+			this.images, 
+
+			this.onLoad.bind( this ), 
+			this.onProgress.bind( this ), 
+			this.onError.bind( this ) 
+
+		);
+
+	};
+
+	PANOLENS.CubePanorama.prototype.onLoad = function ( texture ) {
 		
+		this.material.uniforms[ 'tCube' ].value = texture;
+
 		PANOLENS.Panorama.prototype.onLoad.call( this );
 
 	};
