@@ -22,6 +22,8 @@
 
 		}, onProgress, onError );
 
+		return texture;
+
 	};
 
 })();
