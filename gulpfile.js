@@ -17,7 +17,9 @@ var _panolensfiles = [
 	'src/Panolens.js',
 	'src/util/DataImage.js',
 	'src/util/Modes.js',
+	'src/util/ImageLoader.js',
 	'src/util/TextureLoader.js',
+	'src/util/CubeTextureLoader.js',
 	'src/panorama/Panorama.js',
 	'src/panorama/ImagePanorama.js',
 	'src/panorama/GoogleStreetviewPanorama.js',
@@ -43,7 +45,7 @@ gulp.task( 'default', [ 'minify', 'docs' ] );
 gulp.task( 'minify', function() {
   return gulp.src( _libfiles.concat( _panolensfiles ) )
   	.pipe( concat( 'panolens.js', { newLine: ';' } ) )
-  	.pipe( stripDebug() )
+  	//.pipe( stripDebug() )
   	.pipe( gulp.dest( './build/' ) )
   	.pipe( concat( 'panolens.min.js' ) )
     .pipe( uglify() )
