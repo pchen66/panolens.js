@@ -11,6 +11,7 @@
 	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
 	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
 	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
+	 * @param {array}   [options.controlButtons=[ 'fullscreen', 'navigation', 'vr', 'video' ]] - Button names to mount on controlBar if controlBar exists
 	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
 	 * @param {boolean} [options.autoHideInfospot=false] - Auto hide infospots when click on non-active area
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
@@ -31,6 +32,7 @@
 
 		options = options || {};
 		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
+		options.controlButtons = options.controlButtons || [ 'fullscreen', 'navigation', 'vr', 'video' ];
 		options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
 		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
@@ -119,7 +121,7 @@
 
 		// Add Control UI
 		if ( this.options.controlBar !== false ) {
-			this.addDefaultControlBar();
+			this.addDefaultControlBar( this.options.controlButtons );
 		}
 
 		// Reverse dragging direction
@@ -188,7 +190,9 @@
 
 	};
 
-	PANOLENS.Viewer.prototype.addDefaultControlBar = function () {
+	PANOLENS.Viewer.prototype.addDefaultControlBar = function ( array ) {
+
+		var scope = this;
 
 		if ( this.widget ) {
 
@@ -199,7 +203,12 @@
 
 		this.widget = new PANOLENS.Widget( this.container );
 		this.widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
-		this.widget.addDefaultControlBar();
+		this.widget.addControlBar();
+		array.forEach( function( buttonName ){
+
+			scope.widget.addControlButton( buttonName );
+
+		} );
 
 	};
 
@@ -736,9 +745,7 @@
 
 			}
 
-			if ( type === 'click' && object.onClick ) {
-
-				object.onClick();
+			if ( type === 'click' ) {
 
 				return true;
 

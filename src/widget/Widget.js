@@ -23,7 +23,7 @@
 
 	PANOLENS.Widget.prototype.constructor = PANOLENS.Widget;
 
-	PANOLENS.Widget.prototype.addDefaultControlBar = function () {
+	PANOLENS.Widget.prototype.addControlBar = function () {
 
 		if ( !this.container ) {
 
@@ -49,23 +49,27 @@
 			bar.style.opacity = styleOpacity;
 		};
 
-		this.fullscreenElement = this.createFullscreenButton();
-		this.navigationElement = this.createCameraControlButton();
-		this.vrElement = this.createVRButton();
-		this.videoElement = this.createVideoControl();
-
-		// Add Control Items
-		bar.appendChild( this.fullscreenElement );
-		bar.appendChild( this.navigationElement );
-		bar.appendChild( this.vrElement );
-		bar.appendChild( this.videoElement );
-
 		this.container.appendChild( bar );
 
 		// Event listener
 		this.addEventListener( 'control-bar-toggle', bar.toggle );
 
 		this.barElement = bar;
+
+	};
+
+	PANOLENS.Widget.prototype.addControlButton = function ( name ) {
+
+		this.fullscreenElement = name === 'fullscreen' ? this.createFullscreenButton() : this.fullscreenElement;
+		this.navigationElement = name === 'navigation' ? this.createCameraControlButton() : this.navigationElement;
+		this.vrElement = name === 'vr' ? this.createVRButton() : this.vrElement;
+		this.videoElement = name === 'video' ? this.createVideoControl() : this.videoElement;
+
+		// Add Control Items
+		this.fullscreenElement && this.barElement.appendChild( this.fullscreenElement );
+		this.navigationElement && this.barElement.appendChild( this.navigationElement );
+		this.vrElement && this.barElement.appendChild( this.vrElement );
+		this.videoElement && this.barElement.appendChild( this.videoElement );
 
 	};
 
