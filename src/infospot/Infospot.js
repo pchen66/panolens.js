@@ -71,21 +71,16 @@
 
 		}
 
+		// Lock element if there's one
+		this.addEventListener( 'click', function () {
+
+			this.element && this.lockHoverElement();
+
+		} );
+
 	}
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
-
-	PANOLENS.Infospot.prototype.onClick = function () {
-
-		if ( this.element ) {
-
-			this.lockHoverElement();
-
-		}
-
-		this.dispatchEvent( { type: 'click' } );
-
-	};
 
 	PANOLENS.Infospot.prototype.onHover = function ( x, y ) {
 
