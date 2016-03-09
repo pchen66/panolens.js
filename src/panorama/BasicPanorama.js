@@ -5,6 +5,7 @@
 	/**
 	 * Basic panorama with 6 faces tile images
 	 * @constructor
+	 * @param {number} [edgeLength=10000] - The length of cube's edge
 	 */
 	PANOLENS.BasicPanorama = function ( edgeLength ) {
 		
