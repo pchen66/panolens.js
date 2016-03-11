@@ -38,8 +38,7 @@
 		// Construct a new XMLHttpRequest
 		urlCreator = window.URL || window.webkitURL;
 		image = document.createElement( 'img' );
-		image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
-
+		
 		// Add to cache
 		THREE.Cache.add( url, image );
 
@@ -56,6 +55,8 @@
 			return image;
 		}
 
+		image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
+
 		request = new XMLHttpRequest();
 		request.responseType = 'arraybuffer';
 		request.open( 'GET', url, true );
@@ -68,7 +69,7 @@
 		    }
 
 		};
-		request.onload = function( event ) {
+		request.onloadend = function( event ) {
 
 		    arrayBufferView = new Uint8Array( this.response );
 		    blob = new Blob( [ arrayBufferView ] );
