@@ -103,6 +103,14 @@
 
 		var scope = this, item, isFullscreen = false;
 
+		// Don't create button if no support
+		if ( !document.fullscreenEnabled       && 
+			 !document.webkitFullscreenEnabled &&
+			 !document.mozFullScreenEnabled    &&
+			 !document.msFullscreenEnabled ) {
+			return;
+		}
+
 		function onTap () {
 
 			if ( !isFullscreen ) {
