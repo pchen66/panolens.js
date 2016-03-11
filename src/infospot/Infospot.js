@@ -9,111 +9,117 @@
 	 */
 	PANOLENS.Infospot = function ( scale, imageSrc, container ) {
 		
-		var scope = this, ratio;
+		var scope = this, ratio, startScale, endScale, duration;
+
+		scale = scale || 1;
+		imageSrc = imageSrc || PANOLENS.DataImage.Info;
+		duration = 500;
 
 		THREE.Sprite.call( this );
 
 		this.type = 'infospot';
 
 		this.isHovering = false;
+		this.visible = false;
+
 		this.element;
 		this.toPanorama;
 
-		this.container = container || document.body;
-
-		// Default is not visible until panorama is loaded
-		this.visible = false;
-
-		scale = scale || 1;
-		imageSrc = imageSrc || PANOLENS.DataImage.Info;
-
 		this.scale.set( scale, scale, 1 );
+		this.rotation.y = Math.PI;
+
+		this.container = container || document.body;
 
 		PANOLENS.Utils.TextureLoader.load( imageSrc, postLoad );		
 
 		function postLoad ( texture ) {
-
-			texture.minFilter = texture.maxFilter = THREE.LinearFilter;
-
-			texture.wrapS = THREE.RepeatWrapping;
-
-			texture.repeat.x = -1;
-
+			
+			scope.material.side = THREE.DoubleSide;
 			scope.material.map = texture;
-			scope.material.depthWrite = false;
 			scope.material.depthTest = false;
 
 			ratio = texture.image.width / texture.image.height;
 
 			scope.scale.set( ratio * scale, scale, 1 );
 
-			scope.hoverStartScale = scope.scale.clone();
-			scope.hoverEndScale = scope.scale.clone().multiplyScalar( 1.3 );
-			scope.hoverEndScale.z = 1;
+			startScale = scope.scale.clone();
+			endScale = scope.scale.clone().multiplyScalar( 1.3 );
+			endScale.z = 1;
 
 			scope.scaleUpAnimation = new TWEEN.Tween( scope.scale )
-				.to( { x: scope.hoverEndScale.x, y: scope.hoverEndScale.y }, 500 )
+				.to( { x: endScale.x, y: endScale.y }, duration )
 				.easing( TWEEN.Easing.Elastic.Out );
 
 			scope.scaleDownAnimation = new TWEEN.Tween( scope.scale )
-				.to( { x: scope.hoverStartScale.x, y: scope.hoverStartScale.y }, 500 )
+				.to( { x: startScale.x, y: startScale.y }, duration )
 				.easing( TWEEN.Easing.Elastic.Out );
-
-			scope.showAnimation = new TWEEN.Tween( scope.material )
-				.to( { opacity: 1 }, scope.animationDuration )
-				.onStart( function () { scope.visible = true; } )
-				.easing( TWEEN.Easing.Quartic.Out );
-
-			scope.hideAnimation = new TWEEN.Tween( scope.material )
-				.to( { opacity: 0 }, scope.animationDuration )
-				.onComplete( function () { scope.visible = false; } )
-				.easing( TWEEN.Easing.Quartic.Out );
 
 		}
 
-		// Lock element if there's one
-		this.addEventListener( 'click', function () {
+		function show () {
 
-			this.element && this.lockHoverElement();
+			this.visible = true;
 
-		} );
+		}
+
+		function hide () {
+
+			this.visible = false;
+
+		}
+
+		// Add show and hide animations
+		this.showAnimation = new TWEEN.Tween( this.material )
+			.to( { opacity: 1 }, duration )
+			.onStart( show.bind( this ) )
+			.easing( TWEEN.Easing.Quartic.Out );
+
+		this.hideAnimation = new TWEEN.Tween( this.material )
+			.to( { opacity: 0 }, duration )
+			.onComplete( hide.bind( this ) )
+			.easing( TWEEN.Easing.Quartic.Out );
+
+		// Attach event listeners
+		this.addEventListener( 'click', this.onClick );
+		this.addEventListener( 'hover', this.onHover );
+		this.addEventListener( 'hoverenter', this.onHoverStart );
+		this.addEventListener( 'hoverleave', this.onHoverEnd );
 
 	}
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
 
-	PANOLENS.Infospot.prototype.onHover = function ( x, y ) {
+	PANOLENS.Infospot.prototype.onClick = function ( event ) {
 
-		if ( !this.isHovering ) {
+		if ( this.element ) {
 
-			this.onHoverStart();
-			this.isHovering = true;
+			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+
+			// Lock element
+			this.lockHoverElement();
 
 		}
 
-		if ( !this.element || this.element.locked ) { return; }
+	};
 
-		var left, top;
+	PANOLENS.Infospot.prototype.onHover = function ( event ) {
 
-		left = x - this.element.clientWidth / 2;
-		top = y - this.element.clientHeight - 30;
+		if ( this.element && !this.element.locked ) {
 
-		this.element.style.webkitTransform =
-		this.element.style.msTransform =
-		this.element.style.transform = 'translate(' + left + 'px, ' + top + 'px)';
+			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+
+		}
 
 	};
 
 	PANOLENS.Infospot.prototype.onHoverStart = function() {
 
-		if ( !this.hoverEndScale.equals( this.scale ) ) {
+		this.isHovering = true;
+		this.container.style.cursor = 'pointer';
+		this.scaleDownAnimation.stop();
+		this.scaleUpAnimation.start();
 
-			this.scaleDownAnimation.stop();
-			this.scaleUpAnimation.start();
-
-		}
-
-		if ( this.element && this.element.style.display === 'none' ) {
+		if ( this.element ) {
 
 			this.element.style.display = 'block';
 
@@ -124,20 +130,31 @@
 	PANOLENS.Infospot.prototype.onHoverEnd = function() {
 
 		this.isHovering = false;
-		
-		if ( !this.hoverStartScale.equals( this.scale ) ) {
+		this.container.style.cursor = 'default';
+		this.scaleUpAnimation.stop();
+		this.scaleDownAnimation.start();
 
-			this.scaleUpAnimation.stop();
-			this.scaleDownAnimation.start();
-
-		}
-
-		if ( this.element && this.element.style.display !== 'none' ) {
+		if ( this.element ) {
 
 			this.element.style.display = 'none';
 			this.unlockHoverElement();
 
 		}
+
+	};
+
+	PANOLENS.Infospot.prototype.translateElement = function ( x, y ) {
+
+		var left, top;
+
+		this.element.style.display = 'block';
+
+		left = x - this.element.clientWidth / 2;
+		top = y - this.element.clientHeight - 30;
+
+		this.element.style.webkitTransform =
+		this.element.style.msTransform =
+		this.element.style.transform = 'translate(' + left + 'px, ' + top + 'px)';
 
 	};
 
@@ -157,14 +174,14 @@
 
 			this.element = document.createElement( 'div' );
 
+			this.element.style.display = 'none';
 			this.element.style.color = '#fff';
 			this.element.style.top = 0;
 			this.element.style.maxWidth = '50%';
 			this.element.style.maxHeight = '50%';
 			this.element.style.textShadow = '0 0 3px #000000';
 			this.element.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
-			this.element.style.position = 'absolute';
-			this.element.style.display = 'none';
+			this.element.style.position = 'fixed';
 			this.element.classList.add( 'panolens-infospot' );
 
 			this.container.appendChild( this.element );
@@ -180,9 +197,9 @@
 		if ( !this.element ) { 
 
 			this.element = el.cloneNode( true );
-			this.element.style.top = 0;
-			this.element.style.position = 'absolute';
 			this.element.style.display = 'none';
+			this.element.style.top = 0;
+			this.element.style.position = 'fixed';
 			this.element.classList.add( 'panolens-infospot' );
 
 			this.container.appendChild( this.element );

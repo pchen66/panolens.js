@@ -79,7 +79,7 @@
 		this.widget;
 		
 		this.hoverObject;
-		this.hoveringObject;
+		this.infospot;
 		this.pressEntityObject;
 		this.pressObject;
 
@@ -216,6 +216,9 @@
 
 		if ( pano.type === 'panorama' ) {
 			
+			// Clear exisiting infospot
+			this.hideInfospot();
+
 			// Reset Current Panorama
 			this.panorama && this.panorama.onLeave();
 
@@ -493,6 +496,29 @@
 
 	};
 
+	PANOLENS.Viewer.prototype.outputInfospotPosition = function () {
+
+		var intersects;
+
+		intersects = this.raycaster.intersectObject( this.panorama, true );
+
+		if ( intersects.length > 0 ) {
+
+			intersects[0].point.applyAxisAngle( new THREE.Vector3( -1, 0, 0 ), this.panorama.rotation.x );
+			intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, -1, 0 ), this.panorama.rotation.y );
+			intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, 0, -1 ), this.panorama.rotation.z );
+
+			intersects[0].point.sub( this.panorama.position );
+
+			console.info('{ ' + (-intersects[0].point.x).toFixed(2) + 
+				', ' + (intersects[0].point.y).toFixed(2) +
+				', ' + (intersects[0].point.z).toFixed(2) + ' }'
+			);
+
+		}
+
+	};
+
 	PANOLENS.Viewer.prototype.onMouseDown = function ( event ) {
 
 		event.preventDefault();
@@ -572,27 +598,8 @@
 
 		if ( !this.panorama ) { return; }
 
-		// For Adding Infospot
-		if ( this.DEBUG ) {
-
-			intersects = this.raycaster.intersectObject( this.panorama, true );
-
-			if ( intersects.length > 0 ) {
-
-				intersects[0].point.applyAxisAngle( new THREE.Vector3( -1, 0, 0 ), this.panorama.rotation.x );
-				intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, -1, 0 ), this.panorama.rotation.y );
-				intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, 0, -1 ), this.panorama.rotation.z );
-
-				intersects[0].point.sub( this.panorama.position );
-
-				console.info('{ ' + (-intersects[0].point.x).toFixed(2) + 
-					', ' + (intersects[0].point.y).toFixed(2) +
-					', ' + (intersects[0].point.z).toFixed(2) + ' }'
-				);
-
-			}
-			
-		}
+		// output infospot information
+		if ( this.DEBUG ) { this.outputInfospotPosition(); }
 
 		intersects = this.raycaster.intersectObjects( this.panorama.children, true );
 
@@ -697,6 +704,12 @@
 
 				if ( this.userMouse.type === 'mousemove' ) {
 
+					if ( intersect && intersect.dispatchEvent ) {
+
+						intersect.dispatchEvent( { type: 'hover', mouseEvent: event } );
+
+					}
+
 					if ( this.pressEntityObject && this.pressEntityObject.dispatchEvent ) {
 
 						this.pressEntityObject.dispatchEvent( { type: 'pressmove-entity', mouseEvent: event } );
@@ -731,31 +744,21 @@
 
 		}
 
-		if ( intersects.length > 0 && intersects[ 0 ].object instanceof PANOLENS.Infospot ) {
+		// Infospot handler
+		if ( intersect && intersect instanceof PANOLENS.Infospot ) {
 
-			object = intersects[ 0 ].object;
-
-			if ( object.onHover ) {
-
-				this.hoveringObject = object;
-
-				this.container.style.cursor = 'pointer';
-
-				object.onHover( event.clientX, event.clientY );
-
-			}
-
+			this.infospot = intersect;
+			
 			if ( type === 'click' ) {
 
 				return true;
 
 			}
+			
 
-		} else {
+		} else if ( this.infospot ) {
 
-			this.container.style.cursor = 'default';
-
-			this.hideHoveringObject();
+			this.hideInfospot();
 
 		}
 
@@ -787,13 +790,13 @@
 
 	};
 
-	PANOLENS.Viewer.prototype.hideHoveringObject = function ( intersects ) {
+	PANOLENS.Viewer.prototype.hideInfospot = function ( intersects ) {
 
-		if ( this.hoveringObject ) {
+		if ( this.infospot ) {
 
-			this.hoveringObject.onHoverEnd();
+			this.infospot.onHoverEnd();
 
-			this.hoveringObject = undefined;
+			this.infospot = undefined;
 
 		}
 
