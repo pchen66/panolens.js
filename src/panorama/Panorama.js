@@ -145,7 +145,7 @@
 
 	};
 
-	PANOLENS.Panorama.prototype.updatePanoObjectTexture = function ( texture ) {
+	PANOLENS.Panorama.prototype.updateTexture = function ( texture ) {
 
 		this.material.map = texture;
 

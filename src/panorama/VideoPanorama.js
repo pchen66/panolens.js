@@ -158,7 +158,7 @@
 		videoContext.drawImage( video, 0, 0 );
 		videoTexture.needsUpdate = true;
 
-		this.updatePanoObjectTexture( videoTexture );
+		this.updateTexture( videoTexture );
 
 		this.videoRenderObject = videoRenderObject;
 

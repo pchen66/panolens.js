@@ -54,7 +54,7 @@
 
 		texture.needsUpdate = true;
 
-		this.updatePanoObjectTexture( texture );
+		this.updateTexture( texture );
 
 		PANOLENS.Panorama.prototype.onLoad.call( this );
 		
