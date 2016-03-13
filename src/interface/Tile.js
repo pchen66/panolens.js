@@ -79,12 +79,6 @@
 
 	};
 
-	PANOLENS.Tile.prototype.setEntity = function ( entity ) {
-
-		this.entity = entity;
-
-	};
-
 	/**
 	 * Bend panel with direction, axis, and angle
 	 * @param  {THREE.Vector3} direction - Force direction
@@ -99,6 +93,20 @@
 
 	};
 
+	/**
+	 * Create a tween object for animation
+	 * based on - {@link https://github.com/tweenjs/tween.js}
+	 * @param  {string} name       - Name of the tween animation
+	 * @param  {object} object     - Object to be tweened
+	 * @param  {object} toState    - Final state of the object's properties
+	 * @param  {number} duration   - Tweening duration
+	 * @param  {TWEEN.Easing} easing     - Easing function
+	 * @param  {number} delay      - Animation delay time
+	 * @param  {Function} onStart    - On start function
+	 * @param  {Function} onUpdate   - On update function
+	 * @param  {Function} onComplete - On complete function
+	 * @return {TWEEN.Tween}         - Tween object
+	 */
 	PANOLENS.Tile.prototype.tween = function ( name, object, toState, duration, easing, delay, onStart, onUpdate, onComplete ) {
 
 		object = object || this;
@@ -124,6 +132,13 @@
 
     };
 
+    /**
+     * Short-hand for displaying a single ripple effect
+     * by duplicating itself and fadeout
+     * @param  {number} scale    - The duplicated self fadeout scale
+     * @param  {number} duration - Effect duration
+     * @param  {TWEEN.Easing} easing   - Easing function
+     */
     PANOLENS.Tile.prototype.ripple = function ( scale, duration, easing ) {
 
     	scale = scale || 2;
@@ -150,5 +165,15 @@
         this.add( ripple );
 
     };
+
+    /**
+	 * Set entity if multiple objects are considered as one entity
+	 * @param {object} entity - Entity represents whole group structure
+	 */
+	PANOLENS.Tile.prototype.setEntity = function ( entity ) {
+
+		this.entity = entity;
+
+	};
 
 } )();

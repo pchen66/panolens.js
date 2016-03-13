@@ -1,13 +1,6 @@
 /**
  * @author pchen66
+ * @namespace PANOLENS
  */
 
-window.PANOLENS = {
-
-	// Placeholder for async bmfont texture loading
-	Utils: {
-		loadBMFont: function(){},
-		textureLoader: function(){}
-	}
-
-};
+window.PANOLENS = {};

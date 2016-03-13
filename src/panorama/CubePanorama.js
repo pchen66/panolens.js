@@ -36,6 +36,9 @@
 
 	PANOLENS.CubePanorama.prototype.constructor = PANOLENS.CubePanorama;
 
+	/**
+	 * Load 6 images and bind listeners
+	 */
 	PANOLENS.CubePanorama.prototype.load = function () {
 
 		PANOLENS.Utils.CubeTextureLoader.load( 	
@@ -50,6 +53,10 @@
 
 	};
 
+	/**
+	 * This will be called when 6 textures are ready
+	 * @param  {THREE.CubeTexture} texture - Cube texture
+	 */
 	PANOLENS.CubePanorama.prototype.onLoad = function ( texture ) {
 		
 		this.material.uniforms[ 'tCube' ].value = texture;

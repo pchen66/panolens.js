@@ -48,6 +48,10 @@
 
 	PANOLENS.TileGroup.prototype.constructor = PANOLENS.TileGroup;
 
+    /**
+     * Update corresponding tile textures
+     * @param  {array} imageArray - Image array with index to index image update
+     */
 	PANOLENS.TileGroup.prototype.updateTexture = function ( imageArray ) {
 
 		var scope = this;
@@ -64,6 +68,10 @@
 
 	};
 
+    /**
+     * Update all tile textures and hide the remaining ones
+     * @param  {array} imageArray - Image array with index to index image update
+     */
 	PANOLENS.TileGroup.prototype.updateAllTexture = function ( imageArray ) {
 
 		this.updateTexture( imageArray );
@@ -81,6 +89,10 @@
 
 	}
 
+    /**
+     * Set individual texture
+     * @param {THREE.Texture} texture - Texture to be updated
+     */
 	PANOLENS.TileGroup.prototype.setTexture = function ( texture ) {
 
         texture.minFilter = THREE.LinearFilter;
@@ -91,6 +103,9 @@
 
     };
 
+    /**
+     * Update visibility
+     */
     PANOLENS.TileGroup.prototype.updateVisbility = function () {
 
     	this.children[this.offset].visible = true;
@@ -153,6 +168,10 @@
 
     };
 
+    /**
+     * Scroll up
+     * @param  {number} duration - Scroll up duration
+     */
     PANOLENS.TileGroup.prototype.scrollUp = function ( duration ) {
 
     	var tiles = this.tileArray, offset;
@@ -181,6 +200,10 @@
 
     };
 
+    /**
+     * Scroll down 
+     * @param  {number} duration - Scroll up duration
+     */
     PANOLENS.TileGroup.prototype.scrollDown = function ( duration ) {
 
     	var tiles = this.tileArray, offset;
@@ -222,12 +245,20 @@
 
     };
 
+    /**
+     * Get current index
+     * @return {number} Index of the group. Range from 0 to this.tileArray.length
+     */
     PANOLENS.TileGroup.prototype.getIndex = function () {
 
     	return this.offset;
 
     };
 
+    /**
+     * Get visible tile counts
+     * @return {number} Number of visible tiles
+     */
     PANOLENS.TileGroup.prototype.getTileCount = function () {
 
     	var count = 0;

@@ -26,7 +26,7 @@
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
-    "gulp-jsdoc": "^0.1.5",
+    "gulp-jsdoc3": "^0.2.1",
     "gulp-strip-debug": "^1.1.0",
     "gulp-uglify": "^1.5.2",
     "three": "^0.74.0",

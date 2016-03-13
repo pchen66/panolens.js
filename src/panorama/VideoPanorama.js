@@ -4,6 +4,7 @@
 
 	/**
 	 * Video Panorama
+	 * @constructor
 	 * @param {string} src - Equirectangular video url
 	 * @param {object} [options] - Option for video settings
 	 * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video
@@ -43,6 +44,12 @@
 
 	PANOLENS.VideoPanorama.constructor = PANOLENS.VideoPanorama;
 
+	/**
+	 * [load description]
+	 * @param  {string} src     - The video url
+	 * @param  {object} options - Option object containing videoElement and videoCanvas
+	 * @fires  PANOLENS.Panorama#panolens-viewer-handler
+	 */
 	PANOLENS.VideoPanorama.prototype.load = function ( src, options ) {
 
 		var scope = this;
@@ -68,12 +75,24 @@
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'onVideoUpdate'
+			 * @property {number} data - The percentage of video progress. Range from 0.0 to 1.0
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: this.currentTime / this.duration } );
 
 		};
 
 	};
 
+	/**
+	 * Set video texture
+	 * @param {HTMLVideoElement} video  - The html5 video element
+	 * @param {HTMLCanvasElement} canvas - The canvas for video to be drawn on
+	 * @fires PANOLENS.Panorama#panolens-viewer-handler
+	 */
 	PANOLENS.VideoPanorama.prototype.setVideoTexture = function ( video, canvas ) {
 
 		var videoTexture, videoRenderObject, videoContext, scene, updateCallback;
@@ -158,11 +177,18 @@
 		videoContext.drawImage( video, 0, 0 );
 		videoTexture.needsUpdate = true;
 
-		this.updatePanoObjectTexture( videoTexture );
+		this.updateTexture( videoTexture );
 
 		this.videoRenderObject = videoRenderObject;
 
 		// Notify Viewer to render object
+		/**
+		 * Viewer handler event
+		 * @type {object}
+		 * @event PANOLENS.Panorama#panolens-viewer-handler
+		 * @property {string} method - 'addUpdateCallback'
+		 * @property {*} data - The callback function to update video
+		 */
 		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'addUpdateCallback', data: updateCallback.bind( videoRenderObject ) } );
 		
 	};
@@ -177,6 +203,10 @@
 
 	};
 
+	/**
+	 * Check if video is paused
+	 * @return {boolean} - is video paused or not
+	 */
 	PANOLENS.VideoPanorama.prototype.isVideoPaused = function () {
 
 		return ( this.isIOS ) 
@@ -185,6 +215,9 @@
 
 	};
 
+	/**
+	 * Toggle video to play or pause
+	 */
 	PANOLENS.VideoPanorama.prototype.toggleVideo = function () {
 
 		if ( this.videoRenderObject && this.videoRenderObject.video ) {
@@ -203,6 +236,10 @@
 
 	};
 
+	/**
+	 * Set video currentTime
+	 * @param {object} event - Event contains percentage. Range from 0.0 to 1.0
+	 */
 	PANOLENS.VideoPanorama.prototype.setVideoCurrentTime = function ( event ) {
 
 		if ( this.videoRenderObject && this.videoRenderObject.video && event.percentage !== 1 ) {
@@ -213,6 +250,9 @@
 
 	};
 
+	/**
+	 * Play video
+	 */
 	PANOLENS.VideoPanorama.prototype.playVideo = function () {
 
 		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoPaused() ) {
@@ -223,6 +263,9 @@
 
 	};
 
+	/**
+	 * Pause video
+	 */
 	PANOLENS.VideoPanorama.prototype.pauseVideo = function () {
 
 		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoPaused() ) {
@@ -233,6 +276,9 @@
 
 	};
 
+	/**
+	 * Reset video at stating point
+	 */
 	PANOLENS.VideoPanorama.prototype.resetVideo = function () {
 
 		if ( this.videoRenderObject && this.videoRenderObject.video ) {

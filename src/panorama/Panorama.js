@@ -28,7 +28,7 @@
 
 		this.linkedSpots = [];
 
-		this.isChildrenVisible = false;
+		this.isInfospotVisible = false;
 		
 		this.linkingImageURL = undefined;
 		this.linkingImageScale = undefined;
@@ -53,6 +53,12 @@
 
 	PANOLENS.Panorama.prototype.constructor = PANOLENS.Panorama;
 
+	/**
+	 * Adding an object
+	 * To counter the scale.x = -1, it will automatically add an 
+	 * empty object with inverted scale on x
+	 * @param {THREE.Object3D} object - The object to be added
+	 */
 	PANOLENS.Panorama.prototype.add = function ( object ) {
 
 		var invertedObject;
@@ -93,28 +99,60 @@
 		
 	};
 
+	/**
+	 * This will be called when panorama is loaded
+	 * @fires PANOLENS.Panorama#load
+	 */
 	PANOLENS.Panorama.prototype.onLoad = function () {
 
-		this.toggleChildrenVisibility( true );
+		this.toggleInfospotVisibility( true );
 
 		this.loaded = true;
 
+		/**
+		 * Load panorama event
+		 * @type {object}
+		 * @event PANOLENS.Panorama#load
+		 */
 		this.dispatchEvent( { type: 'load' } );
 
 	};
 
+	/**
+	 * This will be called when panorama is in progress
+	 * @fires PANOLENS.Panorama#progress
+	 */
 	PANOLENS.Panorama.prototype.onProgress = function ( progress ) {
 
+		/**
+		 * Loading panorama progress event
+		 * @type {object}
+		 * @event PANOLENS.Panorama#progress
+	 	 * @property {object} progress - The progress object containing loaded and total amount
+		 */
 		this.dispatchEvent( { type: 'progress', progress: progress } );
 
 	};
 
+	/**
+	 * This will be called when panorama loading has error
+	 * @fires PANOLENS.Panorama#error
+	 */
 	PANOLENS.Panorama.prototype.onError = function () {
 
+		/**
+		 * Loading panorama error event
+		 * @type {object}
+		 * @event PANOLENS.Panorama#error
+		 */
 		this.dispatchEvent( { type: 'error' } );
 
 	};
 
+	/**
+	 * Get zoom level based on window width
+	 * @return {number} zoom level indicating image quality
+	 */
 	PANOLENS.Panorama.prototype.getZoomLevel = function () {
 
 		var zoomLevel;
@@ -145,7 +183,11 @@
 
 	};
 
-	PANOLENS.Panorama.prototype.updatePanoObjectTexture = function ( texture ) {
+	/**
+	 * Update texture of a panorama
+	 * @param {THREE.Texture} texture - Texture to be updated
+	 */
+	PANOLENS.Panorama.prototype.updateTexture = function ( texture ) {
 
 		this.material.map = texture;
 
@@ -153,12 +195,19 @@
 
 	};
 
-	PANOLENS.Panorama.prototype.toggleChildrenVisibility = function ( force, delay ) {
+	/**
+	 * Toggle visibility of infospots in this panorama
+	 * @param  {boolean} isVisible - Visibility of infospots
+	 * @param  {number} delay - Delay in milliseconds to change visibility
+	 */
+	PANOLENS.Panorama.prototype.toggleInfospotVisibility = function ( isVisible, delay ) {
 
 		delay = ( delay !== undefined ) ? delay : 0;
 
-		var scope = this, 
-			visible = ( force !== undefined ) ? force : ( this.isChildrenVisible ? false : true );
+		var scope, visible;
+
+		scope = this;
+		visible = ( isVisible !== undefined ) ? isVisible : ( this.isInfospotVisible ? false : true );
 
 		this.traverse( function ( object ) {
 
@@ -170,10 +219,15 @@
 
 		} );
 
-		this.isChildrenVisible = visible;
+		this.isInfospotVisible = visible;
 
 	};
 
+	/**
+	 * Set image of this panorama's linking infospot
+	 * @param {string} url   - Url to the image asset
+	 * @param {number} scale - Scale factor of the infospot
+	 */
 	PANOLENS.Panorama.prototype.setLinkingImage = function ( url, scale ) {
 
 		this.linkingImageURL = url;
@@ -181,6 +235,11 @@
 
 	};
 
+	/**
+	 * Link two panorama bidirectionally by attaching infospot on each other
+	 * @param  {PANOLENS.Panorama} pano  - The panorama to be linked to
+	 * @param  {boolean} ended - If this linking is the second / last iteration
+	 */
 	PANOLENS.Panorama.prototype.link = function ( pano, ended ) {
 
 		var scope = this, spot, raycaster, intersect, point;
@@ -210,6 +269,13 @@
         spot.toPanorama = pano;
         spot.addEventListener( 'click', function () {
 
+        	/**
+        	 * Viewer handler event
+        	 * @type {object}
+        	 * @event PANOLENS.Panorama#panolens-viewer-handler
+        	 * @property {string} method - Viewer function name
+        	 * @property {*} data - The argument to be passed into the method
+        	 */
         	scope.dispatchEvent( { type : 'panolens-viewer-handler', method: 'setPanorama', data: pano } );
 
         } );
@@ -234,6 +300,9 @@
 
 	};
 
+	/**
+	 * Start fading in animation
+	 */
 	PANOLENS.Panorama.prototype.fadeIn = function () {
 
 		new TWEEN.Tween( this.material )
@@ -243,6 +312,9 @@
 
 	};
 
+	/**
+	 * Start fading out animation
+	 */
 	PANOLENS.Panorama.prototype.fadeOut = function () {
 
 		new TWEEN.Tween( this.material )
@@ -252,6 +324,11 @@
 
 	};
 
+	/**
+	 * This will be called when entering a panorama 
+	 * @fires PANOLENS.Panorama#enter
+	 * @fires PANOLENS.Panorama#enter-animation-start
+	 */
 	PANOLENS.Panorama.prototype.onEnter = function () {
 
 		new TWEEN.Tween( this )
@@ -259,12 +336,17 @@
 		.easing( TWEEN.Easing.Quartic.Out )
 		.onStart( function () {
 
-			this.dispatchEvent( { type: 'enter-start' } );
+			/**
+			 * Enter panorama and animation starting event
+			 * @event PANOLENS.Panorama#enter-animation-start
+			 * @type {object} 
+			 */
+			this.dispatchEvent( { type: 'enter-animation-start' } );
 
 			if ( this.loaded ) {
 
 				this.fadeIn();
-				this.toggleChildrenVisibility( true, this.animationDuration );
+				this.toggleInfospotVisibility( true, this.animationDuration );
 
 			} else {
 
@@ -278,10 +360,19 @@
 		.delay( this.animationDuration )
 		.start();
 
+		/**
+		 * Enter panorama event
+		 * @event PANOLENS.Panorama#enter
+		 * @type {object} 
+		 */
 		this.dispatchEvent( { type: 'enter' } );
 
 	};
 
+	/**
+	 * This will be called when leaving a panorama
+	 * @fires PANOLENS.Panorama#leave
+	 */
 	PANOLENS.Panorama.prototype.onLeave = function () {
 
 		new TWEEN.Tween( this )
@@ -290,7 +381,7 @@
 		.onStart( function () {
 
 			this.fadeOut();
-			this.toggleChildrenVisibility( false );
+			this.toggleInfospotVisibility( false );
 
 		} )
 		.onComplete( function () {
@@ -301,6 +392,11 @@
 		} )
 		.start();
 
+		/**
+		 * Leave panorama event
+		 * @event PANOLENS.Panorama#leave
+		 * @type {object} 
+		 */
 		this.dispatchEvent( { type: 'leave' } );
 
 	};

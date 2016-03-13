@@ -26,6 +26,10 @@
 
 	PANOLENS.GoogleStreetviewPanorama.constructor = PANOLENS.GoogleStreetviewPanorama;
 
+	/**
+	 * Load Google Street View by panorama id
+	 * @param {string} panoId - Gogogle Street View panorama id
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.load = function ( panoId ) {
 
 		panoId = ( panoId || this.panoId ) || {};
@@ -42,6 +46,9 @@
 
 	};
 
+	/**
+	 * Setup Google Map API
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function () {
 
 		var script = document.createElement( 'script' );
@@ -53,6 +60,9 @@
 
 	};
 
+	/**
+	 * Set GSV Loader
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.setGSVLoader = function () {
 
 		this.gsvLoader = new GSVPANO.PanoLoader();
@@ -65,12 +75,20 @@
 
 	};
 
+	/**
+	 * Get GSV Loader
+	 * @return {object} GSV Loader instance
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.getGSVLoader = function () {
 
 		return this.gsvLoader;
 
 	};
 
+	/**
+	 * Load GSV Loader
+	 * @param  {string} panoId - Gogogle Street View panorama id
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.loadGSVLoader = function ( panoId ) {
 
 		this.gsvLoader.onProgress = this.onProgress.bind( this );
@@ -84,6 +102,10 @@
 		this.gsvLoader.loaded = true;
 	};
 
+	/**
+	 * This will be called when panorama is loaded
+	 * @param  {HTMLCanvasElement} canvas - Canvas where the tiles have been drawn
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.onLoad = function ( canvas ) {
 
 		if ( !this.gsvLoader ) { return; }

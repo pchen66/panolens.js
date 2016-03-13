@@ -11,7 +11,7 @@
 	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
 	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
 	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
-	 * @param {array}   [options.controlButtons=[ 'fullscreen', 'navigation', 'vr', 'video' ]] - Button names to mount on controlBar if controlBar exists
+	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'navigation', 'vr', 'video']
 	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
 	 * @param {boolean} [options.autoHideInfospot=false] - Auto hide infospots when click on non-active area
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
@@ -79,7 +79,7 @@
 		this.widget;
 		
 		this.hoverObject;
-		this.hoveringObject;
+		this.infospot;
 		this.pressEntityObject;
 		this.pressObject;
 
@@ -152,6 +152,12 @@
 
 	PANOLENS.Viewer.prototype.constructor = PANOLENS.Viewer;
 
+	/**
+	 * Adding an object
+	 * Automatically hookup with panolens-viewer-handler listener
+	 * to communicate with viewer method
+	 * @param {THREE.Object3D} object - The object to be added
+	 */
 	PANOLENS.Viewer.prototype.add = function ( object ) {
 
 		if ( arguments.length > 1 ) {
@@ -190,6 +196,10 @@
 
 	};
 
+	/**
+	 * Add default control bar
+	 * @param {array} array - The control buttons array
+	 */
 	PANOLENS.Viewer.prototype.addDefaultControlBar = function ( array ) {
 
 		var scope = this;
@@ -212,10 +222,17 @@
 
 	};
 
+	/**
+	 * Set a panorama to be the current one
+	 * @param {PANOLENS.Panorama} pano - Panorama to be set
+	 */
 	PANOLENS.Viewer.prototype.setPanorama = function ( pano ) {
 
 		if ( pano.type === 'panorama' ) {
 			
+			// Clear exisiting infospot
+			this.hideInfospot();
+
 			// Reset Current Panorama
 			this.panorama && this.panorama.onLeave();
 
@@ -226,6 +243,10 @@
 
 	};
 
+	/**
+	 * Event handler to execute commands from child objects
+	 * @param  {object} event - The dispatched event with method as function name and data as an argument
+	 */
 	PANOLENS.Viewer.prototype.eventHandler = function ( event ) {
 
 		if ( event.method && this[ event.method ] ) {
@@ -236,6 +257,10 @@
 
 	};
 
+	/**
+	 * Toggle VR effect mode
+	 * @fires PANOLENS.Viewer#VR-toggle
+	 */
 	PANOLENS.Viewer.prototype.toggleVR = function () {
 
 		if ( this.effect ) {
@@ -251,10 +276,19 @@
 			}
 		}
 
+		/**
+		 * Toggle vr event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#VR-toggle
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
 		this.dispatchEvent( { type: 'VR-toggle', mode: this.mode } );
 
 	};
 
+	/**
+	 * Enable VR effect
+	 */
 	PANOLENS.Viewer.prototype.enableVR = function () {
 
 		if ( this.effect && this.mode !== PANOLENS.Modes.VR ) {
@@ -265,6 +299,9 @@
 
 	};
 
+	/**
+	 * Disable VR effect
+	 */
 	PANOLENS.Viewer.prototype.disableVR = function () {
 
 		if ( this.effect && this.mode !== PANOLENS.Modes.NORMAL ) {
@@ -275,32 +312,66 @@
 
 	};
 
+	/**
+	 * Toggle video play or stop
+	 * @fires PANOLENS.Viewer#video-toggle
+	 */
 	PANOLENS.Viewer.prototype.toggleVideoPlay = function () {
 
 		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
 
+			/**
+			 * Toggle video event
+			 * @type {object}
+			 * @event PANOLENS.Viewer#video-toggle
+			 */
 			this.panorama.dispatchEvent( { type: 'video-toggle' } );
 
 		}
 
 	};
 
+	/**
+	 * Set currentTime in a video
+	 * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+	 * @fires PANOLENS.Viewer#video-time
+	 */
 	PANOLENS.Viewer.prototype.setVideoCurrentTime = function ( percentage ) {
 
 		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
 
+			/**
+			 * Setting video time event
+			 * @type {object}
+			 * @event PANOLENS.Viewer#video-time
+			 * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+			 */
 			this.panorama.dispatchEvent( { type: 'video-time', percentage: percentage } );
 
 		}
 
 	};
 
+	/**
+	 * This will be called when video updates if an widget is present
+	 * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+	 * @fires PANOLENS.Viewer#video-update
+	 */
 	PANOLENS.Viewer.prototype.onVideoUpdate = function ( percentage ) {
 
+		/**
+		 * Video update event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#video-update
+		 * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-update', percentage: percentage } );
 
 	};
 
+	/**
+	 * Add update callback to be called every animation frame
+	 */
 	PANOLENS.Viewer.prototype.addUpdateCallback = function ( fn ) {
 
 		if ( fn ) {
@@ -311,6 +382,10 @@
 
 	};
 
+	/**
+	 * Remove update callback
+	 * @param  {Function} fn - The function to be removed
+	 */
 	PANOLENS.Viewer.prototype.removeUpdateCallback = function ( fn ) {
 
 		var index = this.updateCallbacks.indexOf( fn );
@@ -323,24 +398,44 @@
 
 	};
 
+	/**
+	 * Show video widget
+	 */
 	PANOLENS.Viewer.prototype.showVideoWidget = function () {
 
+		/**
+		 * Show video widget event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#video-control-show
+		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-control-show' } );
 
 	};
 
+	/**
+	 * Hide video widget
+	 */
 	PANOLENS.Viewer.prototype.hideVideoWidget = function () {
 
+		/**
+		 * Hide video widget
+		 * @type {object}
+		 * @event PANOLENS.Viewer#video-control-hide
+		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-control-hide' } );
 
 	};
 
+	/**
+	 * Add default panorama event listeners
+	 * @param {PANOLENS.Panorama} pano - The panorama to be added with event listener
+	 */
 	PANOLENS.Viewer.prototype.addPanoramaEventListener = function ( pano ) {
 
-		// Every panorama
-		pano.addEventListener( 'enter-start', this.setCameraControl.bind( this ) );
+		// Set camera control on every panorama
+		pano.addEventListener( 'enter-animation-start', this.setCameraControl.bind( this ) );
 
-		// VideoPanorama
+		// Show and hide widget event only when it's PANOLENS.VideoPanorama
 		if ( pano instanceof PANOLENS.VideoPanorama ) {
 
 			pano.addEventListener( 'enter', this.showVideoWidget.bind( this ) );
@@ -351,6 +446,9 @@
 
 	};
 
+	/**
+	 * Set camera control
+	 */
 	PANOLENS.Viewer.prototype.setCameraControl = function () {
 
 		this.camera.position.copy( this.panorama.position );
@@ -359,54 +457,89 @@
 
 	};
 
+	/**
+	 * Get current camera control
+	 * @return {object} - Current navigation control. THREE.OrbitControls or THREE.DeviceOrientationControls
+	 */
 	PANOLENS.Viewer.prototype.getControl = function () {
 
 		return this.control;
 
 	},
 
+	/**
+	 * Get scene
+	 * @return {THREE.Scene} - Current scene which the viewer is built on
+	 */
 	PANOLENS.Viewer.prototype.getScene = function () {
 
 		return this.scene;
 
 	};
 
+	/**
+	 * Get camera
+	 * @return {THREE.Camera} - The scene camera
+	 */
 	PANOLENS.Viewer.prototype.getCamera = function () {
 
 		return this.camera;
 
 	},
 
+	/**
+	 * Get renderer
+	 * @return {THREE.WebGLRenderer} - The renderer using webgl
+	 */
 	PANOLENS.Viewer.prototype.getRenderer = function () {
 
 		return this.renderer;
 
 	};
 
+	/**
+	 * Get container
+	 * @return {HTMLDOMElement} - The container holds rendererd canvas
+	 */
 	PANOLENS.Viewer.prototype.getContainer = function () {
 
 		return this.container;
 
 	};
 
+	/**
+	 * Get control name
+	 * @return {string} - Control name. 'orbit' or 'device-orientation'
+	 */
 	PANOLENS.Viewer.prototype.getControlName = function () {
 
 		return this.control.name;
 
 	};
 
+	/**
+	 * Get next navigation control name
+	 * @return {string} - Next control name
+	 */
 	PANOLENS.Viewer.prototype.getNextControlName = function () {
 
 		return this.controls[ this.getNextControlIndex() ].name;
 
 	};
 
+	/**
+	 * Get next navigation control index
+	 * @return {number} - Next control index
+	 */
 	PANOLENS.Viewer.prototype.getNextControlIndex = function () {
 
 		return ( this.controls.indexOf( this.control ) + 1 >= this.controls.length ) ? 0 : this.controls.indexOf( this.control ) + 1;
 
 	};
 
+	/**
+	 * Set field of view of camera
+	 */
 	PANOLENS.Viewer.prototype.setCameraFov = function ( fov ) {
 
 		this.camera.fov = fov;
@@ -414,6 +547,10 @@
 
 	};
 
+	/**
+	 * Enable control by index
+	 * @param  {number} index - Index of camera control
+	 */
 	PANOLENS.Viewer.prototype.enableControl = function ( index ) {
 
 		index = ( index >= 0 && index < this.controls.length ) ? index : 0;
@@ -438,12 +575,19 @@
 
 	};
 
+	/**
+	 * Toggle next control
+	 */
 	PANOLENS.Viewer.prototype.toggleNextControl = function () {
 
 		this.enableControl( this.getNextControlIndex() );
 
 	};
 
+	/**
+	 * Toggle fullscreen
+	 * @param  {Boolean} isFullscreen - If it's fullscreen
+	 */
 	PANOLENS.Viewer.prototype.toggleFullscreen = function ( isFullscreen ) {
 
 		if ( isFullscreen ) {
@@ -458,6 +602,9 @@
 
 	};
 
+	/**
+	 * Reverse dragging direction
+	 */
 	PANOLENS.Viewer.prototype.reverseDraggingDirection = function () {
 
 		this.OrbitControls.rotateSpeed *= -1;
@@ -465,6 +612,10 @@
 
 	};
 
+	/**
+	 * This is called when window size is changed
+	 * @fires PANOLENS.Viewer#window-resize
+	 */
 	PANOLENS.Viewer.prototype.onWindowResize = function () {
 
 		this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
@@ -472,9 +623,19 @@
 
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 
+		/**
+		 * Window resizing event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#window-resize
+		 * @property {number} width  - Width of the window
+		 * @property {number} height - Height of the window
+		 */
 		this.dispatchEvent( { type: 'window-resize', width: this.container.clientWidth, height: this.container.clientHeight })
 	};
 
+	/**
+	 * Rendering function to be called on every animation frame
+	 */
 	PANOLENS.Viewer.prototype.render = function () {
 
 		TWEEN.update();
@@ -488,6 +649,32 @@
 		} else {
 
 			this.renderer.render( this.scene, this.camera );
+
+		}
+
+	};
+
+	/**
+	 * Output infospot attach position in console.warn by holding down Ctrl button
+	 */
+	PANOLENS.Viewer.prototype.outputInfospotPosition = function () {
+
+		var intersects;
+
+		intersects = this.raycaster.intersectObject( this.panorama, true );
+
+		if ( intersects.length > 0 ) {
+
+			intersects[0].point.applyAxisAngle( new THREE.Vector3( -1, 0, 0 ), this.panorama.rotation.x );
+			intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, -1, 0 ), this.panorama.rotation.y );
+			intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, 0, -1 ), this.panorama.rotation.z );
+
+			intersects[0].point.sub( this.panorama.position );
+
+			console.info('{ ' + (-intersects[0].point.x).toFixed(2) + 
+				', ' + (intersects[0].point.y).toFixed(2) +
+				', ' + (intersects[0].point.z).toFixed(2) + ' }'
+			);
 
 		}
 
@@ -554,7 +741,7 @@
 
 		if ( type === 'click' ) {
 
-			this.options.autoHideInfospot && this.panorama && this.panorama.toggleChildrenVisibility();
+			this.options.autoHideInfospot && this.panorama && this.panorama.toggleInfospotVisibility();
 			this.options.autoHideControlBar && this.toggleControlBar();
 
 		}
@@ -572,27 +759,8 @@
 
 		if ( !this.panorama ) { return; }
 
-		// For Adding Infospot
-		if ( this.DEBUG ) {
-
-			intersects = this.raycaster.intersectObject( this.panorama, true );
-
-			if ( intersects.length > 0 ) {
-
-				intersects[0].point.applyAxisAngle( new THREE.Vector3( -1, 0, 0 ), this.panorama.rotation.x );
-				intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, -1, 0 ), this.panorama.rotation.y );
-				intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, 0, -1 ), this.panorama.rotation.z );
-
-				intersects[0].point.sub( this.panorama.position );
-
-				console.info('{ ' + (-intersects[0].point.x).toFixed(2) + 
-					', ' + (intersects[0].point.y).toFixed(2) +
-					', ' + (intersects[0].point.z).toFixed(2) + ' }'
-				);
-
-			}
-			
-		}
+		// output infospot information
+		if ( this.DEBUG ) { this.outputInfospotPosition(); }
 
 		intersects = this.raycaster.intersectObjects( this.panorama.children, true );
 
@@ -697,6 +865,12 @@
 
 				if ( this.userMouse.type === 'mousemove' ) {
 
+					if ( intersect && intersect.dispatchEvent ) {
+
+						intersect.dispatchEvent( { type: 'hover', mouseEvent: event } );
+
+					}
+
 					if ( this.pressEntityObject && this.pressEntityObject.dispatchEvent ) {
 
 						this.pressEntityObject.dispatchEvent( { type: 'pressmove-entity', mouseEvent: event } );
@@ -731,31 +905,21 @@
 
 		}
 
-		if ( intersects.length > 0 && intersects[ 0 ].object instanceof PANOLENS.Infospot ) {
+		// Infospot handler
+		if ( intersect && intersect instanceof PANOLENS.Infospot ) {
 
-			object = intersects[ 0 ].object;
-
-			if ( object.onHover ) {
-
-				this.hoveringObject = object;
-
-				this.container.style.cursor = 'pointer';
-
-				object.onHover( event.clientX, event.clientY );
-
-			}
-
+			this.infospot = intersect;
+			
 			if ( type === 'click' ) {
 
 				return true;
 
 			}
+			
 
-		} else {
+		} else if ( this.infospot ) {
 
-			this.container.style.cursor = 'default';
-
-			this.hideHoveringObject();
+			this.hideInfospot();
 
 		}
 
@@ -787,20 +951,29 @@
 
 	};
 
-	PANOLENS.Viewer.prototype.hideHoveringObject = function ( intersects ) {
+	PANOLENS.Viewer.prototype.hideInfospot = function ( intersects ) {
 
-		if ( this.hoveringObject ) {
+		if ( this.infospot ) {
 
-			this.hoveringObject.onHoverEnd();
+			this.infospot.onHoverEnd();
 
-			this.hoveringObject = undefined;
+			this.infospot = undefined;
 
 		}
 
 	};
 
+	/**
+	 * Toggle control bar
+	 * @fires [PANOLENS.Viewer#control-bar-toggle]
+	 */
 	PANOLENS.Viewer.prototype.toggleControlBar = function () {
 
+		/**
+		 * Toggle control bar event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#control-bar-toggle
+		 */
 		this.widget && this.widget.dispatchEvent( { type: 'control-bar-toggle' } );
 
 	};

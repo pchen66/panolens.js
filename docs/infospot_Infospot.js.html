@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Source: infospot/Infospot.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.paper.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="PANOLENS.html">PANOLENS</a></li><li><a href="PANOLENS.Utils.html">PANOLENS.Utils</a></li><li><a href="PANOLENS.Utils.CubeTextureLoader.html">PANOLENS.Utils.CubeTextureLoader</a></li><li><a href="PANOLENS.Utils.ImageLoader.html">PANOLENS.Utils.ImageLoader</a></li><li><a href="PANOLENS.Utils.TextureLoader.html">PANOLENS.Utils.TextureLoader</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="PANOLENS.BasicPanorama.html">PANOLENS.BasicPanorama</a></li><li><a href="PANOLENS.CubePanorama.html">PANOLENS.CubePanorama</a></li><li><a href="PANOLENS.EmptyPanorama.html">PANOLENS.EmptyPanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">PANOLENS.GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImagePanorama.html">PANOLENS.ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">PANOLENS.Infospot</a></li><li><a href="PANOLENS.Panorama.html">PANOLENS.Panorama</a></li><li><a href="PANOLENS.SpriteText.html">PANOLENS.SpriteText</a></li><li><a href="PANOLENS.Tile.html">PANOLENS.Tile</a></li><li><a href="PANOLENS.TileGroup.html">PANOLENS.TileGroup</a></li><li><a href="PANOLENS.VideoPanorama.html">PANOLENS.VideoPanorama</a></li><li><a href="PANOLENS.Viewer.html">PANOLENS.Viewer</a></li><li><a href="PANOLENS.Widget.html">PANOLENS.Widget</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:VR-toggle">PANOLENS.Viewer#event:VR-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: infospot/Infospot.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript ">( function () {
+
+	/**
+	 * Information spot attached to panorama
+	 * @constructor
+	 * @param {number} [scale=1] - Infospot scale
+	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
+	 * @param {HTMLElement} [container=document.body] - The dom element contains infospot elements
+	 */
+	PANOLENS.Infospot = function ( scale, imageSrc, container ) {
+		
+		var scope = this, ratio, startScale, endScale, duration;
+
+		scale = scale || 1;
+		imageSrc = imageSrc || PANOLENS.DataImage.Info;
+		duration = 500;
+
+		THREE.Sprite.call( this );
+
+		this.type = 'infospot';
+
+		this.isHovering = false;
+		this.visible = false;
+
+		this.element;
+		this.toPanorama;
+
+		this.scale.set( scale, scale, 1 );
+		this.rotation.y = Math.PI;
+
+		this.container = container || document.body;
+
+		PANOLENS.Utils.TextureLoader.load( imageSrc, postLoad );		
+
+		function postLoad ( texture ) {
+			
+			scope.material.side = THREE.DoubleSide;
+			scope.material.map = texture;
+			scope.material.depthTest = false;
+
+			ratio = texture.image.width / texture.image.height;
+
+			scope.scale.set( ratio * scale, scale, 1 );
+
+			startScale = scope.scale.clone();
+			endScale = scope.scale.clone().multiplyScalar( 1.3 );
+			endScale.z = 1;
+
+			scope.scaleUpAnimation = new TWEEN.Tween( scope.scale )
+				.to( { x: endScale.x, y: endScale.y }, duration )
+				.easing( TWEEN.Easing.Elastic.Out );
+
+			scope.scaleDownAnimation = new TWEEN.Tween( scope.scale )
+				.to( { x: startScale.x, y: startScale.y }, duration )
+				.easing( TWEEN.Easing.Elastic.Out );
+
+		}
+
+		function show () {
+
+			this.visible = true;
+
+		}
+
+		function hide () {
+
+			this.visible = false;
+
+		}
+
+		// Add show and hide animations
+		this.showAnimation = new TWEEN.Tween( this.material )
+			.to( { opacity: 1 }, duration )
+			.onStart( show.bind( this ) )
+			.easing( TWEEN.Easing.Quartic.Out );
+
+		this.hideAnimation = new TWEEN.Tween( this.material )
+			.to( { opacity: 0 }, duration )
+			.onComplete( hide.bind( this ) )
+			.easing( TWEEN.Easing.Quartic.Out );
+
+		// Attach event listeners
+		this.addEventListener( 'click', this.onClick );
+		this.addEventListener( 'hover', this.onHover );
+		this.addEventListener( 'hoverenter', this.onHoverStart );
+		this.addEventListener( 'hoverleave', this.onHoverEnd );
+
+	}
+
+	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
+
+	/**
+	 * This will be called by a click event
+	 * Translate and lock the hovering element if any
+	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
+	 */
+	PANOLENS.Infospot.prototype.onClick = function ( event ) {
+
+		if ( this.element ) {
+
+			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+
+			// Lock element
+			this.lockHoverElement();
+
+		}
+
+	};
+
+	/**
+	 * This will be called by a mouse hover event
+	 * Translate the hovering element if any
+	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
+	 */
+	PANOLENS.Infospot.prototype.onHover = function ( event ) {
+
+		if ( this.element &amp;&amp; !this.element.locked ) {
+
+			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+
+		}
+
+	};
+
+	/**
+	 * This will be called on a mouse hover start
+	 * Sets cursor style to 'pointer', display the element and scale up the infospot
+	 */
+	PANOLENS.Infospot.prototype.onHoverStart = function() {
+
+		this.isHovering = true;
+		this.container.style.cursor = 'pointer';
+		this.scaleDownAnimation.stop();
+		this.scaleUpAnimation.start();
+
+		if ( this.element ) {
+
+			this.element.style.display = 'block';
+
+		}
+
+	};
+
+	/**
+	 * This will be called on a mouse hover end
+	 * Sets cursor style to 'default', hide the element and scale down the infospot
+	 */
+	PANOLENS.Infospot.prototype.onHoverEnd = function() {
+
+		this.isHovering = false;
+		this.container.style.cursor = 'default';
+		this.scaleUpAnimation.stop();
+		this.scaleDownAnimation.start();
+
+		if ( this.element ) {
+
+			this.element.style.display = 'none';
+			this.unlockHoverElement();
+
+		}
+
+	};
+
+	/**
+	 * Translate the hovering element by css transform
+	 * @param  {number} x - X position on the window screen
+	 * @param  {number} y - Y position on the window screen
+	 */
+	PANOLENS.Infospot.prototype.translateElement = function ( x, y ) {
+
+		var left, top;
+
+		this.element.style.display = 'block';
+
+		left = x - this.element.clientWidth / 2;
+		top = y - this.element.clientHeight - 30;
+
+		this.element.style.webkitTransform =
+		this.element.style.msTransform =
+		this.element.style.transform = 'translate(' + left + 'px, ' + top + 'px)';
+
+	};
+
+	/**
+	 * Set hovering text content
+	 * @param {string} text - Text to be displayed
+	 */
+	PANOLENS.Infospot.prototype.setText = function ( text ) {
+
+		if ( this.element ) {
+
+			this.element.textContent = text;
+
+		}
+
+	};
+
+	/**
+	 * Add hovering text element
+	 * @param {string} text - Text to be displayed
+	 */
+	PANOLENS.Infospot.prototype.addHoverText = function ( text ) {
+
+		if ( !this.element ) {
+
+			this.element = document.createElement( 'div' );
+
+			this.element.style.display = 'none';
+			this.element.style.color = '#fff';
+			this.element.style.top = 0;
+			this.element.style.maxWidth = '50%';
+			this.element.style.maxHeight = '50%';
+			this.element.style.textShadow = '0 0 3px #000000';
+			this.element.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
+			this.element.style.position = 'fixed';
+			this.element.classList.add( 'panolens-infospot' );
+
+			this.container.appendChild( this.element );
+
+		}
+
+		this.setText( text );
+
+	};
+
+	/**
+	 * Add hovering element by cloning an element
+	 * @param {HTMLDOMElement} el - Element to be cloned and displayed
+	 */
+	PANOLENS.Infospot.prototype.addHoverElement = function ( el ) {
+
+		if ( !this.element ) { 
+
+			this.element = el.cloneNode( true );
+			this.element.style.display = 'none';
+			this.element.style.top = 0;
+			this.element.style.position = 'fixed';
+			this.element.classList.add( 'panolens-infospot' );
+
+			this.container.appendChild( this.element );
+
+		}
+
+	};
+
+	/**
+	 * Remove hovering element
+	 */
+	PANOLENS.Infospot.prototype.removeHoverElement = function () {
+
+		if ( this.element ) { 
+
+			this.container.removeChild( this.element );
+
+			this.element = undefined;
+
+		}
+
+	};
+
+	/**
+	 * Lock hovering element
+	 */
+	PANOLENS.Infospot.prototype.lockHoverElement = function () {
+
+		if ( this.element ) { 
+
+			this.element.locked = true;
+
+		}
+
+	};
+
+	/**
+	 * Unlock hovering element
+	 */
+	PANOLENS.Infospot.prototype.unlockHoverElement = function () {
+
+		if ( this.element ) { 
+
+			this.element.locked = false;
+
+		}
+
+	};
+
+	/**
+	 * Show infospot
+	 * @param  {number} [delay=0] - Delay time to show
+	 */
+	PANOLENS.Infospot.prototype.show = function ( delay ) {
+
+		delay = delay || 0;
+
+		this.hideAnimation &amp;&amp; this.hideAnimation.stop();
+		this.showAnimation &amp;&amp; this.showAnimation.delay( delay ).start();
+
+	};
+
+	/**
+	 * Hide infospot
+	 * @param  {number} [delay=0] - Delay time to hide
+	 */
+	PANOLENS.Infospot.prototype.hide = function ( delay ) {
+
+		delay = delay || 0;
+
+		this.showAnimation &amp;&amp; this.showAnimation.stop();
+		this.hideAnimation &amp;&amp; this.hideAnimation.delay( delay ).start();
+		
+	};
+
+} )()</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-03-12T19:29:43-08:00
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

@@ -2273,24 +2273,18 @@ THREE.BendModifier.prototype = {
     }	
 };/**
  * @author pchen66
+ * @namespace PANOLENS
  */
 
-window.PANOLENS = {
-
-	// Placeholder for async bmfont texture loading
-	Utils: {
-		loadBMFont: function(){},
-		textureLoader: function(){}
-	}
-
-};
+window.PANOLENS = {};
 ;(function(){
 
 	'use strict';
 
 	/**
 	 * Data Image
-	 * @type {Object}
+	 * @memberOf PANOLENS
+	 * @enum {string}
 	 */
 	PANOLENS.DataImage = {
 
@@ -2313,12 +2307,18 @@ window.PANOLENS = {
 
 	/**
 	 * Modes
-	 * @type {Object}
+	 * @memberOf PANOLENS
+	 * @enum {number}
 	 */
 	PANOLENS.Modes = {
 
+		/** Current viewer state is unknown */
 		UNKNOWN: 0,
+
+		/** Current viewer state is normal */
 		NORMAL: 1,
+
+		/** Current viewer state is in vr mode*/
 		VR: 2
 
 	};
@@ -2328,11 +2328,32 @@ window.PANOLENS = {
 	'use strict';
 
 	/**
-	 * Image loader with progress based on https://github.com/mrdoob/three.js/blob/master/src/loaders/ImageLoader.js
+	 * Utility
+	 * @namespace PANOLENS.Utils
+	 * @memberOf PANOLENS
 	 * @type {object}
+	 */
+	PANOLENS.Utils = {};
+
+})();;(function(){
+	
+	'use strict';
+
+	/**
+	 * Image loader with progress based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/ImageLoader.js}
+	 * @memberOf PANOLENS.Utils
+	 * @namespace
 	 */
 	PANOLENS.Utils.ImageLoader = {};
 
+	/**
+	 * Load an image with XMLHttpRequest to provide progress checking
+	 * @param  {string}   url        - An image url
+	 * @param  {function} onLoad     - On load callback
+	 * @param  {function} onProgress - In progress callback
+	 * @param  {function} onError    - On error callback
+	 * @return {HTMLImageElement}    - DOM image element
+	 */
 	PANOLENS.Utils.ImageLoader.checkDataURL = function ( url ) {
 		return !!url.match( /^\s*data:([a-z]+\/[a-z0-9\-\+]+(;[a-z\-]+\=[a-z0-9\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i );
 	};
@@ -2363,8 +2384,7 @@ window.PANOLENS = {
 		// Construct a new XMLHttpRequest
 		urlCreator = window.URL || window.webkitURL;
 		image = document.createElement( 'img' );
-		image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
-
+		
 		// Add to cache
 		THREE.Cache.add( url, image );
 
@@ -2381,6 +2401,8 @@ window.PANOLENS = {
 			return image;
 		}
 
+		image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
+
 		request = new XMLHttpRequest();
 		request.responseType = 'arraybuffer';
 		request.open( 'GET', url, true );
@@ -2393,7 +2415,7 @@ window.PANOLENS = {
 		    }
 
 		};
-		request.onload = function( event ) {
+		request.onloadend = function( event ) {
 
 		    arrayBufferView = new Uint8Array( this.response );
 		    blob = new Blob( [ arrayBufferView ] );
@@ -2415,12 +2437,20 @@ window.PANOLENS = {
 	'use strict';
 
 	/**
-	 * Texture loader based on https://github.com/mrdoob/three.js/blob/master/src/loaders/TextureLoader.js
-	 * @type {object}
+	 * Texture loader based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/TextureLoader.js}
+	 * @memberOf PANOLENS.Utils
+	 * @namespace
 	 */
-	
 	PANOLENS.Utils.TextureLoader = {};
 
+	/**
+	 * Load image texture
+	 * @param  {string}   url        - An image url
+	 * @param  {function} onLoad     - On load callback
+	 * @param  {function} onProgress - In progress callback
+	 * @param  {function} onError    - On error callback
+	 * @return {THREE.Texture}   	 - Image texture
+	 */
 	PANOLENS.Utils.TextureLoader.load = function ( url, onLoad, onProgress, onError ) {
 
 		var texture = new THREE.Texture(); 
@@ -2443,11 +2473,20 @@ window.PANOLENS = {
 	'use strict';
 
 	/**
-	 * Cube Texture Loader based on https://github.com/mrdoob/three.js/blob/master/src/loaders/CubeTextureLoader.js
-	 * @type {object}
+	 * Cube Texture Loader based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/CubeTextureLoader.js}
+	 * @memberOf PANOLENS.Utils
+	 * @namespace
 	 */
 	PANOLENS.Utils.CubeTextureLoader = {};
 
+	/**
+	 * Load 6 images as a cube texture
+	 * @param  {array}   urls        - Array with 6 image urls
+	 * @param  {function} onLoad     - On load callback
+	 * @param  {function} onProgress - In progress callback
+	 * @param  {function} onError    - On error callback
+	 * @return {THREE.CubeTexture}   - Cube texture
+	 */
 	PANOLENS.Utils.CubeTextureLoader.load = function ( urls, onLoad, onProgress, onError ) {
 
 		var texture, loaded, progress, all, loadings;
@@ -2536,7 +2575,7 @@ window.PANOLENS = {
 
 		this.linkedSpots = [];
 
-		this.isChildrenVisible = false;
+		this.isInfospotVisible = false;
 		
 		this.linkingImageURL = undefined;
 		this.linkingImageScale = undefined;
@@ -2561,6 +2600,12 @@ window.PANOLENS = {
 
 	PANOLENS.Panorama.prototype.constructor = PANOLENS.Panorama;
 
+	/**
+	 * Adding an object
+	 * To counter the scale.x = -1, it will automatically add an 
+	 * empty object with inverted scale on x
+	 * @param {THREE.Object3D} object - The object to be added
+	 */
 	PANOLENS.Panorama.prototype.add = function ( object ) {
 
 		var invertedObject;
@@ -2601,28 +2646,60 @@ window.PANOLENS = {
 		
 	};
 
+	/**
+	 * This will be called when panorama is loaded
+	 * @fires PANOLENS.Panorama#load
+	 */
 	PANOLENS.Panorama.prototype.onLoad = function () {
 
-		this.toggleChildrenVisibility( true );
+		this.toggleInfospotVisibility( true );
 
 		this.loaded = true;
 
+		/**
+		 * Load panorama event
+		 * @type {object}
+		 * @event PANOLENS.Panorama#load
+		 */
 		this.dispatchEvent( { type: 'load' } );
 
 	};
 
+	/**
+	 * This will be called when panorama is in progress
+	 * @fires PANOLENS.Panorama#progress
+	 */
 	PANOLENS.Panorama.prototype.onProgress = function ( progress ) {
 
+		/**
+		 * Loading panorama progress event
+		 * @type {object}
+		 * @event PANOLENS.Panorama#progress
+	 	 * @property {object} progress - The progress object containing loaded and total amount
+		 */
 		this.dispatchEvent( { type: 'progress', progress: progress } );
 
 	};
 
+	/**
+	 * This will be called when panorama loading has error
+	 * @fires PANOLENS.Panorama#error
+	 */
 	PANOLENS.Panorama.prototype.onError = function () {
 
+		/**
+		 * Loading panorama error event
+		 * @type {object}
+		 * @event PANOLENS.Panorama#error
+		 */
 		this.dispatchEvent( { type: 'error' } );
 
 	};
 
+	/**
+	 * Get zoom level based on window width
+	 * @return {number} zoom level indicating image quality
+	 */
 	PANOLENS.Panorama.prototype.getZoomLevel = function () {
 
 		var zoomLevel;
@@ -2653,7 +2730,11 @@ window.PANOLENS = {
 
 	};
 
-	PANOLENS.Panorama.prototype.updatePanoObjectTexture = function ( texture ) {
+	/**
+	 * Update texture of a panorama
+	 * @param {THREE.Texture} texture - Texture to be updated
+	 */
+	PANOLENS.Panorama.prototype.updateTexture = function ( texture ) {
 
 		this.material.map = texture;
 
@@ -2661,12 +2742,19 @@ window.PANOLENS = {
 
 	};
 
-	PANOLENS.Panorama.prototype.toggleChildrenVisibility = function ( force, delay ) {
+	/**
+	 * Toggle visibility of infospots in this panorama
+	 * @param  {boolean} isVisible - Visibility of infospots
+	 * @param  {number} delay - Delay in milliseconds to change visibility
+	 */
+	PANOLENS.Panorama.prototype.toggleInfospotVisibility = function ( isVisible, delay ) {
 
 		delay = ( delay !== undefined ) ? delay : 0;
 
-		var scope = this, 
-			visible = ( force !== undefined ) ? force : ( this.isChildrenVisible ? false : true );
+		var scope, visible;
+
+		scope = this;
+		visible = ( isVisible !== undefined ) ? isVisible : ( this.isInfospotVisible ? false : true );
 
 		this.traverse( function ( object ) {
 
@@ -2678,10 +2766,15 @@ window.PANOLENS = {
 
 		} );
 
-		this.isChildrenVisible = visible;
+		this.isInfospotVisible = visible;
 
 	};
 
+	/**
+	 * Set image of this panorama's linking infospot
+	 * @param {string} url   - Url to the image asset
+	 * @param {number} scale - Scale factor of the infospot
+	 */
 	PANOLENS.Panorama.prototype.setLinkingImage = function ( url, scale ) {
 
 		this.linkingImageURL = url;
@@ -2689,6 +2782,11 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Link two panorama bidirectionally by attaching infospot on each other
+	 * @param  {PANOLENS.Panorama} pano  - The panorama to be linked to
+	 * @param  {boolean} ended - If this linking is the second / last iteration
+	 */
 	PANOLENS.Panorama.prototype.link = function ( pano, ended ) {
 
 		var scope = this, spot, raycaster, intersect, point;
@@ -2718,6 +2816,13 @@ window.PANOLENS = {
         spot.toPanorama = pano;
         spot.addEventListener( 'click', function () {
 
+        	/**
+        	 * Viewer handler event
+        	 * @type {object}
+        	 * @event PANOLENS.Panorama#panolens-viewer-handler
+        	 * @property {string} method - Viewer function name
+        	 * @property {*} data - The argument to be passed into the method
+        	 */
         	scope.dispatchEvent( { type : 'panolens-viewer-handler', method: 'setPanorama', data: pano } );
 
         } );
@@ -2742,6 +2847,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Start fading in animation
+	 */
 	PANOLENS.Panorama.prototype.fadeIn = function () {
 
 		new TWEEN.Tween( this.material )
@@ -2751,6 +2859,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Start fading out animation
+	 */
 	PANOLENS.Panorama.prototype.fadeOut = function () {
 
 		new TWEEN.Tween( this.material )
@@ -2760,6 +2871,11 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * This will be called when entering a panorama 
+	 * @fires PANOLENS.Panorama#enter
+	 * @fires PANOLENS.Panorama#enter-animation-start
+	 */
 	PANOLENS.Panorama.prototype.onEnter = function () {
 
 		new TWEEN.Tween( this )
@@ -2767,12 +2883,17 @@ window.PANOLENS = {
 		.easing( TWEEN.Easing.Quartic.Out )
 		.onStart( function () {
 
-			this.dispatchEvent( { type: 'enter-start' } );
+			/**
+			 * Enter panorama and animation starting event
+			 * @event PANOLENS.Panorama#enter-animation-start
+			 * @type {object} 
+			 */
+			this.dispatchEvent( { type: 'enter-animation-start' } );
 
 			if ( this.loaded ) {
 
 				this.fadeIn();
-				this.toggleChildrenVisibility( true, this.animationDuration );
+				this.toggleInfospotVisibility( true, this.animationDuration );
 
 			} else {
 
@@ -2786,10 +2907,19 @@ window.PANOLENS = {
 		.delay( this.animationDuration )
 		.start();
 
+		/**
+		 * Enter panorama event
+		 * @event PANOLENS.Panorama#enter
+		 * @type {object} 
+		 */
 		this.dispatchEvent( { type: 'enter' } );
 
 	};
 
+	/**
+	 * This will be called when leaving a panorama
+	 * @fires PANOLENS.Panorama#leave
+	 */
 	PANOLENS.Panorama.prototype.onLeave = function () {
 
 		new TWEEN.Tween( this )
@@ -2798,7 +2928,7 @@ window.PANOLENS = {
 		.onStart( function () {
 
 			this.fadeOut();
-			this.toggleChildrenVisibility( false );
+			this.toggleInfospotVisibility( false );
 
 		} )
 		.onComplete( function () {
@@ -2809,6 +2939,11 @@ window.PANOLENS = {
 		} )
 		.start();
 
+		/**
+		 * Leave panorama event
+		 * @event PANOLENS.Panorama#leave
+		 * @type {object} 
+		 */
 		this.dispatchEvent( { type: 'leave' } );
 
 	};
@@ -2840,6 +2975,10 @@ window.PANOLENS = {
 
 	PANOLENS.ImagePanorama.prototype.constructor = PANOLENS.ImagePanorama;
 
+	/**
+	 * Load image asset
+	 * @param  {*} src - Url or image element
+	 */
 	PANOLENS.ImagePanorama.prototype.load = function ( src ) {
 
 		src = src || this.src;
@@ -2863,13 +3002,17 @@ window.PANOLENS = {
 		
 	};
 
+	/**
+	 * This will be called when image is loaded
+	 * @param  {THREE.Texture} texture - Texture to be updated
+	 */
 	PANOLENS.ImagePanorama.prototype.onLoad = function ( texture ) {
 
 		texture.minFilter = texture.maxFilter = THREE.LinearFilter;
 
 		texture.needsUpdate = true;
 
-		this.updatePanoObjectTexture( texture );
+		this.updateTexture( texture );
 
 		PANOLENS.Panorama.prototype.onLoad.call( this );
 		
@@ -2909,6 +3052,10 @@ window.PANOLENS = {
 
 	PANOLENS.GoogleStreetviewPanorama.constructor = PANOLENS.GoogleStreetviewPanorama;
 
+	/**
+	 * Load Google Street View by panorama id
+	 * @param {string} panoId - Gogogle Street View panorama id
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.load = function ( panoId ) {
 
 		panoId = ( panoId || this.panoId ) || {};
@@ -2925,6 +3072,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Setup Google Map API
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function () {
 
 		var script = document.createElement( 'script' );
@@ -2936,6 +3086,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Set GSV Loader
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.setGSVLoader = function () {
 
 		this.gsvLoader = new GSVPANO.PanoLoader();
@@ -2948,12 +3101,20 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Get GSV Loader
+	 * @return {object} GSV Loader instance
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.getGSVLoader = function () {
 
 		return this.gsvLoader;
 
 	};
 
+	/**
+	 * Load GSV Loader
+	 * @param  {string} panoId - Gogogle Street View panorama id
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.loadGSVLoader = function ( panoId ) {
 
 		this.gsvLoader.onProgress = this.onProgress.bind( this );
@@ -2967,6 +3128,10 @@ window.PANOLENS = {
 		this.gsvLoader.loaded = true;
 	};
 
+	/**
+	 * This will be called when panorama is loaded
+	 * @param  {HTMLCanvasElement} canvas - Canvas where the tiles have been drawn
+	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.onLoad = function ( canvas ) {
 
 		if ( !this.gsvLoader ) { return; }
@@ -3021,6 +3186,9 @@ window.PANOLENS = {
 
 	PANOLENS.CubePanorama.prototype.constructor = PANOLENS.CubePanorama;
 
+	/**
+	 * Load 6 images and bind listeners
+	 */
 	PANOLENS.CubePanorama.prototype.load = function () {
 
 		PANOLENS.Utils.CubeTextureLoader.load( 	
@@ -3035,6 +3203,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * This will be called when 6 textures are ready
+	 * @param  {THREE.CubeTexture} texture - Cube texture
+	 */
 	PANOLENS.CubePanorama.prototype.onLoad = function ( texture ) {
 		
 		this.material.uniforms[ 'tCube' ].value = texture;
@@ -3070,6 +3242,7 @@ window.PANOLENS = {
 
 	/**
 	 * Video Panorama
+	 * @constructor
 	 * @param {string} src - Equirectangular video url
 	 * @param {object} [options] - Option for video settings
 	 * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video
@@ -3109,6 +3282,12 @@ window.PANOLENS = {
 
 	PANOLENS.VideoPanorama.constructor = PANOLENS.VideoPanorama;
 
+	/**
+	 * [load description]
+	 * @param  {string} src     - The video url
+	 * @param  {object} options - Option object containing videoElement and videoCanvas
+	 * @fires  PANOLENS.Panorama#panolens-viewer-handler
+	 */
 	PANOLENS.VideoPanorama.prototype.load = function ( src, options ) {
 
 		var scope = this;
@@ -3134,12 +3313,24 @@ window.PANOLENS = {
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'onVideoUpdate'
+			 * @property {number} data - The percentage of video progress. Range from 0.0 to 1.0
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: this.currentTime / this.duration } );
 
 		};
 
 	};
 
+	/**
+	 * Set video texture
+	 * @param {HTMLVideoElement} video  - The html5 video element
+	 * @param {HTMLCanvasElement} canvas - The canvas for video to be drawn on
+	 * @fires PANOLENS.Panorama#panolens-viewer-handler
+	 */
 	PANOLENS.VideoPanorama.prototype.setVideoTexture = function ( video, canvas ) {
 
 		var videoTexture, videoRenderObject, videoContext, scene, updateCallback;
@@ -3224,11 +3415,18 @@ window.PANOLENS = {
 		videoContext.drawImage( video, 0, 0 );
 		videoTexture.needsUpdate = true;
 
-		this.updatePanoObjectTexture( videoTexture );
+		this.updateTexture( videoTexture );
 
 		this.videoRenderObject = videoRenderObject;
 
 		// Notify Viewer to render object
+		/**
+		 * Viewer handler event
+		 * @type {object}
+		 * @event PANOLENS.Panorama#panolens-viewer-handler
+		 * @property {string} method - 'addUpdateCallback'
+		 * @property {*} data - The callback function to update video
+		 */
 		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'addUpdateCallback', data: updateCallback.bind( videoRenderObject ) } );
 		
 	};
@@ -3243,6 +3441,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Check if video is paused
+	 * @return {boolean} - is video paused or not
+	 */
 	PANOLENS.VideoPanorama.prototype.isVideoPaused = function () {
 
 		return ( this.isIOS ) 
@@ -3251,6 +3453,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Toggle video to play or pause
+	 */
 	PANOLENS.VideoPanorama.prototype.toggleVideo = function () {
 
 		if ( this.videoRenderObject && this.videoRenderObject.video ) {
@@ -3269,6 +3474,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Set video currentTime
+	 * @param {object} event - Event contains percentage. Range from 0.0 to 1.0
+	 */
 	PANOLENS.VideoPanorama.prototype.setVideoCurrentTime = function ( event ) {
 
 		if ( this.videoRenderObject && this.videoRenderObject.video && event.percentage !== 1 ) {
@@ -3279,6 +3488,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Play video
+	 */
 	PANOLENS.VideoPanorama.prototype.playVideo = function () {
 
 		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoPaused() ) {
@@ -3289,6 +3501,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Pause video
+	 */
 	PANOLENS.VideoPanorama.prototype.pauseVideo = function () {
 
 		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoPaused() ) {
@@ -3299,6 +3514,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Reset video at stating point
+	 */
 	PANOLENS.VideoPanorama.prototype.resetVideo = function () {
 
 		if ( this.videoRenderObject && this.videoRenderObject.video ) {
@@ -3416,12 +3634,6 @@ window.PANOLENS = {
 
 	};
 
-	PANOLENS.Tile.prototype.setEntity = function ( entity ) {
-
-		this.entity = entity;
-
-	};
-
 	/**
 	 * Bend panel with direction, axis, and angle
 	 * @param  {THREE.Vector3} direction - Force direction
@@ -3436,6 +3648,20 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Create a tween object for animation
+	 * based on - {@link https://github.com/tweenjs/tween.js}
+	 * @param  {string} name       - Name of the tween animation
+	 * @param  {object} object     - Object to be tweened
+	 * @param  {object} toState    - Final state of the object's properties
+	 * @param  {number} duration   - Tweening duration
+	 * @param  {TWEEN.Easing} easing     - Easing function
+	 * @param  {number} delay      - Animation delay time
+	 * @param  {Function} onStart    - On start function
+	 * @param  {Function} onUpdate   - On update function
+	 * @param  {Function} onComplete - On complete function
+	 * @return {TWEEN.Tween}         - Tween object
+	 */
 	PANOLENS.Tile.prototype.tween = function ( name, object, toState, duration, easing, delay, onStart, onUpdate, onComplete ) {
 
 		object = object || this;
@@ -3461,6 +3687,13 @@ window.PANOLENS = {
 
     };
 
+    /**
+     * Short-hand for displaying a single ripple effect
+     * by duplicating itself and fadeout
+     * @param  {number} scale    - The duplicated self fadeout scale
+     * @param  {number} duration - Effect duration
+     * @param  {TWEEN.Easing} easing   - Easing function
+     */
     PANOLENS.Tile.prototype.ripple = function ( scale, duration, easing ) {
 
     	scale = scale || 2;
@@ -3487,6 +3720,16 @@ window.PANOLENS = {
         this.add( ripple );
 
     };
+
+    /**
+	 * Set entity if multiple objects are considered as one entity
+	 * @param {object} entity - Entity represents whole group structure
+	 */
+	PANOLENS.Tile.prototype.setEntity = function ( entity ) {
+
+		this.entity = entity;
+
+	};
 
 } )();;(function(){
 	
@@ -3538,6 +3781,10 @@ window.PANOLENS = {
 
 	PANOLENS.TileGroup.prototype.constructor = PANOLENS.TileGroup;
 
+    /**
+     * Update corresponding tile textures
+     * @param  {array} imageArray - Image array with index to index image update
+     */
 	PANOLENS.TileGroup.prototype.updateTexture = function ( imageArray ) {
 
 		var scope = this;
@@ -3554,6 +3801,10 @@ window.PANOLENS = {
 
 	};
 
+    /**
+     * Update all tile textures and hide the remaining ones
+     * @param  {array} imageArray - Image array with index to index image update
+     */
 	PANOLENS.TileGroup.prototype.updateAllTexture = function ( imageArray ) {
 
 		this.updateTexture( imageArray );
@@ -3571,6 +3822,10 @@ window.PANOLENS = {
 
 	}
 
+    /**
+     * Set individual texture
+     * @param {THREE.Texture} texture - Texture to be updated
+     */
 	PANOLENS.TileGroup.prototype.setTexture = function ( texture ) {
 
         texture.minFilter = THREE.LinearFilter;
@@ -3581,6 +3836,9 @@ window.PANOLENS = {
 
     };
 
+    /**
+     * Update visibility
+     */
     PANOLENS.TileGroup.prototype.updateVisbility = function () {
 
     	this.children[this.offset].visible = true;
@@ -3643,6 +3901,10 @@ window.PANOLENS = {
 
     };
 
+    /**
+     * Scroll up
+     * @param  {number} duration - Scroll up duration
+     */
     PANOLENS.TileGroup.prototype.scrollUp = function ( duration ) {
 
     	var tiles = this.tileArray, offset;
@@ -3671,6 +3933,10 @@ window.PANOLENS = {
 
     };
 
+    /**
+     * Scroll down 
+     * @param  {number} duration - Scroll up duration
+     */
     PANOLENS.TileGroup.prototype.scrollDown = function ( duration ) {
 
     	var tiles = this.tileArray, offset;
@@ -3712,12 +3978,20 @@ window.PANOLENS = {
 
     };
 
+    /**
+     * Get current index
+     * @return {number} Index of the group. Range from 0 to this.tileArray.length
+     */
     PANOLENS.TileGroup.prototype.getIndex = function () {
 
     	return this.offset;
 
     };
 
+    /**
+     * Get visible tile counts
+     * @return {number} Number of visible tiles
+     */
     PANOLENS.TileGroup.prototype.getTileCount = function () {
 
     	var count = 0;
@@ -3744,7 +4018,7 @@ window.PANOLENS = {
 	var pendingQueue = [];
 
 	/**
-	 * Sprite text based on https://github.com/Jam3/three-bmfont-text
+	 * Sprite text based on {@link https://github.com/Jam3/three-bmfont-text}
 	 * @constructor
 	 * @param {string} text     - Text to be displayed
 	 * @param {number} maxWidth	- Max width
@@ -3779,13 +4053,19 @@ window.PANOLENS = {
 	PANOLENS.SpriteText.prototype.generateTextGeometry = function () {};
 	PANOLENS.SpriteText.prototype.generateSDFShader = function () {};
 
+	/**
+	 * Set BMFont
+	 * @param {Function} callback - Callback after font is loaded
+	 * @param {object}   font     - The font to be loaded
+	 * @param {THREE.Texture}   texture  - Font texture
+	 */
 	PANOLENS.SpriteText.prototype.setBMFont = function ( callback, font, texture ) {
 
 		texture.needsUpdate = true;
 	  	texture.minFilter = THREE.LinearMipMapLinearFilter;
 		texture.magFilter = THREE.LinearFilter;
 		texture.generateMipmaps = true;
-		texture.anisotropy = 16;
+		texture.anisotropy = 8;
 
 		sharedFont = font;
 		sharedTexture = texture;
@@ -3802,6 +4082,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Add text mesh
+	 * @param {string} text - Text to be displayed
+	 */
 	PANOLENS.SpriteText.prototype.addText = function ( text ) {
 
 		if ( !sharedFont || !sharedTexture ) {
@@ -3842,6 +4126,11 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Update text geometry
+	 * @param  {object} options - Geometry options based on
+	 *  https://github.com/Jam3/three-bmfont-text#geometry--createtextopt
+	 */
 	PANOLENS.SpriteText.prototype.update = function ( options ) {
 
 		var mesh;
@@ -3856,6 +4145,20 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Create a tween object for animation
+	 * based on - {@link https://github.com/tweenjs/tween.js}
+	 * @param  {string} name       - Name of the tween animation
+	 * @param  {object} object     - Object to be tweened
+	 * @param  {object} toState    - Final state of the object's properties
+	 * @param  {number} duration   - Tweening duration
+	 * @param  {TWEEN.Easing} easing     - Easing function
+	 * @param  {number} delay      - Animation delay time
+	 * @param  {Function} onStart    - On start function
+	 * @param  {Function} onUpdate   - On update function
+	 * @param  {Function} onComplete - On complete function
+	 * @return {TWEEN.Tween}         - Tween object
+	 */
 	PANOLENS.SpriteText.prototype.tween = function ( name, object, toState, duration, easing, delay, onStart, onUpdate, onComplete ) {
 
 		object = object || this;
@@ -3881,15 +4184,23 @@ window.PANOLENS = {
 
 	};
 
-	PANOLENS.SpriteText.prototype.setEntity = function ( entity ) {
-
-		this.entity = entity;
-
-	};
-
+	/**
+	 * Get geometry layout
+	 * @return {object} Text geometry layout 
+	 */
 	PANOLENS.SpriteText.prototype.getLayout = function () {
 
 		return this.mesh && this.mesh.geometry && this.mesh.geometry.layout || {};
+
+	};
+
+	/**
+	 * Set entity if multiple objects are considered as one entity
+	 * @param {object} entity - Entity represents whole group structure
+	 */
+	PANOLENS.SpriteText.prototype.setEntity = function ( entity ) {
+
+		this.entity = entity;
 
 	};
 
@@ -3918,6 +4229,9 @@ window.PANOLENS = {
 
 	PANOLENS.Widget.prototype.constructor = PANOLENS.Widget;
 
+	/**
+	 * Add control bar
+	 */
 	PANOLENS.Widget.prototype.addControlBar = function () {
 
 		if ( !this.container ) {
@@ -3953,6 +4267,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Add buttons on top of control bar
+	 * @param {string} name - The control button name to be created
+	 */
 	PANOLENS.Widget.prototype.addControlButton = function ( name ) {
 
 		this.fullscreenElement = name === 'fullscreen' ? this.createFullscreenButton() : this.fullscreenElement;
@@ -3968,12 +4286,22 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Create VR button
+	 * @return {HTMLSpanElement} - The dom element icon for VR effect
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
 	PANOLENS.Widget.prototype.createVRButton = function () {
 
 		var scope = this, item;
 
 		function onTap () {
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleVR' function call on PANOLENS.Viewer
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVR' } );
 
 		}
@@ -3994,9 +4322,22 @@ window.PANOLENS = {
 
 	}
 
+	/**
+	 * Create Fullscreen button
+	 * @return {HTMLSpanElement} - The dom element icon for fullscreen
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
 	PANOLENS.Widget.prototype.createFullscreenButton = function () {
 
 		var scope = this, item, isFullscreen = false;
+
+		// Don't create button if no support
+		if ( !document.fullscreenEnabled       && 
+			 !document.webkitFullscreenEnabled &&
+			 !document.mozFullScreenEnabled    &&
+			 !document.msFullscreenEnabled ) {
+			return;
+		}
 
 		function onTap () {
 
@@ -4019,6 +4360,11 @@ window.PANOLENS = {
 				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
 				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleFullscreen' function call on PANOLENS.Viewer
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
 
 		}
@@ -4056,12 +4402,22 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Create camera control button
+	 * @return {HTMLSpanElement} - The dom element icon for camera navigation
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
 	PANOLENS.Widget.prototype.createCameraControlButton = function () {
 
 		var scope = this, item;
 
 		function onTap(){
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleNextControl' function call on PANOLENS.Viewer
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleNextControl' } );
 
 			this.controlName = ( this.controlName === 'orbit' ) ? 'device-orientation' : 'orbit';
@@ -4090,6 +4446,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Create video control container
+	 * @return {HTMLSpanElement} - The dom element icon for video control
+	 */
 	PANOLENS.Widget.prototype.createVideoControl = function () {
 
 		var item;
@@ -4123,12 +4483,22 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Create video control button
+	 * @return {HTMLSpanElement} - The dom element icon for video control
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
 	PANOLENS.Widget.prototype.createVideoControlButton = function () {
 
 		var scope = this, item;
 
 		function onTap () {
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleVideoPlay' function call on PANOLENS.Viewer
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVideoPlay' } );
 
 			this.paused = !this.paused;
@@ -4164,6 +4534,11 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Create video seekbar
+	 * @return {HTMLSpanElement} - The dom element icon for video seekbar
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
 	PANOLENS.Widget.prototype.createVideoControlSeekbar = function () {
 
 		var scope = this, item, progressElement, progressElementControl,
@@ -4218,6 +4593,12 @@ window.PANOLENS = {
 
 				item.setProgress ( percentageNext );
 
+				/**
+				 * Viewer handler event
+				 * @type {object}
+				 * @property {string} method - 'setVideoCurrentTime' function call on PANOLENS.Viewer
+				 * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
+				 */
 				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setVideoCurrentTime', data: percentageNext } );
 
 			}
@@ -4247,6 +4628,12 @@ window.PANOLENS = {
 				? ( event.changedTouches[0].pageX - event.target.getBoundingClientRect().left ) / this.clientWidth
 				: event.offsetX / this.clientWidth;
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'setVideoCurrentTime' function call on PANOLENS.Viewer
+			 * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setVideoCurrentTime', data: percentage } );
 
 			item.setProgress( event.offsetX / this.clientWidth );
@@ -4289,6 +4676,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Create custom item element
+	 * @return {HTMLSpanElement} - The dom element icon
+	 */
 	PANOLENS.Widget.prototype.createCustomItem = function ( options ) {
 
 		options = options || {};
@@ -4322,6 +4713,12 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Merge item css style
+	 * @param  {HTMLDOMElement} element - The element to be merged with style
+	 * @param  {object} options - The style options
+	 * @return {HTMLDOMElement} - The same element with merged styles
+	 */
 	PANOLENS.Widget.prototype.mergeStyleOptions = function ( element, options ) {
 
 		options = options || {};
@@ -4351,91 +4748,168 @@ window.PANOLENS = {
 	 */
 	PANOLENS.Infospot = function ( scale, imageSrc, container ) {
 		
-		var scope = this, ratio;
+		var scope = this, ratio, startScale, endScale, duration;
+
+		scale = scale || 1;
+		imageSrc = imageSrc || PANOLENS.DataImage.Info;
+		duration = 500;
 
 		THREE.Sprite.call( this );
 
 		this.type = 'infospot';
 
 		this.isHovering = false;
+		this.visible = false;
+
 		this.element;
 		this.toPanorama;
 
-		this.container = container || document.body;
-
-		// Default is not visible until panorama is loaded
-		this.visible = false;
-
-		scale = scale || 1;
-		imageSrc = imageSrc || PANOLENS.DataImage.Info;
-
 		this.scale.set( scale, scale, 1 );
+		this.rotation.y = Math.PI;
+
+		this.container = container || document.body;
 
 		PANOLENS.Utils.TextureLoader.load( imageSrc, postLoad );		
 
 		function postLoad ( texture ) {
-
-			texture.minFilter = texture.maxFilter = THREE.LinearFilter;
-
-			texture.wrapS = THREE.RepeatWrapping;
-
-			texture.repeat.x = -1;
-
+			
+			scope.material.side = THREE.DoubleSide;
 			scope.material.map = texture;
-			scope.material.depthWrite = false;
 			scope.material.depthTest = false;
 
 			ratio = texture.image.width / texture.image.height;
 
 			scope.scale.set( ratio * scale, scale, 1 );
 
-			scope.hoverStartScale = scope.scale.clone();
-			scope.hoverEndScale = scope.scale.clone().multiplyScalar( 1.3 );
-			scope.hoverEndScale.z = 1;
+			startScale = scope.scale.clone();
+			endScale = scope.scale.clone().multiplyScalar( 1.3 );
+			endScale.z = 1;
 
 			scope.scaleUpAnimation = new TWEEN.Tween( scope.scale )
-				.to( { x: scope.hoverEndScale.x, y: scope.hoverEndScale.y }, 500 )
+				.to( { x: endScale.x, y: endScale.y }, duration )
 				.easing( TWEEN.Easing.Elastic.Out );
 
 			scope.scaleDownAnimation = new TWEEN.Tween( scope.scale )
-				.to( { x: scope.hoverStartScale.x, y: scope.hoverStartScale.y }, 500 )
+				.to( { x: startScale.x, y: startScale.y }, duration )
 				.easing( TWEEN.Easing.Elastic.Out );
-
-			scope.showAnimation = new TWEEN.Tween( scope.material )
-				.to( { opacity: 1 }, scope.animationDuration )
-				.onStart( function () { scope.visible = true; } )
-				.easing( TWEEN.Easing.Quartic.Out );
-
-			scope.hideAnimation = new TWEEN.Tween( scope.material )
-				.to( { opacity: 0 }, scope.animationDuration )
-				.onComplete( function () { scope.visible = false; } )
-				.easing( TWEEN.Easing.Quartic.Out );
 
 		}
 
-		// Lock element if there's one
-		this.addEventListener( 'click', function () {
+		function show () {
 
-			this.element && this.lockHoverElement();
+			this.visible = true;
 
-		} );
+		}
+
+		function hide () {
+
+			this.visible = false;
+
+		}
+
+		// Add show and hide animations
+		this.showAnimation = new TWEEN.Tween( this.material )
+			.to( { opacity: 1 }, duration )
+			.onStart( show.bind( this ) )
+			.easing( TWEEN.Easing.Quartic.Out );
+
+		this.hideAnimation = new TWEEN.Tween( this.material )
+			.to( { opacity: 0 }, duration )
+			.onComplete( hide.bind( this ) )
+			.easing( TWEEN.Easing.Quartic.Out );
+
+		// Attach event listeners
+		this.addEventListener( 'click', this.onClick );
+		this.addEventListener( 'hover', this.onHover );
+		this.addEventListener( 'hoverenter', this.onHoverStart );
+		this.addEventListener( 'hoverleave', this.onHoverEnd );
 
 	}
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
 
-	PANOLENS.Infospot.prototype.onHover = function ( x, y ) {
+	/**
+	 * This will be called by a click event
+	 * Translate and lock the hovering element if any
+	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
+	 */
+	PANOLENS.Infospot.prototype.onClick = function ( event ) {
 
-		if ( !this.isHovering ) {
+		if ( this.element ) {
 
-			this.onHoverStart();
-			this.isHovering = true;
+			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+
+			// Lock element
+			this.lockHoverElement();
 
 		}
 
-		if ( !this.element || this.element.locked ) { return; }
+	};
+
+	/**
+	 * This will be called by a mouse hover event
+	 * Translate the hovering element if any
+	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
+	 */
+	PANOLENS.Infospot.prototype.onHover = function ( event ) {
+
+		if ( this.element && !this.element.locked ) {
+
+			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+
+		}
+
+	};
+
+	/**
+	 * This will be called on a mouse hover start
+	 * Sets cursor style to 'pointer', display the element and scale up the infospot
+	 */
+	PANOLENS.Infospot.prototype.onHoverStart = function() {
+
+		this.isHovering = true;
+		this.container.style.cursor = 'pointer';
+		this.scaleDownAnimation.stop();
+		this.scaleUpAnimation.start();
+
+		if ( this.element ) {
+
+			this.element.style.display = 'block';
+
+		}
+
+	};
+
+	/**
+	 * This will be called on a mouse hover end
+	 * Sets cursor style to 'default', hide the element and scale down the infospot
+	 */
+	PANOLENS.Infospot.prototype.onHoverEnd = function() {
+
+		this.isHovering = false;
+		this.container.style.cursor = 'default';
+		this.scaleUpAnimation.stop();
+		this.scaleDownAnimation.start();
+
+		if ( this.element ) {
+
+			this.element.style.display = 'none';
+			this.unlockHoverElement();
+
+		}
+
+	};
+
+	/**
+	 * Translate the hovering element by css transform
+	 * @param  {number} x - X position on the window screen
+	 * @param  {number} y - Y position on the window screen
+	 */
+	PANOLENS.Infospot.prototype.translateElement = function ( x, y ) {
 
 		var left, top;
+
+		this.element.style.display = 'block';
 
 		left = x - this.element.clientWidth / 2;
 		top = y - this.element.clientHeight - 30;
@@ -4446,43 +4920,10 @@ window.PANOLENS = {
 
 	};
 
-	PANOLENS.Infospot.prototype.onHoverStart = function() {
-
-		if ( !this.hoverEndScale.equals( this.scale ) ) {
-
-			this.scaleDownAnimation.stop();
-			this.scaleUpAnimation.start();
-
-		}
-
-		if ( this.element && this.element.style.display === 'none' ) {
-
-			this.element.style.display = 'block';
-
-		}
-
-	};
-
-	PANOLENS.Infospot.prototype.onHoverEnd = function() {
-
-		this.isHovering = false;
-		
-		if ( !this.hoverStartScale.equals( this.scale ) ) {
-
-			this.scaleUpAnimation.stop();
-			this.scaleDownAnimation.start();
-
-		}
-
-		if ( this.element && this.element.style.display !== 'none' ) {
-
-			this.element.style.display = 'none';
-			this.unlockHoverElement();
-
-		}
-
-	};
-
+	/**
+	 * Set hovering text content
+	 * @param {string} text - Text to be displayed
+	 */
 	PANOLENS.Infospot.prototype.setText = function ( text ) {
 
 		if ( this.element ) {
@@ -4493,20 +4934,24 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Add hovering text element
+	 * @param {string} text - Text to be displayed
+	 */
 	PANOLENS.Infospot.prototype.addHoverText = function ( text ) {
 
 		if ( !this.element ) {
 
 			this.element = document.createElement( 'div' );
 
+			this.element.style.display = 'none';
 			this.element.style.color = '#fff';
 			this.element.style.top = 0;
 			this.element.style.maxWidth = '50%';
 			this.element.style.maxHeight = '50%';
 			this.element.style.textShadow = '0 0 3px #000000';
 			this.element.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
-			this.element.style.position = 'absolute';
-			this.element.style.display = 'none';
+			this.element.style.position = 'fixed';
 			this.element.classList.add( 'panolens-infospot' );
 
 			this.container.appendChild( this.element );
@@ -4517,14 +4962,18 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Add hovering element by cloning an element
+	 * @param {HTMLDOMElement} el - Element to be cloned and displayed
+	 */
 	PANOLENS.Infospot.prototype.addHoverElement = function ( el ) {
 
 		if ( !this.element ) { 
 
 			this.element = el.cloneNode( true );
-			this.element.style.top = 0;
-			this.element.style.position = 'absolute';
 			this.element.style.display = 'none';
+			this.element.style.top = 0;
+			this.element.style.position = 'fixed';
 			this.element.classList.add( 'panolens-infospot' );
 
 			this.container.appendChild( this.element );
@@ -4533,6 +4982,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Remove hovering element
+	 */
 	PANOLENS.Infospot.prototype.removeHoverElement = function () {
 
 		if ( this.element ) { 
@@ -4545,6 +4997,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Lock hovering element
+	 */
 	PANOLENS.Infospot.prototype.lockHoverElement = function () {
 
 		if ( this.element ) { 
@@ -4555,6 +5010,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Unlock hovering element
+	 */
 	PANOLENS.Infospot.prototype.unlockHoverElement = function () {
 
 		if ( this.element ) { 
@@ -4565,6 +5023,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Show infospot
+	 * @param  {number} [delay=0] - Delay time to show
+	 */
 	PANOLENS.Infospot.prototype.show = function ( delay ) {
 
 		delay = delay || 0;
@@ -4574,6 +5036,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Hide infospot
+	 * @param  {number} [delay=0] - Delay time to hide
+	 */
 	PANOLENS.Infospot.prototype.hide = function ( delay ) {
 
 		delay = delay || 0;
@@ -4596,7 +5062,7 @@ window.PANOLENS = {
 	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
 	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
 	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
-	 * @param {array}   [options.controlButtons=[ 'fullscreen', 'navigation', 'vr', 'video' ]] - Button names to mount on controlBar if controlBar exists
+	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'navigation', 'vr', 'video']
 	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
 	 * @param {boolean} [options.autoHideInfospot=false] - Auto hide infospots when click on non-active area
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
@@ -4664,7 +5130,7 @@ window.PANOLENS = {
 		this.widget;
 		
 		this.hoverObject;
-		this.hoveringObject;
+		this.infospot;
 		this.pressEntityObject;
 		this.pressObject;
 
@@ -4737,6 +5203,12 @@ window.PANOLENS = {
 
 	PANOLENS.Viewer.prototype.constructor = PANOLENS.Viewer;
 
+	/**
+	 * Adding an object
+	 * Automatically hookup with panolens-viewer-handler listener
+	 * to communicate with viewer method
+	 * @param {THREE.Object3D} object - The object to be added
+	 */
 	PANOLENS.Viewer.prototype.add = function ( object ) {
 
 		if ( arguments.length > 1 ) {
@@ -4775,6 +5247,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Add default control bar
+	 * @param {array} array - The control buttons array
+	 */
 	PANOLENS.Viewer.prototype.addDefaultControlBar = function ( array ) {
 
 		var scope = this;
@@ -4797,10 +5273,17 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Set a panorama to be the current one
+	 * @param {PANOLENS.Panorama} pano - Panorama to be set
+	 */
 	PANOLENS.Viewer.prototype.setPanorama = function ( pano ) {
 
 		if ( pano.type === 'panorama' ) {
 			
+			// Clear exisiting infospot
+			this.hideInfospot();
+
 			// Reset Current Panorama
 			this.panorama && this.panorama.onLeave();
 
@@ -4811,6 +5294,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Event handler to execute commands from child objects
+	 * @param  {object} event - The dispatched event with method as function name and data as an argument
+	 */
 	PANOLENS.Viewer.prototype.eventHandler = function ( event ) {
 
 		if ( event.method && this[ event.method ] ) {
@@ -4821,6 +5308,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Toggle VR effect mode
+	 * @fires PANOLENS.Viewer#VR-toggle
+	 */
 	PANOLENS.Viewer.prototype.toggleVR = function () {
 
 		if ( this.effect ) {
@@ -4836,10 +5327,19 @@ window.PANOLENS = {
 			}
 		}
 
+		/**
+		 * Toggle vr event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#VR-toggle
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
 		this.dispatchEvent( { type: 'VR-toggle', mode: this.mode } );
 
 	};
 
+	/**
+	 * Enable VR effect
+	 */
 	PANOLENS.Viewer.prototype.enableVR = function () {
 
 		if ( this.effect && this.mode !== PANOLENS.Modes.VR ) {
@@ -4850,6 +5350,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Disable VR effect
+	 */
 	PANOLENS.Viewer.prototype.disableVR = function () {
 
 		if ( this.effect && this.mode !== PANOLENS.Modes.NORMAL ) {
@@ -4860,32 +5363,66 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Toggle video play or stop
+	 * @fires PANOLENS.Viewer#video-toggle
+	 */
 	PANOLENS.Viewer.prototype.toggleVideoPlay = function () {
 
 		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
 
+			/**
+			 * Toggle video event
+			 * @type {object}
+			 * @event PANOLENS.Viewer#video-toggle
+			 */
 			this.panorama.dispatchEvent( { type: 'video-toggle' } );
 
 		}
 
 	};
 
+	/**
+	 * Set currentTime in a video
+	 * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+	 * @fires PANOLENS.Viewer#video-time
+	 */
 	PANOLENS.Viewer.prototype.setVideoCurrentTime = function ( percentage ) {
 
 		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
 
+			/**
+			 * Setting video time event
+			 * @type {object}
+			 * @event PANOLENS.Viewer#video-time
+			 * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+			 */
 			this.panorama.dispatchEvent( { type: 'video-time', percentage: percentage } );
 
 		}
 
 	};
 
+	/**
+	 * This will be called when video updates if an widget is present
+	 * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+	 * @fires PANOLENS.Viewer#video-update
+	 */
 	PANOLENS.Viewer.prototype.onVideoUpdate = function ( percentage ) {
 
+		/**
+		 * Video update event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#video-update
+		 * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-update', percentage: percentage } );
 
 	};
 
+	/**
+	 * Add update callback to be called every animation frame
+	 */
 	PANOLENS.Viewer.prototype.addUpdateCallback = function ( fn ) {
 
 		if ( fn ) {
@@ -4896,6 +5433,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Remove update callback
+	 * @param  {Function} fn - The function to be removed
+	 */
 	PANOLENS.Viewer.prototype.removeUpdateCallback = function ( fn ) {
 
 		var index = this.updateCallbacks.indexOf( fn );
@@ -4908,24 +5449,44 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Show video widget
+	 */
 	PANOLENS.Viewer.prototype.showVideoWidget = function () {
 
+		/**
+		 * Show video widget event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#video-control-show
+		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-control-show' } );
 
 	};
 
+	/**
+	 * Hide video widget
+	 */
 	PANOLENS.Viewer.prototype.hideVideoWidget = function () {
 
+		/**
+		 * Hide video widget
+		 * @type {object}
+		 * @event PANOLENS.Viewer#video-control-hide
+		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-control-hide' } );
 
 	};
 
+	/**
+	 * Add default panorama event listeners
+	 * @param {PANOLENS.Panorama} pano - The panorama to be added with event listener
+	 */
 	PANOLENS.Viewer.prototype.addPanoramaEventListener = function ( pano ) {
 
-		// Every panorama
-		pano.addEventListener( 'enter-start', this.setCameraControl.bind( this ) );
+		// Set camera control on every panorama
+		pano.addEventListener( 'enter-animation-start', this.setCameraControl.bind( this ) );
 
-		// VideoPanorama
+		// Show and hide widget event only when it's PANOLENS.VideoPanorama
 		if ( pano instanceof PANOLENS.VideoPanorama ) {
 
 			pano.addEventListener( 'enter', this.showVideoWidget.bind( this ) );
@@ -4936,6 +5497,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Set camera control
+	 */
 	PANOLENS.Viewer.prototype.setCameraControl = function () {
 
 		this.camera.position.copy( this.panorama.position );
@@ -4944,54 +5508,89 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Get current camera control
+	 * @return {object} - Current navigation control. THREE.OrbitControls or THREE.DeviceOrientationControls
+	 */
 	PANOLENS.Viewer.prototype.getControl = function () {
 
 		return this.control;
 
 	},
 
+	/**
+	 * Get scene
+	 * @return {THREE.Scene} - Current scene which the viewer is built on
+	 */
 	PANOLENS.Viewer.prototype.getScene = function () {
 
 		return this.scene;
 
 	};
 
+	/**
+	 * Get camera
+	 * @return {THREE.Camera} - The scene camera
+	 */
 	PANOLENS.Viewer.prototype.getCamera = function () {
 
 		return this.camera;
 
 	},
 
+	/**
+	 * Get renderer
+	 * @return {THREE.WebGLRenderer} - The renderer using webgl
+	 */
 	PANOLENS.Viewer.prototype.getRenderer = function () {
 
 		return this.renderer;
 
 	};
 
+	/**
+	 * Get container
+	 * @return {HTMLDOMElement} - The container holds rendererd canvas
+	 */
 	PANOLENS.Viewer.prototype.getContainer = function () {
 
 		return this.container;
 
 	};
 
+	/**
+	 * Get control name
+	 * @return {string} - Control name. 'orbit' or 'device-orientation'
+	 */
 	PANOLENS.Viewer.prototype.getControlName = function () {
 
 		return this.control.name;
 
 	};
 
+	/**
+	 * Get next navigation control name
+	 * @return {string} - Next control name
+	 */
 	PANOLENS.Viewer.prototype.getNextControlName = function () {
 
 		return this.controls[ this.getNextControlIndex() ].name;
 
 	};
 
+	/**
+	 * Get next navigation control index
+	 * @return {number} - Next control index
+	 */
 	PANOLENS.Viewer.prototype.getNextControlIndex = function () {
 
 		return ( this.controls.indexOf( this.control ) + 1 >= this.controls.length ) ? 0 : this.controls.indexOf( this.control ) + 1;
 
 	};
 
+	/**
+	 * Set field of view of camera
+	 */
 	PANOLENS.Viewer.prototype.setCameraFov = function ( fov ) {
 
 		this.camera.fov = fov;
@@ -4999,6 +5598,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Enable control by index
+	 * @param  {number} index - Index of camera control
+	 */
 	PANOLENS.Viewer.prototype.enableControl = function ( index ) {
 
 		index = ( index >= 0 && index < this.controls.length ) ? index : 0;
@@ -5023,12 +5626,19 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Toggle next control
+	 */
 	PANOLENS.Viewer.prototype.toggleNextControl = function () {
 
 		this.enableControl( this.getNextControlIndex() );
 
 	};
 
+	/**
+	 * Toggle fullscreen
+	 * @param  {Boolean} isFullscreen - If it's fullscreen
+	 */
 	PANOLENS.Viewer.prototype.toggleFullscreen = function ( isFullscreen ) {
 
 		if ( isFullscreen ) {
@@ -5043,6 +5653,9 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * Reverse dragging direction
+	 */
 	PANOLENS.Viewer.prototype.reverseDraggingDirection = function () {
 
 		this.OrbitControls.rotateSpeed *= -1;
@@ -5050,6 +5663,10 @@ window.PANOLENS = {
 
 	};
 
+	/**
+	 * This is called when window size is changed
+	 * @fires PANOLENS.Viewer#window-resize
+	 */
 	PANOLENS.Viewer.prototype.onWindowResize = function () {
 
 		this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
@@ -5057,9 +5674,19 @@ window.PANOLENS = {
 
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 
+		/**
+		 * Window resizing event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#window-resize
+		 * @property {number} width  - Width of the window
+		 * @property {number} height - Height of the window
+		 */
 		this.dispatchEvent( { type: 'window-resize', width: this.container.clientWidth, height: this.container.clientHeight })
 	};
 
+	/**
+	 * Rendering function to be called on every animation frame
+	 */
 	PANOLENS.Viewer.prototype.render = function () {
 
 		TWEEN.update();
@@ -5073,6 +5700,32 @@ window.PANOLENS = {
 		} else {
 
 			this.renderer.render( this.scene, this.camera );
+
+		}
+
+	};
+
+	/**
+	 * Output infospot attach position in console.warn by holding down Ctrl button
+	 */
+	PANOLENS.Viewer.prototype.outputInfospotPosition = function () {
+
+		var intersects;
+
+		intersects = this.raycaster.intersectObject( this.panorama, true );
+
+		if ( intersects.length > 0 ) {
+
+			intersects[0].point.applyAxisAngle( new THREE.Vector3( -1, 0, 0 ), this.panorama.rotation.x );
+			intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, -1, 0 ), this.panorama.rotation.y );
+			intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, 0, -1 ), this.panorama.rotation.z );
+
+			intersects[0].point.sub( this.panorama.position );
+
+			console.info('{ ' + (-intersects[0].point.x).toFixed(2) + 
+				', ' + (intersects[0].point.y).toFixed(2) +
+				', ' + (intersects[0].point.z).toFixed(2) + ' }'
+			);
 
 		}
 
@@ -5139,7 +5792,7 @@ window.PANOLENS = {
 
 		if ( type === 'click' ) {
 
-			this.options.autoHideInfospot && this.panorama && this.panorama.toggleChildrenVisibility();
+			this.options.autoHideInfospot && this.panorama && this.panorama.toggleInfospotVisibility();
 			this.options.autoHideControlBar && this.toggleControlBar();
 
 		}
@@ -5157,27 +5810,8 @@ window.PANOLENS = {
 
 		if ( !this.panorama ) { return; }
 
-		// For Adding Infospot
-		if ( this.DEBUG ) {
-
-			intersects = this.raycaster.intersectObject( this.panorama, true );
-
-			if ( intersects.length > 0 ) {
-
-				intersects[0].point.applyAxisAngle( new THREE.Vector3( -1, 0, 0 ), this.panorama.rotation.x );
-				intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, -1, 0 ), this.panorama.rotation.y );
-				intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, 0, -1 ), this.panorama.rotation.z );
-
-				intersects[0].point.sub( this.panorama.position );
-
-				console.info('{ ' + (-intersects[0].point.x).toFixed(2) + 
-					', ' + (intersects[0].point.y).toFixed(2) +
-					', ' + (intersects[0].point.z).toFixed(2) + ' }'
-				);
-
-			}
-			
-		}
+		// output infospot information
+		if ( this.DEBUG ) { this.outputInfospotPosition(); }
 
 		intersects = this.raycaster.intersectObjects( this.panorama.children, true );
 
@@ -5282,6 +5916,12 @@ window.PANOLENS = {
 
 				if ( this.userMouse.type === 'mousemove' ) {
 
+					if ( intersect && intersect.dispatchEvent ) {
+
+						intersect.dispatchEvent( { type: 'hover', mouseEvent: event } );
+
+					}
+
 					if ( this.pressEntityObject && this.pressEntityObject.dispatchEvent ) {
 
 						this.pressEntityObject.dispatchEvent( { type: 'pressmove-entity', mouseEvent: event } );
@@ -5316,31 +5956,21 @@ window.PANOLENS = {
 
 		}
 
-		if ( intersects.length > 0 && intersects[ 0 ].object instanceof PANOLENS.Infospot ) {
+		// Infospot handler
+		if ( intersect && intersect instanceof PANOLENS.Infospot ) {
 
-			object = intersects[ 0 ].object;
-
-			if ( object.onHover ) {
-
-				this.hoveringObject = object;
-
-				this.container.style.cursor = 'pointer';
-
-				object.onHover( event.clientX, event.clientY );
-
-			}
-
+			this.infospot = intersect;
+			
 			if ( type === 'click' ) {
 
 				return true;
 
 			}
+			
 
-		} else {
+		} else if ( this.infospot ) {
 
-			this.container.style.cursor = 'default';
-
-			this.hideHoveringObject();
+			this.hideInfospot();
 
 		}
 
@@ -5372,20 +6002,29 @@ window.PANOLENS = {
 
 	};
 
-	PANOLENS.Viewer.prototype.hideHoveringObject = function ( intersects ) {
+	PANOLENS.Viewer.prototype.hideInfospot = function ( intersects ) {
 
-		if ( this.hoveringObject ) {
+		if ( this.infospot ) {
 
-			this.hoveringObject.onHoverEnd();
+			this.infospot.onHoverEnd();
 
-			this.hoveringObject = undefined;
+			this.infospot = undefined;
 
 		}
 
 	};
 
+	/**
+	 * Toggle control bar
+	 * @fires [PANOLENS.Viewer#control-bar-toggle]
+	 */
 	PANOLENS.Viewer.prototype.toggleControlBar = function () {
 
+		/**
+		 * Toggle control bar event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#control-bar-toggle
+		 */
 		this.widget && this.widget.dispatchEvent( { type: 'control-bar-toggle' } );
 
 	};

@@ -25,6 +25,10 @@
 
 	PANOLENS.ImagePanorama.prototype.constructor = PANOLENS.ImagePanorama;
 
+	/**
+	 * Load image asset
+	 * @param  {*} src - Url or image element
+	 */
 	PANOLENS.ImagePanorama.prototype.load = function ( src ) {
 
 		src = src || this.src;
@@ -48,13 +52,17 @@
 		
 	};
 
+	/**
+	 * This will be called when image is loaded
+	 * @param  {THREE.Texture} texture - Texture to be updated
+	 */
 	PANOLENS.ImagePanorama.prototype.onLoad = function ( texture ) {
 
 		texture.minFilter = texture.maxFilter = THREE.LinearFilter;
 
 		texture.needsUpdate = true;
 
-		this.updatePanoObjectTexture( texture );
+		this.updateTexture( texture );
 
 		PANOLENS.Panorama.prototype.onLoad.call( this );
 		
