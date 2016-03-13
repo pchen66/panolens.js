@@ -6,7 +6,7 @@
 	var pendingQueue = [];
 
 	/**
-	 * Sprite text based on https://github.com/Jam3/three-bmfont-text
+	 * Sprite text based on {@link https://github.com/Jam3/three-bmfont-text}
 	 * @constructor
 	 * @param {string} text     - Text to be displayed
 	 * @param {number} maxWidth	- Max width
@@ -41,13 +41,19 @@
 	PANOLENS.SpriteText.prototype.generateTextGeometry = function () {};
 	PANOLENS.SpriteText.prototype.generateSDFShader = function () {};
 
+	/**
+	 * Set BMFont
+	 * @param {Function} callback - Callback after font is loaded
+	 * @param {object}   font     - The font to be loaded
+	 * @param {THREE.Texture}   texture  - Font texture
+	 */
 	PANOLENS.SpriteText.prototype.setBMFont = function ( callback, font, texture ) {
 
 		texture.needsUpdate = true;
 	  	texture.minFilter = THREE.LinearMipMapLinearFilter;
 		texture.magFilter = THREE.LinearFilter;
 		texture.generateMipmaps = true;
-		texture.anisotropy = 16;
+		texture.anisotropy = 8;
 
 		sharedFont = font;
 		sharedTexture = texture;
@@ -64,6 +70,10 @@
 
 	};
 
+	/**
+	 * Add text mesh
+	 * @param {string} text - Text to be displayed
+	 */
 	PANOLENS.SpriteText.prototype.addText = function ( text ) {
 
 		if ( !sharedFont || !sharedTexture ) {
@@ -104,6 +114,11 @@
 
 	};
 
+	/**
+	 * Update text geometry
+	 * @param  {object} options - Geometry options based on
+	 *  https://github.com/Jam3/three-bmfont-text#geometry--createtextopt
+	 */
 	PANOLENS.SpriteText.prototype.update = function ( options ) {
 
 		var mesh;
@@ -118,6 +133,20 @@
 
 	};
 
+	/**
+	 * Create a tween object for animation
+	 * based on - {@link https://github.com/tweenjs/tween.js}
+	 * @param  {string} name       - Name of the tween animation
+	 * @param  {object} object     - Object to be tweened
+	 * @param  {object} toState    - Final state of the object's properties
+	 * @param  {number} duration   - Tweening duration
+	 * @param  {TWEEN.Easing} easing     - Easing function
+	 * @param  {number} delay      - Animation delay time
+	 * @param  {Function} onStart    - On start function
+	 * @param  {Function} onUpdate   - On update function
+	 * @param  {Function} onComplete - On complete function
+	 * @return {TWEEN.Tween}         - Tween object
+	 */
 	PANOLENS.SpriteText.prototype.tween = function ( name, object, toState, duration, easing, delay, onStart, onUpdate, onComplete ) {
 
 		object = object || this;
@@ -143,15 +172,23 @@
 
 	};
 
-	PANOLENS.SpriteText.prototype.setEntity = function ( entity ) {
-
-		this.entity = entity;
-
-	};
-
+	/**
+	 * Get geometry layout
+	 * @return {object} Text geometry layout 
+	 */
 	PANOLENS.SpriteText.prototype.getLayout = function () {
 
 		return this.mesh && this.mesh.geometry && this.mesh.geometry.layout || {};
+
+	};
+
+	/**
+	 * Set entity if multiple objects are considered as one entity
+	 * @param {object} entity - Entity represents whole group structure
+	 */
+	PANOLENS.SpriteText.prototype.setEntity = function ( entity ) {
+
+		this.entity = entity;
 
 	};
 

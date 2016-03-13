@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Source: widget/Widget.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.paper.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="PANOLENS.html">PANOLENS</a></li><li><a href="PANOLENS.Utils.html">PANOLENS.Utils</a></li><li><a href="PANOLENS.Utils.CubeTextureLoader.html">PANOLENS.Utils.CubeTextureLoader</a></li><li><a href="PANOLENS.Utils.ImageLoader.html">PANOLENS.Utils.ImageLoader</a></li><li><a href="PANOLENS.Utils.TextureLoader.html">PANOLENS.Utils.TextureLoader</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="PANOLENS.BasicPanorama.html">PANOLENS.BasicPanorama</a></li><li><a href="PANOLENS.CubePanorama.html">PANOLENS.CubePanorama</a></li><li><a href="PANOLENS.EmptyPanorama.html">PANOLENS.EmptyPanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">PANOLENS.GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImagePanorama.html">PANOLENS.ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">PANOLENS.Infospot</a></li><li><a href="PANOLENS.Panorama.html">PANOLENS.Panorama</a></li><li><a href="PANOLENS.SpriteText.html">PANOLENS.SpriteText</a></li><li><a href="PANOLENS.Tile.html">PANOLENS.Tile</a></li><li><a href="PANOLENS.TileGroup.html">PANOLENS.TileGroup</a></li><li><a href="PANOLENS.VideoPanorama.html">PANOLENS.VideoPanorama</a></li><li><a href="PANOLENS.Viewer.html">PANOLENS.Viewer</a></li><li><a href="PANOLENS.Widget.html">PANOLENS.Widget</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:VR-toggle">PANOLENS.Viewer#event:VR-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: widget/Widget.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript ">(function () {
+	
+	/**
+	 * Widget for controls
+	 * @constructor
+	 * @param {HTMLElement} container - A domElement where default control widget will be attached to
+	 */
+	PANOLENS.Widget = function ( container ) {
+
+		THREE.EventDispatcher.call( this );
+
+		this.container = container || document.body;
+
+		this.barElement;
+		this.fullscreenElement;
+		this.navigationElement;
+		this.vrElement;
+		this.videoElement;
+
+	}
+
+	PANOLENS.Widget.prototype = Object.create( THREE.EventDispatcher.prototype );
+
+	PANOLENS.Widget.prototype.constructor = PANOLENS.Widget;
+
+	/**
+	 * Add control bar
+	 */
+	PANOLENS.Widget.prototype.addControlBar = function () {
+
+		if ( !this.container ) {
+
+			console.warn( 'Widget container not set' ); 
+			return; 
+		}
+
+		var scope = this, bar, styleTranslate, styleOpacity;
+
+		bar = document.createElement( 'div' );
+		bar.style.width = '100%';
+		bar.style.height = '44px';
+		bar.style.float = 'left';
+		bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = 'translateY(-100%)';
+		bar.style.background = 'rgba( 0, 0, 0, 0.3 )';
+		bar.style.transition = 'all 0.5s ease';
+		bar.isHidden = false;
+		bar.toggle = function () {
+			bar.isHidden = !bar.isHidden;
+			styleTranslate = bar.isHidden ? 'translateY(0)' : 'translateY(-100%)';
+			styleOpacity = bar.isHidden ? 0 : 1;
+			bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = styleTranslate;
+			bar.style.opacity = styleOpacity;
+		};
+
+		this.container.appendChild( bar );
+
+		// Event listener
+		this.addEventListener( 'control-bar-toggle', bar.toggle );
+
+		this.barElement = bar;
+
+	};
+
+	/**
+	 * Add buttons on top of control bar
+	 * @param {string} name - The control button name to be created
+	 */
+	PANOLENS.Widget.prototype.addControlButton = function ( name ) {
+
+		this.fullscreenElement = name === 'fullscreen' ? this.createFullscreenButton() : this.fullscreenElement;
+		this.navigationElement = name === 'navigation' ? this.createCameraControlButton() : this.navigationElement;
+		this.vrElement = name === 'vr' ? this.createVRButton() : this.vrElement;
+		this.videoElement = name === 'video' ? this.createVideoControl() : this.videoElement;
+
+		// Add Control Items
+		this.fullscreenElement &amp;&amp; this.barElement.appendChild( this.fullscreenElement );
+		this.navigationElement &amp;&amp; this.barElement.appendChild( this.navigationElement );
+		this.vrElement &amp;&amp; this.barElement.appendChild( this.vrElement );
+		this.videoElement &amp;&amp; this.barElement.appendChild( this.videoElement );
+
+	};
+
+	/**
+	 * Create VR button
+	 * @return {HTMLSpanElement} - The dom element icon for VR effect
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
+	PANOLENS.Widget.prototype.createVRButton = function () {
+
+		var scope = this, item;
+
+		function onTap () {
+
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleVR' function call on PANOLENS.Viewer
+			 */
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVR' } );
+
+		}
+
+		item = this.createCustomItem( { 
+
+			style : { 
+
+				backgroundImage : 'url("' + PANOLENS.DataImage.Cardboard + '")' 
+
+			},
+
+			onTap : onTap
+
+		} );
+
+		return item;
+
+	}
+
+	/**
+	 * Create Fullscreen button
+	 * @return {HTMLSpanElement} - The dom element icon for fullscreen
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
+	PANOLENS.Widget.prototype.createFullscreenButton = function () {
+
+		var scope = this, item, isFullscreen = false;
+
+		// Don't create button if no support
+		if ( !document.fullscreenEnabled       &amp;&amp; 
+			 !document.webkitFullscreenEnabled &amp;&amp;
+			 !document.mozFullScreenEnabled    &amp;&amp;
+			 !document.msFullscreenEnabled ) {
+			return;
+		}
+
+		function onTap () {
+
+			if ( !isFullscreen ) {
+			    scope.container.requestFullscreen &amp;&amp; scope.container.requestFullscreen();
+			    scope.container.msRequestFullscreen &amp;&amp; scope.container.msRequestFullscreen();
+			    scope.container.mozRequestFullScreen &amp;&amp; scope.container.mozRequestFullScreen();
+			    scope.container.webkitRequestFullscreen &amp;&amp; scope.container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+				isFullscreen = true;
+				attachInfospotsToContainer();
+			} else {
+			    document.exitFullscreen &amp;&amp; document.exitFullscreen();
+			    document.msExitFullscreen &amp;&amp; document.msExitFullscreen();
+			    document.mozCancelFullScreen &amp;&amp; document.mozCancelFullScreen();
+			    document.webkitExitFullscreen &amp;&amp; document.webkitExitFullscreen();
+				isFullscreen = false;
+			}
+
+			this.style.backgroundImage = ( isFullscreen ) 
+				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
+				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
+
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleFullscreen' function call on PANOLENS.Viewer
+			 */
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
+
+		}
+
+		// Attach infospot to container when fullscreen
+		function attachInfospotsToContainer () {
+
+			var infospotElements = document.querySelectorAll( '.panolens-infospot' );
+
+			for ( var i = 0; i &lt; infospotElements.length; i++ ) {
+
+				if ( infospotElements[ i ].parentElement !== scope.container ) {
+
+					scope.container.appendChild( infospotElements[ i ] );
+
+				}
+				
+			}
+
+		}
+
+		item = this.createCustomItem( { 
+
+			style : { 
+
+				backgroundImage : 'url("' + PANOLENS.DataImage.FullscreenEnter + '")' 
+
+			},
+
+			onTap : onTap
+
+		} );
+
+		return item;
+
+	};
+
+	/**
+	 * Create camera control button
+	 * @return {HTMLSpanElement} - The dom element icon for camera navigation
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
+	PANOLENS.Widget.prototype.createCameraControlButton = function () {
+
+		var scope = this, item;
+
+		function onTap(){
+
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleNextControl' function call on PANOLENS.Viewer
+			 */
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleNextControl' } );
+
+			this.controlName = ( this.controlName === 'orbit' ) ? 'device-orientation' : 'orbit';
+
+			this.style.backgroundImage = 'url("' + ( this.controlName === 'orbit' 
+				? PANOLENS.DataImage.Gyro 
+				: PANOLENS.DataImage.Orbit ) + '")';
+
+		}
+
+		item = this.createCustomItem( {
+
+			style: {
+
+				backgroundImage: 'url("' + PANOLENS.DataImage.Gyro + '")'
+
+			},
+
+			onTap : onTap
+
+		} );
+
+		item.controlName = 'orbit';
+
+		return item;
+
+	};
+
+	/**
+	 * Create video control container
+	 * @return {HTMLSpanElement} - The dom element icon for video control
+	 */
+	PANOLENS.Widget.prototype.createVideoControl = function () {
+
+		var item;
+
+		item = document.createElement( 'span' );
+		item.style.display = 'none';
+		item.show = function () { 
+
+			item.style.display = '';
+
+		};
+
+		item.hide = function () { 
+
+			item.style.display = 'none';
+			item.controlButton.paused = true;
+			item.controlButton.update();
+			item.seekBar.setProgress( 0 );
+		};
+
+		item.controlButton = this.createVideoControlButton();
+		item.seekBar = this.createVideoControlSeekbar();
+		
+		item.appendChild( item.controlButton );
+		item.appendChild( item.seekBar );
+
+		this.addEventListener( 'video-control-show', item.show );
+		this.addEventListener( 'video-control-hide', item.hide )
+
+		return item;
+
+	};
+
+	/**
+	 * Create video control button
+	 * @return {HTMLSpanElement} - The dom element icon for video control
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
+	PANOLENS.Widget.prototype.createVideoControlButton = function () {
+
+		var scope = this, item;
+
+		function onTap () {
+
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleVideoPlay' function call on PANOLENS.Viewer
+			 */
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVideoPlay' } );
+
+			this.paused = !this.paused;
+
+			item.update();
+
+		};
+
+		item = this.createCustomItem( { 
+
+			style : { 
+
+				float : 'left',
+				backgroundImage : 'url("' + PANOLENS.DataImage.VideoPlay + '")'
+
+			},
+
+			onTap : onTap
+
+		} );
+
+		item.paused = true;
+
+		item.update = function () {
+
+			this.style.backgroundImage = 'url("' + ( this.paused 
+				? PANOLENS.DataImage.VideoPlay 
+				: PANOLENS.DataImage.VideoPause ) + '")';
+
+		};
+
+		return item;
+
+	};
+
+	/**
+	 * Create video seekbar
+	 * @return {HTMLSpanElement} - The dom element icon for video seekbar
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
+	PANOLENS.Widget.prototype.createVideoControlSeekbar = function () {
+
+		var scope = this, item, progressElement, progressElementControl,
+			isDragging = false, mouseX, percentageNow, percentageNext;
+
+		progressElement = document.createElement( 'div' );
+		progressElement.style.width = '0%';
+		progressElement.style.height = '100%';
+		progressElement.style.backgroundColor = '#fff';
+
+		progressElementControl = document.createElement( 'div' );
+		progressElementControl.style.float = 'right';
+		progressElementControl.style.width = '14px';
+		progressElementControl.style.height = '14px';
+		progressElementControl.style.transform = 'translate(7px, -5px)';
+		progressElementControl.style.borderRadius = '50%';
+		progressElementControl.style.backgroundColor = '#ddd';
+
+		progressElementControl.addEventListener( 'mousedown', onMouseDown, false );
+		progressElementControl.addEventListener( 'touchstart', onMouseDown, false );
+
+		function onMouseDown ( event ) {
+
+			event.stopPropagation();
+			
+			isDragging = true;
+			
+			mouseX = event.clientX || ( event.changedTouches &amp;&amp; event.changedTouches[0].clientX );
+
+			percentageNow = parseInt( progressElement.style.width ) / 100;
+
+			scope.container.addEventListener( 'mousemove', onVideoControlDrag, false );
+			scope.container.addEventListener( 'mouseup', onVideoControlStop, false );
+			scope.container.addEventListener( 'touchmove', onVideoControlDrag, false );
+			scope.container.addEventListener( 'touchend', onVideoControlStop, false );
+
+		}
+
+		function onVideoControlDrag ( event ) {
+
+			var clientX;
+
+			if( isDragging ){
+
+				clientX = event.clientX || ( event.changedTouches &amp;&amp; event.changedTouches[0].clientX );
+				
+				percentageNext = ( clientX - mouseX ) / item.clientWidth;
+
+				percentageNext = percentageNow + percentageNext;
+
+				percentageNext = percentageNext > 1 ? 1 : ( ( percentageNext &lt; 0 ) ? 0 : percentageNext );
+
+				item.setProgress ( percentageNext );
+
+				/**
+				 * Viewer handler event
+				 * @type {object}
+				 * @property {string} method - 'setVideoCurrentTime' function call on PANOLENS.Viewer
+				 * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
+				 */
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setVideoCurrentTime', data: percentageNext } );
+
+			}
+
+		}
+
+		function onVideoControlStop ( event ) {
+
+			event.stopPropagation();
+
+			isDragging = false;
+
+			scope.container.removeEventListener( 'mousemove', onVideoControlDrag, false );
+			scope.container.removeEventListener( 'mouseup', onVideoControlStop, false );
+			scope.container.removeEventListener( 'touchmove', onVideoControlDrag, false );
+			scope.container.removeEventListener( 'touchend', onVideoControlStop, false );
+
+		}
+
+		function onTap ( event ) {
+
+			var percentage;
+
+			if ( event.target === progressElementControl ) { return; }
+
+			percentage = ( event.changedTouches &amp;&amp; event.changedTouches.length > 0 )
+				? ( event.changedTouches[0].pageX - event.target.getBoundingClientRect().left ) / this.clientWidth
+				: event.offsetX / this.clientWidth;
+
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'setVideoCurrentTime' function call on PANOLENS.Viewer
+			 * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
+			 */
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setVideoCurrentTime', data: percentage } );
+
+			item.setProgress( event.offsetX / this.clientWidth );
+
+		};
+
+		progressElement.appendChild( progressElementControl );
+
+		item = this.createCustomItem( {
+
+			style : { 
+
+				float : 'left',
+				width : '30%',
+				height : '4px',
+				marginTop : '20px',
+				backgroundColor : 'rgba(188,188,188,0.8)'
+
+			},
+
+			onTap : onTap
+
+		} );
+
+		item.appendChild( progressElement );
+
+		item.setProgress = function( percentage ) {
+
+			progressElement.style.width = percentage * 100 + '%';
+
+		};		
+
+		this.addEventListener( 'video-update', function ( event ) { 
+
+			item.setProgress( event.percentage ); 
+
+		} );
+
+		return item;
+
+	};
+
+	/**
+	 * Create custom item element
+	 * @return {HTMLSpanElement} - The dom element icon
+	 */
+	PANOLENS.Widget.prototype.createCustomItem = function ( options ) {
+
+		options = options || {};
+
+		var item = options.element || document.createElement( 'span' );
+
+		item.style.cursor = 'pointer';
+		item.style.float = 'right';
+		item.style.width = '44px';
+		item.style.height = '100%';
+		item.style.backgroundSize = '60%';
+		item.style.backgroundRepeat = 'no-repeat';
+		item.style.backgroundPosition = 'center';
+
+		item.addEventListener('mouseenter', function(e) {
+			item.style.filter = item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
+		});
+		item.addEventListener('mouseleave', function(e) {
+			item.style.filter = item.style.webkitFilter = '';
+		});
+
+		item = this.mergeStyleOptions( item, options.style );
+
+		if ( options.onTap ) {
+			[ 'click', 'touchend' ].forEach( function( event ) {
+				item.addEventListener( event, options.onTap, false );
+			} );
+		}
+		
+		return item;
+
+	};
+
+	/**
+	 * Merge item css style
+	 * @param  {HTMLDOMElement} element - The element to be merged with style
+	 * @param  {object} options - The style options
+	 * @return {HTMLDOMElement} - The same element with merged styles
+	 */
+	PANOLENS.Widget.prototype.mergeStyleOptions = function ( element, options ) {
+
+		options = options || {};
+
+		for ( var property in options ){
+
+			if ( options.hasOwnProperty( property ) ) {
+
+				element.style[ property ] = options[ property ];
+
+			}
+
+		}
+
+		return element;
+
+	};
+
+})();</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-03-12T19:29:43-08:00
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

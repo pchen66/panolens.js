@@ -89,6 +89,11 @@
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
 
+	/**
+	 * This will be called by a click event
+	 * Translate and lock the hovering element if any
+	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
+	 */
 	PANOLENS.Infospot.prototype.onClick = function ( event ) {
 
 		if ( this.element ) {
@@ -102,6 +107,11 @@
 
 	};
 
+	/**
+	 * This will be called by a mouse hover event
+	 * Translate the hovering element if any
+	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
+	 */
 	PANOLENS.Infospot.prototype.onHover = function ( event ) {
 
 		if ( this.element && !this.element.locked ) {
@@ -112,6 +122,10 @@
 
 	};
 
+	/**
+	 * This will be called on a mouse hover start
+	 * Sets cursor style to 'pointer', display the element and scale up the infospot
+	 */
 	PANOLENS.Infospot.prototype.onHoverStart = function() {
 
 		this.isHovering = true;
@@ -127,6 +141,10 @@
 
 	};
 
+	/**
+	 * This will be called on a mouse hover end
+	 * Sets cursor style to 'default', hide the element and scale down the infospot
+	 */
 	PANOLENS.Infospot.prototype.onHoverEnd = function() {
 
 		this.isHovering = false;
@@ -143,6 +161,11 @@
 
 	};
 
+	/**
+	 * Translate the hovering element by css transform
+	 * @param  {number} x - X position on the window screen
+	 * @param  {number} y - Y position on the window screen
+	 */
 	PANOLENS.Infospot.prototype.translateElement = function ( x, y ) {
 
 		var left, top;
@@ -158,6 +181,10 @@
 
 	};
 
+	/**
+	 * Set hovering text content
+	 * @param {string} text - Text to be displayed
+	 */
 	PANOLENS.Infospot.prototype.setText = function ( text ) {
 
 		if ( this.element ) {
@@ -168,6 +195,10 @@
 
 	};
 
+	/**
+	 * Add hovering text element
+	 * @param {string} text - Text to be displayed
+	 */
 	PANOLENS.Infospot.prototype.addHoverText = function ( text ) {
 
 		if ( !this.element ) {
@@ -192,6 +223,10 @@
 
 	};
 
+	/**
+	 * Add hovering element by cloning an element
+	 * @param {HTMLDOMElement} el - Element to be cloned and displayed
+	 */
 	PANOLENS.Infospot.prototype.addHoverElement = function ( el ) {
 
 		if ( !this.element ) { 
@@ -208,6 +243,9 @@
 
 	};
 
+	/**
+	 * Remove hovering element
+	 */
 	PANOLENS.Infospot.prototype.removeHoverElement = function () {
 
 		if ( this.element ) { 
@@ -220,6 +258,9 @@
 
 	};
 
+	/**
+	 * Lock hovering element
+	 */
 	PANOLENS.Infospot.prototype.lockHoverElement = function () {
 
 		if ( this.element ) { 
@@ -230,6 +271,9 @@
 
 	};
 
+	/**
+	 * Unlock hovering element
+	 */
 	PANOLENS.Infospot.prototype.unlockHoverElement = function () {
 
 		if ( this.element ) { 
@@ -240,6 +284,10 @@
 
 	};
 
+	/**
+	 * Show infospot
+	 * @param  {number} [delay=0] - Delay time to show
+	 */
 	PANOLENS.Infospot.prototype.show = function ( delay ) {
 
 		delay = delay || 0;
@@ -249,6 +297,10 @@
 
 	};
 
+	/**
+	 * Hide infospot
+	 * @param  {number} [delay=0] - Delay time to hide
+	 */
 	PANOLENS.Infospot.prototype.hide = function ( delay ) {
 
 		delay = delay || 0;

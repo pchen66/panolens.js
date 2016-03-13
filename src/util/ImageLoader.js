@@ -3,11 +3,20 @@
 	'use strict';
 
 	/**
-	 * Image loader with progress based on https://github.com/mrdoob/three.js/blob/master/src/loaders/ImageLoader.js
-	 * @type {object}
+	 * Image loader with progress based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/ImageLoader.js}
+	 * @memberOf PANOLENS.Utils
+	 * @namespace
 	 */
 	PANOLENS.Utils.ImageLoader = {};
 
+	/**
+	 * Load an image with XMLHttpRequest to provide progress checking
+	 * @param  {string}   url        - An image url
+	 * @param  {function} onLoad     - On load callback
+	 * @param  {function} onProgress - In progress callback
+	 * @param  {function} onError    - On error callback
+	 * @return {HTMLImageElement}    - DOM image element
+	 */
 	PANOLENS.Utils.ImageLoader.checkDataURL = function ( url ) {
 		return !!url.match( /^\s*data:([a-z]+\/[a-z0-9\-\+]+(;[a-z\-]+\=[a-z0-9\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i );
 	};

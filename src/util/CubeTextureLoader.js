@@ -3,11 +3,20 @@
 	'use strict';
 
 	/**
-	 * Cube Texture Loader based on https://github.com/mrdoob/three.js/blob/master/src/loaders/CubeTextureLoader.js
-	 * @type {object}
+	 * Cube Texture Loader based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/CubeTextureLoader.js}
+	 * @memberOf PANOLENS.Utils
+	 * @namespace
 	 */
 	PANOLENS.Utils.CubeTextureLoader = {};
 
+	/**
+	 * Load 6 images as a cube texture
+	 * @param  {array}   urls        - Array with 6 image urls
+	 * @param  {function} onLoad     - On load callback
+	 * @param  {function} onProgress - In progress callback
+	 * @param  {function} onError    - On error callback
+	 * @return {THREE.CubeTexture}   - Cube texture
+	 */
 	PANOLENS.Utils.CubeTextureLoader.load = function ( urls, onLoad, onProgress, onError ) {
 
 		var texture, loaded, progress, all, loadings;

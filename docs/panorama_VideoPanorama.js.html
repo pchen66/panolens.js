@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Source: panorama/VideoPanorama.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.paper.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="PANOLENS.html">PANOLENS</a></li><li><a href="PANOLENS.Utils.html">PANOLENS.Utils</a></li><li><a href="PANOLENS.Utils.CubeTextureLoader.html">PANOLENS.Utils.CubeTextureLoader</a></li><li><a href="PANOLENS.Utils.ImageLoader.html">PANOLENS.Utils.ImageLoader</a></li><li><a href="PANOLENS.Utils.TextureLoader.html">PANOLENS.Utils.TextureLoader</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="PANOLENS.BasicPanorama.html">PANOLENS.BasicPanorama</a></li><li><a href="PANOLENS.CubePanorama.html">PANOLENS.CubePanorama</a></li><li><a href="PANOLENS.EmptyPanorama.html">PANOLENS.EmptyPanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">PANOLENS.GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImagePanorama.html">PANOLENS.ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">PANOLENS.Infospot</a></li><li><a href="PANOLENS.Panorama.html">PANOLENS.Panorama</a></li><li><a href="PANOLENS.SpriteText.html">PANOLENS.SpriteText</a></li><li><a href="PANOLENS.Tile.html">PANOLENS.Tile</a></li><li><a href="PANOLENS.TileGroup.html">PANOLENS.TileGroup</a></li><li><a href="PANOLENS.VideoPanorama.html">PANOLENS.VideoPanorama</a></li><li><a href="PANOLENS.Viewer.html">PANOLENS.Viewer</a></li><li><a href="PANOLENS.Widget.html">PANOLENS.Widget</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:VR-toggle">PANOLENS.Viewer#event:VR-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: panorama/VideoPanorama.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript ">(function(){
+
+	'use strict';
+
+	/**
+	 * Video Panorama
+	 * @constructor
+	 * @param {string} src - Equirectangular video url
+	 * @param {object} [options] - Option for video settings
+	 * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video
+	 * @param {HTMLCanvasElement} [options.videoCanvas] - HTML5 canvas element for drawing the video
+	 * @param {boolean} [options.muted=false] - Mute the video or not
+	 * @param {boolean} [options.loop=true] - Specify if the video should loop in the end
+	 * @param {number} [radius=5000] - The minimum radius for this panoram
+	 */
+	PANOLENS.VideoPanorama = function ( src, options, radius ) {
+
+		radius = radius || 5000;
+
+		var geometry = new THREE.SphereGeometry( radius, 60, 40 ),
+			material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
+
+		PANOLENS.Panorama.call( this, geometry, material );
+
+		this.src = src;
+		this.options = options;
+
+		this.videoElement = undefined;
+		this.videoCanvas = undefined;
+		this.videoRenderObject = undefined;
+
+		this.videoFramerate = 30;
+
+		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
+
+		this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
+		this.addEventListener( 'leave', this.resetVideo.bind( this ) );
+		this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
+		this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
+
+	}
+
+	PANOLENS.VideoPanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
+
+	PANOLENS.VideoPanorama.constructor = PANOLENS.VideoPanorama;
+
+	/**
+	 * [load description]
+	 * @param  {string} src     - The video url
+	 * @param  {object} options - Option object containing videoElement and videoCanvas
+	 * @fires  PANOLENS.Panorama#panolens-viewer-handler
+	 */
+	PANOLENS.VideoPanorama.prototype.load = function ( src, options ) {
+
+		var scope = this;
+
+		src = ( src || this.src ) || '';
+		options = ( options || this.options ) || {};
+
+		this.videoElement = options.videoElement || document.createElement( 'video' );
+		this.videoCanvas = options.videoCanvas || document.createElement( 'canvas' );
+		
+		this.videoElement.muted = options.muted || false;
+		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
+		this.videoElement.src =  src;
+		this.videoElement.load();
+
+		this.videoElement.onloadeddata = function(){
+
+			scope.setVideoTexture( scope.videoElement, scope.videoCanvas );
+
+			scope.onLoad();
+
+		}
+
+		this.videoElement.ontimeupdate = function ( event ) {
+
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'onVideoUpdate'
+			 * @property {number} data - The percentage of video progress. Range from 0.0 to 1.0
+			 */
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: this.currentTime / this.duration } );
+
+		};
+
+	};
+
+	/**
+	 * Set video texture
+	 * @param {HTMLVideoElement} video  - The html5 video element
+	 * @param {HTMLCanvasElement} canvas - The canvas for video to be drawn on
+	 * @fires PANOLENS.Panorama#panolens-viewer-handler
+	 */
+	PANOLENS.VideoPanorama.prototype.setVideoTexture = function ( video, canvas ) {
+
+		var videoTexture, videoRenderObject, videoContext, scene, updateCallback;
+
+		if ( !video || !canvas ) return;
+
+		canvas.width = video.videoWidth;
+		canvas.height = video.videoHeight;
+
+		videoContext = canvas.getContext('2d');
+
+		videoTexture = new THREE.Texture( canvas );
+		videoTexture.minFilter = THREE.LinearFilter;
+		videoTexture.maxFilter = THREE.LinearFilter;
+
+		videoRenderObject = {
+
+			video : video,
+			videoContext : videoContext,
+			videoTexture: videoTexture,
+			target : this
+
+		};
+
+		if ( this.isIOS ){
+			
+			videoRenderObject.fps = this.videoFramerate;
+			videoRenderObject.lastTime = Date.now();
+			videoRenderObject.video.pano_paused = true;
+			videoRenderObject.video.play = function(){
+
+				videoRenderObject.lastTime = Date.now();
+				this.pano_paused = false;
+
+			};
+			videoRenderObject.video.pause = function(){
+
+				this.pano_paused = true;
+
+			};
+			updateCallback = function () {
+
+				if ( this.video.pano_paused ) { return; }
+
+				var time = Date.now();
+			    var elapsed = ( time - this.lastTime ) / 1000;
+
+			    if ( this.video &amp;&amp; elapsed >= ( ( 1000 / this.fps ) / 1000 ) ) {
+			    	if ( this.video.currentTime + elapsed >= this.video.duration ) {
+			    		this.video.currentTime = 0;
+			    	} else {
+			    		this.video.currentTime = this.video.currentTime + elapsed;
+			    	}
+			        this.videoContext.drawImage( this.video, 0, 0, this.video.videoWidth, this.video.videoHeight );
+		        	this.videoTexture.needsUpdate = true;
+			        this.lastTime = time;
+			    }
+
+			};
+
+		} else {
+
+			updateCallback = function () {
+
+				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+
+					this.videoContext.drawImage( this.video, 0, 0 );
+
+					if ( this.videoTexture ) {
+
+						this.videoTexture.needsUpdate = true;
+
+					}
+
+				}
+
+			};
+
+		}
+
+		// Draw the first frame
+		videoContext.drawImage( video, 0, 0 );
+		videoTexture.needsUpdate = true;
+
+		this.updateTexture( videoTexture );
+
+		this.videoRenderObject = videoRenderObject;
+
+		// Notify Viewer to render object
+		/**
+		 * Viewer handler event
+		 * @type {object}
+		 * @event PANOLENS.Panorama#panolens-viewer-handler
+		 * @property {string} method - 'addUpdateCallback'
+		 * @property {*} data - The callback function to update video
+		 */
+		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'addUpdateCallback', data: updateCallback.bind( videoRenderObject ) } );
+		
+	};
+
+	PANOLENS.VideoPanorama.prototype.reset = function () {
+
+		this.videoElement = undefined;
+
+		this.videoCanvas = undefined;	
+
+		PANOLENS.Panorama.prototype.reset.call( this );
+
+	};
+
+	/**
+	 * Check if video is paused
+	 * @return {boolean} - is video paused or not
+	 */
+	PANOLENS.VideoPanorama.prototype.isVideoPaused = function () {
+
+		return ( this.isIOS ) 
+			? this.videoRenderObject.video.pano_paused 
+			: this.videoRenderObject.video.paused;
+
+	};
+
+	/**
+	 * Toggle video to play or pause
+	 */
+	PANOLENS.VideoPanorama.prototype.toggleVideo = function () {
+
+		if ( this.videoRenderObject &amp;&amp; this.videoRenderObject.video ) {
+
+			if ( this.isVideoPaused() ) {
+
+				this.videoRenderObject.video.play();
+
+			} else {
+
+				this.videoRenderObject.video.pause();
+
+			}
+
+		}
+
+	};
+
+	/**
+	 * Set video currentTime
+	 * @param {object} event - Event contains percentage. Range from 0.0 to 1.0
+	 */
+	PANOLENS.VideoPanorama.prototype.setVideoCurrentTime = function ( event ) {
+
+		if ( this.videoRenderObject &amp;&amp; this.videoRenderObject.video &amp;&amp; event.percentage !== 1 ) {
+
+			this.videoRenderObject.video.currentTime = this.videoRenderObject.video.duration * event.percentage;
+
+		}
+
+	};
+
+	/**
+	 * Play video
+	 */
+	PANOLENS.VideoPanorama.prototype.playVideo = function () {
+
+		if ( this.videoRenderObject &amp;&amp; this.videoRenderObject.video &amp;&amp; this.isVideoPaused() ) {
+
+			this.videoRenderObject.video.play();
+
+		}
+
+	};
+
+	/**
+	 * Pause video
+	 */
+	PANOLENS.VideoPanorama.prototype.pauseVideo = function () {
+
+		if ( this.videoRenderObject &amp;&amp; this.videoRenderObject.video &amp;&amp; !this.isVideoPaused() ) {
+
+			this.videoRenderObject.video.pause();
+
+		}
+
+	};
+
+	/**
+	 * Reset video at stating point
+	 */
+	PANOLENS.VideoPanorama.prototype.resetVideo = function () {
+
+		if ( this.videoRenderObject &amp;&amp; this.videoRenderObject.video ) {
+
+			this.setVideoCurrentTime( { percentage: 0 } );
+
+		}
+
+	};
+
+})();</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-03-12T19:29:43-08:00
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

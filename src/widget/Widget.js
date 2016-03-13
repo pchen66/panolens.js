@@ -23,6 +23,9 @@
 
 	PANOLENS.Widget.prototype.constructor = PANOLENS.Widget;
 
+	/**
+	 * Add control bar
+	 */
 	PANOLENS.Widget.prototype.addControlBar = function () {
 
 		if ( !this.container ) {
@@ -58,6 +61,10 @@
 
 	};
 
+	/**
+	 * Add buttons on top of control bar
+	 * @param {string} name - The control button name to be created
+	 */
 	PANOLENS.Widget.prototype.addControlButton = function ( name ) {
 
 		this.fullscreenElement = name === 'fullscreen' ? this.createFullscreenButton() : this.fullscreenElement;
@@ -73,12 +80,22 @@
 
 	};
 
+	/**
+	 * Create VR button
+	 * @return {HTMLSpanElement} - The dom element icon for VR effect
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
 	PANOLENS.Widget.prototype.createVRButton = function () {
 
 		var scope = this, item;
 
 		function onTap () {
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleVR' function call on PANOLENS.Viewer
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVR' } );
 
 		}
@@ -99,6 +116,11 @@
 
 	}
 
+	/**
+	 * Create Fullscreen button
+	 * @return {HTMLSpanElement} - The dom element icon for fullscreen
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
 	PANOLENS.Widget.prototype.createFullscreenButton = function () {
 
 		var scope = this, item, isFullscreen = false;
@@ -132,6 +154,11 @@
 				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
 				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleFullscreen' function call on PANOLENS.Viewer
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
 
 		}
@@ -169,12 +196,22 @@
 
 	};
 
+	/**
+	 * Create camera control button
+	 * @return {HTMLSpanElement} - The dom element icon for camera navigation
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
 	PANOLENS.Widget.prototype.createCameraControlButton = function () {
 
 		var scope = this, item;
 
 		function onTap(){
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleNextControl' function call on PANOLENS.Viewer
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleNextControl' } );
 
 			this.controlName = ( this.controlName === 'orbit' ) ? 'device-orientation' : 'orbit';
@@ -203,6 +240,10 @@
 
 	};
 
+	/**
+	 * Create video control container
+	 * @return {HTMLSpanElement} - The dom element icon for video control
+	 */
 	PANOLENS.Widget.prototype.createVideoControl = function () {
 
 		var item;
@@ -236,12 +277,22 @@
 
 	};
 
+	/**
+	 * Create video control button
+	 * @return {HTMLSpanElement} - The dom element icon for video control
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
 	PANOLENS.Widget.prototype.createVideoControlButton = function () {
 
 		var scope = this, item;
 
 		function onTap () {
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'toggleVideoPlay' function call on PANOLENS.Viewer
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVideoPlay' } );
 
 			this.paused = !this.paused;
@@ -277,6 +328,11 @@
 
 	};
 
+	/**
+	 * Create video seekbar
+	 * @return {HTMLSpanElement} - The dom element icon for video seekbar
+	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 */
 	PANOLENS.Widget.prototype.createVideoControlSeekbar = function () {
 
 		var scope = this, item, progressElement, progressElementControl,
@@ -331,6 +387,12 @@
 
 				item.setProgress ( percentageNext );
 
+				/**
+				 * Viewer handler event
+				 * @type {object}
+				 * @property {string} method - 'setVideoCurrentTime' function call on PANOLENS.Viewer
+				 * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
+				 */
 				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setVideoCurrentTime', data: percentageNext } );
 
 			}
@@ -360,6 +422,12 @@
 				? ( event.changedTouches[0].pageX - event.target.getBoundingClientRect().left ) / this.clientWidth
 				: event.offsetX / this.clientWidth;
 
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'setVideoCurrentTime' function call on PANOLENS.Viewer
+			 * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
+			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setVideoCurrentTime', data: percentage } );
 
 			item.setProgress( event.offsetX / this.clientWidth );
@@ -402,6 +470,10 @@
 
 	};
 
+	/**
+	 * Create custom item element
+	 * @return {HTMLSpanElement} - The dom element icon
+	 */
 	PANOLENS.Widget.prototype.createCustomItem = function ( options ) {
 
 		options = options || {};
@@ -435,6 +507,12 @@
 
 	};
 
+	/**
+	 * Merge item css style
+	 * @param  {HTMLDOMElement} element - The element to be merged with style
+	 * @param  {object} options - The style options
+	 * @return {HTMLDOMElement} - The same element with merged styles
+	 */
 	PANOLENS.Widget.prototype.mergeStyleOptions = function ( element, options ) {
 
 		options = options || {};
