@@ -86,6 +86,8 @@
 		this.raycaster = new THREE.Raycaster();
 		this.userMouse = new THREE.Vector2();
 		this.updateCallbacks = [];
+		this.requestAnimationId;
+
 		this.DEBUG = false;
 
 		// Renderer
@@ -129,19 +131,8 @@
 			this.reverseDraggingDirection();
 		}
 		
-		// Mouse / Touch Event
-		this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), true );
-		this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), true );
-		this.container.addEventListener( 'mouseup', this.onMouseUp.bind( this ), true );
-		this.container.addEventListener( 'touchstart', this.onMouseDown.bind( this ), true );
-		this.container.addEventListener( 'touchend', this.onMouseUp.bind( this ), true );
-
-		// Resize Event
-		window.addEventListener( 'resize', this.onWindowResize.bind( this ), true );
-
-		// Keyboard Event
-		window.addEventListener( 'keydown', this.onKeyDown.bind( this ), true );
-		window.addEventListener( 'keyup', this.onKeyUp.bind( this ), true );
+		// Register dom event listeners
+		this.registerEventListeners();
 
 		// Animate
 		this.animate.call( this );
@@ -996,9 +987,109 @@
 
 	PANOLENS.Viewer.prototype.animate = function () {
 
-		window.requestAnimationFrame( this.animate.bind( this ) );
+		this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
         this.render();
+
+	};
+
+	/**
+	 * Register container and window listeners
+	 */
+	PANOLENS.Viewer.prototype.registerEventListeners = function () {
+
+		// Mouse / Touch Event
+		this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), true );
+		this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), true );
+		this.container.addEventListener( 'mouseup', this.onMouseUp.bind( this ), true );
+		this.container.addEventListener( 'touchstart', this.onMouseDown.bind( this ), true );
+		this.container.addEventListener( 'touchend', this.onMouseUp.bind( this ), true );
+
+		// Resize Event
+		window.addEventListener( 'resize', this.onWindowResize.bind( this ), true );
+
+		// Keyboard Event
+		window.addEventListener( 'keydown', this.onKeyDown.bind( this ), true );
+		window.addEventListener( 'keyup', this.onKeyUp.bind( this ), true );
+
+	};
+
+	/**
+	 * Unregister container and window listeners
+	 */
+	PANOLENS.Viewer.prototype.unregisterEventListeners = function () {
+
+		// Mouse / Touch Event
+		this.container.removeEventListener( 'mousedown', this.onMouseDown.bind( this ), true );
+		this.container.removeEventListener( 'mousemove', this.onMouseMove.bind( this ), true );
+		this.container.removeEventListener( 'mouseup', this.onMouseUp.bind( this ), true );
+		this.container.removeEventListener( 'touchstart', this.onMouseDown.bind( this ), true );
+		this.container.removeEventListener( 'touchend', this.onMouseUp.bind( this ), true );
+
+		// Resize Event
+		window.removeEventListener( 'resize', this.onWindowResize.bind( this ), true );
+
+		// Keyboard Event
+		window.removeEventListener( 'keydown', this.onKeyDown.bind( this ), true );
+		window.removeEventListener( 'keyup', this.onKeyUp.bind( this ), true );
+
+	};
+
+	/**
+	 * Dispose all scene objects and clear cache
+	 */
+	PANOLENS.Viewer.prototype.dispose = function () {
+
+		// Unregister dom event listeners
+		this.unregisterEventListeners();
+
+		// recursive disposal on 3d objects
+		function recursiveDispose ( object ) {
+
+			for ( var i = object.children.length - 1; i >= 0; i-- ) {
+
+				recursiveDispose( object.children[i] );
+				object.remove( object.children[i] );
+
+			}
+
+			if ( object instanceof PANOLENS.Infospot ) {
+
+				object.dispose();
+
+			}
+			
+			object.geometry && object.geometry.dispose();
+			object.material && object.material.dispose();
+		}
+
+		recursiveDispose( this.scene );
+
+		// dispose widget
+		if ( this.widget ) {
+
+			this.widget.dispose();
+			this.widget = null;
+
+		}
+
+		// clear cache
+		if ( THREE.Cache && THREE.Cache.enabled ) {
+
+			THREE.Cache.clear();
+
+		}
+
+	};
+
+	/**
+	 * Destory viewer by disposing and stopping requestAnimationFrame
+	 */
+	PANOLENS.Viewer.prototype.destory = function () {
+
+		this.dispose();
+		this.render();
+		window.cancelAnimationFrame( this.requestAnimationId );		
 
 	};
 

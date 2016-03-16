@@ -52,6 +52,43 @@
 			bar.style.opacity = styleOpacity;
 		};
 
+		// Dispose
+		bar.dispose = function () {
+
+			if ( scope.fullscreenElement ) {
+
+				bar.removeChild( scope.fullscreenElement );
+				scope.fullscreenElement.dispose();
+				scope.fullscreenElement = null;
+
+			}
+
+			if ( scope.navigationElement ) {
+
+				bar.removeChild( scope.navigationElement );
+				scope.navigationElement.dispose();
+				scope.navigationElement = null;
+
+			}
+
+			if ( scope.vrElement ) {
+
+				bar.removeChild( scope.vrElement );
+				scope.vrElement.dispose();
+				scope.vrElement = null;
+
+			}
+
+			if ( scope.videoElement ) {
+
+				bar.removeChild( scope.videoElement );
+				scope.videoElement.dispose();
+				scope.videoElement = null;
+
+			}
+
+		};
+
 		this.container.appendChild( bar );
 
 		// Event listener
@@ -270,8 +307,21 @@
 		item.appendChild( item.controlButton );
 		item.appendChild( item.seekBar );
 
+		item.dispose = function () {
+
+			item.removeChild( item.controlButton );
+			item.removeChild( item.seekBar );
+
+			item.controlButton.dispose();
+			item.controlButton = null;
+
+			item.seekBar.dispose();
+			item.seekBar = null;
+
+		};
+
 		this.addEventListener( 'video-control-show', item.show );
-		this.addEventListener( 'video-control-hide', item.hide )
+		this.addEventListener( 'video-control-hide', item.hide );
 
 		return item;
 
@@ -364,11 +414,7 @@
 
 			percentageNow = parseInt( progressElement.style.width ) / 100;
 
-			scope.container.addEventListener( 'mousemove', onVideoControlDrag, false );
-			scope.container.addEventListener( 'mouseup', onVideoControlStop, false );
-			scope.container.addEventListener( 'touchmove', onVideoControlDrag, false );
-			scope.container.addEventListener( 'touchend', onVideoControlStop, false );
-
+			addControlListeners();
 		}
 
 		function onVideoControlDrag ( event ) {
@@ -405,6 +451,22 @@
 
 			isDragging = false;
 
+			removeControlListeners();
+
+		}
+
+		function addControlListeners () {
+
+			scope.container.addEventListener( 'mousemove', onVideoControlDrag, false );
+			scope.container.addEventListener( 'mouseup', onVideoControlStop, false );
+			scope.container.addEventListener( 'touchmove', onVideoControlDrag, false );
+			scope.container.addEventListener( 'touchend', onVideoControlStop, false );
+
+
+		}
+
+		function removeControlListeners () {
+
 			scope.container.removeEventListener( 'mousemove', onVideoControlDrag, false );
 			scope.container.removeEventListener( 'mouseup', onVideoControlStop, false );
 			scope.container.removeEventListener( 'touchmove', onVideoControlDrag, false );
@@ -434,6 +496,14 @@
 
 		};
 
+		function onDispose () {
+
+			removeControlListeners();
+			progressElement = null;
+			progressElementControl = null;
+
+		}
+
 		progressElement.appendChild( progressElementControl );
 
 		item = this.createCustomItem( {
@@ -448,7 +518,8 @@
 
 			},
 
-			onTap : onTap
+			onTap : onTap,
+			onDispose: onDispose
 
 		} );
 
@@ -502,6 +573,16 @@
 				item.addEventListener( event, options.onTap, false );
 			} );
 		}
+
+		item.dispose = function () {
+
+			[ 'click', 'touchend' ].forEach( function( event ) {
+				item.removeEventListener( event, options.onTap, false );
+			} );
+
+			options.onDispose && options.onDispose();
+
+		};
 		
 		return item;
 
@@ -528,6 +609,20 @@
 		}
 
 		return element;
+
+	};
+
+	/**
+	 * Dispose widgets by detaching dom elements from container
+	 */
+	PANOLENS.Widget.prototype.dispose = function () {
+
+		if ( this.barElement ) {
+			this.container.removeChild( this.barElement );
+			this.barElement.dispose();
+			this.barElement = null;
+
+		}
 
 	};
 

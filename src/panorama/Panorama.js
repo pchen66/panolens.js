@@ -401,4 +401,33 @@
 
 	};
 
+	/**
+	 * Dispose panorama
+	 */
+	PANOLENS.Panorama.prototype.dispose = function () {
+
+		// recursive disposal on 3d objects
+		function recursiveDispose ( object ) {
+
+			for ( var i = object.children.length - 1; i >= 0; i-- ) {
+
+				recursiveDispose( object.children[i] );
+				object.remove( object.children[i] );
+
+			}
+
+			if ( object instanceof PANOLENS.Infospot ) {
+
+				object.dispose();
+
+			}
+			
+			object.geometry && object.geometry.dispose();
+			object.material && object.material.dispose();
+		}
+
+		recursiveDispose( this );
+
+	};
+
 } )();
