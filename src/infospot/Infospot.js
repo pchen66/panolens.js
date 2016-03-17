@@ -318,6 +318,12 @@
 		this.removeHoverElement();
 		this.material.dispose();
 
+		if ( this.parent ) {
+
+			this.parent.remove( this );
+
+		}
+
 	};
 
 } )()

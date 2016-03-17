@@ -428,6 +428,12 @@
 
 		recursiveDispose( this );
 
+		if ( this.parent ) {
+
+			this.parent.remove( this );
+
+		}
+
 	};
 
 } )();
