@@ -252,7 +252,7 @@
 
 			this.container.removeChild( this.element );
 
-			this.element = undefined;
+			this.element = null;
 
 		}
 
@@ -308,6 +308,22 @@
 		this.showAnimation && this.showAnimation.stop();
 		this.hideAnimation && this.hideAnimation.delay( delay ).start();
 		
+	};
+
+	/**
+	 * Dispose infospot
+	 */
+	PANOLENS.Infospot.prototype.dispose = function () {
+
+		this.removeHoverElement();
+		this.material.dispose();
+
+		if ( this.parent ) {
+
+			this.parent.remove( this );
+
+		}
+
 	};
 
 } )()

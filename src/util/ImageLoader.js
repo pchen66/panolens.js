@@ -34,6 +34,12 @@
 
 				setTimeout( function () {
 
+					if ( onProgress ) {
+
+						onProgress( { loaded: 1, total: 1 } );
+
+					} 
+					
 					onLoad( cached );
 
 				}, 0 );
