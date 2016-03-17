@@ -144,7 +144,7 @@
 	PANOLENS.Viewer.prototype.constructor = PANOLENS.Viewer;
 
 	/**
-	 * Adding an object
+	 * Add an object to the scene
 	 * Automatically hookup with panolens-viewer-handler listener
 	 * to communicate with viewer method
 	 * @param {THREE.Object3D} object - The object to be added
@@ -184,6 +184,22 @@
 			}
 
 		}
+
+	};
+
+	/**
+	 * Remove an object from the scene
+	 * @param  {THREE.Object3D} object - Object to be removed
+	 */
+	PANOLENS.Viewer.prototype.remove = function ( object ) {
+
+		if ( object.removeEventListener ) {
+
+			object.removeEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+
+		}
+
+		this.scene.remove( object );
 
 	};
 
@@ -1058,7 +1074,7 @@
 				object.dispose();
 
 			}
-			
+
 			object.geometry && object.geometry.dispose();
 			object.material && object.material.dispose();
 		}
