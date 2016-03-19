@@ -169,9 +169,11 @@ THREE.CardboardEffect = function ( renderer ) {
 
 	this.setSize = function ( width, height ) {
 
-		_renderTarget.setSize( width, height );
-
 		renderer.setSize( width, height );
+
+		var pixelRatio = renderer.getPixelRatio();
+
+		_renderTarget.setSize( width * pixelRatio, height * pixelRatio );
 
 	};
 
@@ -1138,7 +1140,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Set to true to disable this control
 	this.noRotate = false;
-	this.rotateSpeed = 0.15;
+	this.rotateSpeed = -0.15;
 
 	// Set to true to disable this control
 	this.noPan = true;
@@ -1155,7 +1157,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Momentum
   	this.momentumDampingFactor = 0.90;
-  	this.momentumScalingFactor = 0.005;
+  	this.momentumScalingFactor = -0.005;
 
   	// Fov
   	this.minFov = 30;
@@ -2171,7 +2173,7 @@ THREE.BendModifier.prototype = {
 			this.axis.x, this.axis.y, this.axis.z, 0, 
 			0, 0, 0, 1 ).transpose();
 
-		var InverseP =  new THREE.Matrix3().getInverse( P );
+		var InverseP =  new THREE.Matrix4().getInverse( P );
 		var newVertices = []; var oldVertices = []; var anglesBetweenOldandNewVertices = [];
 
 		var meshGeometryBoundingBoxMaxx = 0; var meshGeometryBoundingBoxMinx = 0;
@@ -2179,7 +2181,7 @@ THREE.BendModifier.prototype = {
 
 		for (var i = 0; i < geometry.vertices.length; i++)  {
 
-			newVertices[i] = new THREE.Vector3(); newVertices[i].copy( geometry.vertices[i] ).applyMatrix3( InverseP );
+			newVertices[i] = new THREE.Vector3(); newVertices[i].copy( geometry.vertices[i] ).applyMatrix4( InverseP );
 			if ( newVertices[i].x > meshGeometryBoundingBoxMaxx ) { meshGeometryBoundingBoxMaxx = newVertices[i].x; }
 			if ( newVertices[i].x < meshGeometryBoundingBoxMinx ) { meshGeometryBoundingBoxMinx = newVertices[i].x; }
 			if ( newVertices[i].y > meshGeometryBoundingBoxMaxy ) { meshGeometryBoundingBoxMaxy = newVertices[i].y; }
