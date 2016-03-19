@@ -1140,7 +1140,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Set to true to disable this control
 	this.noRotate = false;
-	this.rotateSpeed = 0.15;
+	this.rotateSpeed = -0.15;
 
 	// Set to true to disable this control
 	this.noPan = true;
@@ -1157,7 +1157,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Momentum
   	this.momentumDampingFactor = 0.90;
-  	this.momentumScalingFactor = 0.005;
+  	this.momentumScalingFactor = -0.005;
 
   	// Fov
   	this.minFov = 30;
