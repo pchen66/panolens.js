@@ -678,7 +678,14 @@
 		this.camera.updateProjectionMatrix();
 
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
-		this.updateReticleEvent( this.mode );
+
+		// Update reticle
+		if ( this.options.enableReticle ) {
+
+			this.updateReticleEvent( this.mode );
+
+		}
+		
 
 		/**
 		 * Window resizing event
