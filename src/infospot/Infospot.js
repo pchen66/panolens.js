@@ -25,6 +25,8 @@
 		this.element;
 		this.toPanorama;
 
+		this.mode = PANOLENS.Modes.UNKNOWN;
+
 		this.scale.set( scale, scale, 1 );
 		this.rotation.y = Math.PI;
 
@@ -37,6 +39,9 @@
 			scope.material.side = THREE.DoubleSide;
 			scope.material.map = texture;
 			scope.material.depthTest = false;
+
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.repeat.x = - 1;
 
 			ratio = texture.image.width / texture.image.height;
 
@@ -84,6 +89,7 @@
 		this.addEventListener( 'hover', this.onHover );
 		this.addEventListener( 'hoverenter', this.onHoverStart );
 		this.addEventListener( 'hoverleave', this.onHoverEnd );
+		this.addEventListener( 'VR-toggle', this.onToggleVR );
 
 	}
 
@@ -126,7 +132,7 @@
 	 * This will be called on a mouse hover start
 	 * Sets cursor style to 'pointer', display the element and scale up the infospot
 	 */
-	PANOLENS.Infospot.prototype.onHoverStart = function() {
+	PANOLENS.Infospot.prototype.onHoverStart = function ( event ) {
 
 		this.isHovering = true;
 		this.container.style.cursor = 'pointer';
@@ -135,7 +141,30 @@
 
 		if ( this.element ) {
 
-			this.element.style.display = 'block';
+			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+
+			if ( this.mode === PANOLENS.Modes.VR ) {
+
+				this.element.style.display = 'none';
+				this.element.left && ( this.element.left.style.display = 'block' );
+				this.element.right && ( this.element.right.style.display = 'block' );
+
+				// Store element width for reference
+				this.element._width = this.element.left.clientWidth;
+				this.element._height = this.element.left.clientHeight;
+
+			} else {
+
+				this.element.style.display = 'block';
+				this.element.left && ( this.element.left.style.display = 'none' );
+				this.element.right && ( this.element.right.style.display = 'none' );
+
+				// Store element width for reference
+				this.element._width = this.element.clientWidth;
+				this.element._height = this.element.clientHeight;
+
+			}
+			
 
 		}
 
@@ -145,7 +174,7 @@
 	 * This will be called on a mouse hover end
 	 * Sets cursor style to 'default', hide the element and scale down the infospot
 	 */
-	PANOLENS.Infospot.prototype.onHoverEnd = function() {
+	PANOLENS.Infospot.prototype.onHoverEnd = function () {
 
 		this.isHovering = false;
 		this.container.style.cursor = 'default';
@@ -155,11 +184,57 @@
 		if ( this.element ) {
 
 			this.element.style.display = 'none';
+			this.element.left && ( this.element.left.style.display = 'none' );
+			this.element.right && ( this.element.right.style.display = 'none' );
+
 			this.unlockHoverElement();
 
 		}
 
 	};
+
+	PANOLENS.Infospot.prototype.onToggleVR = function ( event ) {
+		
+		var leftElement, rightElement, element;
+
+		this.mode = event.mode;
+
+		element = this.element;
+
+		if ( !element ) {
+
+			return;
+
+		}
+
+		if ( !element.left || !element.right ) {
+
+			element.left = element.cloneNode( true );
+			element.right = element.cloneNode( true );
+
+		}
+
+		if ( this.mode === PANOLENS.Modes.VR ) {
+
+			// Update elements translation
+			this.translateElement( 0, 0 );
+
+			element.left.style.display = element.style.display;
+			element.right.style.display = element.style.display;
+			element.style.display = 'none';
+
+		} else {
+
+			element.style.display = element.left.style.display;
+			element.left.style.display = 'none';
+			element.right.style.display = 'none';
+
+		}
+
+		this.container.appendChild( element.left );
+		this.container.appendChild( element.right );
+
+	}
 
 	/**
 	 * Translate the hovering element by css transform
@@ -168,16 +243,57 @@
 	 */
 	PANOLENS.Infospot.prototype.translateElement = function ( x, y ) {
 
-		var left, top;
+		if ( !this.element._width || !this.element._height ) {
 
-		this.element.style.display = 'block';
+			return;
 
-		left = x - this.element.clientWidth / 2;
-		top = y - this.element.clientHeight - 30;
+		}
 
-		this.element.style.webkitTransform =
-		this.element.style.msTransform =
-		this.element.style.transform = 'translate(' + left + 'px, ' + top + 'px)';
+		var left, top, element, width, height, delta, container;
+
+		container = this.container;
+		element = this.element;
+		width = element._width / 2;
+		height = element._height;
+		delta = 30;
+
+		left = x - width;
+		top = y - height - delta;
+
+		if ( this.mode === PANOLENS.Modes.VR && element.left && element.right ) {
+
+			left = container.clientWidth / 4 - width;
+			top = container.clientHeight / 2 - height - delta;
+
+			this.setCSSStyle( 'transform', element.left, 'translate(' + left + 'px, ' + top + 'px)' );
+
+			left += container.clientWidth / 2;
+
+			this.setCSSStyle( 'transform', element.right, 'translate(' + left + 'px, ' + top + 'px)' );
+
+		} else {
+
+			this.setCSSStyle( 'transform', element, 'translate(' + left + 'px, ' + top + 'px)' );
+
+		}
+
+	};
+
+	/**
+	 * Set vendor specific css
+	 * @param {string} type - CSS style name
+	 * @param {HTMLElement} element - The element to be modified
+	 * @param {string} value - Style value
+	 */
+	PANOLENS.Infospot.prototype.setCSSStyle = function ( type, element, value ) {
+
+		var style = element.style;
+
+		if ( type === 'transform' ) {
+
+			style.webkitTransform = style.msTransform = style.transform = value;
+
+		}
 
 	};
 
