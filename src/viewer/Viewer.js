@@ -18,7 +18,7 @@
 	 * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
 	 * @param {number}  [options.cameraFov=60] - Camera field of view value
 	 * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
-	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction
+	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 */
@@ -32,6 +32,8 @@
 
 			return;
 		}
+
+		var container;
 
 		options = options || {};
 		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
@@ -47,34 +49,37 @@
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		
 		this.options = options;
-		this.container;
 
 		// Container
 		if ( options.container ) {
 
-			this.container = options.container;
+			container = options.container;
 
 		} else {
 
-			this.container = document.createElement( 'div' );
-			this.container.style.width = window.innerWidth + 'px';
-			this.container.style.height = window.innerHeight + 'px';
-			document.body.appendChild( this.container );
+			container = document.createElement( 'div' );
+			container.style.width = window.innerWidth + 'px';
+			container.style.height = window.innerHeight + 'px';
+			document.body.appendChild( container );
 
 			// For matching body's width and height dynamically on the next tick to 
 			// avoid 0 height in the beginning
 			setTimeout( function () {
-				this.container.style.width = '100%';
-				this.container.style.height = '100%';
-			}.bind( this ), 0 );
+				container.style.width = '100%';
+				container.style.height = '100%';
+			}, 0 );
 
 		}
+
+		this.container = container;
 
 		this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
 		this.effect;
+
 		this.reticle = {};
+		this.tempEnableReticle = this.options.enableReticle;
 
 		this.mode = PANOLENS.Modes.NORMAL;
 
@@ -135,6 +140,9 @@
 
 		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
 		this.control = this.OrbitControls;
+
+		// Add default hidden reticle
+		this.addReticle();
 		
 		// Lock horizontal view
 		if ( this.options.horizontalView ) {
@@ -154,6 +162,7 @@
 
 		// Register event if reticle is enabled, otherwise defaults to mouse
 		if ( this.options.enableReticle ) {
+			this.reticle.show();
 			this.registerReticleEvent();
 		} else {
 			this.registerMouseAndTouchEvents();
@@ -197,6 +206,13 @@
 		if ( object.addEventListener ) {
 
 			object.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+
+		}
+
+		// All object added to scene being passed with container
+		if ( object instanceof PANOLENS.Panorama && object.dispatchEvent ) {
+
+			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
 
 		}
 
@@ -305,11 +321,11 @@
 
 			if ( this.mode !== PANOLENS.Modes.VR ) {
 
-				this.enableVR();
+				this.mode = PANOLENS.Modes.VR;
 
 			} else {
 
-				this.disableVR();
+				this.mode = PANOLENS.Modes.NORMAL;
 
 			}
 		}
@@ -334,6 +350,16 @@
 
 		});
 
+		if ( this.mode === PANOLENS.Modes.VR ) {
+
+			this.enableVR();
+
+		} else {
+
+			this.disableVR();
+
+		}
+
 	};
 
 	/**
@@ -341,9 +367,18 @@
 	 */
 	PANOLENS.Viewer.prototype.enableVR = function () {
 
-		if ( this.effect && this.mode !== PANOLENS.Modes.VR ) {
+		if ( this.effect && this.mode === PANOLENS.Modes.VR ) {
 
-			this.mode = PANOLENS.Modes.VR;
+			this.tempEnableReticle = true;
+
+			// Register reticle event and unregister mouse event
+			this.unregisterMouseAndTouchEvents();
+
+			this.reticle.show();
+			this.registerReticleEvent();
+
+			this.updateReticleEvent( this.mode );
+			
 
 		}
 
@@ -354,10 +389,25 @@
 	 */
 	PANOLENS.Viewer.prototype.disableVR = function () {
 
-		if ( this.effect && this.mode !== PANOLENS.Modes.NORMAL ) {
+		if ( this.effect && this.mode === PANOLENS.Modes.NORMAL ) {
 
-			this.mode = PANOLENS.Modes.NORMAL;
+			this.tempEnableReticle = false;
 
+			// Register mouse event and unregister reticle event
+			if ( !this.options.enableReticle ) {
+
+				this.reticle.hide();
+				this.unregisterReticleEvent();
+				this.registerMouseAndTouchEvents();
+
+			} else {
+
+				this.updateReticleEvent( this.mode );
+
+			}
+
+			
+			
 		}
 
 	};
@@ -669,18 +719,36 @@
 	};
 
 	/**
+	 * Add reticle 
+	 */
+	PANOLENS.Viewer.prototype.addReticle = function () {
+
+		this.reticle = new PANOLENS.Reticle( 0x1abc9c );
+		this.reticle.scale.multiplyScalar( 0.1 );
+		this.reticle.position.z = -2;
+		this.camera.add( this.reticle );
+		this.scene.add( this.camera );
+
+	};
+
+	/**
 	 * This is called when window size is changed
 	 * @fires PANOLENS.Viewer#window-resize
 	 */
 	PANOLENS.Viewer.prototype.onWindowResize = function () {
 
-		this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
+		var width, height;
+
+		width = this.container.clientWidth;
+		height = this.container.clientHeight;
+
+		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
 
-		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.renderer.setSize( width, height );
 
 		// Update reticle
-		if ( this.options.enableReticle ) {
+		if ( this.options.enableReticle || this.tempEnableReticle ) {
 
 			this.updateReticleEvent( this.mode );
 
@@ -694,7 +762,7 @@
 		 * @property {number} width  - Width of the window
 		 * @property {number} height - Height of the window
 		 */
-		this.dispatchEvent( { type: 'window-resize', width: this.container.clientWidth, height: this.container.clientHeight })
+		this.dispatchEvent( { type: 'window-resize', width: width, height: height })
 	};
 
 	/**
@@ -893,7 +961,7 @@
 					this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
 
 					// Reset reticle timer
-					if ( this.options.autoReticleSelect && this.options.enableReticle ) {
+					if ( this.reticle.timerId ) {
 						reticle = this.reticle;
 						window.cancelAnimationFrame( reticle.timerId );
 						reticle.target = null;
@@ -917,7 +985,7 @@
 						this.hoverObject.dispatchEvent( { type: 'hoverenter', mouseEvent: event } );
 
 						// Start reticle timer
-						if ( this.options.autoReticleSelect && this.options.enableReticle ) {
+						if ( this.options.autoReticleSelect && this.options.enableReticle || this.tempEnableReticle ) {
 							reticle = this.reticle;
 							reticle.target = this.hoverObject;
 							reticle.startTime = window.performance.now();
@@ -1116,12 +1184,22 @@
 		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , true );
 	};
 
+	/**
+	 * Reticle selection
+	 * @param  {object} mouseEvent - Mouse event to be passed in
+	 */
 	PANOLENS.Viewer.prototype.reticleSelect = function ( mouseEvent ) {
 		
 		var reticle = this.reticle;
 
 		if ( reticle.target && performance.now() - reticle.startTime >= this.options.dwellTime ) {
 
+			/**
+			 * Reticle select event
+			 * @type {object}
+			 * @event THREE.Object#click
+			 * @property {object} mouseEvent - Reticle selection as mouse click event
+			 */
 			reticle.target.dispatchEvent( { type: 'click', mouseEvent: mouseEvent } );
 			
 
@@ -1134,87 +1212,11 @@
 	}
 
 	/**
-	 * Create reticle element
-	 * @param  {string} type - 'left' or 'right'
-	 * @return {HTMLElement} - Dom element for reticle element
-	 */
-	PANOLENS.Viewer.prototype.createReticle = function ( type ) {
-		
-		var reticle, centerX, centerY;
-
-		centerX = this.container.clientWidth / 2;
-		centerY = this.container.clientHeight / 2;
-
-		reticle = document.createElement( 'div' );
-
-		reticle.id = 'panolens-reticle-' + type;
-		reticle.style.position = 'absolute';
-		reticle.style.width = '12px';
-		reticle.style.height = '12px';
-		reticle.style.top = '0';
-		reticle.style.left = '0';
-		reticle.style.marginTop = '-6px';
-		reticle.style.marginLeft = '-6px';
-		reticle.style.borderRadius = '50%';
-		reticle.style.border = '2px solid #1abc9c';
-		reticle.style.webkitTransform =
-		reticle.style.msTransform =
-		reticle.style.transform = 'translate( ' + centerX + 'px, ' + centerY + 'px )';
-
-		return reticle;
-
-	}
-
-	/**
-	 * Add reticle element
-	 */
-	PANOLENS.Viewer.prototype.addReticleElement = function () {
-
-		var reticleLeft, reticleRight, reticle, container;
-
-		reticle = this.reticle;
-		container = this.container;
-
-		reticleLeft = this.createReticle( 'left' );
-		container.appendChild( reticleLeft );
-		reticle.left = reticleLeft;
-
-		reticleRight = this.createReticle( 'right' );
-		container.appendChild( reticleRight );
-		reticle.right = reticleRight;
-
-	};
-
-	/**
-	 * Remove reticle element
-	 */
-	PANOLENS.Viewer.prototype.removeReticleElement = function () {
-
-		var reticle, container;
-
-		reticle = this.reticle;
-		container = this.container;
-
-		container.removeChild( reticle.left );
-		reticle.left = null;
-
-		container.removeChild( reticle.right );
-		reticle.right = null;
-
-	};
-
-	/**
 	 * Register reticle event
 	 */
 	PANOLENS.Viewer.prototype.registerReticleEvent = function () {
 
-		var scope = this;
-
-		this.addReticleElement();
 		this.addUpdateCallback( this.HANDLER_TAP );
-		this.addEventListener( 'VR-toggle', function ( event ) {
-			scope.updateReticleEvent( event.mode );
-		} );
 
 	};
 
@@ -1223,7 +1225,6 @@
 	 */
 	PANOLENS.Viewer.prototype.unregisterReticleEvent = function () {
 
-		this.removeReticleElement();
 		this.removeUpdateCallback( this.HANDLER_TAP );
 
 	};
@@ -1233,29 +1234,14 @@
 	 */
 	PANOLENS.Viewer.prototype.updateReticleEvent = function ( mode ) {
 
-		var centerX, centerY, offsetLeft, offsetRight, reticle;
-
-		mode = mode || PANOLENS.Modes.NORMAL;
-
-		reticle = this.reticle;
+		var centerX, centerY;
 
 		centerX = this.container.clientWidth / 2;
 		centerY = this.container.clientHeight / 2;
 
-		offsetLeft = ( mode === PANOLENS.Modes.VR ) ? 0.5 : 1;
-		offsetRight = ( mode === PANOLENS.Modes.VR ) ? 1.5 : 1;
-
 		this.removeUpdateCallback( this.HANDLER_TAP );
 		this.HANDLER_TAP = this.onTap.bind( this, { clientX: centerX, clientY: centerY } );
 		this.addUpdateCallback( this.HANDLER_TAP );
-
-		reticle.left.style.webkitTransform =
-		reticle.left.style.msTransform =
-		reticle.left.style.transform = 'translate( ' + centerX * offsetLeft + 'px, ' + centerY + 'px )';
-
-		reticle.right.style.webkitTransform =
-		reticle.right.style.msTransform =
-		reticle.right.style.transform = 'translate( ' + centerX * offsetRight + 'px, ' + centerY + 'px )';
 
 	};
 

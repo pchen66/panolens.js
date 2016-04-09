@@ -5,9 +5,8 @@
 	 * @constructor
 	 * @param {number} [scale=1] - Infospot scale
 	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
-	 * @param {HTMLElement} [container=document.body] - The dom element contains infospot elements
 	 */
-	PANOLENS.Infospot = function ( scale, imageSrc, container ) {
+	PANOLENS.Infospot = function ( scale, imageSrc ) {
 		
 		var scope = this, ratio, startScale, endScale, duration;
 
@@ -30,7 +29,7 @@
 		this.scale.set( scale, scale, 1 );
 		this.rotation.y = Math.PI;
 
-		this.container = container || document.body;
+		this.container;
 
 		PANOLENS.Utils.TextureLoader.load( imageSrc, postLoad );		
 
@@ -90,10 +89,36 @@
 		this.addEventListener( 'hoverenter', this.onHoverStart );
 		this.addEventListener( 'hoverleave', this.onHoverEnd );
 		this.addEventListener( 'VR-toggle', this.onToggleVR );
+		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 
 	}
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
+
+	PANOLENS.Infospot.prototype.setContainer = function ( data ) {
+
+		var container;
+
+		if ( data instanceof HTMLElement ) {
+
+			container = data;
+
+		} else if ( data && data.container ) {
+
+			container = data.container;
+
+		}
+
+		// Append element if exists
+		if ( container && this.element ) {
+
+			container.appendChild( this.element );
+
+		}
+
+		this.container = container;
+
+	};
 
 	/**
 	 * This will be called by a click event
@@ -135,13 +160,11 @@
 	PANOLENS.Infospot.prototype.onHoverStart = function ( event ) {
 
 		this.isHovering = true;
-		this.container.style.cursor = 'pointer';
+		this.container.style.cursor = this.mode === PANOLENS.Modes.VR ? 'default' : 'pointer';
 		this.scaleDownAnimation.stop();
 		this.scaleUpAnimation.start();
 
 		if ( this.element ) {
-
-			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 
 			if ( this.mode === PANOLENS.Modes.VR ) {
 
@@ -164,8 +187,9 @@
 				this.element._height = this.element.clientHeight;
 
 			}
-			
 
+			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+			
 		}
 
 	};
@@ -195,11 +219,14 @@
 
 	PANOLENS.Infospot.prototype.onToggleVR = function ( event ) {
 		
-		var leftElement, rightElement, element;
+		var element, halfWidth, halfHeight;
 
 		this.mode = event.mode;
 
 		element = this.element;
+
+		halfWidth = this.container.clientWidth / 2;
+		halfHeight = this.container.clientHeight / 2;
 
 		if ( !element ) {
 
@@ -216,9 +243,6 @@
 
 		if ( this.mode === PANOLENS.Modes.VR ) {
 
-			// Update elements translation
-			this.translateElement( 0, 0 );
-
 			element.left.style.display = element.style.display;
 			element.right.style.display = element.style.display;
 			element.style.display = 'none';
@@ -230,6 +254,9 @@
 			element.right.style.display = 'none';
 
 		}
+
+		// Update elements translation
+		this.translateElement( halfWidth, halfHeight );
 
 		this.container.appendChild( element.left );
 		this.container.appendChild( element.right );
@@ -331,8 +358,6 @@
 			this.element.style.position = 'fixed';
 			this.element.classList.add( 'panolens-infospot' );
 
-			this.container.appendChild( this.element );
-
 		}
 
 		this.setText( text );
@@ -353,8 +378,6 @@
 			this.element.style.position = 'fixed';
 			this.element.classList.add( 'panolens-infospot' );
 
-			this.container.appendChild( this.element );
-
 		}
 
 	};
@@ -366,8 +389,21 @@
 
 		if ( this.element ) { 
 
-			this.container.removeChild( this.element );
+			if ( this.element.left ) {
 
+				this.container.removeChild( this.element.left );
+				this.element.left = null;
+
+			}
+
+			if ( this.element.right ) {
+
+				this.container.removeChild( this.element.right );
+				this.element.right = null;
+
+			}
+
+			this.container.removeChild( this.element );
 			this.element = null;
 
 		}
