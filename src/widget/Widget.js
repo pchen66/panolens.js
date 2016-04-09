@@ -9,7 +9,7 @@
 
 		THREE.EventDispatcher.call( this );
 
-		this.container = container || document.body;
+		this.container = container;
 
 		this.barElement;
 		this.fullscreenElement;
