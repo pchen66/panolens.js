@@ -13,11 +13,12 @@
 		url = url || PANOLENS.DataImage.Reticle;
 
 		map = PANOLENS.Utils.TextureLoader.load( url );
-		material = new THREE.SpriteMaterial( { map: map, color: color } );
+		material = new THREE.SpriteMaterial( { map: map, color: color, depthTest: false } );
 
 		THREE.Sprite.call( this, material );
 
-		this.visible = false;		
+		this.visible = false;
+		this.renderOrder = 10;
 
 	}
 
