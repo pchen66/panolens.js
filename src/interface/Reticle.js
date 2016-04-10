@@ -1,5 +1,10 @@
 (function(){
 	
+	/**
+	 * Reticle 3D Sprite
+	 * @param {THREE.Color} [color=0xfffff] - Color of the reticle sprite
+	 * @param {string} [url=PANOLENS.DataImage.Reticle] - Image asset url
+	 */
 	PANOLENS.Reticle = function ( color, url ) {
 
 		var map, material;
