@@ -27,6 +27,7 @@ var _panolensfiles = [
 	'src/panorama/BasicPanorama.js',
 	'src/panorama/VideoPanorama.js',
 	'src/panorama/EmptyPanorama.js',
+	'src/interface/Reticle.js',
 	'src/interface/Tile.js',
 	'src/interface/TileGroup.js',
 	'src/interface/SpriteText.js',
