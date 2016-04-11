@@ -5,8 +5,9 @@
 	 * @constructor
 	 * @param {number} [scale=1] - Infospot scale
 	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
+	 * @param {boolean} [animated=true] - Enable default hover animation
 	 */
-	PANOLENS.Infospot = function ( scale, imageSrc ) {
+	PANOLENS.Infospot = function ( scale, imageSrc, animated ) {
 		
 		var scope = this, ratio, startScale, endScale, duration;
 
@@ -18,11 +19,13 @@
 
 		this.type = 'infospot';
 
+		this.animated = animated !== undefined ? animated : true;
 		this.isHovering = false;
 		this.visible = false;
 
 		this.element;
 		this.toPanorama;
+		this.cursorStyle;
 
 		this.mode = PANOLENS.Modes.UNKNOWN;
 
@@ -95,6 +98,10 @@
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
 
+	/**
+	 * Set infospot container
+	 * @param {HTMLElement|object} data - Data with container information
+	 */
 	PANOLENS.Infospot.prototype.setContainer = function ( data ) {
 
 		var container;
@@ -121,13 +128,23 @@
 	};
 
 	/**
+	 * Get container
+	 * @return {HTMLElement} - The container of this infospot
+	 */
+	PANOLENS.Infospot.prototype.getContainer = function () {
+
+		return this.container;
+
+	};
+
+	/**
 	 * This will be called by a click event
 	 * Translate and lock the hovering element if any
 	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
 	 */
 	PANOLENS.Infospot.prototype.onClick = function ( event ) {
 
-		if ( this.element ) {
+		if ( this.element && this.getContainer() ) {
 
 			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 
@@ -145,7 +162,7 @@
 	 */
 	PANOLENS.Infospot.prototype.onHover = function ( event ) {
 
-		if ( this.element && !this.element.locked ) {
+		if ( this.element && !this.element.locked && this.getContainer() ) {
 
 			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 
@@ -159,11 +176,20 @@
 	 */
 	PANOLENS.Infospot.prototype.onHoverStart = function ( event ) {
 
-		this.isHovering = true;
-		this.container.style.cursor = this.mode === PANOLENS.Modes.VR ? 'default' : 'pointer';
-		this.scaleDownAnimation.stop();
-		this.scaleUpAnimation.start();
+		if ( !this.getContainer() ) { return; }
 
+		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.VR ? 'default' : 'pointer' );
+
+		this.isHovering = true;
+		this.container.style.cursor = cursorStyle;
+		
+		if ( this.animated ) {
+
+			this.scaleDownAnimation.stop();
+			this.scaleUpAnimation.start();
+
+		}
+		
 		if ( this.element ) {
 
 			if ( this.mode === PANOLENS.Modes.VR ) {
@@ -200,10 +226,17 @@
 	 */
 	PANOLENS.Infospot.prototype.onHoverEnd = function () {
 
+		if ( !this.getContainer() ) { return; }
+
 		this.isHovering = false;
 		this.container.style.cursor = 'default';
-		this.scaleUpAnimation.stop();
-		this.scaleDownAnimation.start();
+
+		if ( this.animated ) {
+
+			this.scaleUpAnimation.stop();
+			this.scaleDownAnimation.start();
+
+		}
 
 		if ( this.element ) {
 
@@ -217,8 +250,15 @@
 
 	};
 
+	/**
+	 * On VR toggle handler
+	 * Creates duplicate left and right element
+	 * @param  {object} event - VR toggle event
+	 */
 	PANOLENS.Infospot.prototype.onToggleVR = function ( event ) {
 		
+		if ( !this.getContainer() ) { return; }
+
 		var element, halfWidth, halfHeight;
 
 		this.mode = event.mode;
@@ -270,7 +310,7 @@
 	 */
 	PANOLENS.Infospot.prototype.translateElement = function ( x, y ) {
 
-		if ( !this.element._width || !this.element._height ) {
+		if ( !this.element._width || !this.element._height || !this.getContainer() ) {
 
 			return;
 
@@ -292,15 +332,15 @@
 			left = container.clientWidth / 4 - width;
 			top = container.clientHeight / 2 - height - delta;
 
-			this.setCSSStyle( 'transform', element.left, 'translate(' + left + 'px, ' + top + 'px)' );
+			this.setElementStyle( 'transform', element.left, 'translate(' + left + 'px, ' + top + 'px)' );
 
 			left += container.clientWidth / 2;
 
-			this.setCSSStyle( 'transform', element.right, 'translate(' + left + 'px, ' + top + 'px)' );
+			this.setElementStyle( 'transform', element.right, 'translate(' + left + 'px, ' + top + 'px)' );
 
 		} else {
 
-			this.setCSSStyle( 'transform', element, 'translate(' + left + 'px, ' + top + 'px)' );
+			this.setElementStyle( 'transform', element, 'translate(' + left + 'px, ' + top + 'px)' );
 
 		}
 
@@ -312,7 +352,7 @@
 	 * @param {HTMLElement} element - The element to be modified
 	 * @param {string} value - Style value
 	 */
-	PANOLENS.Infospot.prototype.setCSSStyle = function ( type, element, value ) {
+	PANOLENS.Infospot.prototype.setElementStyle = function ( type, element, value ) {
 
 		var style = element.style;
 
@@ -335,6 +375,15 @@
 			this.element.textContent = text;
 
 		}
+
+	};
+
+	/**
+	 * Set cursor css style on hover
+	 */
+	PANOLENS.Infospot.prototype.setCursorHoverStyle = function ( style ) {
+
+		this.cursorStyle = style;
 
 	};
 
@@ -444,8 +493,12 @@
 
 		delay = delay || 0;
 
-		this.hideAnimation && this.hideAnimation.stop();
-		this.showAnimation && this.showAnimation.delay( delay ).start();
+		if ( this.animated ) {
+
+			this.hideAnimation && this.hideAnimation.stop();
+			this.showAnimation && this.showAnimation.delay( delay ).start();
+
+		}
 
 	};
 
@@ -457,8 +510,13 @@
 
 		delay = delay || 0;
 
-		this.showAnimation && this.showAnimation.stop();
-		this.hideAnimation && this.hideAnimation.delay( delay ).start();
+		if ( this.animated ) {
+
+			this.showAnimation && this.showAnimation.stop();
+			this.hideAnimation && this.hideAnimation.delay( delay ).start();
+
+		}
+		
 		
 	};
 
