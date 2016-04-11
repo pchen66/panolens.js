@@ -724,7 +724,8 @@
 	PANOLENS.Viewer.prototype.addReticle = function () {
 
 		this.reticle = new PANOLENS.Reticle( 0x1abc9c );
-		this.reticle.position.z = -20;
+		this.reticle.position.z = -10;
+		this.reticle.scale.multiplyScalar( 0.3 );
 		this.camera.add( this.reticle );
 		this.scene.add( this.camera );
 
@@ -881,7 +882,7 @@
 
 	PANOLENS.Viewer.prototype.onTap = function ( event, type ) {
 
-		var intersects, intersect_entity, intersect, reticle;
+		var intersects, intersect_entity, intersect;
 
 		this.raycasterPoint.x = ( ( event.clientX - this.renderer.domElement.offsetLeft ) / this.renderer.domElement.clientWidth ) * 2 - 1;
     	this.raycasterPoint.y = - ( ( event.clientY - this.renderer.domElement.offsetTop ) / this.renderer.domElement.clientHeight ) * 2 + 1;
@@ -961,10 +962,8 @@
 
 					// Reset reticle timer
 					if ( this.reticle.timerId ) {
-						reticle = this.reticle;
-						window.cancelAnimationFrame( reticle.timerId );
-						reticle.target = null;
-						reticle.timerId = null;
+						window.cancelAnimationFrame( this.reticle.timerId );
+						this.reticle.timerId = null;
 					}
 
 				}
@@ -985,10 +984,8 @@
 
 						// Start reticle timer
 						if ( this.options.autoReticleSelect && this.options.enableReticle || this.tempEnableReticle ) {
-							reticle = this.reticle;
-							reticle.target = this.hoverObject;
-							reticle.startTime = window.performance.now();
-							reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, event ) );
+							this.reticle.startTime = window.performance.now();
+							this.reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, event ) );
 						}
 
 					}
@@ -1191,15 +1188,13 @@
 		
 		var reticle = this.reticle;
 
-		if ( reticle.target && performance.now() - reticle.startTime >= this.options.dwellTime ) {
+		if ( performance.now() - reticle.startTime >= this.options.dwellTime ) {
 
-			/**
-			 * Reticle select event
-			 * @type {object}
-			 * @event THREE.Object#click
-			 * @property {object} mouseEvent - Reticle selection as mouse click event
-			 */
-			reticle.target.dispatchEvent( { type: 'click', mouseEvent: mouseEvent } );
+			// Reticle select
+			this.onTap( mouseEvent, 'click' );
+
+			window.cancelAnimationFrame( reticle.timerId );
+			reticle.timerId = null;
 			
 
 		} else if ( this.options.autoReticleSelect ){
