@@ -79,10 +79,9 @@ GSVPANO.PanoLoader = function (parameters) {
 		var ptr = 0;
 		for( var y = 0; y < _hc; y++ ) {
 			for( var x = 0; x < _wc; x++ ) {
-				var c = document.createElement('canvas');//c.style.height='200px';document.body.insertBefore(c, document.body.children[0]);
+				var c = document.createElement('canvas');
 				if( x < ( _wc - 1 ) ) c.width = maxW; else c.width = w - ( maxW * x );
 				if( y < ( _hc - 1 ) ) c.height = maxH; else c.height = h - ( maxH * y );
-				//console.log( 'New canvas of ' + c.width + 'x' + c.height );
 				_canvas.push( c );
 				_ctx.push( c.getContext('2d') );
 				ptr++;

@@ -24,6 +24,8 @@
 
 		this.defaultInfospotSize = 350;
 
+		this.container = undefined;
+
 		this.loaded = false;
 
 		this.linkedSpots = [];
@@ -46,6 +48,7 @@
 			: 100;
 
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
+		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 
 	}
 
@@ -80,6 +83,12 @@
 
 			invertedObject = object;
 
+			if ( object.dispatchEvent && this.container ) {
+
+				object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+
+			}
+
 		} else {
 
 			// Counter scale.x = -1 effect
@@ -97,6 +106,50 @@
 
 		this.onLoad();
 		
+	};
+
+	/**
+	 * Set container of this panorama 
+	 * @param {HTMLElement|object} data - Data with container information
+	 * @fires PANOLENS.Infospot#panolens-container
+	 */
+	PANOLENS.Panorama.prototype.setContainer = function ( data ) {
+
+		var container;
+
+		if ( data instanceof HTMLElement ) {
+
+			container = data;
+
+		} else if ( data && data.container ) {
+
+			container = data.container;
+
+		}
+
+		if ( container ) {
+
+			this.children.forEach( function ( child ) {
+
+				if ( child instanceof PANOLENS.Infospot && child.dispatchEvent ) {
+
+					/**
+					 * Set container event
+					 * @type {object}
+					 * @event PANOLENS.Infospot#panolens-container
+					 * @property {HTMLElement} container - The container of this panorama
+					 */
+					child.dispatchEvent( { type: 'panolens-container', container: container } );
+
+				}
+
+			} );
+
+			this.container = container;
+
+		}
+		
+
 	};
 
 	/**

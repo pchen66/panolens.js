@@ -1973,10 +1973,9 @@ GSVPANO.PanoLoader = function (parameters) {
 		var ptr = 0;
 		for( var y = 0; y < _hc; y++ ) {
 			for( var x = 0; x < _wc; x++ ) {
-				var c = document.createElement('canvas');//c.style.height='200px';document.body.insertBefore(c, document.body.children[0]);
+				var c = document.createElement('canvas');
 				if( x < ( _wc - 1 ) ) c.width = maxW; else c.width = w - ( maxW * x );
 				if( y < ( _hc - 1 ) ) c.height = maxH; else c.height = h - ( maxH * y );
-				//console.log( 'New canvas of ' + c.width + 'x' + c.height );
 				_canvas.push( c );
 				_ctx.push( c.getContext('2d') );
 				ptr++;
@@ -2299,8 +2298,9 @@ window.PANOLENS = {};
 		VideoPlay: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTgsNS4xNFYxOS4xNEwxOSwxMi4xNEw4LDUuMTRaIiAvPjwvc3ZnPg==',
 		VideoPause: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTE0LDE5LjE0SDE4VjUuMTRIMTRNNiwxOS4xNEgxMFY1LjE0SDZWMTkuMTRaIiAvPjwvc3ZnPg==',
 		Cardboard: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI0ZGRkZGRiI+CiAgICA8cGF0aCBkPSJNMjAuNzQgNkgzLjIxQzIuNTUgNiAyIDYuNTcgMiA3LjI4djEwLjQ0YzAgLjcuNTUgMS4yOCAxLjIzIDEuMjhoNC43OWMuNTIgMCAuOTYtLjMzIDEuMTQtLjc5bDEuNC0zLjQ4Yy4yMy0uNTkuNzktMS4wMSAxLjQ0LTEuMDFzMS4yMS40MiAxLjQ1IDEuMDFsMS4zOSAzLjQ4Yy4xOS40Ni42My43OSAxLjExLjc5aDQuNzljLjcxIDAgMS4yNi0uNTcgMS4yNi0xLjI4VjcuMjhjMC0uNy0uNTUtMS4yOC0xLjI2LTEuMjh6TTcuNSAxNC42MmMtMS4xNyAwLTIuMTMtLjk1LTIuMTMtMi4xMiAwLTEuMTcuOTYtMi4xMyAyLjEzLTIuMTMgMS4xOCAwIDIuMTIuOTYgMi4xMiAyLjEzcy0uOTUgMi4xMi0yLjEyIDIuMTJ6bTkgMGMtMS4xNyAwLTIuMTMtLjk1LTIuMTMtMi4xMiAwLTEuMTcuOTYtMi4xMyAyLjEzLTIuMTNzMi4xMi45NiAyLjEyIDIuMTMtLjk1IDIuMTItMi4xMiAyLjEyeiIvPgogICAgPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAgMGgyNHYyNEgwVjB6Ii8+Cjwvc3ZnPgo=',
-		WhiteTile: 'data:image/png;base64,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'
-	
+		WhiteTile: 'data:image/png;base64,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',
+		Reticle: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDIwQTgsOCAwIDAsMSA0LDEyQTgsOCAwIDAsMSAxMiw0QTgsOCAwIDAsMSAyMCwxMkE4LDggMCAwLDEgMTIsMjBNMTIsMkExMCwxMCAwIDAsMCAyLDEyQTEwLDEwIDAgMCwwIDEyLDIyQTEwLDEwIDAgMCwwIDIyLDEyQTEwLDEwIDAgMCwwIDEyLDJaIiAvPjwvc3ZnPg=='
+
 	};
 
 })();;(function(){
@@ -2579,6 +2579,8 @@ window.PANOLENS = {};
 
 		this.defaultInfospotSize = 350;
 
+		this.container = undefined;
+
 		this.loaded = false;
 
 		this.linkedSpots = [];
@@ -2601,6 +2603,7 @@ window.PANOLENS = {};
 			: 100;
 
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
+		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 
 	}
 
@@ -2635,6 +2638,12 @@ window.PANOLENS = {};
 
 			invertedObject = object;
 
+			if ( object.dispatchEvent && this.container ) {
+
+				object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+
+			}
+
 		} else {
 
 			// Counter scale.x = -1 effect
@@ -2652,6 +2661,50 @@ window.PANOLENS = {};
 
 		this.onLoad();
 		
+	};
+
+	/**
+	 * Set container of this panorama 
+	 * @param {HTMLElement|object} data - Data with container information
+	 * @fires PANOLENS.Infospot#panolens-container
+	 */
+	PANOLENS.Panorama.prototype.setContainer = function ( data ) {
+
+		var container;
+
+		if ( data instanceof HTMLElement ) {
+
+			container = data;
+
+		} else if ( data && data.container ) {
+
+			container = data.container;
+
+		}
+
+		if ( container ) {
+
+			this.children.forEach( function ( child ) {
+
+				if ( child instanceof PANOLENS.Infospot && child.dispatchEvent ) {
+
+					/**
+					 * Set container event
+					 * @type {object}
+					 * @event PANOLENS.Infospot#panolens-container
+					 * @property {HTMLElement} container - The container of this panorama
+					 */
+					child.dispatchEvent( { type: 'panolens-container', container: container } );
+
+				}
+
+			} );
+
+			this.container = container;
+
+		}
+		
+
 	};
 
 	/**
@@ -3596,6 +3649,52 @@ window.PANOLENS = {};
 
 	PANOLENS.EmptyPanorama.prototype.constructor = PANOLENS.EmptyPanorama;
 
+})();;(function(){
+	
+	/**
+	 * Reticle 3D Sprite
+	 * @param {THREE.Color} [color=0xfffff] - Color of the reticle sprite
+	 * @param {string} [url=PANOLENS.DataImage.Reticle] - Image asset url
+	 */
+	PANOLENS.Reticle = function ( color, url ) {
+
+		var map, material;
+
+		color = color || 0xffffff;
+		url = url || PANOLENS.DataImage.Reticle;
+
+		map = PANOLENS.Utils.TextureLoader.load( url );
+		material = new THREE.SpriteMaterial( { map: map, color: color, depthTest: false } );
+
+		THREE.Sprite.call( this, material );
+
+		this.visible = false;
+		this.renderOrder = 10;
+
+	}
+
+	PANOLENS.Reticle.prototype = Object.create( THREE.Sprite.prototype );
+
+	PANOLENS.Reticle.prototype.constructor = PANOLENS.Reticle;
+
+	/**
+	 * Make reticle visible
+	 */
+	PANOLENS.Reticle.prototype.show = function () {
+
+		this.visible = true;
+
+	};
+
+	/**
+	 * Make reticle invisible
+	 */
+	PANOLENS.Reticle.prototype.hide = function () {
+
+		this.visible = false;
+
+	};
+
 })();;( function () {
 	
 	/**
@@ -3636,6 +3735,8 @@ window.PANOLENS = {};
 			new THREE.MeshBasicMaterial( { color: 0xffffff, transparent: true } )
 		);
 
+		this.bendModifier = new THREE.BendModifier();
+
 		this.entity = undefined;
 
 		this.animationDuration = 500;
@@ -3650,6 +3751,7 @@ window.PANOLENS = {};
 
 		}
 		
+		this.originalGeometry = this.geometry.clone();
 	}
 
 	PANOLENS.Tile.prototype = Object.create( THREE.Mesh.prototype );
@@ -3685,9 +3787,22 @@ window.PANOLENS = {};
 	 */
 	PANOLENS.Tile.prototype.bend = function ( direction, axis, angle ) {
 
-		var modifier = new THREE.BendModifier();
+		this.bendModifier.set( direction, axis, angle ).modify( this.geometry );
 
-		modifier.set( direction, axis, angle ).modify( this.geometry );
+	};
+
+	/**
+	 * Restore geometry back to initial state 
+	 */
+	PANOLENS.Tile.prototype.unbend = function () {
+
+		var geometry = this.geometry;
+
+		this.geometry = this.originalGeometry;
+		this.originalGeometry = this.geometry.clone();
+
+		geometry.dispose();
+		geometry = null;
 
 	};
 
@@ -4258,7 +4373,7 @@ window.PANOLENS = {};
 
 		THREE.EventDispatcher.call( this );
 
-		this.container = container || document.body;
+		this.container = container;
 
 		this.barElement;
 		this.fullscreenElement;
@@ -4798,7 +4913,8 @@ window.PANOLENS = {};
 
 		options = options || {};
 
-		var item = options.element || document.createElement( 'span' );
+		var item = options.element || document.createElement( 'span' ),
+			touchEnabled = ( document.ontouchend === undefined ) ? false : true;
 
 		item.style.cursor = 'pointer';
 		item.style.float = 'right';
@@ -4807,27 +4923,31 @@ window.PANOLENS = {};
 		item.style.backgroundSize = '60%';
 		item.style.backgroundRepeat = 'no-repeat';
 		item.style.backgroundPosition = 'center';
+		item.style.webkitUserSelect = 
+		item.style.MozUserSelect = 
+		item.style.userSelect = 'none';
 
-		item.addEventListener('mouseenter', function(e) {
-			item.style.filter = item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
+		// White glow on icon
+		item.addEventListener( touchEnabled ? 'touchstart' : 'mouseenter', function() {
+			item.style.filter = 
+			item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
 		});
-		item.addEventListener('mouseleave', function(e) {
-			item.style.filter = item.style.webkitFilter = '';
+		item.addEventListener( touchEnabled ? 'touchend' : 'mouseleave', function() {
+			item.style.filter = 
+			item.style.webkitFilter = '';
 		});
 
 		item = this.mergeStyleOptions( item, options.style );
 
 		if ( options.onTap ) {
-			[ 'click', 'touchend' ].forEach( function( event ) {
-				item.addEventListener( event, options.onTap, false );
-			} );
+
+			item.addEventListener( touchEnabled ? 'touchend' : 'click', options.onTap, true );
+
 		}
 
 		item.dispose = function () {
 
-			[ 'click', 'touchend' ].forEach( function( event ) {
-				item.removeEventListener( event, options.onTap, false );
-			} );
+			item.removeEventListener( touchEnabled ? 'touchend' : 'click', options.onTap, true );
 
 			options.onDispose && options.onDispose();
 
@@ -4882,9 +5002,9 @@ window.PANOLENS = {};
 	 * @constructor
 	 * @param {number} [scale=1] - Infospot scale
 	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
-	 * @param {HTMLElement} [container=document.body] - The dom element contains infospot elements
+	 * @param {boolean} [animated=true] - Enable default hover animation
 	 */
-	PANOLENS.Infospot = function ( scale, imageSrc, container ) {
+	PANOLENS.Infospot = function ( scale, imageSrc, animated ) {
 		
 		var scope = this, ratio, startScale, endScale, duration;
 
@@ -4896,16 +5016,20 @@ window.PANOLENS = {};
 
 		this.type = 'infospot';
 
+		this.animated = animated !== undefined ? animated : true;
 		this.isHovering = false;
 		this.visible = false;
 
 		this.element;
 		this.toPanorama;
+		this.cursorStyle;
+
+		this.mode = PANOLENS.Modes.UNKNOWN;
 
 		this.scale.set( scale, scale, 1 );
 		this.rotation.y = Math.PI;
 
-		this.container = container || document.body;
+		this.container;
 
 		PANOLENS.Utils.TextureLoader.load( imageSrc, postLoad );		
 
@@ -4914,6 +5038,9 @@ window.PANOLENS = {};
 			scope.material.side = THREE.DoubleSide;
 			scope.material.map = texture;
 			scope.material.depthTest = false;
+
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.repeat.x = - 1;
 
 			ratio = texture.image.width / texture.image.height;
 
@@ -4961,10 +5088,51 @@ window.PANOLENS = {};
 		this.addEventListener( 'hover', this.onHover );
 		this.addEventListener( 'hoverenter', this.onHoverStart );
 		this.addEventListener( 'hoverleave', this.onHoverEnd );
+		this.addEventListener( 'VR-toggle', this.onToggleVR );
+		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 
 	}
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
+
+	/**
+	 * Set infospot container
+	 * @param {HTMLElement|object} data - Data with container information
+	 */
+	PANOLENS.Infospot.prototype.setContainer = function ( data ) {
+
+		var container;
+
+		if ( data instanceof HTMLElement ) {
+
+			container = data;
+
+		} else if ( data && data.container ) {
+
+			container = data.container;
+
+		}
+
+		// Append element if exists
+		if ( container && this.element ) {
+
+			container.appendChild( this.element );
+
+		}
+
+		this.container = container;
+
+	};
+
+	/**
+	 * Get container
+	 * @return {HTMLElement} - The container of this infospot
+	 */
+	PANOLENS.Infospot.prototype.getContainer = function () {
+
+		return this.container;
+
+	};
 
 	/**
 	 * This will be called by a click event
@@ -4973,7 +5141,7 @@ window.PANOLENS = {};
 	 */
 	PANOLENS.Infospot.prototype.onClick = function ( event ) {
 
-		if ( this.element ) {
+		if ( this.element && this.getContainer() ) {
 
 			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 
@@ -4991,7 +5159,7 @@ window.PANOLENS = {};
 	 */
 	PANOLENS.Infospot.prototype.onHover = function ( event ) {
 
-		if ( this.element && !this.element.locked ) {
+		if ( this.element && !this.element.locked && this.getContainer() ) {
 
 			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 
@@ -5003,17 +5171,48 @@ window.PANOLENS = {};
 	 * This will be called on a mouse hover start
 	 * Sets cursor style to 'pointer', display the element and scale up the infospot
 	 */
-	PANOLENS.Infospot.prototype.onHoverStart = function() {
+	PANOLENS.Infospot.prototype.onHoverStart = function ( event ) {
+
+		if ( !this.getContainer() ) { return; }
+
+		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.VR ? 'default' : 'pointer' );
 
 		this.isHovering = true;
-		this.container.style.cursor = 'pointer';
-		this.scaleDownAnimation.stop();
-		this.scaleUpAnimation.start();
+		this.container.style.cursor = cursorStyle;
+		
+		if ( this.animated ) {
 
+			this.scaleDownAnimation.stop();
+			this.scaleUpAnimation.start();
+
+		}
+		
 		if ( this.element ) {
 
-			this.element.style.display = 'block';
+			if ( this.mode === PANOLENS.Modes.VR ) {
 
+				this.element.style.display = 'none';
+				this.element.left && ( this.element.left.style.display = 'block' );
+				this.element.right && ( this.element.right.style.display = 'block' );
+
+				// Store element width for reference
+				this.element._width = this.element.left.clientWidth;
+				this.element._height = this.element.left.clientHeight;
+
+			} else {
+
+				this.element.style.display = 'block';
+				this.element.left && ( this.element.left.style.display = 'none' );
+				this.element.right && ( this.element.right.style.display = 'none' );
+
+				// Store element width for reference
+				this.element._width = this.element.clientWidth;
+				this.element._height = this.element.clientHeight;
+
+			}
+
+			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+			
 		}
 
 	};
@@ -5022,21 +5221,84 @@ window.PANOLENS = {};
 	 * This will be called on a mouse hover end
 	 * Sets cursor style to 'default', hide the element and scale down the infospot
 	 */
-	PANOLENS.Infospot.prototype.onHoverEnd = function() {
+	PANOLENS.Infospot.prototype.onHoverEnd = function () {
+
+		if ( !this.getContainer() ) { return; }
 
 		this.isHovering = false;
 		this.container.style.cursor = 'default';
-		this.scaleUpAnimation.stop();
-		this.scaleDownAnimation.start();
+
+		if ( this.animated ) {
+
+			this.scaleUpAnimation.stop();
+			this.scaleDownAnimation.start();
+
+		}
 
 		if ( this.element ) {
 
 			this.element.style.display = 'none';
+			this.element.left && ( this.element.left.style.display = 'none' );
+			this.element.right && ( this.element.right.style.display = 'none' );
+
 			this.unlockHoverElement();
 
 		}
 
 	};
+
+	/**
+	 * On VR toggle handler
+	 * Creates duplicate left and right element
+	 * @param  {object} event - VR toggle event
+	 */
+	PANOLENS.Infospot.prototype.onToggleVR = function ( event ) {
+		
+		if ( !this.getContainer() ) { return; }
+
+		var element, halfWidth, halfHeight;
+
+		this.mode = event.mode;
+
+		element = this.element;
+
+		halfWidth = this.container.clientWidth / 2;
+		halfHeight = this.container.clientHeight / 2;
+
+		if ( !element ) {
+
+			return;
+
+		}
+
+		if ( !element.left || !element.right ) {
+
+			element.left = element.cloneNode( true );
+			element.right = element.cloneNode( true );
+
+		}
+
+		if ( this.mode === PANOLENS.Modes.VR ) {
+
+			element.left.style.display = element.style.display;
+			element.right.style.display = element.style.display;
+			element.style.display = 'none';
+
+		} else {
+
+			element.style.display = element.left.style.display;
+			element.left.style.display = 'none';
+			element.right.style.display = 'none';
+
+		}
+
+		// Update elements translation
+		this.translateElement( halfWidth, halfHeight );
+
+		this.container.appendChild( element.left );
+		this.container.appendChild( element.right );
+
+	}
 
 	/**
 	 * Translate the hovering element by css transform
@@ -5045,16 +5307,57 @@ window.PANOLENS = {};
 	 */
 	PANOLENS.Infospot.prototype.translateElement = function ( x, y ) {
 
-		var left, top;
+		if ( !this.element._width || !this.element._height || !this.getContainer() ) {
 
-		this.element.style.display = 'block';
+			return;
 
-		left = x - this.element.clientWidth / 2;
-		top = y - this.element.clientHeight - 30;
+		}
 
-		this.element.style.webkitTransform =
-		this.element.style.msTransform =
-		this.element.style.transform = 'translate(' + left + 'px, ' + top + 'px)';
+		var left, top, element, width, height, delta, container;
+
+		container = this.container;
+		element = this.element;
+		width = element._width / 2;
+		height = element._height;
+		delta = 30;
+
+		left = x - width;
+		top = y - height - delta;
+
+		if ( this.mode === PANOLENS.Modes.VR && element.left && element.right ) {
+
+			left = container.clientWidth / 4 - width;
+			top = container.clientHeight / 2 - height - delta;
+
+			this.setElementStyle( 'transform', element.left, 'translate(' + left + 'px, ' + top + 'px)' );
+
+			left += container.clientWidth / 2;
+
+			this.setElementStyle( 'transform', element.right, 'translate(' + left + 'px, ' + top + 'px)' );
+
+		} else {
+
+			this.setElementStyle( 'transform', element, 'translate(' + left + 'px, ' + top + 'px)' );
+
+		}
+
+	};
+
+	/**
+	 * Set vendor specific css
+	 * @param {string} type - CSS style name
+	 * @param {HTMLElement} element - The element to be modified
+	 * @param {string} value - Style value
+	 */
+	PANOLENS.Infospot.prototype.setElementStyle = function ( type, element, value ) {
+
+		var style = element.style;
+
+		if ( type === 'transform' ) {
+
+			style.webkitTransform = style.msTransform = style.transform = value;
+
+		}
 
 	};
 
@@ -5069,6 +5372,15 @@ window.PANOLENS = {};
 			this.element.textContent = text;
 
 		}
+
+	};
+
+	/**
+	 * Set cursor css style on hover
+	 */
+	PANOLENS.Infospot.prototype.setCursorHoverStyle = function ( style ) {
+
+		this.cursorStyle = style;
 
 	};
 
@@ -5092,8 +5404,6 @@ window.PANOLENS = {};
 			this.element.style.position = 'fixed';
 			this.element.classList.add( 'panolens-infospot' );
 
-			this.container.appendChild( this.element );
-
 		}
 
 		this.setText( text );
@@ -5114,8 +5424,6 @@ window.PANOLENS = {};
 			this.element.style.position = 'fixed';
 			this.element.classList.add( 'panolens-infospot' );
 
-			this.container.appendChild( this.element );
-
 		}
 
 	};
@@ -5127,8 +5435,21 @@ window.PANOLENS = {};
 
 		if ( this.element ) { 
 
-			this.container.removeChild( this.element );
+			if ( this.element.left ) {
 
+				this.container.removeChild( this.element.left );
+				this.element.left = null;
+
+			}
+
+			if ( this.element.right ) {
+
+				this.container.removeChild( this.element.right );
+				this.element.right = null;
+
+			}
+
+			this.container.removeChild( this.element );
 			this.element = null;
 
 		}
@@ -5169,8 +5490,12 @@ window.PANOLENS = {};
 
 		delay = delay || 0;
 
-		this.hideAnimation && this.hideAnimation.stop();
-		this.showAnimation && this.showAnimation.delay( delay ).start();
+		if ( this.animated ) {
+
+			this.hideAnimation && this.hideAnimation.stop();
+			this.showAnimation && this.showAnimation.delay( delay ).start();
+
+		}
 
 	};
 
@@ -5182,8 +5507,13 @@ window.PANOLENS = {};
 
 		delay = delay || 0;
 
-		this.showAnimation && this.showAnimation.stop();
-		this.hideAnimation && this.hideAnimation.delay( delay ).start();
+		if ( this.animated ) {
+
+			this.showAnimation && this.showAnimation.stop();
+			this.hideAnimation && this.hideAnimation.delay( delay ).start();
+
+		}
+		
 		
 	};
 
@@ -5223,6 +5553,9 @@ window.PANOLENS = {};
 	 * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
 	 * @param {number}  [options.cameraFov=60] - Camera field of view value
 	 * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
+	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
+	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
+	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -5235,6 +5568,8 @@ window.PANOLENS = {};
 			return;
 		}
 
+		var container;
+
 		options = options || {};
 		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
 		options.controlButtons = options.controlButtons || [ 'fullscreen', 'navigation', 'vr', 'video' ];
@@ -5244,35 +5579,42 @@ window.PANOLENS = {};
 		options.clickTolerance = options.clickTolerance || 10;
 		options.cameraFov = options.cameraFov || 60;
 		options.reverseDragging = options.reverseDragging || false;
+		options.enableReticle = options.enableReticle || false;
+		options.dwellTime = options.dwellTime || 1500;
+		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		
 		this.options = options;
-		this.container;
 
 		// Container
 		if ( options.container ) {
 
-			this.container = options.container;
+			container = options.container;
 
 		} else {
 
-			this.container = document.createElement( 'div' );
-			this.container.style.width = window.innerWidth + 'px';
-			this.container.style.height = window.innerHeight + 'px';
-			document.body.appendChild( this.container );
+			container = document.createElement( 'div' );
+			container.style.width = window.innerWidth + 'px';
+			container.style.height = window.innerHeight + 'px';
+			document.body.appendChild( container );
 
 			// For matching body's width and height dynamically on the next tick to 
 			// avoid 0 height in the beginning
 			setTimeout( function () {
-				this.container.style.width = '100%';
-				this.container.style.height = '100%';
-			}.bind( this ), 0 );
+				container.style.width = '100%';
+				container.style.height = '100%';
+			}, 0 );
 
 		}
+
+		this.container = container;
 
 		this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
 		this.effect;
+
+		this.reticle = {};
+		this.tempEnableReticle = this.options.enableReticle;
 
 		this.mode = PANOLENS.Modes.NORMAL;
 
@@ -5289,11 +5631,25 @@ window.PANOLENS = {};
 		this.pressObject;
 
 		this.raycaster = new THREE.Raycaster();
+		this.raycasterPoint = new THREE.Vector2();
 		this.userMouse = new THREE.Vector2();
 		this.updateCallbacks = [];
 		this.requestAnimationId;
 
-		this.DEBUG = false;
+		// Handler references
+		this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
+		this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
+		this.HANDLER_MOUSE_MOVE = this.onMouseMove.bind( this );
+		this.HANDLER_WINDOW_RESIZE = this.onWindowResize.bind( this );
+		this.HANDLER_KEY_DOWN = this.onKeyDown.bind( this );
+		this.HANDLER_KEY_UP = this.onKeyUp.bind( this );
+		this.HANDLER_TAP = this.onTap.bind( this, {
+			clientX: this.container.clientWidth / 2,
+			clientY: this.container.clientHeight / 2
+		} );
+
+		// Flag for infospot output
+		this.OUTPUT_INFOSPOT = false;
 
 		// Renderer
 		this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -5319,6 +5675,9 @@ window.PANOLENS = {};
 
 		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
 		this.control = this.OrbitControls;
+
+		// Add default hidden reticle
+		this.addReticle();
 		
 		// Lock horizontal view
 		if ( this.options.horizontalView ) {
@@ -5334,6 +5693,14 @@ window.PANOLENS = {};
 		// Reverse dragging direction
 		if ( this.options.reverseDragging ) {
 			this.reverseDraggingDirection();
+		}
+
+		// Register event if reticle is enabled, otherwise defaults to mouse
+		if ( this.options.enableReticle ) {
+			this.reticle.show();
+			this.registerReticleEvent();
+		} else {
+			this.registerMouseAndTouchEvents();
 		}
 		
 		// Register dom event listeners
@@ -5374,6 +5741,13 @@ window.PANOLENS = {};
 		if ( object.addEventListener ) {
 
 			object.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+
+		}
+
+		// All object added to scene being passed with container
+		if ( object instanceof PANOLENS.Panorama && object.dispatchEvent ) {
+
+			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
 
 		}
 
@@ -5470,31 +5844,56 @@ window.PANOLENS = {};
 	};
 
 	/**
-	 * Toggle VR effect mode
+	 * Toggle VR effect mode and broadcast event to infospot descendants
 	 * @fires PANOLENS.Viewer#VR-toggle
+	 * @fires PANOLENS.Infospot#VR-toggle
 	 */
 	PANOLENS.Viewer.prototype.toggleVR = function () {
+
+		var event;
 
 		if ( this.effect ) {
 
 			if ( this.mode !== PANOLENS.Modes.VR ) {
 
-				this.enableVR();
+				this.mode = PANOLENS.Modes.VR;
 
 			} else {
 
-				this.disableVR();
+				this.mode = PANOLENS.Modes.NORMAL;
 
 			}
 		}
+
+		event = { type: 'VR-toggle', mode: this.mode };
 
 		/**
 		 * Toggle vr event
 		 * @type {object}
 		 * @event PANOLENS.Viewer#VR-toggle
+		 * @event PANOLENS.Infospot#VR-toggle
 		 * @property {PANOLENS.Modes} mode - Current display mode
 		 */
-		this.dispatchEvent( { type: 'VR-toggle', mode: this.mode } );
+		this.dispatchEvent( event );
+		this.scene.traverse( function ( object ) {
+
+			if ( object.dispatchEvent ) {
+
+				object.dispatchEvent( event );
+
+			}
+
+		});
+
+		if ( this.mode === PANOLENS.Modes.VR ) {
+
+			this.enableVR();
+
+		} else {
+
+			this.disableVR();
+
+		}
 
 	};
 
@@ -5503,9 +5902,18 @@ window.PANOLENS = {};
 	 */
 	PANOLENS.Viewer.prototype.enableVR = function () {
 
-		if ( this.effect && this.mode !== PANOLENS.Modes.VR ) {
+		if ( this.effect && this.mode === PANOLENS.Modes.VR ) {
 
-			this.mode = PANOLENS.Modes.VR;
+			this.tempEnableReticle = true;
+
+			// Register reticle event and unregister mouse event
+			this.unregisterMouseAndTouchEvents();
+
+			this.reticle.show();
+			this.registerReticleEvent();
+
+			this.updateReticleEvent( this.mode );
+			
 
 		}
 
@@ -5516,10 +5924,25 @@ window.PANOLENS = {};
 	 */
 	PANOLENS.Viewer.prototype.disableVR = function () {
 
-		if ( this.effect && this.mode !== PANOLENS.Modes.NORMAL ) {
+		if ( this.effect && this.mode === PANOLENS.Modes.NORMAL ) {
 
-			this.mode = PANOLENS.Modes.NORMAL;
+			this.tempEnableReticle = false;
 
+			// Register mouse event and unregister reticle event
+			if ( !this.options.enableReticle ) {
+
+				this.reticle.hide();
+				this.unregisterReticleEvent();
+				this.registerMouseAndTouchEvents();
+
+			} else {
+
+				this.updateReticleEvent( this.mode );
+
+			}
+
+			
+			
 		}
 
 	};
@@ -5745,7 +6168,13 @@ window.PANOLENS = {};
 	 */
 	PANOLENS.Viewer.prototype.getNextControlIndex = function () {
 
-		return ( this.controls.indexOf( this.control ) + 1 >= this.controls.length ) ? 0 : this.controls.indexOf( this.control ) + 1;
+		var controls, control, nextIndex;
+
+		controls = this.controls;
+		control = this.control;
+		nextIndex = controls.indexOf( control ) + 1;
+
+		return ( nextIndex >= controls.length ) ? 0 : nextIndex;
 
 	};
 
@@ -5825,15 +6254,41 @@ window.PANOLENS = {};
 	};
 
 	/**
+	 * Add reticle 
+	 */
+	PANOLENS.Viewer.prototype.addReticle = function () {
+
+		this.reticle = new PANOLENS.Reticle( 0x1abc9c );
+		this.reticle.position.z = -10;
+		this.reticle.scale.multiplyScalar( 0.3 );
+		this.camera.add( this.reticle );
+		this.scene.add( this.camera );
+
+	};
+
+	/**
 	 * This is called when window size is changed
 	 * @fires PANOLENS.Viewer#window-resize
 	 */
 	PANOLENS.Viewer.prototype.onWindowResize = function () {
 
-		this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
+		var width, height;
+
+		width = this.container.clientWidth;
+		height = this.container.clientHeight;
+
+		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
 
-		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.renderer.setSize( width, height );
+
+		// Update reticle
+		if ( this.options.enableReticle || this.tempEnableReticle ) {
+
+			this.updateReticleEvent( this.mode );
+
+		}
+		
 
 		/**
 		 * Window resizing event
@@ -5842,7 +6297,7 @@ window.PANOLENS = {};
 		 * @property {number} width  - Width of the window
 		 * @property {number} height - Height of the window
 		 */
-		this.dispatchEvent( { type: 'window-resize', width: this.container.clientWidth, height: this.container.clientHeight })
+		this.dispatchEvent( { type: 'window-resize', width: width, height: height })
 	};
 
 	/**
@@ -5962,17 +6417,26 @@ window.PANOLENS = {};
 
 	PANOLENS.Viewer.prototype.onTap = function ( event, type ) {
 
-		var point = {}, object, intersects, intersect_entity, intersect;
+		var intersects, intersect_entity, intersect;
 
-		point.x = ( ( event.clientX - this.renderer.domElement.offsetLeft ) / this.renderer.domElement.clientWidth ) * 2 - 1;
-    	point.y = - ( ( event.clientY - this.renderer.domElement.offsetTop ) / this.renderer.domElement.clientHeight ) * 2 + 1;
+		this.raycasterPoint.x = ( ( event.clientX - this.renderer.domElement.offsetLeft ) / this.renderer.domElement.clientWidth ) * 2 - 1;
+    	this.raycasterPoint.y = - ( ( event.clientY - this.renderer.domElement.offsetTop ) / this.renderer.domElement.clientHeight ) * 2 + 1;
 
-		this.raycaster.setFromCamera( point, this.camera );
+		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
-		if ( !this.panorama ) { return; }
+		// Return if no panorama 
+		if ( !this.panorama ) { 
+
+			return; 
+
+		}
 
 		// output infospot information
-		if ( this.DEBUG ) { this.outputInfospotPosition(); }
+		if ( this.OUTPUT_INFOSPOT ) { 
+
+			this.outputInfospotPosition(); 
+
+		}
 
 		intersects = this.raycaster.intersectObjects( this.panorama.children, true );
 
@@ -6031,6 +6495,12 @@ window.PANOLENS = {};
 
 					this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
 
+					// Reset reticle timer
+					if ( this.reticle.timerId ) {
+						window.cancelAnimationFrame( this.reticle.timerId );
+						this.reticle.timerId = null;
+					}
+
 				}
 
 				this.hoverObject = undefined;
@@ -6046,6 +6516,12 @@ window.PANOLENS = {};
 					if ( this.hoverObject.dispatchEvent ) {
 
 						this.hoverObject.dispatchEvent( { type: 'hoverenter', mouseEvent: event } );
+
+						// Start reticle timer
+						if ( this.options.autoReticleSelect && this.options.enableReticle || this.tempEnableReticle ) {
+							this.reticle.startTime = window.performance.now();
+							this.reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, event ) );
+						}
 
 					}
 
@@ -6075,7 +6551,7 @@ window.PANOLENS = {};
 
 				}
 
-				if ( this.userMouse.type === 'mousemove' ) {
+				if ( this.userMouse.type === 'mousemove' || this.options.enableReticle ) {
 
 					if ( intersect && intersect.dispatchEvent ) {
 
@@ -6194,7 +6670,7 @@ window.PANOLENS = {};
 
 		if ( event.keyCode === 17 || event.keyIdentifier === 'Control' ) {
 
-			this.DEBUG = true;
+			this.OUTPUT_INFOSPOT = true;
 
 		}
 
@@ -6202,7 +6678,7 @@ window.PANOLENS = {};
 
 	PANOLENS.Viewer.prototype.onKeyUp = function ( event ) {
 
-		this.DEBUG = false;
+		this.OUTPUT_INFOSPOT = false;
 
 	};
 
@@ -6215,23 +6691,100 @@ window.PANOLENS = {};
 	};
 
 	/**
+	 * Register mouse and touch event on container
+	 */
+	PANOLENS.Viewer.prototype.registerMouseAndTouchEvents = function () {
+
+		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, true );
+		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, true );
+		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , true );
+		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, true );
+		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , true );
+
+	};
+
+	/**
+	 * Unregister mouse and touch event on container
+	 */
+	PANOLENS.Viewer.prototype.unregisterMouseAndTouchEvents = function () {
+
+		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, true );
+		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, true );
+		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , true );
+		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, true );
+		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , true );
+	};
+
+	/**
+	 * Reticle selection
+	 * @param  {object} mouseEvent - Mouse event to be passed in
+	 */
+	PANOLENS.Viewer.prototype.reticleSelect = function ( mouseEvent ) {
+		
+		var reticle = this.reticle;
+
+		if ( performance.now() - reticle.startTime >= this.options.dwellTime ) {
+
+			// Reticle select
+			this.onTap( mouseEvent, 'click' );
+
+			window.cancelAnimationFrame( reticle.timerId );
+			reticle.timerId = null;
+			
+
+		} else if ( this.options.autoReticleSelect ){
+
+			reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, mouseEvent ) );
+
+		}
+
+	}
+
+	/**
+	 * Register reticle event
+	 */
+	PANOLENS.Viewer.prototype.registerReticleEvent = function () {
+
+		this.addUpdateCallback( this.HANDLER_TAP );
+
+	};
+
+	/**
+	 * Unregister reticle event
+	 */
+	PANOLENS.Viewer.prototype.unregisterReticleEvent = function () {
+
+		this.removeUpdateCallback( this.HANDLER_TAP );
+
+	};
+
+	/**
+	 * Update reticle event
+	 */
+	PANOLENS.Viewer.prototype.updateReticleEvent = function ( mode ) {
+
+		var centerX, centerY;
+
+		centerX = this.container.clientWidth / 2;
+		centerY = this.container.clientHeight / 2;
+
+		this.removeUpdateCallback( this.HANDLER_TAP );
+		this.HANDLER_TAP = this.onTap.bind( this, { clientX: centerX, clientY: centerY } );
+		this.addUpdateCallback( this.HANDLER_TAP );
+
+	};
+
+	/**
 	 * Register container and window listeners
 	 */
 	PANOLENS.Viewer.prototype.registerEventListeners = function () {
 
-		// Mouse / Touch Event
-		this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), true );
-		this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), true );
-		this.container.addEventListener( 'mouseup', this.onMouseUp.bind( this ), true );
-		this.container.addEventListener( 'touchstart', this.onMouseDown.bind( this ), true );
-		this.container.addEventListener( 'touchend', this.onMouseUp.bind( this ), true );
-
 		// Resize Event
-		window.addEventListener( 'resize', this.onWindowResize.bind( this ), true );
+		window.addEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
 
 		// Keyboard Event
-		window.addEventListener( 'keydown', this.onKeyDown.bind( this ), true );
-		window.addEventListener( 'keyup', this.onKeyUp.bind( this ), true );
+		window.addEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
+		window.addEventListener( 'keyup'  , this.HANDLER_KEY_UP	 , true );
 
 	};
 
@@ -6240,19 +6793,12 @@ window.PANOLENS = {};
 	 */
 	PANOLENS.Viewer.prototype.unregisterEventListeners = function () {
 
-		// Mouse / Touch Event
-		this.container.removeEventListener( 'mousedown', this.onMouseDown.bind( this ), true );
-		this.container.removeEventListener( 'mousemove', this.onMouseMove.bind( this ), true );
-		this.container.removeEventListener( 'mouseup', this.onMouseUp.bind( this ), true );
-		this.container.removeEventListener( 'touchstart', this.onMouseDown.bind( this ), true );
-		this.container.removeEventListener( 'touchend', this.onMouseUp.bind( this ), true );
-
 		// Resize Event
-		window.removeEventListener( 'resize', this.onWindowResize.bind( this ), true );
+		window.removeEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
 
 		// Keyboard Event
-		window.removeEventListener( 'keydown', this.onKeyDown.bind( this ), true );
-		window.removeEventListener( 'keyup', this.onKeyUp.bind( this ), true );
+		window.removeEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
+		window.removeEventListener( 'keyup'  , this.HANDLER_KEY_UP  , true );
 
 	};
 

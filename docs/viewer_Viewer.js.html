@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:VR-toggle">PANOLENS.Viewer#event:VR-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+					<li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:VR-toggle">PANOLENS.Infospot#event:VR-toggle</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
 				</ul>
 			</li>
 			
@@ -102,6 +102,9 @@
 	 * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
 	 * @param {number}  [options.cameraFov=60] - Camera field of view value
 	 * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
+	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
+	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
+	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -114,6 +117,8 @@
 			return;
 		}
 
+		var container;
+
 		options = options || {};
 		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
 		options.controlButtons = options.controlButtons || [ 'fullscreen', 'navigation', 'vr', 'video' ];
@@ -123,35 +128,42 @@
 		options.clickTolerance = options.clickTolerance || 10;
 		options.cameraFov = options.cameraFov || 60;
 		options.reverseDragging = options.reverseDragging || false;
+		options.enableReticle = options.enableReticle || false;
+		options.dwellTime = options.dwellTime || 1500;
+		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		
 		this.options = options;
-		this.container;
 
 		// Container
 		if ( options.container ) {
 
-			this.container = options.container;
+			container = options.container;
 
 		} else {
 
-			this.container = document.createElement( 'div' );
-			this.container.style.width = window.innerWidth + 'px';
-			this.container.style.height = window.innerHeight + 'px';
-			document.body.appendChild( this.container );
+			container = document.createElement( 'div' );
+			container.style.width = window.innerWidth + 'px';
+			container.style.height = window.innerHeight + 'px';
+			document.body.appendChild( container );
 
 			// For matching body's width and height dynamically on the next tick to 
 			// avoid 0 height in the beginning
 			setTimeout( function () {
-				this.container.style.width = '100%';
-				this.container.style.height = '100%';
-			}.bind( this ), 0 );
+				container.style.width = '100%';
+				container.style.height = '100%';
+			}, 0 );
 
 		}
+
+		this.container = container;
 
 		this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
 		this.effect;
+
+		this.reticle = {};
+		this.tempEnableReticle = this.options.enableReticle;
 
 		this.mode = PANOLENS.Modes.NORMAL;
 
@@ -168,11 +180,25 @@
 		this.pressObject;
 
 		this.raycaster = new THREE.Raycaster();
+		this.raycasterPoint = new THREE.Vector2();
 		this.userMouse = new THREE.Vector2();
 		this.updateCallbacks = [];
 		this.requestAnimationId;
 
-		this.DEBUG = false;
+		// Handler references
+		this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
+		this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
+		this.HANDLER_MOUSE_MOVE = this.onMouseMove.bind( this );
+		this.HANDLER_WINDOW_RESIZE = this.onWindowResize.bind( this );
+		this.HANDLER_KEY_DOWN = this.onKeyDown.bind( this );
+		this.HANDLER_KEY_UP = this.onKeyUp.bind( this );
+		this.HANDLER_TAP = this.onTap.bind( this, {
+			clientX: this.container.clientWidth / 2,
+			clientY: this.container.clientHeight / 2
+		} );
+
+		// Flag for infospot output
+		this.OUTPUT_INFOSPOT = false;
 
 		// Renderer
 		this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -198,6 +224,9 @@
 
 		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
 		this.control = this.OrbitControls;
+
+		// Add default hidden reticle
+		this.addReticle();
 		
 		// Lock horizontal view
 		if ( this.options.horizontalView ) {
@@ -213,6 +242,14 @@
 		// Reverse dragging direction
 		if ( this.options.reverseDragging ) {
 			this.reverseDraggingDirection();
+		}
+
+		// Register event if reticle is enabled, otherwise defaults to mouse
+		if ( this.options.enableReticle ) {
+			this.reticle.show();
+			this.registerReticleEvent();
+		} else {
+			this.registerMouseAndTouchEvents();
 		}
 		
 		// Register dom event listeners
@@ -253,6 +290,13 @@
 		if ( object.addEventListener ) {
 
 			object.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+
+		}
+
+		// All object added to scene being passed with container
+		if ( object instanceof PANOLENS.Panorama &amp;&amp; object.dispatchEvent ) {
+
+			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
 
 		}
 
@@ -349,31 +393,56 @@
 	};
 
 	/**
-	 * Toggle VR effect mode
+	 * Toggle VR effect mode and broadcast event to infospot descendants
 	 * @fires PANOLENS.Viewer#VR-toggle
+	 * @fires PANOLENS.Infospot#VR-toggle
 	 */
 	PANOLENS.Viewer.prototype.toggleVR = function () {
+
+		var event;
 
 		if ( this.effect ) {
 
 			if ( this.mode !== PANOLENS.Modes.VR ) {
 
-				this.enableVR();
+				this.mode = PANOLENS.Modes.VR;
 
 			} else {
 
-				this.disableVR();
+				this.mode = PANOLENS.Modes.NORMAL;
 
 			}
 		}
+
+		event = { type: 'VR-toggle', mode: this.mode };
 
 		/**
 		 * Toggle vr event
 		 * @type {object}
 		 * @event PANOLENS.Viewer#VR-toggle
+		 * @event PANOLENS.Infospot#VR-toggle
 		 * @property {PANOLENS.Modes} mode - Current display mode
 		 */
-		this.dispatchEvent( { type: 'VR-toggle', mode: this.mode } );
+		this.dispatchEvent( event );
+		this.scene.traverse( function ( object ) {
+
+			if ( object.dispatchEvent ) {
+
+				object.dispatchEvent( event );
+
+			}
+
+		});
+
+		if ( this.mode === PANOLENS.Modes.VR ) {
+
+			this.enableVR();
+
+		} else {
+
+			this.disableVR();
+
+		}
 
 	};
 
@@ -382,9 +451,18 @@
 	 */
 	PANOLENS.Viewer.prototype.enableVR = function () {
 
-		if ( this.effect &amp;&amp; this.mode !== PANOLENS.Modes.VR ) {
+		if ( this.effect &amp;&amp; this.mode === PANOLENS.Modes.VR ) {
 
-			this.mode = PANOLENS.Modes.VR;
+			this.tempEnableReticle = true;
+
+			// Register reticle event and unregister mouse event
+			this.unregisterMouseAndTouchEvents();
+
+			this.reticle.show();
+			this.registerReticleEvent();
+
+			this.updateReticleEvent( this.mode );
+			
 
 		}
 
@@ -395,10 +473,25 @@
 	 */
 	PANOLENS.Viewer.prototype.disableVR = function () {
 
-		if ( this.effect &amp;&amp; this.mode !== PANOLENS.Modes.NORMAL ) {
+		if ( this.effect &amp;&amp; this.mode === PANOLENS.Modes.NORMAL ) {
 
-			this.mode = PANOLENS.Modes.NORMAL;
+			this.tempEnableReticle = false;
 
+			// Register mouse event and unregister reticle event
+			if ( !this.options.enableReticle ) {
+
+				this.reticle.hide();
+				this.unregisterReticleEvent();
+				this.registerMouseAndTouchEvents();
+
+			} else {
+
+				this.updateReticleEvent( this.mode );
+
+			}
+
+			
+			
 		}
 
 	};
@@ -624,7 +717,13 @@
 	 */
 	PANOLENS.Viewer.prototype.getNextControlIndex = function () {
 
-		return ( this.controls.indexOf( this.control ) + 1 >= this.controls.length ) ? 0 : this.controls.indexOf( this.control ) + 1;
+		var controls, control, nextIndex;
+
+		controls = this.controls;
+		control = this.control;
+		nextIndex = controls.indexOf( control ) + 1;
+
+		return ( nextIndex >= controls.length ) ? 0 : nextIndex;
 
 	};
 
@@ -704,15 +803,41 @@
 	};
 
 	/**
+	 * Add reticle 
+	 */
+	PANOLENS.Viewer.prototype.addReticle = function () {
+
+		this.reticle = new PANOLENS.Reticle( 0x1abc9c );
+		this.reticle.position.z = -10;
+		this.reticle.scale.multiplyScalar( 0.3 );
+		this.camera.add( this.reticle );
+		this.scene.add( this.camera );
+
+	};
+
+	/**
 	 * This is called when window size is changed
 	 * @fires PANOLENS.Viewer#window-resize
 	 */
 	PANOLENS.Viewer.prototype.onWindowResize = function () {
 
-		this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
+		var width, height;
+
+		width = this.container.clientWidth;
+		height = this.container.clientHeight;
+
+		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
 
-		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.renderer.setSize( width, height );
+
+		// Update reticle
+		if ( this.options.enableReticle || this.tempEnableReticle ) {
+
+			this.updateReticleEvent( this.mode );
+
+		}
+		
 
 		/**
 		 * Window resizing event
@@ -721,7 +846,7 @@
 		 * @property {number} width  - Width of the window
 		 * @property {number} height - Height of the window
 		 */
-		this.dispatchEvent( { type: 'window-resize', width: this.container.clientWidth, height: this.container.clientHeight })
+		this.dispatchEvent( { type: 'window-resize', width: width, height: height })
 	};
 
 	/**
@@ -841,17 +966,26 @@
 
 	PANOLENS.Viewer.prototype.onTap = function ( event, type ) {
 
-		var point = {}, object, intersects, intersect_entity, intersect;
+		var intersects, intersect_entity, intersect;
 
-		point.x = ( ( event.clientX - this.renderer.domElement.offsetLeft ) / this.renderer.domElement.clientWidth ) * 2 - 1;
-    	point.y = - ( ( event.clientY - this.renderer.domElement.offsetTop ) / this.renderer.domElement.clientHeight ) * 2 + 1;
+		this.raycasterPoint.x = ( ( event.clientX - this.renderer.domElement.offsetLeft ) / this.renderer.domElement.clientWidth ) * 2 - 1;
+    	this.raycasterPoint.y = - ( ( event.clientY - this.renderer.domElement.offsetTop ) / this.renderer.domElement.clientHeight ) * 2 + 1;
 
-		this.raycaster.setFromCamera( point, this.camera );
+		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
-		if ( !this.panorama ) { return; }
+		// Return if no panorama 
+		if ( !this.panorama ) { 
+
+			return; 
+
+		}
 
 		// output infospot information
-		if ( this.DEBUG ) { this.outputInfospotPosition(); }
+		if ( this.OUTPUT_INFOSPOT ) { 
+
+			this.outputInfospotPosition(); 
+
+		}
 
 		intersects = this.raycaster.intersectObjects( this.panorama.children, true );
 
@@ -910,6 +1044,12 @@
 
 					this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
 
+					// Reset reticle timer
+					if ( this.reticle.timerId ) {
+						window.cancelAnimationFrame( this.reticle.timerId );
+						this.reticle.timerId = null;
+					}
+
 				}
 
 				this.hoverObject = undefined;
@@ -925,6 +1065,12 @@
 					if ( this.hoverObject.dispatchEvent ) {
 
 						this.hoverObject.dispatchEvent( { type: 'hoverenter', mouseEvent: event } );
+
+						// Start reticle timer
+						if ( this.options.autoReticleSelect &amp;&amp; this.options.enableReticle || this.tempEnableReticle ) {
+							this.reticle.startTime = window.performance.now();
+							this.reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, event ) );
+						}
 
 					}
 
@@ -954,7 +1100,7 @@
 
 				}
 
-				if ( this.userMouse.type === 'mousemove' ) {
+				if ( this.userMouse.type === 'mousemove' || this.options.enableReticle ) {
 
 					if ( intersect &amp;&amp; intersect.dispatchEvent ) {
 
@@ -1073,7 +1219,7 @@
 
 		if ( event.keyCode === 17 || event.keyIdentifier === 'Control' ) {
 
-			this.DEBUG = true;
+			this.OUTPUT_INFOSPOT = true;
 
 		}
 
@@ -1081,7 +1227,7 @@
 
 	PANOLENS.Viewer.prototype.onKeyUp = function ( event ) {
 
-		this.DEBUG = false;
+		this.OUTPUT_INFOSPOT = false;
 
 	};
 
@@ -1094,23 +1240,100 @@
 	};
 
 	/**
+	 * Register mouse and touch event on container
+	 */
+	PANOLENS.Viewer.prototype.registerMouseAndTouchEvents = function () {
+
+		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, true );
+		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, true );
+		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , true );
+		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, true );
+		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , true );
+
+	};
+
+	/**
+	 * Unregister mouse and touch event on container
+	 */
+	PANOLENS.Viewer.prototype.unregisterMouseAndTouchEvents = function () {
+
+		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, true );
+		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, true );
+		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , true );
+		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, true );
+		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , true );
+	};
+
+	/**
+	 * Reticle selection
+	 * @param  {object} mouseEvent - Mouse event to be passed in
+	 */
+	PANOLENS.Viewer.prototype.reticleSelect = function ( mouseEvent ) {
+		
+		var reticle = this.reticle;
+
+		if ( performance.now() - reticle.startTime >= this.options.dwellTime ) {
+
+			// Reticle select
+			this.onTap( mouseEvent, 'click' );
+
+			window.cancelAnimationFrame( reticle.timerId );
+			reticle.timerId = null;
+			
+
+		} else if ( this.options.autoReticleSelect ){
+
+			reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, mouseEvent ) );
+
+		}
+
+	}
+
+	/**
+	 * Register reticle event
+	 */
+	PANOLENS.Viewer.prototype.registerReticleEvent = function () {
+
+		this.addUpdateCallback( this.HANDLER_TAP );
+
+	};
+
+	/**
+	 * Unregister reticle event
+	 */
+	PANOLENS.Viewer.prototype.unregisterReticleEvent = function () {
+
+		this.removeUpdateCallback( this.HANDLER_TAP );
+
+	};
+
+	/**
+	 * Update reticle event
+	 */
+	PANOLENS.Viewer.prototype.updateReticleEvent = function ( mode ) {
+
+		var centerX, centerY;
+
+		centerX = this.container.clientWidth / 2;
+		centerY = this.container.clientHeight / 2;
+
+		this.removeUpdateCallback( this.HANDLER_TAP );
+		this.HANDLER_TAP = this.onTap.bind( this, { clientX: centerX, clientY: centerY } );
+		this.addUpdateCallback( this.HANDLER_TAP );
+
+	};
+
+	/**
 	 * Register container and window listeners
 	 */
 	PANOLENS.Viewer.prototype.registerEventListeners = function () {
 
-		// Mouse / Touch Event
-		this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), true );
-		this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), true );
-		this.container.addEventListener( 'mouseup', this.onMouseUp.bind( this ), true );
-		this.container.addEventListener( 'touchstart', this.onMouseDown.bind( this ), true );
-		this.container.addEventListener( 'touchend', this.onMouseUp.bind( this ), true );
-
 		// Resize Event
-		window.addEventListener( 'resize', this.onWindowResize.bind( this ), true );
+		window.addEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
 
 		// Keyboard Event
-		window.addEventListener( 'keydown', this.onKeyDown.bind( this ), true );
-		window.addEventListener( 'keyup', this.onKeyUp.bind( this ), true );
+		window.addEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
+		window.addEventListener( 'keyup'  , this.HANDLER_KEY_UP	 , true );
 
 	};
 
@@ -1119,19 +1342,12 @@
 	 */
 	PANOLENS.Viewer.prototype.unregisterEventListeners = function () {
 
-		// Mouse / Touch Event
-		this.container.removeEventListener( 'mousedown', this.onMouseDown.bind( this ), true );
-		this.container.removeEventListener( 'mousemove', this.onMouseMove.bind( this ), true );
-		this.container.removeEventListener( 'mouseup', this.onMouseUp.bind( this ), true );
-		this.container.removeEventListener( 'touchstart', this.onMouseDown.bind( this ), true );
-		this.container.removeEventListener( 'touchend', this.onMouseUp.bind( this ), true );
-
 		// Resize Event
-		window.removeEventListener( 'resize', this.onWindowResize.bind( this ), true );
+		window.removeEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
 
 		// Keyboard Event
-		window.removeEventListener( 'keydown', this.onKeyDown.bind( this ), true );
-		window.removeEventListener( 'keyup', this.onKeyUp.bind( this ), true );
+		window.removeEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
+		window.removeEventListener( 'keyup'  , this.HANDLER_KEY_UP  , true );
 
 	};
 
@@ -1232,7 +1448,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-03-15T23:58:20-07:00
+		on 2016-04-11T09:24:26-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

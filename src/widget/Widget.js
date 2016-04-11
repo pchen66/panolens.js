@@ -9,7 +9,7 @@
 
 		THREE.EventDispatcher.call( this );
 
-		this.container = container || document.body;
+		this.container = container;
 
 		this.barElement;
 		this.fullscreenElement;
@@ -549,7 +549,8 @@
 
 		options = options || {};
 
-		var item = options.element || document.createElement( 'span' );
+		var item = options.element || document.createElement( 'span' ),
+			touchEnabled = ( document.ontouchend === undefined ) ? false : true;
 
 		item.style.cursor = 'pointer';
 		item.style.float = 'right';
@@ -558,27 +559,31 @@
 		item.style.backgroundSize = '60%';
 		item.style.backgroundRepeat = 'no-repeat';
 		item.style.backgroundPosition = 'center';
+		item.style.webkitUserSelect = 
+		item.style.MozUserSelect = 
+		item.style.userSelect = 'none';
 
-		item.addEventListener('mouseenter', function(e) {
-			item.style.filter = item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
+		// White glow on icon
+		item.addEventListener( touchEnabled ? 'touchstart' : 'mouseenter', function() {
+			item.style.filter = 
+			item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
 		});
-		item.addEventListener('mouseleave', function(e) {
-			item.style.filter = item.style.webkitFilter = '';
+		item.addEventListener( touchEnabled ? 'touchend' : 'mouseleave', function() {
+			item.style.filter = 
+			item.style.webkitFilter = '';
 		});
 
 		item = this.mergeStyleOptions( item, options.style );
 
 		if ( options.onTap ) {
-			[ 'click', 'touchend' ].forEach( function( event ) {
-				item.addEventListener( event, options.onTap, false );
-			} );
+
+			item.addEventListener( touchEnabled ? 'touchend' : 'click', options.onTap, true );
+
 		}
 
 		item.dispose = function () {
 
-			[ 'click', 'touchend' ].forEach( function( event ) {
-				item.removeEventListener( event, options.onTap, false );
-			} );
+			item.removeEventListener( touchEnabled ? 'touchend' : 'click', options.onTap, true );
 
 			options.onDispose && options.onDispose();
 

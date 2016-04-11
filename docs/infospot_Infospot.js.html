@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:VR-toggle">PANOLENS.Viewer#event:VR-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+					<li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:VR-toggle">PANOLENS.Infospot#event:VR-toggle</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
 				</ul>
 			</li>
 			
@@ -89,9 +89,9 @@
 	 * @constructor
 	 * @param {number} [scale=1] - Infospot scale
 	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
-	 * @param {HTMLElement} [container=document.body] - The dom element contains infospot elements
+	 * @param {boolean} [animated=true] - Enable default hover animation
 	 */
-	PANOLENS.Infospot = function ( scale, imageSrc, container ) {
+	PANOLENS.Infospot = function ( scale, imageSrc, animated ) {
 		
 		var scope = this, ratio, startScale, endScale, duration;
 
@@ -103,16 +103,20 @@
 
 		this.type = 'infospot';
 
+		this.animated = animated !== undefined ? animated : true;
 		this.isHovering = false;
 		this.visible = false;
 
 		this.element;
 		this.toPanorama;
+		this.cursorStyle;
+
+		this.mode = PANOLENS.Modes.UNKNOWN;
 
 		this.scale.set( scale, scale, 1 );
 		this.rotation.y = Math.PI;
 
-		this.container = container || document.body;
+		this.container;
 
 		PANOLENS.Utils.TextureLoader.load( imageSrc, postLoad );		
 
@@ -121,6 +125,9 @@
 			scope.material.side = THREE.DoubleSide;
 			scope.material.map = texture;
 			scope.material.depthTest = false;
+
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.repeat.x = - 1;
 
 			ratio = texture.image.width / texture.image.height;
 
@@ -168,10 +175,51 @@
 		this.addEventListener( 'hover', this.onHover );
 		this.addEventListener( 'hoverenter', this.onHoverStart );
 		this.addEventListener( 'hoverleave', this.onHoverEnd );
+		this.addEventListener( 'VR-toggle', this.onToggleVR );
+		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 
 	}
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
+
+	/**
+	 * Set infospot container
+	 * @param {HTMLElement|object} data - Data with container information
+	 */
+	PANOLENS.Infospot.prototype.setContainer = function ( data ) {
+
+		var container;
+
+		if ( data instanceof HTMLElement ) {
+
+			container = data;
+
+		} else if ( data &amp;&amp; data.container ) {
+
+			container = data.container;
+
+		}
+
+		// Append element if exists
+		if ( container &amp;&amp; this.element ) {
+
+			container.appendChild( this.element );
+
+		}
+
+		this.container = container;
+
+	};
+
+	/**
+	 * Get container
+	 * @return {HTMLElement} - The container of this infospot
+	 */
+	PANOLENS.Infospot.prototype.getContainer = function () {
+
+		return this.container;
+
+	};
 
 	/**
 	 * This will be called by a click event
@@ -180,7 +228,7 @@
 	 */
 	PANOLENS.Infospot.prototype.onClick = function ( event ) {
 
-		if ( this.element ) {
+		if ( this.element &amp;&amp; this.getContainer() ) {
 
 			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 
@@ -198,7 +246,7 @@
 	 */
 	PANOLENS.Infospot.prototype.onHover = function ( event ) {
 
-		if ( this.element &amp;&amp; !this.element.locked ) {
+		if ( this.element &amp;&amp; !this.element.locked &amp;&amp; this.getContainer() ) {
 
 			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 
@@ -210,17 +258,48 @@
 	 * This will be called on a mouse hover start
 	 * Sets cursor style to 'pointer', display the element and scale up the infospot
 	 */
-	PANOLENS.Infospot.prototype.onHoverStart = function() {
+	PANOLENS.Infospot.prototype.onHoverStart = function ( event ) {
+
+		if ( !this.getContainer() ) { return; }
+
+		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.VR ? 'default' : 'pointer' );
 
 		this.isHovering = true;
-		this.container.style.cursor = 'pointer';
-		this.scaleDownAnimation.stop();
-		this.scaleUpAnimation.start();
+		this.container.style.cursor = cursorStyle;
+		
+		if ( this.animated ) {
 
+			this.scaleDownAnimation.stop();
+			this.scaleUpAnimation.start();
+
+		}
+		
 		if ( this.element ) {
 
-			this.element.style.display = 'block';
+			if ( this.mode === PANOLENS.Modes.VR ) {
 
+				this.element.style.display = 'none';
+				this.element.left &amp;&amp; ( this.element.left.style.display = 'block' );
+				this.element.right &amp;&amp; ( this.element.right.style.display = 'block' );
+
+				// Store element width for reference
+				this.element._width = this.element.left.clientWidth;
+				this.element._height = this.element.left.clientHeight;
+
+			} else {
+
+				this.element.style.display = 'block';
+				this.element.left &amp;&amp; ( this.element.left.style.display = 'none' );
+				this.element.right &amp;&amp; ( this.element.right.style.display = 'none' );
+
+				// Store element width for reference
+				this.element._width = this.element.clientWidth;
+				this.element._height = this.element.clientHeight;
+
+			}
+
+			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+			
 		}
 
 	};
@@ -229,21 +308,84 @@
 	 * This will be called on a mouse hover end
 	 * Sets cursor style to 'default', hide the element and scale down the infospot
 	 */
-	PANOLENS.Infospot.prototype.onHoverEnd = function() {
+	PANOLENS.Infospot.prototype.onHoverEnd = function () {
+
+		if ( !this.getContainer() ) { return; }
 
 		this.isHovering = false;
 		this.container.style.cursor = 'default';
-		this.scaleUpAnimation.stop();
-		this.scaleDownAnimation.start();
+
+		if ( this.animated ) {
+
+			this.scaleUpAnimation.stop();
+			this.scaleDownAnimation.start();
+
+		}
 
 		if ( this.element ) {
 
 			this.element.style.display = 'none';
+			this.element.left &amp;&amp; ( this.element.left.style.display = 'none' );
+			this.element.right &amp;&amp; ( this.element.right.style.display = 'none' );
+
 			this.unlockHoverElement();
 
 		}
 
 	};
+
+	/**
+	 * On VR toggle handler
+	 * Creates duplicate left and right element
+	 * @param  {object} event - VR toggle event
+	 */
+	PANOLENS.Infospot.prototype.onToggleVR = function ( event ) {
+		
+		if ( !this.getContainer() ) { return; }
+
+		var element, halfWidth, halfHeight;
+
+		this.mode = event.mode;
+
+		element = this.element;
+
+		halfWidth = this.container.clientWidth / 2;
+		halfHeight = this.container.clientHeight / 2;
+
+		if ( !element ) {
+
+			return;
+
+		}
+
+		if ( !element.left || !element.right ) {
+
+			element.left = element.cloneNode( true );
+			element.right = element.cloneNode( true );
+
+		}
+
+		if ( this.mode === PANOLENS.Modes.VR ) {
+
+			element.left.style.display = element.style.display;
+			element.right.style.display = element.style.display;
+			element.style.display = 'none';
+
+		} else {
+
+			element.style.display = element.left.style.display;
+			element.left.style.display = 'none';
+			element.right.style.display = 'none';
+
+		}
+
+		// Update elements translation
+		this.translateElement( halfWidth, halfHeight );
+
+		this.container.appendChild( element.left );
+		this.container.appendChild( element.right );
+
+	}
 
 	/**
 	 * Translate the hovering element by css transform
@@ -252,16 +394,57 @@
 	 */
 	PANOLENS.Infospot.prototype.translateElement = function ( x, y ) {
 
-		var left, top;
+		if ( !this.element._width || !this.element._height || !this.getContainer() ) {
 
-		this.element.style.display = 'block';
+			return;
 
-		left = x - this.element.clientWidth / 2;
-		top = y - this.element.clientHeight - 30;
+		}
 
-		this.element.style.webkitTransform =
-		this.element.style.msTransform =
-		this.element.style.transform = 'translate(' + left + 'px, ' + top + 'px)';
+		var left, top, element, width, height, delta, container;
+
+		container = this.container;
+		element = this.element;
+		width = element._width / 2;
+		height = element._height;
+		delta = 30;
+
+		left = x - width;
+		top = y - height - delta;
+
+		if ( this.mode === PANOLENS.Modes.VR &amp;&amp; element.left &amp;&amp; element.right ) {
+
+			left = container.clientWidth / 4 - width;
+			top = container.clientHeight / 2 - height - delta;
+
+			this.setElementStyle( 'transform', element.left, 'translate(' + left + 'px, ' + top + 'px)' );
+
+			left += container.clientWidth / 2;
+
+			this.setElementStyle( 'transform', element.right, 'translate(' + left + 'px, ' + top + 'px)' );
+
+		} else {
+
+			this.setElementStyle( 'transform', element, 'translate(' + left + 'px, ' + top + 'px)' );
+
+		}
+
+	};
+
+	/**
+	 * Set vendor specific css
+	 * @param {string} type - CSS style name
+	 * @param {HTMLElement} element - The element to be modified
+	 * @param {string} value - Style value
+	 */
+	PANOLENS.Infospot.prototype.setElementStyle = function ( type, element, value ) {
+
+		var style = element.style;
+
+		if ( type === 'transform' ) {
+
+			style.webkitTransform = style.msTransform = style.transform = value;
+
+		}
 
 	};
 
@@ -276,6 +459,15 @@
 			this.element.textContent = text;
 
 		}
+
+	};
+
+	/**
+	 * Set cursor css style on hover
+	 */
+	PANOLENS.Infospot.prototype.setCursorHoverStyle = function ( style ) {
+
+		this.cursorStyle = style;
 
 	};
 
@@ -299,8 +491,6 @@
 			this.element.style.position = 'fixed';
 			this.element.classList.add( 'panolens-infospot' );
 
-			this.container.appendChild( this.element );
-
 		}
 
 		this.setText( text );
@@ -321,8 +511,6 @@
 			this.element.style.position = 'fixed';
 			this.element.classList.add( 'panolens-infospot' );
 
-			this.container.appendChild( this.element );
-
 		}
 
 	};
@@ -334,8 +522,21 @@
 
 		if ( this.element ) { 
 
-			this.container.removeChild( this.element );
+			if ( this.element.left ) {
 
+				this.container.removeChild( this.element.left );
+				this.element.left = null;
+
+			}
+
+			if ( this.element.right ) {
+
+				this.container.removeChild( this.element.right );
+				this.element.right = null;
+
+			}
+
+			this.container.removeChild( this.element );
 			this.element = null;
 
 		}
@@ -376,8 +577,12 @@
 
 		delay = delay || 0;
 
-		this.hideAnimation &amp;&amp; this.hideAnimation.stop();
-		this.showAnimation &amp;&amp; this.showAnimation.delay( delay ).start();
+		if ( this.animated ) {
+
+			this.hideAnimation &amp;&amp; this.hideAnimation.stop();
+			this.showAnimation &amp;&amp; this.showAnimation.delay( delay ).start();
+
+		}
 
 	};
 
@@ -389,8 +594,13 @@
 
 		delay = delay || 0;
 
-		this.showAnimation &amp;&amp; this.showAnimation.stop();
-		this.hideAnimation &amp;&amp; this.hideAnimation.delay( delay ).start();
+		if ( this.animated ) {
+
+			this.showAnimation &amp;&amp; this.showAnimation.stop();
+			this.hideAnimation &amp;&amp; this.hideAnimation.delay( delay ).start();
+
+		}
+		
 		
 	};
 
@@ -449,7 +659,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-03-15T23:58:20-07:00
+		on 2016-04-11T09:24:26-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

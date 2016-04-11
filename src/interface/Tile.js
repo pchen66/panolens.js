@@ -38,6 +38,8 @@
 			new THREE.MeshBasicMaterial( { color: 0xffffff, transparent: true } )
 		);
 
+		this.bendModifier = new THREE.BendModifier();
+
 		this.entity = undefined;
 
 		this.animationDuration = 500;
@@ -52,6 +54,7 @@
 
 		}
 		
+		this.originalGeometry = this.geometry.clone();
 	}
 
 	PANOLENS.Tile.prototype = Object.create( THREE.Mesh.prototype );
@@ -87,9 +90,22 @@
 	 */
 	PANOLENS.Tile.prototype.bend = function ( direction, axis, angle ) {
 
-		var modifier = new THREE.BendModifier();
+		this.bendModifier.set( direction, axis, angle ).modify( this.geometry );
 
-		modifier.set( direction, axis, angle ).modify( this.geometry );
+	};
+
+	/**
+	 * Restore geometry back to initial state 
+	 */
+	PANOLENS.Tile.prototype.unbend = function () {
+
+		var geometry = this.geometry;
+
+		this.geometry = this.originalGeometry;
+		this.originalGeometry = this.geometry.clone();
+
+		geometry.dispose();
+		geometry = null;
 
 	};
 
