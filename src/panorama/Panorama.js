@@ -108,6 +108,11 @@
 		
 	};
 
+	/**
+	 * Set container of this panorama 
+	 * @param {HTMLElement|object} data - Data with container information
+	 * @fires PANOLENS.Infospot#panolens-container
+	 */
 	PANOLENS.Panorama.prototype.setContainer = function ( data ) {
 
 		var container;
@@ -128,6 +133,12 @@
 
 				if ( child instanceof PANOLENS.Infospot && child.dispatchEvent ) {
 
+					/**
+					 * Set container event
+					 * @type {object}
+					 * @event PANOLENS.Infospot#panolens-container
+					 * @property {HTMLElement} container - The container of this panorama
+					 */
 					child.dispatchEvent( { type: 'panolens-container', container: container } );
 
 				}
