@@ -26,12 +26,18 @@
 
 	PANOLENS.Reticle.prototype.constructor = PANOLENS.Reticle;
 
+	/**
+	 * Make reticle visible
+	 */
 	PANOLENS.Reticle.prototype.show = function () {
 
 		this.visible = true;
 
 	};
 
+	/**
+	 * Make reticle invisible
+	 */
 	PANOLENS.Reticle.prototype.hide = function () {
 
 		this.visible = false;
