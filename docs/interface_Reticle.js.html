@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Namespace: TextureLoader</title>
+	<title>Documentation Source: interface/Reticle.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -72,343 +72,66 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Namespace: TextureLoader</h1>
+		<h1 class="page-title">Source: interface/Reticle.js</h1>
+    
 <section>
-
-<header>
-    
-        <h2>
-            <span class="ancestors"><a href="PANOLENS.html">PANOLENS</a><a href="PANOLENS.Utils.html">.Utils</a>.</span>
-        
-        TextureLoader
-        </h2>
-        
-    
-</header>
-
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Texture loader based on <a href="https://github.com/mrdoob/three.js/blob/master/src/loaders/TextureLoader.js">https://github.com/mrdoob/three.js/blob/master/src/loaders/TextureLoader.js</a></div>
-        
-
-        
-<dl class="details">
-    
-
+    <article>
+        <pre
+            class="sunlight-highlight-javascript ">(function(){
 	
+	/**
+	 * Reticle 3D Sprite
+	 * @param {THREE.Color} [color=0xfffff] - Color of the reticle sprite
+	 * @param {string} [url=PANOLENS.DataImage.Reticle] - Image asset url
+	 */
+	PANOLENS.Reticle = function ( color, url ) {
 
-	
+		var map, material;
 
-	
+		color = color || 0xffffff;
+		url = url || PANOLENS.DataImage.Reticle;
 
-    
+		map = PANOLENS.Utils.TextureLoader.load( url );
+		material = new THREE.SpriteMaterial( { map: map, color: color, depthTest: false } );
 
-    
+		THREE.Sprite.call( this, material );
 
-    
+		this.visible = false;
+		this.renderOrder = 10;
 
-    
+	}
 
-	
+	PANOLENS.Reticle.prototype = Object.create( THREE.Sprite.prototype );
 
-	
+	PANOLENS.Reticle.prototype.constructor = PANOLENS.Reticle;
 
-	
+	/**
+	 * Make reticle visible
+	 */
+	PANOLENS.Reticle.prototype.show = function () {
 
-	
+		this.visible = true;
 
-	
+	};
 
+	/**
+	 * Make reticle invisible
+	 */
+	PANOLENS.Reticle.prototype.hide = function () {
 
+		this.visible = false;
 
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="util_TextureLoader.js.html">util/TextureLoader.js</a>
-			</li>
-		</ul>
-	</dd>
-	
+	};
 
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id=".load"><span class="type-signature">&lt;static> </span>load(url, onLoad, onProgress, onError)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Load image texture
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>url</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">An image url</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>onLoad</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">On load callback</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>onProgress</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">In progress callback</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>onError</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">On error callback</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="util_TextureLoader.js.html">util/TextureLoader.js</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - Image texture
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">THREE.Texture</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        </dl>
-    
-
-    
-
-    
-</article>
-
+})();</pre>
+    </article>
 </section>
+
 
 
 
@@ -418,10 +141,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>

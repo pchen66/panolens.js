@@ -39,10 +39,11 @@ This code creates a 360 image panorama. The first panorama added to the viewer w
 7.	[Panorama Linking](http://pchen66.github.io/Panolens/examples/panorama_linking.html)
 8.	[Panorama Progress Loading](http://pchen66.github.io/Panolens/examples/panorama_loading_progress.html)
 9.	[Panorama Simple Gallery](http://pchen66.github.io/Panolens/examples/panorama_simple_gallery.html)
-10.	[Panorama UI](http://pchen66.github.io/Panolens/examples/panorama_ui.html)
-11.	[Panorama Match 3 Game](http://pchen66.github.io/Panolens/examples/XDiamond/)
-12.	[Panorama Interactive](http://pchen66.github.io/Panolens/examples/panorama_interactive.html)
-13.	[Pano Theater](http://pchen66.github.io/PanoTheater)
+10.	[Panorama Reticle Event](http://pchen66.github.io/Panolens/examples/panorama_reticle.html)
+11.	[Panorama UI](http://pchen66.github.io/Panolens/examples/panorama_ui.html)
+12.	[Panorama Match 3 Game](http://pchen66.github.io/Panolens/examples/XDiamond/)
+13.	[Panorama Interactive](http://pchen66.github.io/Panolens/examples/panorama_interactive.html)
+14.	[Pano Theater](http://pchen66.github.io/PanoTheater)
 
 ####[source](https://github.com/pchen66/pchen66.github.io/tree/master/Panolens/examples)
 
@@ -84,5 +85,5 @@ The minified version includes these libraries:
 2. [Tween.js](https://github.com/tweenjs/tween.js/)
 
 ###Future
-1.	More VR support
+1.	Add dwell animation
 2.	Add AR capability
