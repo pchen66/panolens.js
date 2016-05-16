@@ -6322,26 +6322,22 @@ window.PANOLENS = {};
 	};
 
 	/**
-	 * Output infospot attach position in console.warn by holding down Ctrl button
+	 * Output infospot attach position in developer console by holding down Ctrl button
 	 */
 	PANOLENS.Viewer.prototype.outputInfospotPosition = function () {
 
-		var intersects;
+		var intersects, point;
 
 		intersects = this.raycaster.intersectObject( this.panorama, true );
 
 		if ( intersects.length > 0 ) {
 
-			intersects[0].point.applyAxisAngle( new THREE.Vector3( -1, 0, 0 ), this.panorama.rotation.x );
-			intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, -1, 0 ), this.panorama.rotation.y );
-			intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, 0, -1 ), this.panorama.rotation.z );
+			point = intersects[0].point.clone();
 
-			intersects[0].point.sub( this.panorama.position );
-
-			console.info('{ ' + (-intersects[0].point.x).toFixed(2) + 
-				', ' + (intersects[0].point.y).toFixed(2) +
-				', ' + (intersects[0].point.z).toFixed(2) + ' }'
-			);
+			console.info( '{ ' 
+				+ -point.x.toFixed(2) + ', '
+				+  point.y.toFixed(2) + ', '
+				+  point.z.toFixed(2) + ' }' );
 
 		}
 
