@@ -5,7 +5,7 @@
  * W3C Device Orientation control (http://w3c.github.io/deviceorientation/spec-source-orientation.html)
  */
 
-THREE.DeviceOrientationControls = function ( object ) {
+THREE.DeviceOrientationControls = function( object ) {
 
 	var scope = this;
 
@@ -17,13 +17,17 @@ THREE.DeviceOrientationControls = function ( object ) {
 	this.deviceOrientation = {};
 	this.screenOrientation = 0;
 
-	var onDeviceOrientationChangeEvent = function ( event ) {
+	this.alpha = 0;
+	this.alphaOffsetAngle = 0;
+
+
+	var onDeviceOrientationChangeEvent = function( event ) {
 
 		scope.deviceOrientation = event;
 
 	};
 
-	var onScreenOrientationChangeEvent = function () {
+	var onScreenOrientationChangeEvent = function() {
 
 		scope.screenOrientation = window.orientation || 0;
 
@@ -31,7 +35,7 @@ THREE.DeviceOrientationControls = function ( object ) {
 
 	// The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
 
-	var setObjectQuaternion = function () {
+	var setObjectQuaternion = function() {
 
 		var zee = new THREE.Vector3( 0, 0, 1 );
 
@@ -41,15 +45,15 @@ THREE.DeviceOrientationControls = function ( object ) {
 
 		var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
 
-		return function ( quaternion, alpha, beta, gamma, orient ) {
+		return function( quaternion, alpha, beta, gamma, orient ) {
 
-			euler.set( beta, alpha, - gamma, 'YXZ' );                       // 'ZXY' for the device, but 'YXZ' for us
+			euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
 
-			quaternion.setFromEuler( euler );                               // orient the device
+			quaternion.setFromEuler( euler ); // orient the device
 
-			quaternion.multiply( q1 );                                      // camera looks out the back of the device, not the top
+			quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
 
-			quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) );    // adjust for screen orientation
+			quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
 
 		}
 
@@ -75,130 +79,34 @@ THREE.DeviceOrientationControls = function ( object ) {
 
 	};
 
-	this.update = function () {
+	this.update = function() {
 
 		if ( scope.enabled === false ) return;
 
-		var alpha  = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) : 0; // Z
-		var beta   = scope.deviceOrientation.beta  ? THREE.Math.degToRad( scope.deviceOrientation.beta  ) : 0; // X'
-		var gamma  = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
-		var orient = scope.screenOrientation       ? THREE.Math.degToRad( scope.screenOrientation       ) : 0; // O
+		var alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + this.alphaOffsetAngle : 0; // Z
+		var beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
+		var gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
+		var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
 
 		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
+		this.alpha = alpha;
 
 	};
 
-	this.dispose = function () {
+	this.updateAlphaOffsetAngle = function( angle ) {
+
+		this.alphaOffsetAngle = angle;
+		this.update();
+
+	};
+
+	this.dispose = function() {
 
 		this.disconnect();
 
 	};
 
 	this.connect();
-
-};
-;/**
- * @author mrdoob / http://mrdoob.com/
- */
-
-THREE.CardboardEffect = function ( renderer ) {
-
-	var _camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
-
-	var _scene = new THREE.Scene();
-
-	var _stereo = new THREE.StereoCamera();
-	_stereo.aspect = 0.5;
-
-	var _params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
-
-	var _renderTarget = new THREE.WebGLRenderTarget( 512, 512, _params );
-	_renderTarget.scissorTest = true;
-
-	// Distortion Mesh ported from:
-	// https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
-
-	var distortion = new THREE.Vector2( 0.441, 0.156 );
-
-	var geometry = new THREE.PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
-
-	var positions = geometry.attributes.position.array;
-	var uvs = geometry.attributes.uv.array;
-
-	// duplicate
-
-	var positions2 = new Float32Array( positions.length * 2 );
-	positions2.set( positions );
-	positions2.set( positions, positions.length );
-
-	var uvs2 = new Float32Array( uvs.length * 2 );
-	uvs2.set( uvs );
-	uvs2.set( uvs, uvs.length );
-
-	var vector = new THREE.Vector2();
-	var length = positions.length / 3;
-
-	for ( var i = 0, l = positions2.length / 3; i < l; i ++ ) {
-
-		vector.x = positions2[ i * 3 + 0 ];
-		vector.y = positions2[ i * 3 + 1 ];
-
-		var dot = vector.dot( vector );
-		var scalar = 1.5 + ( distortion.x + distortion.y * dot ) * dot;
-
-		var offset = i < length ? 0 : 1;
-
-		positions2[ i * 3 + 0 ] = ( vector.x / scalar ) * 1.5 - 0.5 + offset;
-		positions2[ i * 3 + 1 ] = ( vector.y / scalar ) * 3.0;
-
-		uvs2[ i * 2 ] = ( uvs2[ i * 2 ] + offset ) * 0.5;
-
-	}
-
-	geometry.attributes.position.array = positions2;
-	geometry.attributes.uv.array = uvs2;
-
-	//
-
-	// var material = new THREE.MeshBasicMaterial( { wireframe: true } );
-	var material = new THREE.MeshBasicMaterial( { map: _renderTarget } );
-	var mesh = new THREE.Mesh( geometry, material );
-	_scene.add( mesh );
-
-	//
-
-	this.setSize = function ( width, height ) {
-
-		renderer.setSize( width, height );
-
-		var pixelRatio = renderer.getPixelRatio();
-
-		_renderTarget.setSize( width * pixelRatio, height * pixelRatio );
-
-	};
-
-	this.render = function ( scene, camera ) {
-
-		scene.updateMatrixWorld();
-
-		if ( camera.parent === null ) camera.updateMatrixWorld();
-
-		_stereo.update( camera );
-
-		var width = _renderTarget.width / 2;
-		var height = _renderTarget.height;
-
-		_renderTarget.scissor.set( 0, 0, width, height );
-		_renderTarget.viewport.set( 0, 0, width, height );
-		renderer.render( scene, _stereo.cameraL, _renderTarget );
-
-		_renderTarget.scissor.set( width, 0, width, height );
-		_renderTarget.viewport.set( width, 0, width, height );
-		renderer.render( scene, _stereo.cameraR, _renderTarget );
-
-		renderer.render( _scene, _camera );
-
-	};
 
 };
 ;/**
@@ -1892,7 +1800,260 @@ THREE.OrbitControls = function ( object, domElement ) {
 };
 
 THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;;var GSVPANO = GSVPANO || {};
+THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;; /** The Bend modifier lets you bend the current selection up to 90 degrees about a single axis,
+ * producing a uniform bend in an object's geometry.
+ * You can control the angle and direction of the bend on any of three axes.
+ * The geometry has to have rather large number of polygons!
+ * options:
+ * 	 direction - deformation direction (in local coordinates!). 
+ * 	 axis - deformation axis (in local coordinates!). Vector of direction and axis are perpendicular.
+ * 	 angle - deformation angle.
+ * @author Vildanov Almaz / alvild@gmail.com
+ * The algorithm of a bend is based on the chain line cosh: y = 1/b * cosh(b*x) - 1/b. It can be used only in three.js.
+ */
+
+THREE.BendModifier = function () {
+
+};
+
+THREE.BendModifier.prototype = {
+
+    constructor: THREE.BendModifier,
+
+    set: function ( direction, axis, angle ) {
+        this.direction = new THREE.Vector3(); this.direction.copy( direction );
+		this.axis = new THREE.Vector3(); this.axis.copy( axis );
+        this.angle = angle;
+        return this
+    },
+
+	_sign: function (a) {
+        return 0 > a ? -1 : 0 < a ? 1 : 0
+    },
+
+	_cosh: function( x )  {
+		return ( Math.exp( x ) + Math.exp( -x ) ) / 2;
+	},
+
+	_sinhInverse: function( x )  {
+			return  Math.log( Math.abs( x ) + Math.sqrt( x * x + 1 ) );
+	},
+
+    modify: function ( geometry ) {
+
+		var thirdAxis = new THREE.Vector3();  thirdAxis.crossVectors( this.direction, this.axis );
+
+		// P - matrices of the change-of-coordinates
+		var P = new THREE.Matrix4();
+		P.set ( thirdAxis.x, thirdAxis.y, thirdAxis.z, 0, 
+			this.direction.x, this.direction.y, this.direction.z, 0, 
+			this.axis.x, this.axis.y, this.axis.z, 0, 
+			0, 0, 0, 1 ).transpose();
+
+		var InverseP =  new THREE.Matrix4().getInverse( P );
+		var newVertices = []; var oldVertices = []; var anglesBetweenOldandNewVertices = [];
+
+		var meshGeometryBoundingBoxMaxx = 0; var meshGeometryBoundingBoxMinx = 0;
+		var meshGeometryBoundingBoxMaxy = 0; var meshGeometryBoundingBoxMiny = 0;
+
+		for (var i = 0; i < geometry.vertices.length; i++)  {
+
+			newVertices[i] = new THREE.Vector3(); newVertices[i].copy( geometry.vertices[i] ).applyMatrix4( InverseP );
+			if ( newVertices[i].x > meshGeometryBoundingBoxMaxx ) { meshGeometryBoundingBoxMaxx = newVertices[i].x; }
+			if ( newVertices[i].x < meshGeometryBoundingBoxMinx ) { meshGeometryBoundingBoxMinx = newVertices[i].x; }
+			if ( newVertices[i].y > meshGeometryBoundingBoxMaxy ) { meshGeometryBoundingBoxMaxy = newVertices[i].y; }
+			if ( newVertices[i].y < meshGeometryBoundingBoxMiny ) { meshGeometryBoundingBoxMiny = newVertices[i].y; }
+
+		}
+
+		var meshWidthold =  meshGeometryBoundingBoxMaxx - meshGeometryBoundingBoxMinx;
+		var meshDepth =  meshGeometryBoundingBoxMaxy - meshGeometryBoundingBoxMiny;
+		var ParamB = 2 * this._sinhInverse( Math.tan( this.angle ) ) / meshWidthold;
+		var oldMiddlex = (meshGeometryBoundingBoxMaxx + meshGeometryBoundingBoxMinx) / 2;
+		var oldMiddley = (meshGeometryBoundingBoxMaxy + meshGeometryBoundingBoxMiny) / 2;
+
+		for (var i = 0; i < geometry.vertices.length; i++ )  {
+
+			oldVertices[i] = new THREE.Vector3(); oldVertices[i].copy( newVertices[i] );
+			newVertices[i].x = this._sign( newVertices[i].x - oldMiddlex ) * 1 / ParamB * this._sinhInverse( ( newVertices[i].x - oldMiddlex ) * ParamB );
+
+		}
+
+		var meshWidth = 2 / ParamB * this._sinhInverse( meshWidthold / 2 * ParamB );
+
+		var NewParamB = 2 * this._sinhInverse( Math.tan( this.angle ) ) / meshWidth;
+
+		var rightEdgePos = new THREE.Vector3( meshWidth / 2, -meshDepth / 2, 0 );
+		rightEdgePos.y = 1 / NewParamB * this._cosh( NewParamB * rightEdgePos.x ) - 1 / NewParamB - meshDepth / 2;
+
+		var bendCenter = new THREE.Vector3( 0, rightEdgePos.y  + rightEdgePos.x / Math.tan( this.angle ), 0 );
+
+		for ( var i = 0; i < geometry.vertices.length; i++ )  {
+
+			var x0 = this._sign( oldVertices[i].x - oldMiddlex ) * 1 / ParamB * this._sinhInverse( ( oldVertices[i].x - oldMiddlex ) * ParamB );
+			var y0 = 1 / NewParamB * this._cosh( NewParamB * x0 ) - 1 / NewParamB;
+
+			var k = new THREE.Vector3( bendCenter.x - x0, bendCenter.y - ( y0 - meshDepth / 2 ), bendCenter.z ).normalize();
+
+			var Q = new THREE.Vector3();
+			Q.addVectors( new THREE.Vector3( x0, y0 - meshDepth / 2, oldVertices[i].z ), k.multiplyScalar( oldVertices[i].y + meshDepth / 2 ) );
+			newVertices[i].x = Q.x;  newVertices[i].y = Q.y;
+
+		}	
+
+		var middle = oldMiddlex * meshWidth / meshWidthold;
+
+		for ( var i = 0; i < geometry.vertices.length; i++ )  {
+
+			var O = new THREE.Vector3( oldMiddlex, oldMiddley, oldVertices[i].z );
+			var p = new THREE.Vector3(); p.subVectors( oldVertices[i], O );
+			var q = new THREE.Vector3(); q.subVectors( newVertices[i], O );
+
+			anglesBetweenOldandNewVertices[i] = Math.acos( 1 / this._cosh( ParamB * newVertices[i].x ) )  * this._sign( newVertices[i].x );
+
+			newVertices[i].x = newVertices[i].x + middle;
+			geometry.vertices[i].copy( newVertices[i].applyMatrix4( P ) );
+
+		}
+
+		geometry.computeFaceNormals();
+		geometry.verticesNeedUpdate = true;
+		geometry.normalsNeedUpdate = true;
+
+		// compute Vertex Normals
+		var fvNames = [ 'a', 'b', 'c', 'd' ];
+
+		for ( var f = 0, fl = geometry.faces.length; f < fl; f ++ ) {
+
+			var face = geometry.faces[ f ];
+			if ( face.vertexNormals === undefined ) {
+				continue;
+			}
+			for ( var v = 0, vl = face.vertexNormals.length; v < vl; v ++ ) {
+
+				var angle = anglesBetweenOldandNewVertices[ face[ fvNames[ v ] ] ];
+				var x = this.axis.x,
+					y = this.axis.y,
+					z = this.axis.z;
+
+				var rotateMatrix = new THREE.Matrix3();
+				rotateMatrix.set ( Math.cos(angle) + (1-Math.cos(angle))*x*x, (1-Math.cos(angle))*x*y - Math.sin(angle)*z, (1-Math.cos(angle))*x*z + Math.sin(angle)*y,
+								(1-Math.cos(angle))*y*x + Math.sin(angle)*z, Math.cos(angle) + (1-Math.cos(angle))*y*y, (1-Math.cos(angle))*y*z - Math.sin(angle)*x,
+								(1-Math.cos(angle))*z*x - Math.sin(angle)*y, (1-Math.cos(angle))*z*y + Math.sin(angle)*x, Math.cos(angle) + (1-Math.cos(angle))*z*z );
+
+				face.vertexNormals[ v ].applyMatrix3( rotateMatrix );
+
+				}
+
+			}
+		// end compute Vertex Normals			
+
+		return this			
+    }	
+};/**
+ * @author mrdoob / http://mrdoob.com/
+ */
+
+THREE.CardboardEffect = function ( renderer ) {
+
+	var _camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+
+	var _scene = new THREE.Scene();
+
+	var _stereo = new THREE.StereoCamera();
+	_stereo.aspect = 0.5;
+
+	var _params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
+
+	var _renderTarget = new THREE.WebGLRenderTarget( 512, 512, _params );
+	_renderTarget.scissorTest = true;
+
+	// Distortion Mesh ported from:
+	// https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
+
+	var distortion = new THREE.Vector2( 0.441, 0.156 );
+
+	var geometry = new THREE.PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
+
+	var positions = geometry.attributes.position.array;
+	var uvs = geometry.attributes.uv.array;
+
+	// duplicate
+
+	var positions2 = new Float32Array( positions.length * 2 );
+	positions2.set( positions );
+	positions2.set( positions, positions.length );
+
+	var uvs2 = new Float32Array( uvs.length * 2 );
+	uvs2.set( uvs );
+	uvs2.set( uvs, uvs.length );
+
+	var vector = new THREE.Vector2();
+	var length = positions.length / 3;
+
+	for ( var i = 0, l = positions2.length / 3; i < l; i ++ ) {
+
+		vector.x = positions2[ i * 3 + 0 ];
+		vector.y = positions2[ i * 3 + 1 ];
+
+		var dot = vector.dot( vector );
+		var scalar = 1.5 + ( distortion.x + distortion.y * dot ) * dot;
+
+		var offset = i < length ? 0 : 1;
+
+		positions2[ i * 3 + 0 ] = ( vector.x / scalar ) * 1.5 - 0.5 + offset;
+		positions2[ i * 3 + 1 ] = ( vector.y / scalar ) * 3.0;
+
+		uvs2[ i * 2 ] = ( uvs2[ i * 2 ] + offset ) * 0.5;
+
+	}
+
+	geometry.attributes.position.array = positions2;
+	geometry.attributes.uv.array = uvs2;
+
+	//
+
+	// var material = new THREE.MeshBasicMaterial( { wireframe: true } );
+	var material = new THREE.MeshBasicMaterial( { map: _renderTarget } );
+	var mesh = new THREE.Mesh( geometry, material );
+	_scene.add( mesh );
+
+	//
+
+	this.setSize = function ( width, height ) {
+
+		renderer.setSize( width, height );
+
+		var pixelRatio = renderer.getPixelRatio();
+
+		_renderTarget.setSize( width * pixelRatio, height * pixelRatio );
+
+	};
+
+	this.render = function ( scene, camera ) {
+
+		scene.updateMatrixWorld();
+
+		if ( camera.parent === null ) camera.updateMatrixWorld();
+
+		_stereo.update( camera );
+
+		var width = _renderTarget.width / 2;
+		var height = _renderTarget.height;
+
+		_renderTarget.scissor.set( 0, 0, width, height );
+		_renderTarget.viewport.set( 0, 0, width, height );
+		renderer.render( scene, _stereo.cameraL, _renderTarget );
+
+		_renderTarget.scissor.set( width, 0, width, height );
+		_renderTarget.viewport.set( width, 0, width, height );
+		renderer.render( scene, _stereo.cameraR, _renderTarget );
+
+		renderer.render( _scene, _camera );
+
+	};
+
+};;var GSVPANO = GSVPANO || {};
 GSVPANO.PanoLoader = function (parameters) {
 
 	'use strict';
@@ -2122,157 +2283,7 @@ GSVPANO.PanoLoader = function (parameters) {
 
 	this.setZoom( _parameters.zoom || 1 );
 
-};; /** The Bend modifier lets you bend the current selection up to 90 degrees about a single axis,
- * producing a uniform bend in an object's geometry.
- * You can control the angle and direction of the bend on any of three axes.
- * The geometry has to have rather large number of polygons!
- * options:
- * 	 direction - deformation direction (in local coordinates!). 
- * 	 axis - deformation axis (in local coordinates!). Vector of direction and axis are perpendicular.
- * 	 angle - deformation angle.
- * @author Vildanov Almaz / alvild@gmail.com
- * The algorithm of a bend is based on the chain line cosh: y = 1/b * cosh(b*x) - 1/b. It can be used only in three.js.
- */
-
-THREE.BendModifier = function () {
-
-};
-
-THREE.BendModifier.prototype = {
-
-    constructor: THREE.BendModifier,
-
-    set: function ( direction, axis, angle ) {
-        this.direction = new THREE.Vector3(); this.direction.copy( direction );
-		this.axis = new THREE.Vector3(); this.axis.copy( axis );
-        this.angle = angle;
-        return this
-    },
-
-	_sign: function (a) {
-        return 0 > a ? -1 : 0 < a ? 1 : 0
-    },
-
-	_cosh: function( x )  {
-		return ( Math.exp( x ) + Math.exp( -x ) ) / 2;
-	},
-
-	_sinhInverse: function( x )  {
-			return  Math.log( Math.abs( x ) + Math.sqrt( x * x + 1 ) );
-	},
-
-    modify: function ( geometry ) {
-
-		var thirdAxis = new THREE.Vector3();  thirdAxis.crossVectors( this.direction, this.axis );
-
-		// P - matrices of the change-of-coordinates
-		var P = new THREE.Matrix4();
-		P.set ( thirdAxis.x, thirdAxis.y, thirdAxis.z, 0, 
-			this.direction.x, this.direction.y, this.direction.z, 0, 
-			this.axis.x, this.axis.y, this.axis.z, 0, 
-			0, 0, 0, 1 ).transpose();
-
-		var InverseP =  new THREE.Matrix4().getInverse( P );
-		var newVertices = []; var oldVertices = []; var anglesBetweenOldandNewVertices = [];
-
-		var meshGeometryBoundingBoxMaxx = 0; var meshGeometryBoundingBoxMinx = 0;
-		var meshGeometryBoundingBoxMaxy = 0; var meshGeometryBoundingBoxMiny = 0;
-
-		for (var i = 0; i < geometry.vertices.length; i++)  {
-
-			newVertices[i] = new THREE.Vector3(); newVertices[i].copy( geometry.vertices[i] ).applyMatrix4( InverseP );
-			if ( newVertices[i].x > meshGeometryBoundingBoxMaxx ) { meshGeometryBoundingBoxMaxx = newVertices[i].x; }
-			if ( newVertices[i].x < meshGeometryBoundingBoxMinx ) { meshGeometryBoundingBoxMinx = newVertices[i].x; }
-			if ( newVertices[i].y > meshGeometryBoundingBoxMaxy ) { meshGeometryBoundingBoxMaxy = newVertices[i].y; }
-			if ( newVertices[i].y < meshGeometryBoundingBoxMiny ) { meshGeometryBoundingBoxMiny = newVertices[i].y; }
-
-		}
-
-		var meshWidthold =  meshGeometryBoundingBoxMaxx - meshGeometryBoundingBoxMinx;
-		var meshDepth =  meshGeometryBoundingBoxMaxy - meshGeometryBoundingBoxMiny;
-		var ParamB = 2 * this._sinhInverse( Math.tan( this.angle ) ) / meshWidthold;
-		var oldMiddlex = (meshGeometryBoundingBoxMaxx + meshGeometryBoundingBoxMinx) / 2;
-		var oldMiddley = (meshGeometryBoundingBoxMaxy + meshGeometryBoundingBoxMiny) / 2;
-
-		for (var i = 0; i < geometry.vertices.length; i++ )  {
-
-			oldVertices[i] = new THREE.Vector3(); oldVertices[i].copy( newVertices[i] );
-			newVertices[i].x = this._sign( newVertices[i].x - oldMiddlex ) * 1 / ParamB * this._sinhInverse( ( newVertices[i].x - oldMiddlex ) * ParamB );
-
-		}
-
-		var meshWidth = 2 / ParamB * this._sinhInverse( meshWidthold / 2 * ParamB );
-
-		var NewParamB = 2 * this._sinhInverse( Math.tan( this.angle ) ) / meshWidth;
-
-		var rightEdgePos = new THREE.Vector3( meshWidth / 2, -meshDepth / 2, 0 );
-		rightEdgePos.y = 1 / NewParamB * this._cosh( NewParamB * rightEdgePos.x ) - 1 / NewParamB - meshDepth / 2;
-
-		var bendCenter = new THREE.Vector3( 0, rightEdgePos.y  + rightEdgePos.x / Math.tan( this.angle ), 0 );
-
-		for ( var i = 0; i < geometry.vertices.length; i++ )  {
-
-			var x0 = this._sign( oldVertices[i].x - oldMiddlex ) * 1 / ParamB * this._sinhInverse( ( oldVertices[i].x - oldMiddlex ) * ParamB );
-			var y0 = 1 / NewParamB * this._cosh( NewParamB * x0 ) - 1 / NewParamB;
-
-			var k = new THREE.Vector3( bendCenter.x - x0, bendCenter.y - ( y0 - meshDepth / 2 ), bendCenter.z ).normalize();
-
-			var Q = new THREE.Vector3();
-			Q.addVectors( new THREE.Vector3( x0, y0 - meshDepth / 2, oldVertices[i].z ), k.multiplyScalar( oldVertices[i].y + meshDepth / 2 ) );
-			newVertices[i].x = Q.x;  newVertices[i].y = Q.y;
-
-		}	
-
-		var middle = oldMiddlex * meshWidth / meshWidthold;
-
-		for ( var i = 0; i < geometry.vertices.length; i++ )  {
-
-			var O = new THREE.Vector3( oldMiddlex, oldMiddley, oldVertices[i].z );
-			var p = new THREE.Vector3(); p.subVectors( oldVertices[i], O );
-			var q = new THREE.Vector3(); q.subVectors( newVertices[i], O );
-
-			anglesBetweenOldandNewVertices[i] = Math.acos( 1 / this._cosh( ParamB * newVertices[i].x ) )  * this._sign( newVertices[i].x );
-
-			newVertices[i].x = newVertices[i].x + middle;
-			geometry.vertices[i].copy( newVertices[i].applyMatrix4( P ) );
-
-		}
-
-		geometry.computeFaceNormals();
-		geometry.verticesNeedUpdate = true;
-		geometry.normalsNeedUpdate = true;
-
-		// compute Vertex Normals
-		var fvNames = [ 'a', 'b', 'c', 'd' ];
-
-		for ( var f = 0, fl = geometry.faces.length; f < fl; f ++ ) {
-
-			var face = geometry.faces[ f ];
-			if ( face.vertexNormals === undefined ) {
-				continue;
-			}
-			for ( var v = 0, vl = face.vertexNormals.length; v < vl; v ++ ) {
-
-				var angle = anglesBetweenOldandNewVertices[ face[ fvNames[ v ] ] ];
-				var x = this.axis.x,
-					y = this.axis.y,
-					z = this.axis.z;
-
-				var rotateMatrix = new THREE.Matrix3();
-				rotateMatrix.set ( Math.cos(angle) + (1-Math.cos(angle))*x*x, (1-Math.cos(angle))*x*y - Math.sin(angle)*z, (1-Math.cos(angle))*x*z + Math.sin(angle)*y,
-								(1-Math.cos(angle))*y*x + Math.sin(angle)*z, Math.cos(angle) + (1-Math.cos(angle))*y*y, (1-Math.cos(angle))*y*z - Math.sin(angle)*x,
-								(1-Math.cos(angle))*z*x - Math.sin(angle)*y, (1-Math.cos(angle))*z*y + Math.sin(angle)*x, Math.cos(angle) + (1-Math.cos(angle))*z*z );
-
-				face.vertexNormals[ v ].applyMatrix3( rotateMatrix );
-
-				}
-
-			}
-		// end compute Vertex Normals			
-
-		return this			
-    }	
-};/**
+};;/**
  * @author pchen66
  * @namespace PANOLENS
  */

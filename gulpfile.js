@@ -5,11 +5,11 @@ var uglify = require('gulp-uglify');
 
 var _libfiles = [
 	'node_modules/three/examples/js/controls/DeviceOrientationControls.js',
-	'node_modules/three/examples/js/effects/CardboardEffect.js',
 	'node_modules/tween.js/src/Tween.js',
-	'src/lib/OrbitControls.js',
-	'src/lib/GSVPano.js',
+	'src/lib/controls/OrbitControls.js',
 	'src/lib/modifier/BendModifier.js',
+	'src/lib/effects/CardboardEffect.js',
+	'src/lib/GSVPano.js'
 ];
 
 var _panolensfiles = [
