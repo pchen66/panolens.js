@@ -23,10 +23,22 @@
 
 	PANOLENS.Utils.ImageLoader.load = function ( url, onLoad, onProgress, onError ) {
 
-		var cached, request, arrayBufferView, blob, urlCreator, image;
-		
+		var cached, request, arrayBufferView, blob, urlCreator, image, reference;
+
+		// Reference key
+		for ( var iconName in PANOLENS.DataImage ) {
+
+			if ( PANOLENS.DataImage.hasOwnProperty( iconName ) 
+				&& url === PANOLENS.DataImage[ iconName ] ) {
+
+				reference = iconName;
+
+			}
+
+		}
+
 		// Cached
-		cached = THREE.Cache.get( url );
+		cached = THREE.Cache.get( reference ? reference : url );
 
 		if ( cached !== undefined ) {
 
@@ -53,9 +65,9 @@
 		// Construct a new XMLHttpRequest
 		urlCreator = window.URL || window.webkitURL;
 		image = document.createElement( 'img' );
-		
+
 		// Add to cache
-		THREE.Cache.add( url, image );
+		THREE.Cache.add( reference ? reference : url, image );
 
 		function onImageLoaded () {
 

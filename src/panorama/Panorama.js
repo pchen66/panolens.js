@@ -47,6 +47,8 @@
 			? geometry.parameter.radius
 			: 100;
 
+		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration );
+
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 
@@ -158,8 +160,6 @@
 	 */
 	PANOLENS.Panorama.prototype.onLoad = function () {
 
-		this.toggleInfospotVisibility( true );
-
 		this.loaded = true;
 
 		/**
@@ -252,6 +252,7 @@
 	 * Toggle visibility of infospots in this panorama
 	 * @param  {boolean} isVisible - Visibility of infospots
 	 * @param  {number} delay - Delay in milliseconds to change visibility
+	 * @fires PANOLENS.Panorama#infospot-animation-complete
 	 */
 	PANOLENS.Panorama.prototype.toggleInfospotVisibility = function ( isVisible, delay ) {
 
@@ -273,6 +274,18 @@
 		} );
 
 		this.isInfospotVisible = visible;
+
+		// Animation complete event
+		this.infospotAnimation.onComplete( function () {
+
+			/**
+			 * Complete toggling infospot visibility
+			 * @event PANOLENS.Panorama#infospot-animation-complete
+			 * @type {object} 
+			 */
+			scope.dispatchEvent( { type : 'infospot-animation-complete', visible: visible } );
+
+		} ).delay( delay ).start();
 
 	};
 
@@ -355,12 +368,25 @@
 
 	/**
 	 * Start fading in animation
+	 * @fires PANOLENS.Panorama#enter-complete
 	 */
 	PANOLENS.Panorama.prototype.fadeIn = function () {
 
 		new TWEEN.Tween( this.material )
 		.to( { opacity: 1 }, this.animationDuration )
 		.easing( TWEEN.Easing.Quartic.Out )
+		.onComplete( function () {
+
+			this.toggleInfospotVisibility( true, this.animationDuration );
+
+			/**
+			 * Enter panorama complete event
+			 * @event PANOLENS.Panorama#enter-complete
+			 * @type {object} 
+			 */
+			this.dispatchEvent( { type: 'enter-complete' } );
+
+		}.bind( this ) )
 		.start();
 
 	};
@@ -399,7 +425,6 @@
 			if ( this.loaded ) {
 
 				this.fadeIn();
-				this.toggleInfospotVisibility( true, this.animationDuration );
 
 			} else {
 

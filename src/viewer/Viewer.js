@@ -21,6 +21,7 @@
 	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
+	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -47,7 +48,8 @@
 		options.enableReticle = options.enableReticle || false;
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
-		
+		options.passiveRendering = options.passiveRendering || false;
+
 		this.options = options;
 
 		// Container
@@ -127,12 +129,21 @@
 		this.container.appendChild( this.renderer.domElement );
 
 		// Camera Controls
-		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container );
+		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container, this.options.passiveRendering );
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
 		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera );
 		this.DeviceOrientationControls.name = 'device-orientation';
+		this.DeviceOrientationControls.enabled = false;
+
+		// Register change event if passiveRenering
+		if ( this.options.passiveRendering ) {
+
+			this.OrbitControls.addEventListener( 'change', this.onChange.bind( this ) );
+			this.DeviceOrientationControls.addEventListener( 'change', this.onChange.bind( this ) );
+		
+		}
 
 		// Cardboard effect
         this.effect = new THREE.CardboardEffect( this.renderer );
@@ -296,13 +307,15 @@
 
 	/**
 	 * Event handler to execute commands from child objects
-	 * @param  {object} event - The dispatched event with method as function name and data as an argument
+	 * @param {object} event - The dispatched event with method as function name and data as an argument
 	 */
 	PANOLENS.Viewer.prototype.eventHandler = function ( event ) {
 
 		if ( event.method && this[ event.method ] ) {
 
 			this[ event.method ]( event.data );
+
+			this.options.passiveRendering && this.onChange();
 
 		}
 
@@ -406,8 +419,6 @@
 
 			}
 
-			
-			
 		}
 
 	};
@@ -532,8 +543,33 @@
 	 */
 	PANOLENS.Viewer.prototype.addPanoramaEventListener = function ( pano ) {
 
+		var scope = this;
+
 		// Set camera control on every panorama
 		pano.addEventListener( 'enter-animation-start', this.setCameraControl.bind( this ) );
+
+		// Start panorama leaves
+		pano.addEventListener( 'leave', function () {
+			if ( scope.options.passiveRendering ) { 
+				scope.animate(); 
+			}
+		} );
+
+		// Render view once enter completes
+		pano.addEventListener( 'enter-complete', function(){
+			if ( scope.options.passiveRendering ) {
+				scope.control.update( true );
+				scope.render();
+			}
+		} );
+
+		// Stop animation when infospot finally shows up
+		pano.addEventListener( 'infospot-animation-complete', function( event ) {
+			if ( scope.options.passiveRendering && event.visible ) {
+				window.cancelAnimationFrame( scope.requestAnimationId );
+				scope.render();
+			}
+		} );
 
 		// Show and hide widget event only when it's PANOLENS.VideoPanorama
 		if ( pano instanceof PANOLENS.VideoPanorama ) {
@@ -542,7 +578,6 @@
 			pano.addEventListener( 'leave', this.hideVideoWidget.bind( this ) );
 
 		}
-
 
 	};
 
@@ -679,6 +714,8 @@
 				break;
 		}
 
+		this.control.update();
+
 	};
 
 	/**
@@ -753,7 +790,9 @@
 			this.updateReticleEvent( this.mode );
 
 		}
-		
+
+		// Passive render after window size changes
+		this.options.passiveRendering && this.render();
 
 		/**
 		 * Window resizing event
@@ -762,27 +801,7 @@
 		 * @property {number} width  - Width of the window
 		 * @property {number} height - Height of the window
 		 */
-		this.dispatchEvent( { type: 'window-resize', width: width, height: height })
-	};
-
-	/**
-	 * Rendering function to be called on every animation frame
-	 */
-	PANOLENS.Viewer.prototype.render = function () {
-
-		TWEEN.update();
-		this.updateCallbacks.forEach( function( callback ){ callback(); } );
-		this.control && this.control.update();
-		
-		if ( this.mode === PANOLENS.Modes.VR ) {
-
-			this.effect.render( this.scene, this.camera );
-
-		} else {
-
-			this.renderer.render( this.scene, this.camera );
-
-		}
+		this.dispatchEvent( { type: 'window-resize', width: width, height: height });
 
 	};
 
@@ -1143,10 +1162,49 @@
 
 	};
 
+	/**
+	 * Update control and callbacks
+	 */
+	PANOLENS.Viewer.prototype.update = function () {
+
+		TWEEN.update();
+
+		this.updateCallbacks.forEach( function( callback ){ callback(); } );
+
+		!this.options.passiveRendering && this.control.update();
+
+	};
+
+	/**
+	 * Rendering function to be called on every animation frame
+	 */
+	PANOLENS.Viewer.prototype.render = function () {
+
+		if ( this.mode === PANOLENS.Modes.VR ) {
+
+			this.effect.render( this.scene, this.camera );
+
+		} else {
+
+			this.renderer.render( this.scene, this.camera );
+
+		}
+
+	};
+
 	PANOLENS.Viewer.prototype.animate = function () {
 
 		this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
+		this.update();
+
+        !this.options.passiveRendering && this.render();
+
+	};
+
+	PANOLENS.Viewer.prototype.onChange = function () {
+
+		this.update();
         this.render();
 
 	};
