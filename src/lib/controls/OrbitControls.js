@@ -241,9 +241,13 @@ THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 	this.momentum = function(){
 		
-		if(!momentumOn) return;
+		if ( !momentumOn ) return;
 
-		if(Math.abs(momentumUp + momentumLeft) < MEPS ){ momentumOn = false; return }
+		if ( Math.abs( momentumLeft ) < MEPS && Math.abs( momentumUp ) < MEPS ) { 
+
+			momentumOn = false; 
+			return;
+		}
 
 		momentumUp   *= this.momentumDampingFactor;
 		momentumLeft *= this.momentumDampingFactor;
@@ -380,17 +384,15 @@ THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 		}
 
 		// Passive update with autonomous animation frame
-		if ( this.passiveUpdate ) {
+		if ( ignoreUpdate !== true && this.passiveUpdate ) {
 
 			window.cancelAnimationFrame( this.frameId );
 			this.frameId = window.requestAnimationFrame( this.update.bind( this ) );
 
 			if( state === STATE.NONE 
 				&& Math.abs(momentumLeft) < MEPS 
-				&& Math.abs(momentumUp) < MEPS 
-				&& this.frameId ) {
+				&& Math.abs(momentumUp) < MEPS ) {
 				window.cancelAnimationFrame( this.frameId );
-				this.frameId = null;
 			}
 		}
 

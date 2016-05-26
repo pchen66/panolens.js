@@ -427,7 +427,7 @@
 	 * Toggle video play or stop
 	 * @fires PANOLENS.Viewer#video-toggle
 	 */
-	PANOLENS.Viewer.prototype.toggleVideoPlay = function () {
+	PANOLENS.Viewer.prototype.toggleVideoPlay = function ( pause ) {
 
 		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
 
@@ -436,7 +436,26 @@
 			 * @type {object}
 			 * @event PANOLENS.Viewer#video-toggle
 			 */
-			this.panorama.dispatchEvent( { type: 'video-toggle' } );
+			this.panorama.dispatchEvent( { type: 'video-toggle', pause: pause } );
+
+			if ( this.options.passiveRendering ) {
+
+				if ( !pause ) {
+
+					var loop = function (){
+						this.requestAnimationId = window.requestAnimationFrame( loop.bind( this ) );
+						this.onChange();
+					}.bind(this);
+
+					loop();
+
+				} else {
+
+					window.cancelAnimationFrame( this.requestAnimationId );
+
+				}
+
+			}
 
 		}
 
@@ -551,6 +570,7 @@
 		// Start panorama leaves
 		pano.addEventListener( 'leave', function () {
 			if ( scope.options.passiveRendering ) { 
+				window.cancelAnimationFrame( scope.requestAnimationId );
 				scope.animate(); 
 			}
 		} );

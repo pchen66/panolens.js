@@ -343,7 +343,7 @@
 			 * @type {object}
 			 * @property {string} method - 'toggleVideoPlay' function call on PANOLENS.Viewer
 			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVideoPlay' } );
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVideoPlay', data: !this.paused } );
 
 			this.paused = !this.paused;
 
