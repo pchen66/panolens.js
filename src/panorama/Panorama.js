@@ -51,6 +51,7 @@
 
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+		this.addEventListener( 'click', this.onClick.bind( this ) );
 
 	}
 
@@ -108,6 +109,30 @@
 
 		this.onLoad();
 		
+	};
+
+	/**
+	 * Click event handler
+	 * @param  {object} event - Click event
+	 * @fires *#panolens-container
+	 */
+	PANOLENS.Panorama.prototype.onClick = function ( event ) {
+
+		if ( event.intersects && event.intersects.length === 0 ) {
+
+			this.traverse( function ( object ) {
+
+				/**
+				 * Dimiss event
+				 * @type {object}
+				 * @event *#panolens-container
+				 */
+				object.dispatchEvent( { type: 'dismiss' } );
+
+			} );
+
+		}
+
 	};
 
 	/**

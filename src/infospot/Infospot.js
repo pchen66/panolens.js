@@ -93,6 +93,7 @@
 		this.addEventListener( 'hoverleave', this.onHoverEnd );
 		this.addEventListener( 'VR-toggle', this.onToggleVR );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+		this.addEventListener( 'dismiss', this.onDismiss );
 
 	}
 
@@ -150,6 +151,21 @@
 
 			// Lock element
 			this.lockHoverElement();
+
+		}
+
+	};
+
+	/**
+	 * Dismiss current element if any
+	 * @param  {object} event - Dismiss event
+	 */
+	PANOLENS.Infospot.prototype.onDismiss = function ( event ) {
+
+		if ( this.element ) {
+
+			this.unlockHoverElement();
+			this.onHoverEnd();
 
 		}
 
@@ -238,7 +254,7 @@
 
 		}
 
-		if ( this.element ) {
+		if ( this.element && !this.element.locked ) {
 
 			this.element.style.display = 'none';
 			this.element.left && ( this.element.left.style.display = 'none' );
