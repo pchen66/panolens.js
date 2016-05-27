@@ -114,7 +114,7 @@
 	/**
 	 * Click event handler
 	 * @param  {object} event - Click event
-	 * @fires *#panolens-container
+	 * @fires PANOLENS.Infospot#dismiss
 	 */
 	PANOLENS.Panorama.prototype.onClick = function ( event ) {
 
@@ -125,7 +125,7 @@
 				/**
 				 * Dimiss event
 				 * @type {object}
-				 * @event *#panolens-container
+				 * @event PANOLENS.Infospot#dismiss
 				 */
 				object.dispatchEvent( { type: 'dismiss' } );
 
