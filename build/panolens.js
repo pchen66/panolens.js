@@ -1,115 +1,4 @@
 /**
- * @author richt / http://richt.me
- * @author WestLangley / http://github.com/WestLangley
- *
- * W3C Device Orientation control (http://w3c.github.io/deviceorientation/spec-source-orientation.html)
- */
-
-THREE.DeviceOrientationControls = function( object ) {
-
-	var scope = this;
-
-	this.object = object;
-	this.object.rotation.reorder( "YXZ" );
-
-	this.enabled = true;
-
-	this.deviceOrientation = {};
-	this.screenOrientation = 0;
-
-	this.alpha = 0;
-	this.alphaOffsetAngle = 0;
-
-
-	var onDeviceOrientationChangeEvent = function( event ) {
-
-		scope.deviceOrientation = event;
-
-	};
-
-	var onScreenOrientationChangeEvent = function() {
-
-		scope.screenOrientation = window.orientation || 0;
-
-	};
-
-	// The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
-
-	var setObjectQuaternion = function() {
-
-		var zee = new THREE.Vector3( 0, 0, 1 );
-
-		var euler = new THREE.Euler();
-
-		var q0 = new THREE.Quaternion();
-
-		var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
-
-		return function( quaternion, alpha, beta, gamma, orient ) {
-
-			euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
-
-			quaternion.setFromEuler( euler ); // orient the device
-
-			quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
-
-			quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
-
-		}
-
-	}();
-
-	this.connect = function() {
-
-		onScreenOrientationChangeEvent(); // run once on load
-
-		window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
-		window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
-
-		scope.enabled = true;
-
-	};
-
-	this.disconnect = function() {
-
-		window.removeEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
-		window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
-
-		scope.enabled = false;
-
-	};
-
-	this.update = function() {
-
-		if ( scope.enabled === false ) return;
-
-		var alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + this.alphaOffsetAngle : 0; // Z
-		var beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
-		var gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
-		var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
-
-		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
-		this.alpha = alpha;
-
-	};
-
-	this.updateAlphaOffsetAngle = function( angle ) {
-
-		this.alphaOffsetAngle = angle;
-		this.update();
-
-	};
-
-	this.dispose = function() {
-
-		this.disconnect();
-
-	};
-
-	this.connect();
-
-};
-;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
  * ----------------------------------------------
@@ -1016,15 +905,18 @@ TWEEN.Interpolation = {
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
 //    Pan - right mouse, or arrow keys / touch: three finter swipe
 
-THREE.OrbitControls = function ( object, domElement ) {
+THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 	this.object = object;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
+	this.frameId;
 
 	// API
 
 	// Set to false to disable this control
 	this.enabled = true;
+
+	this.passiveUpdate = passiveUpdate;
 
 	// "target" sets the location of focus, where the control orbits around
 	// and where it pans with respect to.
@@ -1091,6 +983,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	var scope = this;
 
 	var EPS = 0.000001;
+	var MEPS = 10e-5;
 
 	var rotateStart = new THREE.Vector2();
 	var rotateEnd = new THREE.Vector2();
@@ -1117,7 +1010,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	var lastPosition = new THREE.Vector3();
 	var lastQuaternion = new THREE.Quaternion();
 
-	var momentumLeft, momentumUp;
+	var momentumLeft = 0, momentumUp = 0;
 	var eventCurrent, eventPrevious;
 	var momentumOn = false;
 
@@ -1238,9 +1131,13 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	this.momentum = function(){
 		
-		if(!momentumOn) return;
+		if ( !momentumOn ) return;
 
-		if(Math.abs(momentumUp + momentumLeft) < 10e-5){ momentumOn = false; return }
+		if ( Math.abs( momentumLeft ) < MEPS && Math.abs( momentumUp ) < MEPS ) { 
+
+			momentumOn = false; 
+			return;
+		}
 
 		momentumUp   *= this.momentumDampingFactor;
 		momentumLeft *= this.momentumDampingFactor;
@@ -1302,7 +1199,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	};
 
-	this.update = function () {
+	this.update = function ( ignoreUpdate ) {
 
 		var position = this.object.position;
 
@@ -1366,15 +1263,27 @@ THREE.OrbitControls = function ( object, domElement ) {
 		// update condition is:
 		// min(camera displacement, camera rotation in radians)^2 > EPS
 		// using small-angle approximation cos(x/2) = 1 - x^2 / 8
-
 		if ( lastPosition.distanceToSquared( this.object.position ) > EPS
 		    || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
 
-			this.dispatchEvent( changeEvent );
+			ignoreUpdate !== true && this.dispatchEvent( changeEvent );
 
 			lastPosition.copy( this.object.position );
 			lastQuaternion.copy (this.object.quaternion );
 
+		}
+
+		// Passive update with autonomous animation frame
+		if ( ignoreUpdate !== true && this.passiveUpdate ) {
+
+			window.cancelAnimationFrame( this.frameId );
+			this.frameId = window.requestAnimationFrame( this.update.bind( this ) );
+
+			if( state === STATE.NONE 
+				&& Math.abs(momentumLeft) < MEPS 
+				&& Math.abs(momentumUp) < MEPS ) {
+				window.cancelAnimationFrame( this.frameId );
+			}
 		}
 
 	};
@@ -1457,6 +1366,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 			scope.dispatchEvent( startEvent );
 		}
 
+		scope.update();
+
 	}
 
 	function onMouseMove( event ) {
@@ -1521,7 +1432,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		}
 
-		if ( state !== STATE.NONE ) scope.update();
+		if ( state !== STATE.NONE && !this.passiveUpdate ) scope.update();
 
 	}
 
@@ -1578,6 +1489,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 		}
 
 		scope.update();
+		scope.dispatchEvent( changeEvent );
 		scope.dispatchEvent( startEvent );
 		scope.dispatchEvent( endEvent );
 
@@ -1592,21 +1504,25 @@ THREE.OrbitControls = function ( object, domElement ) {
 			case scope.keys.UP:
 				scope.pan( 0, scope.keyPanSpeed );
 				scope.update();
+				scope.dispatchEvent( changeEvent );
 				break;
 
 			case scope.keys.BOTTOM:
 				scope.pan( 0, - scope.keyPanSpeed );
 				scope.update();
+				scope.dispatchEvent( changeEvent );
 				break;
 
 			case scope.keys.LEFT:
 				scope.pan( scope.keyPanSpeed, 0 );
 				scope.update();
+				scope.dispatchEvent( changeEvent );
 				break;
 
 			case scope.keys.RIGHT:
 				scope.pan( - scope.keyPanSpeed, 0 );
 				scope.update();
+				scope.dispatchEvent( changeEvent );
 				break;
 
 		}
@@ -1745,6 +1661,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 				//console.log(distance, event);
 
 				scope.update();
+				scope.dispatchEvent( changeEvent );
 				break;
 
 			case 3: // three-fingered touch: pan
@@ -1800,7 +1717,125 @@ THREE.OrbitControls = function ( object, domElement ) {
 };
 
 THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;; /** The Bend modifier lets you bend the current selection up to 90 degrees about a single axis,
+THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;;/**
+ * @author richt / http://richt.me
+ * @author WestLangley / http://github.com/WestLangley
+ *
+ * W3C Device Orientation control (http://w3c.github.io/deviceorientation/spec-source-orientation.html)
+ */
+
+THREE.DeviceOrientationControls = function( object ) {
+
+	var scope = this;
+	var changeEvent = { type: 'change' };
+
+	this.object = object;
+	this.object.rotation.reorder( "YXZ" );
+
+	this.enabled = true;
+
+	this.deviceOrientation = {};
+	this.screenOrientation = 0;
+
+	this.alpha = 0;
+	this.alphaOffsetAngle = 0;
+
+
+	var onDeviceOrientationChangeEvent = function( event ) {
+
+		scope.deviceOrientation = event;
+
+	};
+
+	var onScreenOrientationChangeEvent = function() {
+
+		scope.screenOrientation = window.orientation || 0;
+
+	};
+
+	// The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
+
+	var setObjectQuaternion = function() {
+
+		var zee = new THREE.Vector3( 0, 0, 1 );
+
+		var euler = new THREE.Euler();
+
+		var q0 = new THREE.Quaternion();
+
+		var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
+
+		return function( quaternion, alpha, beta, gamma, orient ) {
+
+			euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
+
+			quaternion.setFromEuler( euler ); // orient the device
+
+			quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
+
+			quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
+
+		}
+
+	}();
+
+	this.connect = function() {
+
+		onScreenOrientationChangeEvent(); // run once on load
+
+		window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
+		window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
+		window.addEventListener( 'deviceorientation', this.update.bind( this ), false );
+
+		scope.enabled = true;
+
+	};
+
+	this.disconnect = function() {
+
+		window.removeEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
+		window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
+		window.removeEventListener( 'deviceorientation', this.update.bind( this ), false );
+
+		scope.enabled = false;
+
+	};
+
+	this.update = function( ignoreUpdate ) {
+
+		if ( scope.enabled === false ) return;
+
+		var alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + this.alphaOffsetAngle : 0; // Z
+		var beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
+		var gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
+		var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
+
+		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
+		this.alpha = alpha;
+
+		ignoreUpdate !== true && this.dispatchEvent( changeEvent );
+
+	};
+
+	this.updateAlphaOffsetAngle = function( angle ) {
+
+		this.alphaOffsetAngle = angle;
+		this.update();
+
+	};
+
+	this.dispose = function() {
+
+		this.disconnect();
+
+	};
+
+	this.connect();
+
+};
+
+THREE.DeviceOrientationControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+THREE.DeviceOrientationControls.prototype.constructor = THREE.DeviceOrientationControls;; /** The Bend modifier lets you bend the current selection up to 90 degrees about a single axis,
  * producing a uniform bend in an object's geometry.
  * You can control the angle and direction of the bend on any of three axes.
  * The geometry has to have rather large number of polygons!
@@ -2373,10 +2408,22 @@ window.PANOLENS = {};
 
 	PANOLENS.Utils.ImageLoader.load = function ( url, onLoad, onProgress, onError ) {
 
-		var cached, request, arrayBufferView, blob, urlCreator, image;
-		
+		var cached, request, arrayBufferView, blob, urlCreator, image, reference;
+
+		// Reference key
+		for ( var iconName in PANOLENS.DataImage ) {
+
+			if ( PANOLENS.DataImage.hasOwnProperty( iconName ) 
+				&& url === PANOLENS.DataImage[ iconName ] ) {
+
+				reference = iconName;
+
+			}
+
+		}
+
 		// Cached
-		cached = THREE.Cache.get( url );
+		cached = THREE.Cache.get( reference ? reference : url );
 
 		if ( cached !== undefined ) {
 
@@ -2403,9 +2450,9 @@ window.PANOLENS = {};
 		// Construct a new XMLHttpRequest
 		urlCreator = window.URL || window.webkitURL;
 		image = document.createElement( 'img' );
-		
+
 		// Add to cache
-		THREE.Cache.add( url, image );
+		THREE.Cache.add( reference ? reference : url, image );
 
 		function onImageLoaded () {
 
@@ -2613,8 +2660,11 @@ window.PANOLENS = {};
 			? geometry.parameter.radius
 			: 100;
 
+		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration );
+
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+		this.addEventListener( 'click', this.onClick.bind( this ) );
 
 	}
 
@@ -2675,6 +2725,30 @@ window.PANOLENS = {};
 	};
 
 	/**
+	 * Click event handler
+	 * @param  {object} event - Click event
+	 * @fires PANOLENS.Infospot#dismiss
+	 */
+	PANOLENS.Panorama.prototype.onClick = function ( event ) {
+
+		if ( event.intersects && event.intersects.length === 0 ) {
+
+			this.traverse( function ( object ) {
+
+				/**
+				 * Dimiss event
+				 * @type {object}
+				 * @event PANOLENS.Infospot#dismiss
+				 */
+				object.dispatchEvent( { type: 'dismiss' } );
+
+			} );
+
+		}
+
+	};
+
+	/**
 	 * Set container of this panorama 
 	 * @param {HTMLElement|object} data - Data with container information
 	 * @fires PANOLENS.Infospot#panolens-container
@@ -2723,8 +2797,6 @@ window.PANOLENS = {};
 	 * @fires PANOLENS.Panorama#load
 	 */
 	PANOLENS.Panorama.prototype.onLoad = function () {
-
-		this.toggleInfospotVisibility( true );
 
 		this.loaded = true;
 
@@ -2818,6 +2890,7 @@ window.PANOLENS = {};
 	 * Toggle visibility of infospots in this panorama
 	 * @param  {boolean} isVisible - Visibility of infospots
 	 * @param  {number} delay - Delay in milliseconds to change visibility
+	 * @fires PANOLENS.Panorama#infospot-animation-complete
 	 */
 	PANOLENS.Panorama.prototype.toggleInfospotVisibility = function ( isVisible, delay ) {
 
@@ -2839,6 +2912,18 @@ window.PANOLENS = {};
 		} );
 
 		this.isInfospotVisible = visible;
+
+		// Animation complete event
+		this.infospotAnimation.onComplete( function () {
+
+			/**
+			 * Complete toggling infospot visibility
+			 * @event PANOLENS.Panorama#infospot-animation-complete
+			 * @type {object} 
+			 */
+			scope.dispatchEvent( { type : 'infospot-animation-complete', visible: visible } );
+
+		} ).delay( delay ).start();
 
 	};
 
@@ -2921,12 +3006,25 @@ window.PANOLENS = {};
 
 	/**
 	 * Start fading in animation
+	 * @fires PANOLENS.Panorama#enter-complete
 	 */
 	PANOLENS.Panorama.prototype.fadeIn = function () {
 
 		new TWEEN.Tween( this.material )
 		.to( { opacity: 1 }, this.animationDuration )
 		.easing( TWEEN.Easing.Quartic.Out )
+		.onComplete( function () {
+
+			this.toggleInfospotVisibility( true, this.animationDuration );
+
+			/**
+			 * Enter panorama complete event
+			 * @event PANOLENS.Panorama#enter-complete
+			 * @type {object} 
+			 */
+			this.dispatchEvent( { type: 'enter-complete' } );
+
+		}.bind( this ) )
 		.start();
 
 	};
@@ -2965,7 +3063,6 @@ window.PANOLENS = {};
 			if ( this.loaded ) {
 
 				this.fadeIn();
-				this.toggleInfospotVisibility( true, this.animationDuration );
 
 			} else {
 
@@ -4718,7 +4815,7 @@ window.PANOLENS = {};
 			 * @type {object}
 			 * @property {string} method - 'toggleVideoPlay' function call on PANOLENS.Viewer
 			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVideoPlay' } );
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVideoPlay', data: !this.paused } );
 
 			this.paused = !this.paused;
 
@@ -5101,6 +5198,7 @@ window.PANOLENS = {};
 		this.addEventListener( 'hoverleave', this.onHoverEnd );
 		this.addEventListener( 'VR-toggle', this.onToggleVR );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+		this.addEventListener( 'dismiss', this.onDismiss );
 
 	}
 
@@ -5158,6 +5256,21 @@ window.PANOLENS = {};
 
 			// Lock element
 			this.lockHoverElement();
+
+		}
+
+	};
+
+	/**
+	 * Dismiss current element if any
+	 * @param  {object} event - Dismiss event
+	 */
+	PANOLENS.Infospot.prototype.onDismiss = function ( event ) {
+
+		if ( this.element ) {
+
+			this.unlockHoverElement();
+			this.onHoverEnd();
 
 		}
 
@@ -5246,7 +5359,7 @@ window.PANOLENS = {};
 
 		}
 
-		if ( this.element ) {
+		if ( this.element && !this.element.locked ) {
 
 			this.element.style.display = 'none';
 			this.element.left && ( this.element.left.style.display = 'none' );
@@ -5567,6 +5680,7 @@ window.PANOLENS = {};
 	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
+	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -5593,7 +5707,8 @@ window.PANOLENS = {};
 		options.enableReticle = options.enableReticle || false;
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
-		
+		options.passiveRendering = options.passiveRendering || false;
+
 		this.options = options;
 
 		// Container
@@ -5673,12 +5788,21 @@ window.PANOLENS = {};
 		this.container.appendChild( this.renderer.domElement );
 
 		// Camera Controls
-		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container );
+		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container, this.options.passiveRendering );
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
 		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera );
 		this.DeviceOrientationControls.name = 'device-orientation';
+		this.DeviceOrientationControls.enabled = false;
+
+		// Register change event if passiveRenering
+		if ( this.options.passiveRendering ) {
+
+			this.OrbitControls.addEventListener( 'change', this.onChange.bind( this ) );
+			this.DeviceOrientationControls.addEventListener( 'change', this.onChange.bind( this ) );
+		
+		}
 
 		// Cardboard effect
         this.effect = new THREE.CardboardEffect( this.renderer );
@@ -5842,13 +5966,15 @@ window.PANOLENS = {};
 
 	/**
 	 * Event handler to execute commands from child objects
-	 * @param  {object} event - The dispatched event with method as function name and data as an argument
+	 * @param {object} event - The dispatched event with method as function name and data as an argument
 	 */
 	PANOLENS.Viewer.prototype.eventHandler = function ( event ) {
 
 		if ( event.method && this[ event.method ] ) {
 
 			this[ event.method ]( event.data );
+
+			this.options.passiveRendering && this.onChange();
 
 		}
 
@@ -5952,8 +6078,6 @@ window.PANOLENS = {};
 
 			}
 
-			
-			
 		}
 
 	};
@@ -5962,7 +6086,7 @@ window.PANOLENS = {};
 	 * Toggle video play or stop
 	 * @fires PANOLENS.Viewer#video-toggle
 	 */
-	PANOLENS.Viewer.prototype.toggleVideoPlay = function () {
+	PANOLENS.Viewer.prototype.toggleVideoPlay = function ( pause ) {
 
 		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
 
@@ -5971,7 +6095,26 @@ window.PANOLENS = {};
 			 * @type {object}
 			 * @event PANOLENS.Viewer#video-toggle
 			 */
-			this.panorama.dispatchEvent( { type: 'video-toggle' } );
+			this.panorama.dispatchEvent( { type: 'video-toggle', pause: pause } );
+
+			if ( this.options.passiveRendering ) {
+
+				if ( !pause ) {
+
+					var loop = function (){
+						this.requestAnimationId = window.requestAnimationFrame( loop.bind( this ) );
+						this.onChange();
+					}.bind(this);
+
+					loop();
+
+				} else {
+
+					window.cancelAnimationFrame( this.requestAnimationId );
+
+				}
+
+			}
 
 		}
 
@@ -6078,8 +6221,34 @@ window.PANOLENS = {};
 	 */
 	PANOLENS.Viewer.prototype.addPanoramaEventListener = function ( pano ) {
 
+		var scope = this;
+
 		// Set camera control on every panorama
 		pano.addEventListener( 'enter-animation-start', this.setCameraControl.bind( this ) );
+
+		// Start panorama leaves
+		pano.addEventListener( 'leave', function () {
+			if ( scope.options.passiveRendering ) { 
+				window.cancelAnimationFrame( scope.requestAnimationId );
+				scope.animate(); 
+			}
+		} );
+
+		// Render view once enter completes
+		pano.addEventListener( 'enter-complete', function(){
+			if ( scope.options.passiveRendering ) {
+				scope.control.update( true );
+				scope.render();
+			}
+		} );
+
+		// Stop animation when infospot finally shows up
+		pano.addEventListener( 'infospot-animation-complete', function( event ) {
+			if ( scope.options.passiveRendering && event.visible ) {
+				window.cancelAnimationFrame( scope.requestAnimationId );
+				scope.render();
+			}
+		} );
 
 		// Show and hide widget event only when it's PANOLENS.VideoPanorama
 		if ( pano instanceof PANOLENS.VideoPanorama ) {
@@ -6088,7 +6257,6 @@ window.PANOLENS = {};
 			pano.addEventListener( 'leave', this.hideVideoWidget.bind( this ) );
 
 		}
-
 
 	};
 
@@ -6225,6 +6393,8 @@ window.PANOLENS = {};
 				break;
 		}
 
+		this.control.update();
+
 	};
 
 	/**
@@ -6299,7 +6469,9 @@ window.PANOLENS = {};
 			this.updateReticleEvent( this.mode );
 
 		}
-		
+
+		// Passive render after window size changes
+		this.options.passiveRendering && this.render();
 
 		/**
 		 * Window resizing event
@@ -6308,27 +6480,7 @@ window.PANOLENS = {};
 		 * @property {number} width  - Width of the window
 		 * @property {number} height - Height of the window
 		 */
-		this.dispatchEvent( { type: 'window-resize', width: width, height: height })
-	};
-
-	/**
-	 * Rendering function to be called on every animation frame
-	 */
-	PANOLENS.Viewer.prototype.render = function () {
-
-		TWEEN.update();
-		this.updateCallbacks.forEach( function( callback ){ callback(); } );
-		this.control && this.control.update();
-		
-		if ( this.mode === PANOLENS.Modes.VR ) {
-
-			this.effect.render( this.scene, this.camera );
-
-		} else {
-
-			this.renderer.render( this.scene, this.camera );
-
-		}
+		this.dispatchEvent( { type: 'window-resize', width: width, height: height });
 
 	};
 
@@ -6689,10 +6841,49 @@ window.PANOLENS = {};
 
 	};
 
+	/**
+	 * Update control and callbacks
+	 */
+	PANOLENS.Viewer.prototype.update = function () {
+
+		TWEEN.update();
+
+		this.updateCallbacks.forEach( function( callback ){ callback(); } );
+
+		!this.options.passiveRendering && this.control.update();
+
+	};
+
+	/**
+	 * Rendering function to be called on every animation frame
+	 */
+	PANOLENS.Viewer.prototype.render = function () {
+
+		if ( this.mode === PANOLENS.Modes.VR ) {
+
+			this.effect.render( this.scene, this.camera );
+
+		} else {
+
+			this.renderer.render( this.scene, this.camera );
+
+		}
+
+	};
+
 	PANOLENS.Viewer.prototype.animate = function () {
 
 		this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
+		this.update();
+
+        !this.options.passiveRendering && this.render();
+
+	};
+
+	PANOLENS.Viewer.prototype.onChange = function () {
+
+		this.update();
         this.render();
 
 	};

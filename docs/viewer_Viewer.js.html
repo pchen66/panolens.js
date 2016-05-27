@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:VR-toggle">PANOLENS.Infospot#event:VR-toggle</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+					<li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:VR-toggle">PANOLENS.Infospot#event:VR-toggle</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-complete">PANOLENS.Panorama#event:enter-complete</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
 				</ul>
 			</li>
 			
@@ -105,6 +105,7 @@
 	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
+	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -131,7 +132,8 @@
 		options.enableReticle = options.enableReticle || false;
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
-		
+		options.passiveRendering = options.passiveRendering || false;
+
 		this.options = options;
 
 		// Container
@@ -211,12 +213,21 @@
 		this.container.appendChild( this.renderer.domElement );
 
 		// Camera Controls
-		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container );
+		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container, this.options.passiveRendering );
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
 		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera );
 		this.DeviceOrientationControls.name = 'device-orientation';
+		this.DeviceOrientationControls.enabled = false;
+
+		// Register change event if passiveRenering
+		if ( this.options.passiveRendering ) {
+
+			this.OrbitControls.addEventListener( 'change', this.onChange.bind( this ) );
+			this.DeviceOrientationControls.addEventListener( 'change', this.onChange.bind( this ) );
+		
+		}
 
 		// Cardboard effect
         this.effect = new THREE.CardboardEffect( this.renderer );
@@ -380,13 +391,15 @@
 
 	/**
 	 * Event handler to execute commands from child objects
-	 * @param  {object} event - The dispatched event with method as function name and data as an argument
+	 * @param {object} event - The dispatched event with method as function name and data as an argument
 	 */
 	PANOLENS.Viewer.prototype.eventHandler = function ( event ) {
 
 		if ( event.method &amp;&amp; this[ event.method ] ) {
 
 			this[ event.method ]( event.data );
+
+			this.options.passiveRendering &amp;&amp; this.onChange();
 
 		}
 
@@ -490,8 +503,6 @@
 
 			}
 
-			
-			
 		}
 
 	};
@@ -500,7 +511,7 @@
 	 * Toggle video play or stop
 	 * @fires PANOLENS.Viewer#video-toggle
 	 */
-	PANOLENS.Viewer.prototype.toggleVideoPlay = function () {
+	PANOLENS.Viewer.prototype.toggleVideoPlay = function ( pause ) {
 
 		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
 
@@ -509,7 +520,26 @@
 			 * @type {object}
 			 * @event PANOLENS.Viewer#video-toggle
 			 */
-			this.panorama.dispatchEvent( { type: 'video-toggle' } );
+			this.panorama.dispatchEvent( { type: 'video-toggle', pause: pause } );
+
+			if ( this.options.passiveRendering ) {
+
+				if ( !pause ) {
+
+					var loop = function (){
+						this.requestAnimationId = window.requestAnimationFrame( loop.bind( this ) );
+						this.onChange();
+					}.bind(this);
+
+					loop();
+
+				} else {
+
+					window.cancelAnimationFrame( this.requestAnimationId );
+
+				}
+
+			}
 
 		}
 
@@ -616,8 +646,34 @@
 	 */
 	PANOLENS.Viewer.prototype.addPanoramaEventListener = function ( pano ) {
 
+		var scope = this;
+
 		// Set camera control on every panorama
 		pano.addEventListener( 'enter-animation-start', this.setCameraControl.bind( this ) );
+
+		// Start panorama leaves
+		pano.addEventListener( 'leave', function () {
+			if ( scope.options.passiveRendering ) { 
+				window.cancelAnimationFrame( scope.requestAnimationId );
+				scope.animate(); 
+			}
+		} );
+
+		// Render view once enter completes
+		pano.addEventListener( 'enter-complete', function(){
+			if ( scope.options.passiveRendering ) {
+				scope.control.update( true );
+				scope.render();
+			}
+		} );
+
+		// Stop animation when infospot finally shows up
+		pano.addEventListener( 'infospot-animation-complete', function( event ) {
+			if ( scope.options.passiveRendering &amp;&amp; event.visible ) {
+				window.cancelAnimationFrame( scope.requestAnimationId );
+				scope.render();
+			}
+		} );
 
 		// Show and hide widget event only when it's PANOLENS.VideoPanorama
 		if ( pano instanceof PANOLENS.VideoPanorama ) {
@@ -626,7 +682,6 @@
 			pano.addEventListener( 'leave', this.hideVideoWidget.bind( this ) );
 
 		}
-
 
 	};
 
@@ -763,6 +818,8 @@
 				break;
 		}
 
+		this.control.update();
+
 	};
 
 	/**
@@ -837,7 +894,9 @@
 			this.updateReticleEvent( this.mode );
 
 		}
-		
+
+		// Passive render after window size changes
+		this.options.passiveRendering &amp;&amp; this.render();
 
 		/**
 		 * Window resizing event
@@ -846,51 +905,27 @@
 		 * @property {number} width  - Width of the window
 		 * @property {number} height - Height of the window
 		 */
-		this.dispatchEvent( { type: 'window-resize', width: width, height: height })
-	};
-
-	/**
-	 * Rendering function to be called on every animation frame
-	 */
-	PANOLENS.Viewer.prototype.render = function () {
-
-		TWEEN.update();
-		this.updateCallbacks.forEach( function( callback ){ callback(); } );
-		this.control &amp;&amp; this.control.update();
-		
-		if ( this.mode === PANOLENS.Modes.VR ) {
-
-			this.effect.render( this.scene, this.camera );
-
-		} else {
-
-			this.renderer.render( this.scene, this.camera );
-
-		}
+		this.dispatchEvent( { type: 'window-resize', width: width, height: height });
 
 	};
 
 	/**
-	 * Output infospot attach position in console.warn by holding down Ctrl button
+	 * Output infospot attach position in developer console by holding down Ctrl button
 	 */
 	PANOLENS.Viewer.prototype.outputInfospotPosition = function () {
 
-		var intersects;
+		var intersects, point;
 
 		intersects = this.raycaster.intersectObject( this.panorama, true );
 
 		if ( intersects.length > 0 ) {
 
-			intersects[0].point.applyAxisAngle( new THREE.Vector3( -1, 0, 0 ), this.panorama.rotation.x );
-			intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, -1, 0 ), this.panorama.rotation.y );
-			intersects[0].point.applyAxisAngle( new THREE.Vector3( 0, 0, -1 ), this.panorama.rotation.z );
+			point = intersects[0].point.clone();
 
-			intersects[0].point.sub( this.panorama.position );
-
-			console.info('{ ' + (-intersects[0].point.x).toFixed(2) + 
-				', ' + (intersects[0].point.y).toFixed(2) +
-				', ' + (intersects[0].point.z).toFixed(2) + ' }'
-			);
+			console.info( '{ ' 
+				+ -point.x.toFixed(2) + ', '
+				+  point.y.toFixed(2) + ', '
+				+  point.z.toFixed(2) + ' }' );
 
 		}
 
@@ -1231,10 +1266,49 @@
 
 	};
 
+	/**
+	 * Update control and callbacks
+	 */
+	PANOLENS.Viewer.prototype.update = function () {
+
+		TWEEN.update();
+
+		this.updateCallbacks.forEach( function( callback ){ callback(); } );
+
+		!this.options.passiveRendering &amp;&amp; this.control.update();
+
+	};
+
+	/**
+	 * Rendering function to be called on every animation frame
+	 */
+	PANOLENS.Viewer.prototype.render = function () {
+
+		if ( this.mode === PANOLENS.Modes.VR ) {
+
+			this.effect.render( this.scene, this.camera );
+
+		} else {
+
+			this.renderer.render( this.scene, this.camera );
+
+		}
+
+	};
+
 	PANOLENS.Viewer.prototype.animate = function () {
 
 		this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
+		this.update();
+
+        !this.options.passiveRendering &amp;&amp; this.render();
+
+	};
+
+	PANOLENS.Viewer.prototype.onChange = function () {
+
+		this.update();
         this.render();
 
 	};
@@ -1448,7 +1522,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-04-11T09:24:26-07:00
+		on 2016-05-26T21:55:07-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
