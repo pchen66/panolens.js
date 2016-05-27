@@ -98,9 +98,9 @@
 
 
     <section class="readme-section">
-        <article><h1>Panolens.js</h1><p>###Javascript Panorama Viewer</p>
-<p>This project aims to provide a tool for anyone wants to see panorama, photo-based or virtually created, in a simple and painless way. It's built on top of <a href="https://github.com/mrdoob/three.js">Three.JS</a>. </p>
-<p><img src="https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_video_demo_480p.gif?raw=true" alt="Panorama Video Demo"></p>
+        <article><h1><a href="http://pchen66.github.io/Panolens">Panolens.js</a></h1><p>###Javascript Panorama Viewer</p>
+<p>Panolens.js is an event-driven and WebGL based panorama viewer. It's built on top of <a href="https://github.com/mrdoob/three.js">Three.JS</a>. </p>
+<p><img src="https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens.gif?raw=true" alt="Panorama Demo"></p>
 <p>###Usage</p>
 <p>Include <code>three.min.js</code> and <code>panolens.min.js</code></p>
 <pre class="prettyprint source lang-html"><code>&lt;script src=&quot;js/three.min.js&quot;>&lt;/script>
@@ -114,24 +114,25 @@
     viewer = new PANOLENS.Viewer();
     viewer.add( panorama );
 
-&lt;/script></code></pre><p>###Demo </p>
-<ol>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_image.html">Panorama Image</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_cube.html">Panorama Cube</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_basic.html">Panorama Basic</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_googlestreetview.html">Panorama Google Streetview</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_video.html">Panorama Video</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_infospot.html">Panorama Infospot</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_linking.html">Panorama Linking</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_loading_progress.html">Panorama Progress Loading</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_simple_gallery.html">Panorama Simple Gallery</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_reticle.html">Panorama Reticle Event</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_ui.html">Panorama UI</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/XDiamond/">Panorama Match 3 Game</a></li>
-<li><a href="http://pchen66.github.io/Panolens/examples/panorama_interactive.html">Panorama Interactive</a></li>
-<li><a href="http://pchen66.github.io/PanoTheater">Pano Theater</a></li>
-</ol>
-<p>####<a href="https://github.com/pchen66/pchen66.github.io/tree/master/Panolens/examples">source</a></p>
+&lt;/script></code></pre><p>###PANOLENS.Viewer Configuration
+All attributes are optional</p>
+<pre class="prettyprint source lang-html"><code>&lt;script>
+    viewer = new PANOLENS.Viewer({
+        container: document.body,    // A DOM Element container
+        controlBar: true,             // Vsibility of bottom control bar
+        controlButtons: [],            // Buttons array in the control bar. Default to ['fullscreen', 'navigation', 'vr', 'video']
+        autoHideControlBar: false,    // Auto hide control bar
+        autoHideInfospot: true,        // Auto hide infospots
+        horizontalView: false,        // Allow only horizontal camera control
+        cameraFov: 60,                // Camera field of view in degree
+        reverseDragging: false,        // Reverse orbit control direction
+        enableReticle: false,        // Enable reticle for mouseless interaction
+        dwellTime: 1500,            // Dwell time for reticle selection in millisecond
+        autoReticleSelect: true,    // Auto select a clickable target after dwellTime
+        passiveRendering: false,    // Render only when control triggered by user input 
+    });
+&lt;/script></code></pre><p>###Examples</p>
+<p>Check Panolens <a href="http://pchen66.github.io/Panolens/#Example">example page</a></p>
 <p>###Features</p>
 <ol>
 <li>Support equirectangular image</li>
@@ -142,26 +143,11 @@
 <li>Built-in Orbit / DeviceOrientation camera controls</li>
 <li>Built-in fullscreen and video control widgets</li>
 </ol>
-<p>###Tips</p>
-<ol>
-<li>Click on Infospot to &quot;Lock&quot; the hovering element/text</li>
-<li>When adding 3D object to panorama, it will automatically create an empty THREE.Object3D to counter the negative scale effect</li>
-</ol>
-<p>###Try it</p>
-<p>Simply run it with local server ( or check out three.js <a href="https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally">How to run things locally</a> )</p>
-<p>###How to add an infospot (aka hotspot)</p>
+<p>###How to add an infospot (hotspot)</p>
 <p>Move cursor on a specific point in a panorama and press <code>Ctrl</code> with mouse clicking or hovering, which will generate position (x, y, z) in the console. See <a href="http://pchen66.github.io/Panolens/examples/panorama_infospot.html">Panorama Infospot</a> example for creating and attaching infospots.</p>
 <p><img src="https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_add_infospot_480p.gif?raw=true" alt="Panorama Finding Infospot Position"></p>
 <p>###Dependency</p>
-<p>The minified version includes these libraries:</p>
-<ol>
-<li><p><a href="https://github.com/mrdoob/three.js">Three.JS</a> and Controls</p>
-<p> (1) <a href="https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js">OrbitControls.js</a></p>
-<p> (2) <a href="https://github.com/mrdoob/three.js/blob/master/examples/js/controls/DeviceOrientationControls.js">DeviceOrientationControl.js</a></p>
-</li>
-<li><p><a href="https://github.com/tweenjs/tween.js/">Tween.js</a></p>
-</li>
-</ol>
+<p>Panolens.js includes <a href="https://github.com/tweenjs/tween.js/">Tween.js</a> by default</p>
 <p>###Future</p>
 <ol>
 <li>Add dwell animation</li>
@@ -210,7 +196,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-05-26T21:55:07-07:00
+		on 2016-05-27T00:01:31-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

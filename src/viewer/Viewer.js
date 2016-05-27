@@ -13,7 +13,7 @@
 	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
 	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'navigation', 'vr', 'video']
 	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
-	 * @param {boolean} [options.autoHideInfospot=false] - Auto hide infospots when click on non-active area
+	 * @param {boolean} [options.autoHideInfospot=true] - Auto hide infospots when click on non-active area
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
 	 * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
 	 * @param {number}  [options.cameraFov=60] - Camera field of view value
