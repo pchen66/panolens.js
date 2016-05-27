@@ -1,10 +1,10 @@
-# Panolens.js
+# [Panolens.js](http://pchen66.github.io/Panolens)
 
 ###Javascript Panorama Viewer
 
-This project aims to provide a tool for anyone wants to see panorama, photo-based or virtually created, in a simple and painless way. It's built on top of [Three.JS](https://github.com/mrdoob/three.js). 
+Panolens.js is an event-driven and WebGL based panorama viewer. It's built on top of [Three.JS](https://github.com/mrdoob/three.js). 
 
-![Panorama Video Demo](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_video_demo_480p.gif?raw=true)
+![Panorama Demo](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens.gif?raw=true)
 
 ###Usage
 
@@ -29,23 +29,30 @@ This code creates a 360 image panorama. The first panorama added to the viewer w
 </script>
 ```
 
-###Demo 
-1.	[Panorama Image](http://pchen66.github.io/Panolens/examples/panorama_image.html)
-2.	[Panorama Cube](http://pchen66.github.io/Panolens/examples/panorama_cube.html)
-3.	[Panorama Basic](http://pchen66.github.io/Panolens/examples/panorama_basic.html)
-4.	[Panorama Google Streetview](http://pchen66.github.io/Panolens/examples/panorama_googlestreetview.html)
-5.	[Panorama Video](http://pchen66.github.io/Panolens/examples/panorama_video.html)
-6.	[Panorama Infospot](http://pchen66.github.io/Panolens/examples/panorama_infospot.html)
-7.	[Panorama Linking](http://pchen66.github.io/Panolens/examples/panorama_linking.html)
-8.	[Panorama Progress Loading](http://pchen66.github.io/Panolens/examples/panorama_loading_progress.html)
-9.	[Panorama Simple Gallery](http://pchen66.github.io/Panolens/examples/panorama_simple_gallery.html)
-10.	[Panorama Reticle Event](http://pchen66.github.io/Panolens/examples/panorama_reticle.html)
-11.	[Panorama UI](http://pchen66.github.io/Panolens/examples/panorama_ui.html)
-12.	[Panorama Match 3 Game](http://pchen66.github.io/Panolens/examples/XDiamond/)
-13.	[Panorama Interactive](http://pchen66.github.io/Panolens/examples/panorama_interactive.html)
-14.	[Pano Theater](http://pchen66.github.io/PanoTheater)
+###PANOLENS.Viewer Configuration
+All attributes are optional
+```html
+<script>
+	viewer = new PANOLENS.Viewer({
+		container: document.body,	// A DOM Element container
+		controlBar: true, 			// Vsibility of bottom control bar
+		controlButtons: [],			// Buttons array in the control bar. Default to ['fullscreen', 'navigation', 'vr', 'video']
+		autoHideControlBar: false,	// Auto hide control bar
+		autoHideInfospot: true,		// Auto hide infospots
+		horizontalView: false,		// Allow only horizontal camera control
+		cameraFov: 60,				// Camera field of view in degree
+		reverseDragging: false,		// Reverse orbit control direction
+		enableReticle: false,		// Enable reticle for mouseless interaction
+		dwellTime: 1500,			// Dwell time for reticle selection in millisecond
+		autoReticleSelect: true,	// Auto select a clickable target after dwellTime
+		passiveRendering: false,	// Render only when control triggered by user input 
+	});
+</script>
+```
 
-####[source](https://github.com/pchen66/pchen66.github.io/tree/master/Panolens/examples)
+###Examples
+
+Check Panolens [example page](http://pchen66.github.io/Panolens/#Example)
 
 ###Features
 
@@ -57,16 +64,7 @@ This code creates a 360 image panorama. The first panorama added to the viewer w
 6.	Built-in Orbit / DeviceOrientation camera controls
 7.	Built-in fullscreen and video control widgets
 
-###Tips
-
-1.	Click on Infospot to "Lock" the hovering element/text
-2.	When adding 3D object to panorama, it will automatically create an empty THREE.Object3D to counter the negative scale effect
-
-###Try it
-
-Simply run it with local server ( or check out three.js [How to run things locally](https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally) )
-
-###How to add an infospot (aka hotspot)
+###How to add an infospot (hotspot)
 
 Move cursor on a specific point in a panorama and press `Ctrl` with mouse clicking or hovering, which will generate position (x, y, z) in the console. See [Panorama Infospot](http://pchen66.github.io/Panolens/examples/panorama_infospot.html) example for creating and attaching infospots.
 
@@ -74,15 +72,7 @@ Move cursor on a specific point in a panorama and press `Ctrl` with mouse clicki
 
 ###Dependency
 
-The minified version includes these libraries:
-
-1. [Three.JS](https://github.com/mrdoob/three.js) and Controls
-
-	(1) [OrbitControls.js](https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js)
-
-	(2) [DeviceOrientationControl.js](https://github.com/mrdoob/three.js/blob/master/examples/js/controls/DeviceOrientationControls.js)
-
-2. [Tween.js](https://github.com/tweenjs/tween.js/)
+Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) by default
 
 ###Future
 1.	Add dwell animation
