@@ -15,15 +15,18 @@
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
 //    Pan - right mouse, or arrow keys / touch: three finter swipe
 
-THREE.OrbitControls = function ( object, domElement ) {
+THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 	this.object = object;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
+	this.frameId;
 
 	// API
 
 	// Set to false to disable this control
 	this.enabled = true;
+
+	this.passiveUpdate = passiveUpdate;
 
 	// "target" sets the location of focus, where the control orbits around
 	// and where it pans with respect to.
@@ -90,6 +93,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	var scope = this;
 
 	var EPS = 0.000001;
+	var MEPS = 10e-5;
 
 	var rotateStart = new THREE.Vector2();
 	var rotateEnd = new THREE.Vector2();
@@ -116,7 +120,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	var lastPosition = new THREE.Vector3();
 	var lastQuaternion = new THREE.Quaternion();
 
-	var momentumLeft, momentumUp;
+	var momentumLeft = 0, momentumUp = 0;
 	var eventCurrent, eventPrevious;
 	var momentumOn = false;
 
@@ -237,9 +241,13 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	this.momentum = function(){
 		
-		if(!momentumOn) return;
+		if ( !momentumOn ) return;
 
-		if(Math.abs(momentumUp + momentumLeft) < 10e-5){ momentumOn = false; return }
+		if ( Math.abs( momentumLeft ) < MEPS && Math.abs( momentumUp ) < MEPS ) { 
+
+			momentumOn = false; 
+			return;
+		}
 
 		momentumUp   *= this.momentumDampingFactor;
 		momentumLeft *= this.momentumDampingFactor;
@@ -301,7 +309,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	};
 
-	this.update = function () {
+	this.update = function ( ignoreUpdate ) {
 
 		var position = this.object.position;
 
@@ -365,15 +373,27 @@ THREE.OrbitControls = function ( object, domElement ) {
 		// update condition is:
 		// min(camera displacement, camera rotation in radians)^2 > EPS
 		// using small-angle approximation cos(x/2) = 1 - x^2 / 8
-
 		if ( lastPosition.distanceToSquared( this.object.position ) > EPS
 		    || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
 
-			this.dispatchEvent( changeEvent );
+			ignoreUpdate !== true && this.dispatchEvent( changeEvent );
 
 			lastPosition.copy( this.object.position );
 			lastQuaternion.copy (this.object.quaternion );
 
+		}
+
+		// Passive update with autonomous animation frame
+		if ( ignoreUpdate !== true && this.passiveUpdate ) {
+
+			window.cancelAnimationFrame( this.frameId );
+			this.frameId = window.requestAnimationFrame( this.update.bind( this ) );
+
+			if( state === STATE.NONE 
+				&& Math.abs(momentumLeft) < MEPS 
+				&& Math.abs(momentumUp) < MEPS ) {
+				window.cancelAnimationFrame( this.frameId );
+			}
 		}
 
 	};
@@ -456,6 +476,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 			scope.dispatchEvent( startEvent );
 		}
 
+		scope.update();
+
 	}
 
 	function onMouseMove( event ) {
@@ -520,7 +542,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		}
 
-		if ( state !== STATE.NONE ) scope.update();
+		if ( state !== STATE.NONE && !this.passiveUpdate ) scope.update();
 
 	}
 
@@ -577,6 +599,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 		}
 
 		scope.update();
+		scope.dispatchEvent( changeEvent );
 		scope.dispatchEvent( startEvent );
 		scope.dispatchEvent( endEvent );
 
@@ -591,21 +614,25 @@ THREE.OrbitControls = function ( object, domElement ) {
 			case scope.keys.UP:
 				scope.pan( 0, scope.keyPanSpeed );
 				scope.update();
+				scope.dispatchEvent( changeEvent );
 				break;
 
 			case scope.keys.BOTTOM:
 				scope.pan( 0, - scope.keyPanSpeed );
 				scope.update();
+				scope.dispatchEvent( changeEvent );
 				break;
 
 			case scope.keys.LEFT:
 				scope.pan( scope.keyPanSpeed, 0 );
 				scope.update();
+				scope.dispatchEvent( changeEvent );
 				break;
 
 			case scope.keys.RIGHT:
 				scope.pan( - scope.keyPanSpeed, 0 );
 				scope.update();
+				scope.dispatchEvent( changeEvent );
 				break;
 
 		}
@@ -744,6 +771,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 				//console.log(distance, event);
 
 				scope.update();
+				scope.dispatchEvent( changeEvent );
 				break;
 
 			case 3: // three-fingered touch: pan
