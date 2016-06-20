@@ -190,6 +190,10 @@
 			this.style.backgroundImage = ( isFullscreen ) 
 				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
 				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
+			
+		}
+
+		function onFullScreenChange () {
 
 			/**
 			 * Viewer handler event
@@ -199,6 +203,11 @@
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
 
 		}
+
+		document.addEventListener( 'fullscreenchange', onFullScreenChange, false );
+		document.addEventListener( 'webkitfullscreenchange', onFullScreenChange, false );
+		document.addEventListener( 'mozfullscreenchange', onFullScreenChange, false );
+		document.addEventListener( 'MSFullscreenChange', onFullScreenChange, false );
 
 		// Attach infospot to container when fullscreen
 		function attachInfospotsToContainer () {

@@ -1,6 +1,7 @@
 /**
+ * Panolens.js
  * @author pchen66
  * @namespace PANOLENS
  */
 
-window.PANOLENS = {};
+var PANOLENS = { REVISION: '1' };

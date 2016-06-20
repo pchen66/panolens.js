@@ -17,9 +17,6 @@
 	 * @param  {function} onError    - On error callback
 	 * @return {HTMLImageElement}    - DOM image element
 	 */
-	PANOLENS.Utils.ImageLoader.checkDataURL = function ( url ) {
-		return !!url.match( /^\s*data:([a-z]+\/[a-z0-9\-\+]+(;[a-z\-]+\=[a-z0-9\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i );
-	};
 
 	PANOLENS.Utils.ImageLoader.load = function ( url, onLoad, onProgress, onError ) {
 
@@ -71,11 +68,12 @@
 
 		function onImageLoaded () {
 
+			urlCreator.revokeObjectURL( image.src );
 			onLoad && onLoad( image );
 
 		}
 
-		if ( this.checkDataURL( url ) ) {
+		if ( url.indexOf( 'data:' ) === 0 ) {
 
 			image.addEventListener( 'load', onImageLoaded, false );
 			image.src = url;
