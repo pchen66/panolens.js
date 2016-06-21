@@ -61,7 +61,7 @@
 		
 		// Construct a new XMLHttpRequest
 		urlCreator = window.URL || window.webkitURL;
-		image = document.createElement( 'img' );
+		image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
 
 		// Add to cache
 		THREE.Cache.add( reference ? reference : url, image );
