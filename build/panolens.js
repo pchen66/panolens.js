@@ -1,4 +1,11 @@
 /**
+ * Panolens.js
+ * @author pchen66
+ * @namespace PANOLENS
+ */
+
+var PANOLENS = { REVISION: '1' };
+;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
  * ----------------------------------------------
@@ -2318,13 +2325,7 @@ GSVPANO.PanoLoader = function (parameters) {
 
 	this.setZoom( _parameters.zoom || 1 );
 
-};;/**
- * @author pchen66
- * @namespace PANOLENS
- */
-
-window.PANOLENS = {};
-;(function(){
+};;(function(){
 
 	'use strict';
 
@@ -2402,9 +2403,6 @@ window.PANOLENS = {};
 	 * @param  {function} onError    - On error callback
 	 * @return {HTMLImageElement}    - DOM image element
 	 */
-	PANOLENS.Utils.ImageLoader.checkDataURL = function ( url ) {
-		return !!url.match( /^\s*data:([a-z]+\/[a-z0-9\-\+]+(;[a-z\-]+\=[a-z0-9\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i );
-	};
 
 	PANOLENS.Utils.ImageLoader.load = function ( url, onLoad, onProgress, onError ) {
 
@@ -2449,18 +2447,19 @@ window.PANOLENS = {};
 		
 		// Construct a new XMLHttpRequest
 		urlCreator = window.URL || window.webkitURL;
-		image = document.createElement( 'img' );
+		image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
 
 		// Add to cache
 		THREE.Cache.add( reference ? reference : url, image );
 
 		function onImageLoaded () {
 
+			urlCreator.revokeObjectURL( image.src );
 			onLoad && onLoad( image );
 
 		}
 
-		if ( this.checkDataURL( url ) ) {
+		if ( url.indexOf( 'data:' ) === 0 ) {
 
 			image.addEventListener( 'load', onImageLoaded, false );
 			image.src = url;
@@ -2656,10 +2655,6 @@ window.PANOLENS = {};
 
 		this.scale.x *= -1;
 
-		this.orbitRadius = ( geometry.parameter && geometry.parameter.radius ) 
-			? geometry.parameter.radius
-			: 100;
-
 		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration );
 
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
@@ -2680,7 +2675,9 @@ window.PANOLENS = {};
 	 */
 	PANOLENS.Panorama.prototype.add = function ( object ) {
 
-		var invertedObject;
+		var scope, invertedObject;
+
+		scope = this;
 
 		if ( arguments.length > 1 ) {
 
@@ -2699,10 +2696,23 @@ window.PANOLENS = {};
 
 			invertedObject = object;
 
-			if ( object.dispatchEvent && this.container ) {
+			if ( object.dispatchEvent ) {
 
-				object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+				this.container && object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+				
+				object.dispatchEvent( { type: 'panolens-infospot-focus', method: function ( vector, duration, easing ) {
 
+					/**
+		        	 * Infospot focus handler event
+		        	 * @type {object}
+		        	 * @event PANOLENS.Panorama#panolens-viewer-handler
+		        	 * @property {string} method - Viewer function name
+		        	 * @property {*} data - The argument to be passed into the method
+		        	 */
+		        	scope.dispatchEvent( { type : 'panolens-viewer-handler', method: 'tweenControlCenter', data: [ vector, duration, easing ] } );
+
+
+				} } );
 			}
 
 		} else {
@@ -3367,7 +3377,6 @@ window.PANOLENS = {};
 		var shader, geometry, material;
 
 		this.images = images || [];
-		this.orbitRadius = edgeLength / 2;
 
 		edgeLength = edgeLength || 10000;
 		shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
@@ -4662,6 +4671,10 @@ window.PANOLENS = {};
 			this.style.backgroundImage = ( isFullscreen ) 
 				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
 				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
+			
+		}
+
+		function onFullScreenChange () {
 
 			/**
 			 * Viewer handler event
@@ -4671,6 +4684,11 @@ window.PANOLENS = {};
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
 
 		}
+
+		document.addEventListener( 'fullscreenchange', onFullScreenChange, false );
+		document.addEventListener( 'webkitfullscreenchange', onFullScreenChange, false );
+		document.addEventListener( 'mozfullscreenchange', onFullScreenChange, false );
+		document.addEventListener( 'MSFullscreenChange', onFullScreenChange, false );
 
 		// Attach infospot to container when fullscreen
 		function attachInfospotsToContainer () {
@@ -5139,19 +5157,20 @@ window.PANOLENS = {};
 
 		this.container;
 
+		// Event Handler
+		this.HANDLER_FOCUS;
+
 		PANOLENS.Utils.TextureLoader.load( imageSrc, postLoad );		
 
 		function postLoad ( texture ) {
-			
-			scope.material.side = THREE.DoubleSide;
-			scope.material.map = texture;
-			scope.material.depthTest = false;
 
 			texture.wrapS = THREE.RepeatWrapping;
 			texture.repeat.x = - 1;
 
-			ratio = texture.image.width / texture.image.height;
+			texture.image.width = texture.image.naturalWidth || 1;
+			texture.image.height = texture.image.naturalHeight || 1;
 
+			ratio = texture.image.width / texture.image.height;
 			scope.scale.set( ratio * scale, scale, 1 );
 
 			startScale = scope.scale.clone();
@@ -5165,6 +5184,11 @@ window.PANOLENS = {};
 			scope.scaleDownAnimation = new TWEEN.Tween( scope.scale )
 				.to( { x: startScale.x, y: startScale.y }, duration )
 				.easing( TWEEN.Easing.Elastic.Out );
+
+			scope.material.side = THREE.DoubleSide;
+			scope.material.map = texture;
+			scope.material.depthTest = false;
+			scope.material.needsUpdate = true;
 
 		}
 
@@ -5199,6 +5223,7 @@ window.PANOLENS = {};
 		this.addEventListener( 'VR-toggle', this.onToggleVR );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 		this.addEventListener( 'dismiss', this.onDismiss );
+		this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
 
 	}
 
@@ -5445,7 +5470,7 @@ window.PANOLENS = {};
 		height = element._height;
 		delta = 30;
 
-		left = x - width;
+		left = x - width - container.offsetLeft;
 		top = y - height - delta;
 
 		if ( this.mode === PANOLENS.Modes.VR && element.left && element.right ) {
@@ -5642,6 +5667,35 @@ window.PANOLENS = {};
 	};
 
 	/**
+	 * Set focus event handler
+	 */
+	PANOLENS.Infospot.prototype.setFocusMethod = function ( event ) {
+
+		if ( event ) {
+
+			this.HANDLER_FOCUS = event.method;
+
+		}
+
+	};
+
+	/**
+	 * Focus camera center to this infospot
+	 * @param {number} [duration=1000] - Duration to tween
+	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+	 */
+	PANOLENS.Infospot.prototype.focus = function ( duration, easing ) {
+
+		if ( this.HANDLER_FOCUS ) {
+
+			this.HANDLER_FOCUS( this.position, duration, easing );
+			this.onDismiss();
+
+		}
+
+	};
+
+	/**
 	 * Dispose infospot
 	 */
 	PANOLENS.Infospot.prototype.dispose = function () {
@@ -5715,10 +5769,13 @@ window.PANOLENS = {};
 		if ( options.container ) {
 
 			container = options.container;
+			container._width = container.clientWidth;
+			container._height = container.clientHeight;
 
 		} else {
 
 			container = document.createElement( 'div' );
+			container.classList.add( 'panolens-container' );
 			container.style.width = window.innerWidth + 'px';
 			container.style.height = window.innerHeight + 'px';
 			document.body.appendChild( container );
@@ -5728,6 +5785,8 @@ window.PANOLENS = {};
 			setTimeout( function () {
 				container.style.width = '100%';
 				container.style.height = '100%';
+				container._width = window.innerWidth;
+				container._height = window.innerHeight;
 			}, 0 );
 
 		}
@@ -5776,6 +5835,10 @@ window.PANOLENS = {};
 
 		// Flag for infospot output
 		this.OUTPUT_INFOSPOT = false;
+
+		// Animations
+		this.tweenLeftAnimation = new TWEEN.Tween();
+		this.tweenUpAnimation = new TWEEN.Tween();
 
 		// Renderer
 		this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -6413,14 +6476,20 @@ window.PANOLENS = {};
 	PANOLENS.Viewer.prototype.toggleFullscreen = function ( isFullscreen ) {
 
 		if ( isFullscreen ) {
-			this.container._width = this.container.clientWidth;
-			this.container._height = this.container.clientHeight;
 			this.container.style.width = '100%';
 			this.container.style.height = '100%';
+			this.container.isFullscreen = true;
 		} else {
 			this.container._width && ( this.container.style.width = this.container._width + 'px' );
 			this.container._height && ( this.container.style.height = this.container._height + 'px' );
+			if ( this.container.classList.contains( 'panolens-container' ) ) {
+				this.container.style.width = '100%';
+				this.container.style.height = '100%';
+			}
+			this.container.isFullscreen = false;
 		}
+
+		this.onWindowResize();
 
 	};
 
@@ -6448,15 +6517,93 @@ window.PANOLENS = {};
 	};
 
 	/**
+	 * Tween control looking center
+	 * @param {THREE.Vector3} vector - Vector to be looked at the center
+	 * @param {number} [duration=1000] - Duration to tween
+	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+	 */
+	PANOLENS.Viewer.prototype.tweenControlCenter = function ( vector, duration, easing ) {
+
+		if ( this.control !== this.OrbitControls ) {
+
+			return;
+
+		}
+
+		// Pass in arguments as array
+		if ( vector instanceof Array ) {
+
+			duration = vector[ 1 ];
+			easing = vector[ 2 ];
+			vector = vector[ 0 ];
+
+		}
+
+		duration = duration !== undefined ? duration : 1000;
+		easing = easing || TWEEN.Easing.Exponential.Out;
+
+		var scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
+
+		scope = this;
+
+		chv = viewer.camera.getWorldDirection();
+		cvv = chv.clone();
+
+		vptc = this.panorama.getWorldPosition().sub( viewer.camera.getWorldPosition() );
+
+		hv = vector.clone();
+		// Scale effect
+		hv.x *= -1;
+		hv.add( vptc ).normalize();
+		vv = hv.clone();
+
+		chv.y = 0;
+		hv.y = 0;
+
+		ha = Math.atan2( hv.z, hv.x ) - Math.atan2( chv.z, chv.x );
+		ha = ha > Math.PI ? ha - 2 * Math.PI : ha;
+		ha = ha < -Math.PI ? ha + 2 * Math.PI : ha;
+		va = Math.abs( cvv.angleTo( chv ) + ( cvv.y * vv.y <= 0 ? vv.angleTo( hv ) : -vv.angleTo( hv ) ) );
+		va *= vv.y < cvv.y ? 1 : -1;
+
+		ov = { left: 0, up: 0 };
+		nv = { left: 0, up: 0 };
+
+		this.tweenLeftAnimation.stop();
+		this.tweenUpAnimation.stop();
+
+		this.tweenLeftAnimation = new TWEEN.Tween( ov )
+			.to( { left: ha }, duration )
+			.easing( easing )
+			.onUpdate(function(){
+				scope.control.rotateLeft( this.left - nv.left );
+				nv.left = this.left;
+			})
+			.start();
+
+		this.tweenUpAnimation = new TWEEN.Tween( ov )
+			.to( { up: va }, duration )
+			.easing( easing )
+			.onUpdate(function(){
+				scope.control.rotateUp( this.up - nv.up );
+				nv.up = this.up;
+			})
+			.start();
+
+	};
+
+	/**
 	 * This is called when window size is changed
 	 * @fires PANOLENS.Viewer#window-resize
 	 */
 	PANOLENS.Viewer.prototype.onWindowResize = function () {
 
-		var width, height;
+		var width, height, expand;
 
-		width = this.container.clientWidth;
-		height = this.container.clientHeight;
+		expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
+
+		width = expand ? window.innerWidth : this.container._width;
+		height = expand ? window.innerHeight : this.container._height;
 
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
@@ -6510,8 +6657,8 @@ window.PANOLENS = {};
 
 		event.preventDefault();
 
-		this.userMouse.x = ( event.clientX ) ? event.clientX : event.touches[0].clientX;
-		this.userMouse.y = ( event.clientY ) ? event.clientY : event.touches[0].clientY;
+		this.userMouse.x = ( event.clientX >= 0 ) ? event.clientX : event.touches[0].clientX;
+		this.userMouse.y = ( event.clientY >= 0 ) ? event.clientY : event.touches[0].clientY;
 		this.userMouse.type = 'mousedown';
 		this.onTap( event );
 
@@ -6963,7 +7110,7 @@ window.PANOLENS = {};
 
 		var centerX, centerY;
 
-		centerX = this.container.clientWidth / 2;
+		centerX = this.container.clientWidth / 2 + this.container.offsetLeft;
 		centerY = this.container.clientHeight / 2;
 
 		this.removeUpdateCallback( this.HANDLER_TAP );
