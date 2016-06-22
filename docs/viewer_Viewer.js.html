@@ -140,10 +140,13 @@
 		if ( options.container ) {
 
 			container = options.container;
+			container._width = container.clientWidth;
+			container._height = container.clientHeight;
 
 		} else {
 
 			container = document.createElement( 'div' );
+			container.classList.add( 'panolens-container' );
 			container.style.width = window.innerWidth + 'px';
 			container.style.height = window.innerHeight + 'px';
 			document.body.appendChild( container );
@@ -153,6 +156,8 @@
 			setTimeout( function () {
 				container.style.width = '100%';
 				container.style.height = '100%';
+				container._width = window.innerWidth;
+				container._height = window.innerHeight;
 			}, 0 );
 
 		}
@@ -201,6 +206,10 @@
 
 		// Flag for infospot output
 		this.OUTPUT_INFOSPOT = false;
+
+		// Animations
+		this.tweenLeftAnimation = new TWEEN.Tween();
+		this.tweenUpAnimation = new TWEEN.Tween();
 
 		// Renderer
 		this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -838,14 +847,20 @@
 	PANOLENS.Viewer.prototype.toggleFullscreen = function ( isFullscreen ) {
 
 		if ( isFullscreen ) {
-			this.container._width = this.container.clientWidth;
-			this.container._height = this.container.clientHeight;
 			this.container.style.width = '100%';
 			this.container.style.height = '100%';
+			this.container.isFullscreen = true;
 		} else {
 			this.container._width &amp;&amp; ( this.container.style.width = this.container._width + 'px' );
 			this.container._height &amp;&amp; ( this.container.style.height = this.container._height + 'px' );
+			if ( this.container.classList.contains( 'panolens-container' ) ) {
+				this.container.style.width = '100%';
+				this.container.style.height = '100%';
+			}
+			this.container.isFullscreen = false;
 		}
+
+		this.onWindowResize();
 
 	};
 
@@ -873,15 +888,93 @@
 	};
 
 	/**
+	 * Tween control looking center
+	 * @param {THREE.Vector3} vector - Vector to be looked at the center
+	 * @param {number} [duration=1000] - Duration to tween
+	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+	 */
+	PANOLENS.Viewer.prototype.tweenControlCenter = function ( vector, duration, easing ) {
+
+		if ( this.control !== this.OrbitControls ) {
+
+			return;
+
+		}
+
+		// Pass in arguments as array
+		if ( vector instanceof Array ) {
+
+			duration = vector[ 1 ];
+			easing = vector[ 2 ];
+			vector = vector[ 0 ];
+
+		}
+
+		duration = duration !== undefined ? duration : 1000;
+		easing = easing || TWEEN.Easing.Exponential.Out;
+
+		var scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
+
+		scope = this;
+
+		chv = viewer.camera.getWorldDirection();
+		cvv = chv.clone();
+
+		vptc = this.panorama.getWorldPosition().sub( viewer.camera.getWorldPosition() );
+
+		hv = vector.clone();
+		// Scale effect
+		hv.x *= -1;
+		hv.add( vptc ).normalize();
+		vv = hv.clone();
+
+		chv.y = 0;
+		hv.y = 0;
+
+		ha = Math.atan2( hv.z, hv.x ) - Math.atan2( chv.z, chv.x );
+		ha = ha > Math.PI ? ha - 2 * Math.PI : ha;
+		ha = ha &lt; -Math.PI ? ha + 2 * Math.PI : ha;
+		va = Math.abs( cvv.angleTo( chv ) + ( cvv.y * vv.y &lt;= 0 ? vv.angleTo( hv ) : -vv.angleTo( hv ) ) );
+		va *= vv.y &lt; cvv.y ? 1 : -1;
+
+		ov = { left: 0, up: 0 };
+		nv = { left: 0, up: 0 };
+
+		this.tweenLeftAnimation.stop();
+		this.tweenUpAnimation.stop();
+
+		this.tweenLeftAnimation = new TWEEN.Tween( ov )
+			.to( { left: ha }, duration )
+			.easing( easing )
+			.onUpdate(function(){
+				scope.control.rotateLeft( this.left - nv.left );
+				nv.left = this.left;
+			})
+			.start();
+
+		this.tweenUpAnimation = new TWEEN.Tween( ov )
+			.to( { up: va }, duration )
+			.easing( easing )
+			.onUpdate(function(){
+				scope.control.rotateUp( this.up - nv.up );
+				nv.up = this.up;
+			})
+			.start();
+
+	};
+
+	/**
 	 * This is called when window size is changed
 	 * @fires PANOLENS.Viewer#window-resize
 	 */
 	PANOLENS.Viewer.prototype.onWindowResize = function () {
 
-		var width, height;
+		var width, height, expand;
 
-		width = this.container.clientWidth;
-		height = this.container.clientHeight;
+		expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
+
+		width = expand ? window.innerWidth : this.container._width;
+		height = expand ? window.innerHeight : this.container._height;
 
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
@@ -935,8 +1028,8 @@
 
 		event.preventDefault();
 
-		this.userMouse.x = ( event.clientX ) ? event.clientX : event.touches[0].clientX;
-		this.userMouse.y = ( event.clientY ) ? event.clientY : event.touches[0].clientY;
+		this.userMouse.x = ( event.clientX >= 0 ) ? event.clientX : event.touches[0].clientX;
+		this.userMouse.y = ( event.clientY >= 0 ) ? event.clientY : event.touches[0].clientY;
 		this.userMouse.type = 'mousedown';
 		this.onTap( event );
 
@@ -1388,7 +1481,7 @@
 
 		var centerX, centerY;
 
-		centerX = this.container.clientWidth / 2;
+		centerX = this.container.clientWidth / 2 + this.container.offsetLeft;
 		centerY = this.container.clientHeight / 2;
 
 		this.removeUpdateCallback( this.HANDLER_TAP );
@@ -1522,7 +1615,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-05-27T00:01:31-07:00
+		on 2016-06-21T10:41:42-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

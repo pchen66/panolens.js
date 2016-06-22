@@ -51,10 +51,14 @@ var jsdocConfig = {
   	}
 };
 
+var _sources = _panolensfiles.slice( 0, 1 )
+	.concat( _libfiles )
+	.concat( _panolensfiles.slice( 1 ) );
+
 gulp.task( 'default', [ 'minify', 'docs' ] );
 
 gulp.task( 'minify', function() {
-  return gulp.src( _libfiles.concat( _panolensfiles ) )
+  return gulp.src( _sources )
   	.pipe( concat( 'panolens.js', { newLine: ';' } ) )
   	.pipe( gulp.dest( './build/' ) )
   	.pipe( concat( 'panolens.min.js' ) )

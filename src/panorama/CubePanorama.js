@@ -13,7 +13,6 @@
 		var shader, geometry, material;
 
 		this.images = images || [];
-		this.orbitRadius = edgeLength / 2;
 
 		edgeLength = edgeLength || 10000;
 		shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );

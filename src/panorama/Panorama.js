@@ -43,10 +43,6 @@
 
 		this.scale.x *= -1;
 
-		this.orbitRadius = ( geometry.parameter && geometry.parameter.radius ) 
-			? geometry.parameter.radius
-			: 100;
-
 		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration );
 
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
@@ -67,7 +63,9 @@
 	 */
 	PANOLENS.Panorama.prototype.add = function ( object ) {
 
-		var invertedObject;
+		var scope, invertedObject;
+
+		scope = this;
 
 		if ( arguments.length > 1 ) {
 
@@ -86,10 +84,23 @@
 
 			invertedObject = object;
 
-			if ( object.dispatchEvent && this.container ) {
+			if ( object.dispatchEvent ) {
 
-				object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+				this.container && object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+				
+				object.dispatchEvent( { type: 'panolens-infospot-focus', method: function ( vector, duration, easing ) {
 
+					/**
+		        	 * Infospot focus handler event
+		        	 * @type {object}
+		        	 * @event PANOLENS.Panorama#panolens-viewer-handler
+		        	 * @property {string} method - Viewer function name
+		        	 * @property {*} data - The argument to be passed into the method
+		        	 */
+		        	scope.dispatchEvent( { type : 'panolens-viewer-handler', method: 'tweenControlCenter', data: [ vector, duration, easing ] } );
+
+
+				} } );
 			}
 
 		} else {

@@ -34,19 +34,20 @@
 
 		this.container;
 
+		// Event Handler
+		this.HANDLER_FOCUS;
+
 		PANOLENS.Utils.TextureLoader.load( imageSrc, postLoad );		
 
 		function postLoad ( texture ) {
-			
-			scope.material.side = THREE.DoubleSide;
-			scope.material.map = texture;
-			scope.material.depthTest = false;
 
 			texture.wrapS = THREE.RepeatWrapping;
 			texture.repeat.x = - 1;
 
-			ratio = texture.image.width / texture.image.height;
+			texture.image.width = texture.image.naturalWidth || 1;
+			texture.image.height = texture.image.naturalHeight || 1;
 
+			ratio = texture.image.width / texture.image.height;
 			scope.scale.set( ratio * scale, scale, 1 );
 
 			startScale = scope.scale.clone();
@@ -60,6 +61,11 @@
 			scope.scaleDownAnimation = new TWEEN.Tween( scope.scale )
 				.to( { x: startScale.x, y: startScale.y }, duration )
 				.easing( TWEEN.Easing.Elastic.Out );
+
+			scope.material.side = THREE.DoubleSide;
+			scope.material.map = texture;
+			scope.material.depthTest = false;
+			scope.material.needsUpdate = true;
 
 		}
 
@@ -94,6 +100,7 @@
 		this.addEventListener( 'VR-toggle', this.onToggleVR );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 		this.addEventListener( 'dismiss', this.onDismiss );
+		this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
 
 	}
 
@@ -340,7 +347,7 @@
 		height = element._height;
 		delta = 30;
 
-		left = x - width;
+		left = x - width - container.offsetLeft;
 		top = y - height - delta;
 
 		if ( this.mode === PANOLENS.Modes.VR && element.left && element.right ) {
@@ -534,6 +541,35 @@
 		}
 		
 		
+	};
+
+	/**
+	 * Set focus event handler
+	 */
+	PANOLENS.Infospot.prototype.setFocusMethod = function ( event ) {
+
+		if ( event ) {
+
+			this.HANDLER_FOCUS = event.method;
+
+		}
+
+	};
+
+	/**
+	 * Focus camera center to this infospot
+	 * @param {number} [duration=1000] - Duration to tween
+	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+	 */
+	PANOLENS.Infospot.prototype.focus = function ( duration, easing ) {
+
+		if ( this.HANDLER_FOCUS ) {
+
+			this.HANDLER_FOCUS( this.position, duration, easing );
+			this.onDismiss();
+
+		}
+
 	};
 
 	/**
