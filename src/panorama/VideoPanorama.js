@@ -106,7 +106,7 @@
 
 		videoTexture = new THREE.Texture( canvas );
 		videoTexture.minFilter = THREE.LinearFilter;
-		videoTexture.maxFilter = THREE.LinearFilter;
+		videoTexture.magFilter = THREE.LinearFilter;
 
 		videoRenderObject = {
 

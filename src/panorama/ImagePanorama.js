@@ -58,7 +58,7 @@
 	 */
 	PANOLENS.ImagePanorama.prototype.onLoad = function ( texture ) {
 
-		texture.minFilter = texture.maxFilter = THREE.LinearFilter;
+		texture.minFilter = texture.magFilter = THREE.LinearFilter;
 
 		texture.needsUpdate = true;
 
