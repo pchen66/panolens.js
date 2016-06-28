@@ -76,4 +76,6 @@ Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) by default
 
 ###Future
 1.	Add dwell animation
-2.	Add AR capability
+2.	npm packaging
+3.	stereoscopic
+4.	infospot editor
