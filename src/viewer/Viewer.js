@@ -233,6 +233,7 @@
 		if ( object instanceof PANOLENS.Panorama && object.dispatchEvent ) {
 
 			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+			object.dispatchEvent( { type: 'panolens-passive-rendering', enabled: this.options.passiveRendering } );
 
 		}
 
@@ -748,6 +749,15 @@
 	};
 
 	/**
+	 * Disable current control
+	 */
+	PANOLENS.Viewer.prototype.disableControl = function () {
+
+		this.control.enabled = false;
+
+	};
+
+	/**
 	 * Toggle next control
 	 */
 	PANOLENS.Viewer.prototype.toggleNextControl = function () {
@@ -915,6 +925,15 @@
 		 * @property {number} height - Height of the window
 		 */
 		this.dispatchEvent( { type: 'window-resize', width: width, height: height });
+		this.scene.traverse( function ( object ) {
+
+			if ( object.dispatchEvent ) {
+
+				object.dispatchEvent( { type: 'window-resize', width: width, height: height });
+
+			}
+
+		} );		
 
 	};
 
@@ -1012,8 +1031,8 @@
 
 		var intersects, intersect_entity, intersect;
 
-		this.raycasterPoint.x = ( ( event.clientX - this.renderer.domElement.offsetLeft ) / this.renderer.domElement.clientWidth ) * 2 - 1;
-    	this.raycasterPoint.y = - ( ( event.clientY - this.renderer.domElement.offsetTop ) / this.renderer.domElement.clientHeight ) * 2 + 1;
+		this.raycasterPoint.x = ( ( event.clientX - this.container.offsetLeft ) / this.container.clientWidth ) * 2 - 1;
+    	this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
