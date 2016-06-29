@@ -20,6 +20,7 @@ var _panolensfiles = [
 	'src/util/ImageLoader.js',
 	'src/util/TextureLoader.js',
 	'src/util/CubeTextureLoader.js',
+	'src/shaders/StereographicShader.js',
 	'src/panorama/Panorama.js',
 	'src/panorama/ImagePanorama.js',
 	'src/panorama/GoogleStreetviewPanorama.js',
