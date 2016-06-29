@@ -73,6 +73,7 @@
         this.container.addEventListener( 'touchend', this.onMouseUp.bind( this ), false );
         this.container.addEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
         this.container.addEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
+        this.container.addEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
 		
 	};
 
@@ -86,6 +87,7 @@
         this.container.removeEventListener( 'touchend', this.onMouseUp.bind( this ), false );
         this.container.removeEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
         this.container.removeEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
+        this.container.removeEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
 		
 	};
 
@@ -267,6 +269,12 @@
 	PANOLENS.LittlePlanet.prototype.onWindowResize = function () {
 
 		this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.onContextMenu = function () {
+
+		this.dragging = false;
 
 	};
 
