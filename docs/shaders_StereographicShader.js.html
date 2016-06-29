@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Source: util/CubeTextureLoader.js</title>
+	<title>Documentation Source: shaders/StereographicShader.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -77,89 +77,75 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: util/CubeTextureLoader.js</h1>
+		<h1 class="page-title">Source: shaders/StereographicShader.js</h1>
     
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript ">(function(){
-	
-	'use strict';
+            class="sunlight-highlight-javascript ">/**
+ * Stereographic projection shader
+ * based on http://notlion.github.io/streetview-stereographic
+ * @author pchen66
+ */
 
-	/**
-	 * Cube Texture Loader based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/CubeTextureLoader.js}
-	 * @memberOf PANOLENS.Utils
-	 * @namespace
-	 */
-	PANOLENS.Utils.CubeTextureLoader = {};
+PANOLENS.StereographicShader = {
 
-	/**
-	 * Load 6 images as a cube texture
-	 * @param  {array}   urls        - Array with 6 image urls
-	 * @param  {function} onLoad     - On load callback
-	 * @param  {function} onProgress - In progress callback
-	 * @param  {function} onError    - On error callback
-	 * @return {THREE.CubeTexture}   - Cube texture
-	 */
-	PANOLENS.Utils.CubeTextureLoader.load = function ( urls, onLoad, onProgress, onError ) {
+	uniforms: {
 
-		var texture, loaded, progress, all, loadings;
+		"tDiffuse":   { value: new THREE.Texture() },
+        "resolution": { value: 1.0 },
+        "transform":  { value: new THREE.Matrix4() },
+        "zoom": 	  { value: 1.0 }
 
-		texture = new THREE.CubeTexture( [] );
+	},
 
-		loaded = 0;
-		progress = {};
-		all = {};
+	vertexShader: [
 
-		urls.map( function ( url, index ) {
+		"varying vec2 vUv;",
 
-			PANOLENS.Utils.ImageLoader.load( url, function ( image ) {
+        "void main() {",
 
-				texture.images[ index ] = image;
+        	"vUv = uv;",
+        	"gl_Position = vec4( position, 1.0 );",
 
-				loaded++;
+        "}" 
 
-				if ( loaded === 6 ) {
+	].join( "\n" ),
 
-					texture.needsUpdate = true;
+	fragmentShader: [
 
-					onLoad &amp;&amp; onLoad( texture );
+		"uniform sampler2D tDiffuse;",
+        "uniform float resolution;",
+        "uniform mat4 transform;",
+        "uniform float zoom;",
 
-				}
+        "varying vec2 vUv;",
 
-			}, function ( event ) {
+        "const float PI = 3.141592653589793;",
 
-				progress[ index ] = { loaded: event.loaded, total: event.total };
+        "void main(){",
 
-				all.loaded = 0;
-				all.total = 0;
-				loadings = 0;
+        	"vec2 position = -1.0 +  2.0 * vUv;",
 
-				for ( var i in progress ) {
+        	"position *= vec2( zoom * resolution, zoom * 0.5 );",
 
-					loadings++;
-					all.loaded += progress[ i ].loaded;
-					all.total += progress[ i ].total;
+        	"float x2y2 = position.x * position.x + position.y * position.y;",
+        	"vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );",
 
-				}
+        	"sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );",
 
-				if ( loadings &lt; 6 ) {
+        	"vec2 sampleUV = vec2(",
+        		"(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,",
+        		"(asin(sphere_pnt.z) / PI + 0.5)",
+        	");",
 
-					all.total = all.total / loadings * 6;
+        	"gl_FragColor = texture2D( tDiffuse, sampleUV );",
 
-				}
+        "}"
 
-				onProgress &amp;&amp; onProgress( all );
+	].join( "\n" )
 
-			}, onError );
-
-		} );
-
-		return texture;
-
-	};
-
-})();</pre>
+};</pre>
     </article>
 </section>
 
