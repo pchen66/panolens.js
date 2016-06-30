@@ -27,6 +27,8 @@
 
 	PANOLENS.ImageLittlePlanet.prototype.updateTexture = function ( texture ) {
 
+		texture.minFilter = texture.magFilter = THREE.LinearFilter;
+		
 		this.material.uniforms[ "tDiffuse" ].value = texture;
 
 	};
