@@ -18,10 +18,16 @@
 
 	PANOLENS.ImageLittlePlanet.prototype.onLoad = function ( texture ) {
 
-		this.material.uniforms[ "tDiffuse" ].value = texture;
+		this.updateTexture( texture );
 
 		PANOLENS.ImagePanorama.prototype.onLoad.call( this, texture );
 		PANOLENS.LittlePlanet.prototype.onLoad.call( this );
+
+	};
+
+	PANOLENS.ImageLittlePlanet.prototype.updateTexture = function ( texture ) {
+
+		this.material.uniforms[ "tDiffuse" ].value = texture;
 
 	};
 
