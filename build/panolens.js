@@ -4068,6 +4068,14 @@ PANOLENS.StereographicShader = {
 
 	};
 
+	PANOLENS.LittlePlanet.prototype.reset = function () {
+
+		this.quatCur.set( 0, 0, 0, 1 );
+		this.quatSlerp.set( 0, 0, 0, 1 );
+		this.onUpdateCallback();
+
+	};
+
 	PANOLENS.LittlePlanet.prototype.onLoad = function () {
 
 		this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
@@ -4129,10 +4137,18 @@ PANOLENS.StereographicShader = {
 
 	PANOLENS.ImageLittlePlanet.prototype.onLoad = function ( texture ) {
 
-		this.material.uniforms[ "tDiffuse" ].value = texture;
+		this.updateTexture( texture );
 
 		PANOLENS.ImagePanorama.prototype.onLoad.call( this, texture );
 		PANOLENS.LittlePlanet.prototype.onLoad.call( this );
+
+	};
+
+	PANOLENS.ImageLittlePlanet.prototype.updateTexture = function ( texture ) {
+
+		texture.minFilter = texture.magFilter = THREE.LinearFilter;
+		
+		this.material.uniforms[ "tDiffuse" ].value = texture;
 
 	};
 
