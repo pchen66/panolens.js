@@ -237,6 +237,14 @@
 
 	};
 
+	PANOLENS.LittlePlanet.prototype.reset = function () {
+
+		this.quatCur.set( 0, 0, 0, 1 );
+		this.quatSlerp.set( 0, 0, 0, 1 );
+		this.onUpdateCallback();
+
+	};
+
 	PANOLENS.LittlePlanet.prototype.onLoad = function () {
 
 		this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
