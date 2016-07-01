@@ -63,7 +63,7 @@ Check Panolens [example page](http://pchen66.github.io/Panolens/#Example)
 5.	Support text/image/domElement annotations (Infospot)
 6.	Built-in Orbit / DeviceOrientation camera controls
 7.	Built-in fullscreen and video control widgets
-8.	Convert regular image into little planet (Stereograhpic projection)
+8.	Convert regular image into little planet (Stereographic projection)
 
 ###How to add an infospot (hotspot)
 
