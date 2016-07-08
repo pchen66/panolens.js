@@ -97,7 +97,7 @@
 		this.addEventListener( 'hover', this.onHover );
 		this.addEventListener( 'hoverenter', this.onHoverStart );
 		this.addEventListener( 'hoverleave', this.onHoverEnd );
-		this.addEventListener( 'VR-toggle', this.onToggleVR );
+		this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 		this.addEventListener( 'dismiss', this.onDismiss );
 		this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
@@ -201,7 +201,7 @@
 
 		if ( !this.getContainer() ) { return; }
 
-		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.VR ? 'default' : 'pointer' );
+		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.NORMAL ? 'pointer' : 'default' );
 
 		this.isHovering = true;
 		this.container.style.cursor = cursorStyle;
@@ -215,7 +215,7 @@
 		
 		if ( this.element ) {
 
-			if ( this.mode === PANOLENS.Modes.VR ) {
+			if ( this.mode === PANOLENS.Modes.CARDBOARD ||this.mode === PANOLENS.Modes.STEREO ) {
 
 				this.element.style.display = 'none';
 				this.element.left && ( this.element.left.style.display = 'block' );
@@ -274,11 +274,11 @@
 	};
 
 	/**
-	 * On VR toggle handler
+	 * On dual eye effect handler
 	 * Creates duplicate left and right element
-	 * @param  {object} event - VR toggle event
+	 * @param  {object} event - panolens-dual-eye-effect event
 	 */
-	PANOLENS.Infospot.prototype.onToggleVR = function ( event ) {
+	PANOLENS.Infospot.prototype.onDualEyeEffect = function ( event ) {
 		
 		if ( !this.getContainer() ) { return; }
 
@@ -304,7 +304,7 @@
 
 		}
 
-		if ( this.mode === PANOLENS.Modes.VR ) {
+		if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
 
 			element.left.style.display = element.style.display;
 			element.right.style.display = element.style.display;
@@ -350,7 +350,7 @@
 		left = x - width - container.offsetLeft;
 		top = y - height - delta;
 
-		if ( this.mode === PANOLENS.Modes.VR && element.left && element.right ) {
+		if ( ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) && element.left && element.right ) {
 
 			left = container.clientWidth / 4 - width;
 			top = container.clientHeight / 2 - height - delta;
