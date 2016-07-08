@@ -62,7 +62,7 @@ THREE.CardboardEffect = function ( renderer ) {
 	//
 
 	// var material = new THREE.MeshBasicMaterial( { wireframe: true } );
-	var material = new THREE.MeshBasicMaterial( { map: _renderTarget } );
+	var material = new THREE.MeshBasicMaterial( { map: _renderTarget.texture } );
 	var mesh = new THREE.Mesh( geometry, material );
 	_scene.add( mesh );
 
