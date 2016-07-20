@@ -1383,11 +1383,11 @@
 	 */
 	PANOLENS.Viewer.prototype.registerMouseAndTouchEvents = function () {
 
-		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, true );
-		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, true );
-		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , true );
-		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, true );
-		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , true );
+		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, false );
+		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, false );
+		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , false );
+		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, false );
+		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , false );
 
 	};
 
@@ -1396,11 +1396,11 @@
 	 */
 	PANOLENS.Viewer.prototype.unregisterMouseAndTouchEvents = function () {
 
-		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, true );
-		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, true );
-		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , true );
-		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, true );
-		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , true );
+		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, false );
+		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, false );
+		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , false );
+		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, false );
+		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , false );
 	};
 
 	/**

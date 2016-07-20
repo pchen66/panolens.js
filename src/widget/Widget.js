@@ -10,8 +10,11 @@
 		THREE.EventDispatcher.call( this );
 
 		this.DEFAULT_TRANSITION  = 'all 0.27s ease';
-		this.MAX_ZINDEX = 10e5;
-		this.TOUCH_DETECTED = 'ontouchstart' in window;
+		this.TOUCH_ENABLED = 'ontouchstart' in window;
+		this.PREVENT_EVENT_HANDLER = function ( event ) {
+			event.preventDefault();
+			event.stopPropagation();
+		};
 
 		this.container = container;
 
@@ -24,6 +27,7 @@
 
 		this.activeMainItem;
 		this.activeSubMenu;
+		this.mask;
 
 	}
 
@@ -71,6 +75,11 @@
 		this.mainMenu = this.createMainMenu( menu );
 		bar.appendChild( this.mainMenu );
 
+		// Mask
+		var mask = this.createMask();
+		this.mask = mask;
+		this.container.appendChild( mask );
+
 		// Dispose
 		bar.dispose = function () {
 
@@ -101,28 +110,18 @@
 		};
 
 		this.container.appendChild( bar );
-		this.container.addEventListener( 'click', function () {
 
-			// Hide main menu
-			if ( scope.mainMenu && scope.mainMenu.visible ) {
+		// Mask events
+		this.mask.addEventListener( 'mousemove', this.PREVENT_EVENT_HANDLER, true );
+		this.mask.addEventListener( 'mouseup', this.PREVENT_EVENT_HANDLER, true );
+		this.mask.addEventListener( 'mousedown', this.PREVENT_EVENT_HANDLER, true );
+		this.mask.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', function ( event ) {
 
-				scope.mainMenu.hide();
-				
-			}
+			event.preventDefault();
+			event.stopPropagation();
 
-			// Hide active sub menu
-			if ( scope.activeSubMenu && scope.activeSubMenu.visible ) {
-
-				scope.activeSubMenu.hide();
-
-			}
-
-			if ( scope.mainMenu._width && scope.mainMenu._height ) {
-
-				scope.mainMenu.changeSize( scope.mainMenu._width, scope.mainMenu._height );
-				scope.mainMenu.unslideAll();
-
-			}
+			scope.mask.hide();
+			scope.settingElement.deactivate();
 
 		}, false );
 
@@ -162,7 +161,7 @@
 				title: 'Control', 
 				subMenu: [ 
 					{ 
-						title: this.TOUCH_DETECTED ? 'Touch' : 'Mouse', 
+						title: this.TOUCH_ENABLED ? 'Touch' : 'Mouse', 
 						handler: handler( 'enableControl', 0 )
 					},
 					{ 
@@ -235,6 +234,33 @@
 
 	};
 
+	PANOLENS.Widget.prototype.createMask = function () {
+
+		var element = document.createElement( 'div' );
+		element.style.position = 'absolute';
+		element.style.top = 0;
+		element.style.left = 0;
+		element.style.width = '100%';
+		element.style.height = '100%';
+		element.style.background = 'transparent';
+		element.style.display = 'none';
+
+		element.show = function () {
+
+			this.style.display = 'block';
+
+		};
+
+		element.hide = function () {
+
+			this.style.display = 'none';
+
+		};
+
+		return element;
+
+	};
+
 	/**
 	 * Create Setting button to toggle menu
 	 */
@@ -250,16 +276,14 @@
 			scope.mainMenu.toggle();
 
 			if ( this.activated ) {
-
-				this.style.transform = 'rotate3d(0,0,0,0)';
+	
+				this.deactivate();
 
 			} else {
 
-				this.style.transform = 'rotate3d(0,0,1,90deg)';
+				this.activate();
 
 			}
-			
-			this.activated = !this.activated;
 
 		}
 
@@ -276,6 +300,41 @@
 			onTap: onTap
 
 		} );
+
+		item.activate = function () {
+
+			this.style.transform = 'rotate3d(0,0,1,90deg)';
+			this.activated = true;
+			scope.mask.show();
+
+		};
+
+		item.deactivate = function () {
+
+			this.style.transform = 'rotate3d(0,0,0,0)';
+			this.activated = false;
+			scope.mask.hide();
+
+			if ( scope.mainMenu.visible ) {
+
+				scope.mainMenu.hide();
+				
+			}
+
+			if ( scope.activeSubMenu.visible ) {
+
+				scope.activeSubMenu.hide();
+
+			}
+
+			if ( scope.mainMenu._width && scope.mainMenu._height ) {
+
+				scope.mainMenu.changeSize( scope.mainMenu._width, scope.mainMenu._height );
+				scope.mainMenu.unslideAll();
+
+			}
+			
+		};
 
 		item.activated = false;
 
@@ -648,6 +707,7 @@
 		item.style.display = 'block';
 		item.style.padding = '10px';
 		item.style.textDecoration = 'none';
+		item.style.cursor = 'pointer';
 		item.style.transition = this.DEFAULT_TRANSITION;
 
 		item.slide = function ( right ) {
@@ -685,6 +745,8 @@
 		item.addSelection = function ( name ) {
 			
 			var selection = document.createElement( 'span' );
+			selection.style.fontSize = '13px';
+			selection.style.fontWeight = '300';
 			selection.style.float = 'right';
 
 			this.selection = selection;
@@ -807,8 +869,10 @@
 
 			var item = menu.addItem( menus[ i ].title );
 
+			item.style.paddingLeft = '20px';
+
 			item.addIcon()
-				.addEventListener( 'click', onTap, false );
+				.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', onTap, false );
 
 			if ( menus[ i ].subMenu && menus[ i ].subMenu.length > 0 ) {
 
@@ -861,15 +925,16 @@
 
 		}
 
-		subMenu.addHeader( title ).addIcon( undefined, true, true ).addEventListener( 'click', onTap, false );
+		subMenu.addHeader( title ).addIcon( undefined, true, true ).addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', onTap, false );
 
 		for ( var i = 0; i < items.length; i++ ) {
 
 			var item = subMenu.addItem( items[ i ].title );
 
+			item.style.fontWeight = 300;
 			item.handler = items[ i ].handler;
 			item.addIcon( ' ', true );
-			item.addEventListener( 'click', onTap, false );
+			item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', onTap, false );
 
 			if ( !subMenu.activeItem ) {
 
@@ -902,7 +967,6 @@
 		style.backgroundColor = '#fafafa';
 		style.fontFamily = 'Helvetica Neue';
 		style.fontSize = '14px';
-		style.fontWeight = '200';
 		style.visibility = 'hidden';
 		style.opacity = 0;
 		style.boxShadow = '0 0 12pt rgba(0,0,0,0.25)';
@@ -1014,6 +1078,10 @@
 
 		};
 
+		menu.addEventListener( 'mousemove', this.PREVENT_EVENT_HANDLER, true );
+		menu.addEventListener( 'mouseup', this.PREVENT_EVENT_HANDLER, true );
+		menu.addEventListener( 'mousedown', this.PREVENT_EVENT_HANDLER, true );
+
 		return menu;
 
 	};
@@ -1026,8 +1094,8 @@
 
 		options = options || {};
 
-		var item = options.element || document.createElement( 'span' ),
-			touchEnabled = ( document.ontouchend === undefined ) ? false : true;
+		var scope = this,
+			item = options.element || document.createElement( 'span' );
 
 		item.style.cursor = 'pointer';
 		item.style.float = 'right';
@@ -1042,11 +1110,11 @@
 		item.style.position = 'relative';
 
 		// White glow on icon
-		item.addEventListener( touchEnabled ? 'touchstart' : 'mouseenter', function() {
+		item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
 			item.style.filter = 
 			item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
 		});
-		item.addEventListener( touchEnabled ? 'touchend' : 'mouseleave', function() {
+		item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'mouseleave', function() {
 			item.style.filter = 
 			item.style.webkitFilter = '';
 		});
@@ -1055,13 +1123,13 @@
 
 		if ( options.onTap ) {
 
-			item.addEventListener( touchEnabled ? 'touchend' : 'click', options.onTap, true );
+			item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', options.onTap, false );
 
 		}
 
 		item.dispose = function () {
 
-			item.removeEventListener( touchEnabled ? 'touchend' : 'click', options.onTap, true );
+			item.removeEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', options.onTap, false );
 
 			options.onDispose && options.onDispose();
 
