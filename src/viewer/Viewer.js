@@ -842,9 +842,9 @@
 	 */
 	PANOLENS.Viewer.prototype.addReticle = function () {
 
-		this.reticle = new PANOLENS.Reticle( 0x1abc9c );
+		this.reticle = new PANOLENS.Reticle( 0xffffff );
 		this.reticle.position.z = -10;
-		this.reticle.scale.multiplyScalar( 0.3 );
+		this.reticle.scale.set( 0.1, 0.1, 1 );
 		this.camera.add( this.reticle );
 		this.scene.add( this.camera );
 

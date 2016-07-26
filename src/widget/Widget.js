@@ -230,6 +230,12 @@
 
 		}
 
+		if ( !element ) {
+
+			return;
+
+		}
+
 		this.barElement.appendChild( element );
 
 	};
@@ -315,21 +321,21 @@
 			this.activated = false;
 			scope.mask.hide();
 
-			if ( scope.mainMenu.visible ) {
+			if ( scope.mainMenu && scope.mainMenu.visible ) {
 
 				scope.mainMenu.hide();
 				
 			}
 
-			if ( scope.activeSubMenu.visible ) {
+			if ( scope.activeSubMenu && scope.activeSubMenu.visible ) {
 
 				scope.activeSubMenu.hide();
 
 			}
 
-			if ( scope.mainMenu._width && scope.mainMenu._height ) {
+			if ( scope.mainMenu && scope.mainMenu._width ) {
 
-				scope.mainMenu.changeSize( scope.mainMenu._width, scope.mainMenu._height );
+				scope.mainMenu.changeSize( scope.mainMenu._width );
 				scope.mainMenu.unslideAll();
 
 			}
@@ -833,7 +839,8 @@
 		
 		var scope = this, menu = this.createMenu(), subMenu;
 
-		menu.style.width = '200px';
+		menu._width = 200;
+		menu.changeSize( menu._width );
 
 		function onTap ( event ) {
 
@@ -844,18 +851,14 @@
 
 			function onNextTick () {
 
-				mainMenu.changeSize( subMenu.clientWidth, subMenu.clientHeight );
+				mainMenu.changeSize( subMenu.clientWidth );
 				subMenu.show();
 				subMenu.unslideAll();
 
 			}
 
-			mainMenu._width = mainMenu.clientWidth;
-			mainMenu._height = mainMenu.clientHeight;
 			mainMenu.hide();
 			mainMenu.slideAll();
-			mainMenu.style.width = mainMenu.clientWidth + 'px';	
-			mainMenu.style.height = mainMenu.clientHeight + 'px';
 			mainMenu.parentElement.appendChild( subMenu );
 
 			scope.activeMainItem = this;
@@ -908,7 +911,7 @@
 			event.stopPropagation();
 
 			menu = scope.mainMenu;
-			menu.changeSize( menu._width, menu._height );
+			menu.changeSize( menu._width );
 			menu.unslideAll();
 			menu.show();
 			subMenu.slideAll( true );
@@ -979,8 +982,17 @@
 
 		menu.changeSize = function ( width, height ) {
 
-			this.style.width = width + 'px';
-			this.style.height = height + 'px';
+			if ( width ) {
+
+				this.style.width = width + 'px';
+
+			}
+
+			if ( height ) {
+
+				this.style.height = height + 'px';
+
+			}
 
 		};
 

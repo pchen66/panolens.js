@@ -31,6 +31,7 @@
 
 		this.scale.set( scale, scale, 1 );
 		this.rotation.y = Math.PI;
+		this.scaleFactor = 1.3;
 
 		this.container;
 
@@ -44,18 +45,16 @@
 			texture.wrapS = THREE.RepeatWrapping;
 			texture.repeat.x = - 1;
 
-			texture.image.width = texture.image.naturalWidth || 1;
-			texture.image.height = texture.image.naturalHeight || 1;
+			texture.image.width = texture.image.naturalWidth || 64;
+			texture.image.height = texture.image.naturalHeight || 64;
 
 			ratio = texture.image.width / texture.image.height;
 			scope.scale.set( ratio * scale, scale, 1 );
 
 			startScale = scope.scale.clone();
-			endScale = scope.scale.clone().multiplyScalar( 1.3 );
-			endScale.z = 1;
 
 			scope.scaleUpAnimation = new TWEEN.Tween( scope.scale )
-				.to( { x: endScale.x, y: endScale.y }, duration )
+				.to( { x: startScale.x * scope.scaleFactor, y: startScale.y * scope.scaleFactor }, duration )
 				.easing( TWEEN.Easing.Elastic.Out );
 
 			scope.scaleDownAnimation = new TWEEN.Tween( scope.scale )
