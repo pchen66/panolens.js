@@ -105,6 +105,7 @@
 		videoContext = canvas.getContext('2d');
 
 		videoTexture = new THREE.Texture( canvas );
+		videoTexture.generateMipmaps = false;
 		videoTexture.minFilter = THREE.LinearFilter;
 		videoTexture.magFilter = THREE.LinearFilter;
 
@@ -157,15 +158,10 @@
 
 			updateCallback = function () {
 
-				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
 
 					this.videoContext.drawImage( this.video, 0, 0 );
-
-					if ( this.videoTexture ) {
-
-						this.videoTexture.needsUpdate = true;
-
-					}
+					this.videoTexture.needsUpdate = true;
 
 				}
 
