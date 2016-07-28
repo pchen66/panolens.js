@@ -11,7 +11,7 @@ THREE.CardboardEffect = function ( renderer ) {
 	var _stereo = new THREE.StereoCamera();
 	_stereo.aspect = 0.5;
 
-	var _params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
+	var _params = { depthBuffer: false, stencilBuffer: false };
 
 	var _renderTarget = new THREE.WebGLRenderTarget( 512, 512, _params );
 	_renderTarget.scissorTest = true;
