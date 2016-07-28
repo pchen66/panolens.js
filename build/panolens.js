@@ -2009,6 +2009,7 @@ THREE.CardboardEffect = function ( renderer ) {
 
 	var _renderTarget = new THREE.WebGLRenderTarget( 512, 512, _params );
 	_renderTarget.scissorTest = true;
+	_renderTarget.texture.generateMipmaps = false;
 
 	// Distortion Mesh ported from:
 	// https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
@@ -3623,6 +3624,7 @@ PANOLENS.StereographicShader = {
 		
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
+		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -3631,6 +3633,19 @@ PANOLENS.StereographicShader = {
 			scope.setVideoTexture( scope.videoElement, scope.videoCanvas );
 
 			scope.onLoad();
+
+			if ( scope.videoElement.autoplay ) {
+
+				/**
+				 * Viewer handler event
+				 * @type {object}
+				 * @property {string} method - 'updateVideoPlayButton'
+				 * @property {boolean} data - Pause video or not
+				 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
+				 */
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+
+			}
 
 		}
 
@@ -3666,6 +3681,7 @@ PANOLENS.StereographicShader = {
 		videoContext = canvas.getContext('2d');
 
 		videoTexture = new THREE.Texture( canvas );
+		videoTexture.generateMipmaps = false;
 		videoTexture.minFilter = THREE.LinearFilter;
 		videoTexture.magFilter = THREE.LinearFilter;
 
@@ -3718,15 +3734,10 @@ PANOLENS.StereographicShader = {
 
 			updateCallback = function () {
 
-				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
 
 					this.videoContext.drawImage( this.video, 0, 0 );
-
-					if ( this.videoTexture ) {
-
-						this.videoTexture.needsUpdate = true;
-
-					}
+					this.videoTexture.needsUpdate = true;
 
 				}
 
@@ -5440,7 +5451,9 @@ PANOLENS.StereographicShader = {
 
 		item.paused = true;
 
-		item.update = function () {
+		item.update = function ( paused ) {
+
+			this.paused = paused !== undefined ? paused : this.paused;
 
 			this.style.backgroundImage = 'url("' + ( this.paused 
 				? PANOLENS.DataImage.VideoPlay 
@@ -6776,7 +6789,7 @@ PANOLENS.StereographicShader = {
 
 		this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
-		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
+		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
 
 		this.reticle = {};
 		this.tempEnableReticle = this.options.enableReticle;
@@ -7029,7 +7042,7 @@ PANOLENS.StereographicShader = {
 
 			this[ event.method ]( event.data );
 
-			this.options.passiveRendering && this.onChange();
+			this.options.passiveRendering && !event.ignoreUpdate && this.onChange();
 
 		}
 
@@ -7294,6 +7307,18 @@ PANOLENS.StereographicShader = {
 		 * @event PANOLENS.Viewer#video-control-hide
 		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-control-hide' } );
+
+	};
+
+	PANOLENS.Viewer.prototype.updateVideoPlayButton = function ( paused ) {
+
+		if ( this.widget && 
+			 this.widget.videoElement && 
+			 this.widget.videoElement.controlButton ) {
+
+			this.widget.videoElement.controlButton.update( paused );
+
+		}
 
 	};
 
@@ -8011,7 +8036,7 @@ PANOLENS.StereographicShader = {
 
 	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
 
-		if ( event.keyCode === 17 || event.keyIdentifier === 'Control' ) {
+		if ( event.key === 'Control' ) {
 
 			this.OUTPUT_INFOSPOT = true;
 
