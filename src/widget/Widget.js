@@ -526,7 +526,9 @@
 
 		item.paused = true;
 
-		item.update = function () {
+		item.update = function ( paused ) {
+
+			this.paused = paused !== undefined ? paused : this.paused;
 
 			this.style.backgroundImage = 'url("' + ( this.paused 
 				? PANOLENS.DataImage.VideoPlay 

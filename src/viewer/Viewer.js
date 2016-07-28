@@ -335,7 +335,7 @@
 
 			this[ event.method ]( event.data );
 
-			this.options.passiveRendering && this.onChange();
+			this.options.passiveRendering && !event.ignoreUpdate && this.onChange();
 
 		}
 
@@ -600,6 +600,18 @@
 		 * @event PANOLENS.Viewer#video-control-hide
 		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-control-hide' } );
+
+	};
+
+	PANOLENS.Viewer.prototype.updateVideoPlayButton = function ( paused ) {
+
+		if ( this.widget && 
+			 this.widget.videoElement && 
+			 this.widget.videoElement.controlButton ) {
+
+			this.widget.videoElement.controlButton.update( paused );
+
+		}
 
 	};
 
@@ -1317,7 +1329,7 @@
 
 	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
 
-		if ( event.keyCode === 17 || event.keyIdentifier === 'Control' ) {
+		if ( event.key === 'Control' ) {
 
 			this.OUTPUT_INFOSPOT = true;
 
