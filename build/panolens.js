@@ -2517,8 +2517,8 @@ GSVPANO.PanoLoader = function (parameters) {
 		image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
 
 		request = new XMLHttpRequest();
-		request.responseType = 'arraybuffer';
 		request.open( 'GET', url, true );
+		request.responseType = 'arraybuffer';
 		request.onprogress = function ( event ) {
 
 		    if ( event.lengthComputable ) {
