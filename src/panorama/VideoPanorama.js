@@ -32,6 +32,7 @@
 		this.videoFramerate = 30;
 
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
+		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
 		this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
 		this.addEventListener( 'leave', this.resetVideo.bind( this ) );
@@ -72,7 +73,7 @@
 
 			scope.onLoad();
 
-			if ( scope.videoElement.autoplay ) {
+			if ( scope.videoElement.autoplay && !scope.isMobile ) {
 
 				/**
 				 * Viewer handler event
