@@ -38,7 +38,7 @@
 
 		options = options || {};
 		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
-		options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video'  ];
+		options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
 		options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
 		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
@@ -162,11 +162,11 @@
 		this.control = this.OrbitControls;
 
 		// Cardboard effect
-        this.CardboardEffect = new THREE.CardboardEffect( this.renderer );
-        this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.CardboardEffect = new THREE.CardboardEffect( this.renderer );
+		this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
 
-        // Stereo effect
-        this.StereoEffect = new THREE.StereoEffect( this.renderer );
+		// Stereo effect
+		this.StereoEffect = new THREE.StereoEffect( this.renderer );
 		this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
 
 		this.effect = this.CardboardEffect;
@@ -1081,7 +1081,7 @@
 		var intersects, intersect_entity, intersect;
 
 		this.raycasterPoint.x = ( ( event.clientX - this.container.offsetLeft ) / this.container.clientWidth ) * 2 - 1;
-    	this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
+		this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
@@ -1379,14 +1379,14 @@
 
 		this.update();
 
-        !this.options.passiveRendering && this.render();
+		!this.options.passiveRendering && this.render();
 
 	};
 
 	PANOLENS.Viewer.prototype.onChange = function () {
 
 		this.update();
-        this.render();
+		this.render();
 
 	};
 
