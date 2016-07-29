@@ -36,7 +36,7 @@ All attributes are optional
 	viewer = new PANOLENS.Viewer({
 		container: document.body,	// A DOM Element container
 		controlBar: true, 			// Vsibility of bottom control bar
-		controlButtons: [],			// Buttons array in the control bar. Default to ['fullscreen', 'navigation', 'vr', 'video']
+		controlButtons: [],			// Buttons array in the control bar. Default to ['fullscreen', 'setting', 'video']
 		autoHideControlBar: false,	// Auto hide control bar
 		autoHideInfospot: true,		// Auto hide infospots
 		horizontalView: false,		// Allow only horizontal camera control
@@ -63,7 +63,7 @@ Check Panolens [example page](http://pchen66.github.io/Panolens/#Example)
 5.	Support text/image/domElement annotations (Infospot)
 6.	Built-in Orbit / DeviceOrientation camera controls
 7.	Built-in fullscreen and video control widgets
-8.	Convert regular image into little planet (Stereographic projection)
+8.	Convert equirectangular image into little planet (Stereographic projection)
 
 ###How to add an infospot (hotspot)
 
@@ -78,5 +78,4 @@ Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) by default
 ###Future
 1.	Add dwell animation
 2.	npm packaging
-3.	stereoscopic
-4.	infospot editor
+3.	infospot editor
