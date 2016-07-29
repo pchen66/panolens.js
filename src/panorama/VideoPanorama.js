@@ -32,6 +32,7 @@
 		this.videoFramerate = 30;
 
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
+		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
 		this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
 		this.addEventListener( 'leave', this.resetVideo.bind( this ) );
@@ -62,6 +63,7 @@
 		
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
+		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -70,6 +72,19 @@
 			scope.setVideoTexture( scope.videoElement, scope.videoCanvas );
 
 			scope.onLoad();
+
+			if ( scope.videoElement.autoplay && !scope.isMobile ) {
+
+				/**
+				 * Viewer handler event
+				 * @type {object}
+				 * @property {string} method - 'updateVideoPlayButton'
+				 * @property {boolean} data - Pause video or not
+				 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
+				 */
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+
+			}
 
 		}
 
@@ -105,8 +120,9 @@
 		videoContext = canvas.getContext('2d');
 
 		videoTexture = new THREE.Texture( canvas );
+		videoTexture.generateMipmaps = false;
 		videoTexture.minFilter = THREE.LinearFilter;
-		videoTexture.maxFilter = THREE.LinearFilter;
+		videoTexture.magFilter = THREE.LinearFilter;
 
 		videoRenderObject = {
 
@@ -157,15 +173,10 @@
 
 			updateCallback = function () {
 
-				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
 
 					this.videoContext.drawImage( this.video, 0, 0 );
-
-					if ( this.videoTexture ) {
-
-						this.videoTexture.needsUpdate = true;
-
-					}
+					this.videoTexture.needsUpdate = true;
 
 				}
 

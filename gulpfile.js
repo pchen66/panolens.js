@@ -9,6 +9,7 @@ var _libfiles = [
 	'src/lib/controls/DeviceOrientationControls.js',
 	'src/lib/modifier/BendModifier.js',
 	'src/lib/effects/CardboardEffect.js',
+	'node_modules/three/examples/js/effects/StereoEffect.js',
 	'src/lib/GSVPano.js'
 ];
 
@@ -20,6 +21,7 @@ var _panolensfiles = [
 	'src/util/ImageLoader.js',
 	'src/util/TextureLoader.js',
 	'src/util/CubeTextureLoader.js',
+	'src/shaders/StereographicShader.js',
 	'src/panorama/Panorama.js',
 	'src/panorama/ImagePanorama.js',
 	'src/panorama/GoogleStreetviewPanorama.js',
@@ -27,6 +29,8 @@ var _panolensfiles = [
 	'src/panorama/BasicPanorama.js',
 	'src/panorama/VideoPanorama.js',
 	'src/panorama/EmptyPanorama.js',
+	'src/panorama/LittlePlanet.js',
+	'src/panorama/ImageLittlePlanet.js',
 	'src/interface/Reticle.js',
 	'src/interface/Tile.js',
 	'src/interface/TileGroup.js',

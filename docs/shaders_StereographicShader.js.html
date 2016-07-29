@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Source: panorama/CubePanorama.js</title>
+	<title>Documentation Source: shaders/StereographicShader.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -77,78 +77,75 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: panorama/CubePanorama.js</h1>
+		<h1 class="page-title">Source: shaders/StereographicShader.js</h1>
     
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript ">(function(){
-	
-	'use strict';
-	
-	/**
-	 * Cubemap-based panorama
-	 * @constructor
-	 * @param {array} images - An array of cubetexture containing six images
-	 * @param {number} [edgeLength=10000] - The length of cube's edge
-	 */
-	PANOLENS.CubePanorama = function ( images, edgeLength ){
+            class="sunlight-highlight-javascript ">/**
+ * Stereographic projection shader
+ * based on http://notlion.github.io/streetview-stereographic
+ * @author pchen66
+ */
 
-		var shader, geometry, material;
+PANOLENS.StereographicShader = {
 
-		this.images = images || [];
+	uniforms: {
 
-		edgeLength = edgeLength || 10000;
-		shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
+		"tDiffuse":   { value: new THREE.Texture() },
+		"resolution": { value: 1.0 },
+		"transform":  { value: new THREE.Matrix4() },
+		"zoom": 	  { value: 1.0 }
 
-		geometry = new THREE.BoxGeometry( edgeLength, edgeLength, edgeLength );
-		material = new THREE.ShaderMaterial( {
+	},
 
-			fragmentShader: shader.fragmentShader,
-			vertexShader: shader.vertexShader,
-			uniforms: shader.uniforms,
-			side: THREE.BackSide
+	vertexShader: [
 
-		} );
+		"varying vec2 vUv;",
 
-		PANOLENS.Panorama.call( this, geometry, material );
+		"void main() {",
 
-	}
+			"vUv = uv;",
+			"gl_Position = vec4( position, 1.0 );",
 
-	PANOLENS.CubePanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
+		"}" 
 
-	PANOLENS.CubePanorama.prototype.constructor = PANOLENS.CubePanorama;
+	].join( "\n" ),
 
-	/**
-	 * Load 6 images and bind listeners
-	 */
-	PANOLENS.CubePanorama.prototype.load = function () {
+	fragmentShader: [
 
-		PANOLENS.Utils.CubeTextureLoader.load( 	
+		"uniform sampler2D tDiffuse;",
+		"uniform float resolution;",
+		"uniform mat4 transform;",
+		"uniform float zoom;",
 
-			this.images, 
+		"varying vec2 vUv;",
 
-			this.onLoad.bind( this ), 
-			this.onProgress.bind( this ), 
-			this.onError.bind( this ) 
+		"const float PI = 3.141592653589793;",
 
-		);
+		"void main(){",
 
-	};
+			"vec2 position = -1.0 +  2.0 * vUv;",
 
-	/**
-	 * This will be called when 6 textures are ready
-	 * @param  {THREE.CubeTexture} texture - Cube texture
-	 */
-	PANOLENS.CubePanorama.prototype.onLoad = function ( texture ) {
-		
-		this.material.uniforms[ 'tCube' ].value = texture;
+			"position *= vec2( zoom * resolution, zoom * 0.5 );",
 
-		PANOLENS.Panorama.prototype.onLoad.call( this );
+			"float x2y2 = position.x * position.x + position.y * position.y;",
+			"vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );",
 
-	};
+			"sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );",
 
-})();</pre>
+			"vec2 sampleUV = vec2(",
+				"(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,",
+				"(asin(sphere_pnt.z) / PI + 0.5)",
+			");",
+
+			"gl_FragColor = texture2D( tDiffuse, sampleUV );",
+
+		"}"
+
+	].join( "\n" )
+
+};</pre>
     </article>
 </section>
 

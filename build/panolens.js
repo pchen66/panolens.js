@@ -4,7 +4,7 @@
  * @namespace PANOLENS
  */
 
-var PANOLENS = { REVISION: '1' };
+var PANOLENS = { REVISION: '2' };
 ;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
@@ -1707,7 +1707,7 @@ THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 	}
 
-	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
+	//this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
 	this.domElement.addEventListener( 'mousedown', onMouseDown, false );
 	this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
 	this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
@@ -2009,6 +2009,7 @@ THREE.CardboardEffect = function ( renderer ) {
 
 	var _renderTarget = new THREE.WebGLRenderTarget( 512, 512, _params );
 	_renderTarget.scissorTest = true;
+	_renderTarget.texture.generateMipmaps = false;
 
 	// Distortion Mesh ported from:
 	// https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
@@ -2056,7 +2057,7 @@ THREE.CardboardEffect = function ( renderer ) {
 	//
 
 	// var material = new THREE.MeshBasicMaterial( { wireframe: true } );
-	var material = new THREE.MeshBasicMaterial( { map: _renderTarget } );
+	var material = new THREE.MeshBasicMaterial( { map: _renderTarget.texture } );
 	var mesh = new THREE.Mesh( geometry, material );
 	_scene.add( mesh );
 
@@ -2095,7 +2096,51 @@ THREE.CardboardEffect = function ( renderer ) {
 
 	};
 
-};;var GSVPANO = GSVPANO || {};
+};;/**
+ * @author alteredq / http://alteredqualia.com/
+ * @authod mrdoob / http://mrdoob.com/
+ * @authod arodic / http://aleksandarrodic.com/
+ * @authod fonserbc / http://fonserbc.github.io/
+*/
+
+THREE.StereoEffect = function ( renderer ) {
+
+	var _stereo = new THREE.StereoCamera();
+	_stereo.aspect = 0.5;
+
+	this.setSize = function ( width, height ) {
+
+		renderer.setSize( width, height );
+
+	};
+
+	this.render = function ( scene, camera ) {
+
+		scene.updateMatrixWorld();
+
+		if ( camera.parent === null ) camera.updateMatrixWorld();
+
+		_stereo.update( camera );
+
+		var size = renderer.getSize();
+
+		renderer.setScissorTest( true );
+		renderer.clear();
+
+		renderer.setScissor( 0, 0, size.width / 2, size.height );
+		renderer.setViewport( 0, 0, size.width / 2, size.height );
+		renderer.render( scene, _stereo.cameraL );
+
+		renderer.setScissor( size.width / 2, 0, size.width / 2, size.height );
+		renderer.setViewport( size.width / 2, 0, size.width / 2, size.height );
+		renderer.render( scene, _stereo.cameraR );
+
+		renderer.setScissorTest( false );
+
+	};
+
+};
+;var GSVPANO = GSVPANO || {};
 GSVPANO.PanoLoader = function (parameters) {
 
 	'use strict';
@@ -2336,17 +2381,17 @@ GSVPANO.PanoLoader = function (parameters) {
 	 */
 	PANOLENS.DataImage = {
 
-		Info: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEzLDlIMTFWN0gxM00xMywxN0gxMVYxMUgxM00xMiwyQTEwLDEwIDAgMCwwIDIsMTJBMTAsMTAgMCAwLDAgMTIsMjJBMTAsMTAgMCAwLDAgMjIsMTJBMTAsMTAgMCAwLDAgMTIsMloiIC8+PC9zdmc+',
-		Arrow: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDIyQTEwLDEwIDAgMCwxIDIsMTJBMTAsMTAgMCAwLDEgMTIsMkExMCwxMCAwIDAsMSAyMiwxMkExMCwxMCAwIDAsMSAxMiwyMk0xMiw3TDcsMTJIMTBWMTZIMTRWMTJIMTdMMTIsN1oiIC8+PC9zdmc+',
+		Info: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAADBklEQVR42u2bP08UQRiHnzFaSYCI/xoksdBIqGwIiYWRUBISExpCQ0ej38FWOmlIKKhoMPEbaCxsrrHiYrQgOSlQEaICrT+LHSPZzNzt3s3c3Hn7lHvLzvv82L2dm30XKioqKgYY062BJF0HpoA7wARwBbhsPz4DjoEG8AnYNcZ8Sx1Op8IXJM1KWpdUV3nq9m9nJV1I7VNGfEzSM0mNNqR9NOwxx1L7NRMflbQm6SSgeJ4TO8Zoat+8/LKkg4jieQ4kLaf2RtKwpJ0uiufZkTScSn5S0l5C+b/sSZrstvyMpKPU5uc4kjTTjkvpeYCkaeA1/+7hvcIZMGuMqUULQNIU8Aa4ltrWwyHwyBizGzwASSPAe+B2assW7AH3jTE/i+xcZoa12Qfy2Bo3i+5cKABl99zF1GYlWFTBeULLS0DZrOsDcDNggTXgc27bLWA64BhfgHvGmB8dHUXZ1DM0S45xliKMs9bKr+klIOkqsBrwv9JtVq1DewEAT4Ch1BYdMGQdygeg7Df4SmqDAKyoyXpCszPgITCeuvoAjFuX0gE8jljUdv7bCtiOOJ7XpdUZ8L/gdXHOA5QtYH5NXXVgbrgWWn1nwFTqaiPgdPIFcDd1tRFwOl307DwRuZgXwLvctgfA04hjOp18AcReZ6sZY16e3yDpUuQxnU6+S2AkcjEpcDr1zxOXSPgCKLSa0mc4nXwB/EpdbQScTr4AGqmrjYDTyRfAx9TVRsDp5Aug8LJyH+F0cgZg58z11BUHpO5ruGh2G3ybuuqAeF2aBfAqddUB8bq0OgP2U1cegH3aOQOMMb+BrdTVB2DLupQLwLIOnKY26IBT6+ClaQDGmO/ARmqLDtiwDn7HVkcY+EdjNoTlCI+tYhO2iUppm6HKslPUq2qQKHpUe8AFsjaUXuUQWCgqXyoAG8IuME/WkNRrnAHzZfqDSgdgQ6gBc2Td3b3CMTBXtkOsIzTIjZLnQhjcVtlcEIPZLJ0LoVvt8s/Va+3yuSAG84UJRxB98cpM9dJURUVFxSDzBxKde4Lk3/h2AAAAAElFTkSuQmCC',
+		Arrow: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAADPklEQVR42u2bMUscQRiG30/SRaJEI1ZKUiRErNIELRUbQYSAnX8hpVUgkDYp0wgWVjYW+QcJaQzYpLojJIXhtDDEKBpj65ti58ixmdmb2ZvZ7+T2AUHudmfmeXf2bnb3O6CmpqZmgJGqOiI5AWAWwEMA0wDuArht3r4CcAagBeAbgIaI/NQOp1fhIZKLJN+SbDKcptl3keSQtk+I+BjJVyRbJaRdtEybY9p+ReKjJN+QvIwonufS9DGq7ZuXXyd5nFA8zzHJdW1vkLxDcrdC8Ty7JO9oyc+QPFCUb3NAcqZq+TmSp9rmHZySnCvjErwOIPkUwHv8+w7vF64ALIrIfrIASM4C+ADgnratgxMACyLSiB4AyREAnwE80LbswgGAJyJy4bNxyApr6wbIw4xxy3djrwCYfeeuaZsFsEbPdULXU4DZqusLgMkEA21P05EEbf8A8FhEzos28pkBLxLKL5s/r/M1kEkz9vKQHGeatf05yfmOfubNa7G5JDle5NhtBjwHMBz5yFwAWBaRT+0XzP8pZsKwcQiH2fX8Ycojb+kzxUw4ZJn7CSQXqpRPHMKCq7+iZJ71Mvdy/DftXSQ6HcJdSDaqPPKW/mPOBO+lcbvzCU35RCFM2PpwnQKzZQfdgfe0dxH5dLA6uQJ4pC2fIASrkyuA6X6QjxyC1ckVQNn7bNHlI4ZgdXIFUObiJJl8pBCsTjGfuIwA2Cv4FN7xbYjkjqsRAHuIePXoCiDF1Zk2VidXAL+1R5sAq5MrgJb2aBNgdXIF8FV7tAmwOrkCCFs73wysTtYATHFCU3vEEWm6Ci6KvgY/ao86Ik6XogDeaY86Ik6XbjPgSHvkEThCwQy45XpDRK5JbgN4GWkgUyR9H65MRQxgW0SunZ5FezK7pfwd8e8MV8UfAPdF5Jdrg8JrAbPjprZFD2wWyQP6j8ZSEufRmGlgQ9umBBvd5IOgbjFUKLu+XnWBhG+rpsFVZGUo/coJgFVf+aAATAgNACvICpL6jSsAKyH1QcEBmBD2ASwhq+7uF84ALIVWiPUEB7lQsiOEwS2VzQUxmMXSuRCqKpd/zX4rl88FMZg/mLAEcSN+MlP/aKqmpqZmkPkL0hSjwOpNKxwAAAAASUVORK5CYII=',
 		FullscreenEnter: 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz4KICAgIDxwYXRoIGQ9Ik03IDE0SDV2NWg1di0ySDd2LTN6bS0yLTRoMlY3aDNWNUg1djV6bTEyIDdoLTN2Mmg1di01aC0ydjN6TTE0IDV2MmgzdjNoMlY1aC01eiIvPgo8L3N2Zz4=',
 		FullscreenLeave: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTE0LDE0SDE5VjE2SDE2VjE5SDE0VjE0TTUsMTRIMTBWMTlIOFYxNkg1VjE0TTgsNUgxMFYxMEg1VjhIOFY1TTE5LDhWMTBIMTRWNUgxNlY4SDE5WiIgLz48L3N2Zz4=',
-		Orbit: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDYwIDYwIiBoZWlnaHQ9IjY0cHgiIGlkPSJMYXllcl8xIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA2MCA2MCIgd2lkdGg9IjY0cHgiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIGZpbGw9IiNmZmYiPjxnPjxnPjxwb2x5Z29uIHBvaW50cz0iNTYsMjUgNTMuNDM5LDI1IDU2LjY0MSwyOSA1MCwyOSA1MCwzMSA1Ni42MzksMzEgNTMuNDM5LDM1IDU2LDM1IDYwLDI5Ljk5OSAgICAiLz48cG9seWdvbiBwb2ludHM9IjQsMzUgNi41NjEsMzUgMy4zNTksMzEgMTAsMzEgMTAsMjkgMy4zNjEsMjkgNi41NjEsMjUgNCwyNSAwLDMwLjAwMSAgICAiLz48cG9seWdvbiBwb2ludHM9IjM1LDU2IDM1LDUzLjQzOCAzMSw1Ni42NCAzMSw1MCAyOSw1MCAyOSw1Ni42MzkgMjUsNTMuNDM4IDI1LDU2IDMwLjAwMiw2MCAgICAiLz48cG9seWdvbiBwb2ludHM9IjI1LDQgMjUsNi41NjIgMjksMy4zNTkgMjksMTAgMzEsMTAgMzEsMy4zNiAzNSw2LjU2MiAzNSw0IDI5Ljk5OCwwICAgICIvPjxnPjxwYXRoIGQ9Ik0zOC4wOTgsNDAuMTUyQzM3LjkyNCwyOC4xNjIsMzUuOTgyLDIzLDMwLDIzcy03LjkyNCw1LjE2Mi04LjA5OCwxNy4xNTJDMTguOTIsMzcuNzY5LDE3LDM0LjEwNiwxNywzMCAgICAgIGMwLTcuMTY5LDUuODMtMTMsMTMtMTNzMTMsNS44MzEsMTMsMTNDNDMsMzQuMTA2LDQxLjA4LDM3Ljc2OSwzOC4wOTgsNDAuMTUyIE0yOS45OCwzNC45ODhjLTYuMDE2LDAtNS4xMjctNy4zMS01LjEyNy03LjMxICAgICAgczEuMDI3LTIuMzE2LDUuMTI3LTIuMzE2YzQuMTAyLDAsNS4xNywyLjMxNiw1LjE3LDIuMzE2UzM1Ljk5NiwzNC45ODgsMjkuOTgsMzQuOTg4IE0zMCwxNWMtOC4yNzEsMC0xNSw2LjcyOS0xNSwxNSAgICAgIGMwLDguMjcxLDYuNzI5LDE1LDE1LDE1czE1LTYuNzI5LDE1LTE1QzQ1LDIxLjcyOSwzOC4yNzEsMTUsMzAsMTUiLz48L2c+PC9nPjwvZz48L3N2Zz4=', 
-		Gyro: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOC4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNjRweCIgaGVpZ2h0PSI2NHB4IiB2aWV3Qm94PSIxMjAgMTIwIDI2MCAyNjAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDUwMCA1MDAiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPGc+DQoJCTxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0xOTUuNiwyNjAuMWMxLjksMi43LDUuMSw0LjYsOC42LDQuNmM0LjQsMCw4LjctMy40LDguNy04LjRjMC00LjgtNC04LjUtOS4xLTguNWMtMS45LDAtMy44LDAuNS01LjYsMS4zDQoJCQl2LTUuM2w4LjctMTAuM2gtMTUuNXYtOGgyOC4ydjUuM2wtOC40LDEwLjNjNi40LDIuNSwxMC43LDgsMTAuNywxNWMwLDkuOC03LjcsMTYuNC0xNy4zLDE2LjRjLTUuOCwwLTExLjMtMi42LTE1LjQtNy4yDQoJCQlMMTk1LjYsMjYwLjF6Ii8+DQoJCTxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yNTMuOSwyMjUuNmwtOC43LDE0LjhoMC42YzguOCwwLDE2LjIsNi43LDE2LjIsMTZjMCw5LTcuNSwxNi4zLTE2LjUsMTYuM2MtOC43LDAtMTctNi4yLTE3LTE1LjgNCgkJCWMwLTQuNiwyLjEtOC43LDQuNi0xMi44bDEwLjktMTguNEgyNTMuOXogTTIzNy4xLDI1Ni44YzAsNC40LDMuNyw3LjksOC4yLDcuOWM0LjYsMCw3LjgtMy42LDcuOC04LjFjMC00LjQtMy4zLTguMy04LjMtOC4zDQoJCQljLTEuNywwLTMuMiwwLjMtNSwxLjFDMjM4LjcsMjUxLjIsMjM3LjEsMjUzLjcsMjM3LjEsMjU2Ljh6Ii8+DQoJCTxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yODQuNiwyMjVjMTEuOSwwLDE2LjIsMTAuNywxNi4yLDIzLjljMCwxMy4yLTQuNCwyMy45LTE2LjIsMjMuOWMtMTEuOSwwLTE2LjItMTAuNy0xNi4yLTIzLjkNCgkJCUMyNjguMywyMzUuNiwyNzIuNywyMjUsMjg0LjYsMjI1eiBNMjg0LjYsMjMyLjljLTUuNCwwLTcuMyw3LjItNy4zLDE1LjljMCw4LjcsMS45LDE1LjksNy4zLDE1LjljNS40LDAsNy4zLTcuMiw3LjMtMTUuOQ0KCQkJQzI5MS44LDI0MC4xLDI4OS45LDIzMi45LDI4NC42LDIzMi45eiIvPg0KCQk8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMzE2LjQsMjIxLjZjNCwwLDcuMywzLjIsNy4zLDcuM2MwLDQtMy4yLDcuMy03LjMsNy4zYy00LDAtNy4zLTMuMi03LjMtNy4zDQoJCQlDMzA5LjEsMjI0LjksMzEyLjMsMjIxLjYsMzE2LjQsMjIxLjZ6IE0zMTYuNCwyMzAuOWMxLjEsMCwyLTAuOSwyLTJjMC0xLjEtMC45LTItMi0yYy0xLjEsMC0yLDAuOS0yLDINCgkJCUMzMTQuNCwyMzAuMSwzMTUuMywyMzAuOSwzMTYuNCwyMzAuOXoiLz4NCgk8L2c+DQoJPGc+DQoJCTxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yNTAuNSwzNzYuNWMtNzAsMC0xMjctNTctMTI3LTEyN3M1Ny0xMjcsMTI3LTEyN2MyOC44LDAsNTYsOS40LDc4LjYsMjcuMmwtNy43LDkuOA0KCQkJYy0yMC40LTE2LTQ0LjktMjQuNS03MC44LTI0LjVDMTg3LjMsMTM1LDEzNiwxODYuMywxMzYsMjQ5LjVTMTg3LjMsMzY0LDI1MC41LDM2NGM2My4yLDAsMTE0LjUtNTEuNCwxMTQuNS0xMTQuNQ0KCQkJYzAtMjYuNy05LjQtNTIuNy0yNi41LTczLjNsOS42LThjMTguOSwyMi43LDI5LjQsNTEuNiwyOS40LDgxLjJDMzc3LjUsMzE5LjUsMzIwLjUsMzc2LjUsMjUwLjUsMzc2LjV6Ii8+DQoJCTxwb2x5Z29uIGZpbGw9IiNmZmYiIHBvaW50cz0iMzMxLjgsMTYwLjEgMzM1LjgsMTk4LjggMzY5LjcsMTcyLjYgCQkiLz4NCgk8L2c+DQo8L2c+DQo8L3N2Zz4NCg==',
 		VideoPlay: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTgsNS4xNFYxOS4xNEwxOSwxMi4xNEw4LDUuMTRaIiAvPjwvc3ZnPg==',
 		VideoPause: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTE0LDE5LjE0SDE4VjUuMTRIMTRNNiwxOS4xNEgxMFY1LjE0SDZWMTkuMTRaIiAvPjwvc3ZnPg==',
-		Cardboard: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI0ZGRkZGRiI+CiAgICA8cGF0aCBkPSJNMjAuNzQgNkgzLjIxQzIuNTUgNiAyIDYuNTcgMiA3LjI4djEwLjQ0YzAgLjcuNTUgMS4yOCAxLjIzIDEuMjhoNC43OWMuNTIgMCAuOTYtLjMzIDEuMTQtLjc5bDEuNC0zLjQ4Yy4yMy0uNTkuNzktMS4wMSAxLjQ0LTEuMDFzMS4yMS40MiAxLjQ1IDEuMDFsMS4zOSAzLjQ4Yy4xOS40Ni42My43OSAxLjExLjc5aDQuNzljLjcxIDAgMS4yNi0uNTcgMS4yNi0xLjI4VjcuMjhjMC0uNy0uNTUtMS4yOC0xLjI2LTEuMjh6TTcuNSAxNC42MmMtMS4xNyAwLTIuMTMtLjk1LTIuMTMtMi4xMiAwLTEuMTcuOTYtMi4xMyAyLjEzLTIuMTMgMS4xOCAwIDIuMTIuOTYgMi4xMiAyLjEzcy0uOTUgMi4xMi0yLjEyIDIuMTJ6bTkgMGMtMS4xNyAwLTIuMTMtLjk1LTIuMTMtMi4xMiAwLTEuMTcuOTYtMi4xMyAyLjEzLTIuMTNzMi4xMi45NiAyLjEyIDIuMTMtLjk1IDIuMTItMi4xMiAyLjEyeiIvPgogICAgPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAgMGgyNHYyNEgwVjB6Ii8+Cjwvc3ZnPgo=',
 		WhiteTile: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIABAMAAAAGVsnJAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAB1WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOkNvbXByZXNzaW9uPjE8L3RpZmY6Q29tcHJlc3Npb24+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgICAgIDx0aWZmOlBob3RvbWV0cmljSW50ZXJwcmV0YXRpb24+MjwvdGlmZjpQaG90b21ldHJpY0ludGVycHJldGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KAtiABQAAACRQTFRFAAAAAAAABgYGBwcHHh4eKysrx8fHy8vLzMzM7OzsAAAABgYG+q7SZgAAAAp0Uk5TAP7+/v7+/v7+/iJx/a8AAAOwSURBVHja7d0hbsNAEAVQo6SFI6XEcALDcgNLvUBvEBQVhpkWVYWlhSsVFS7t5QIshRt695lEASZP+8c7a1kzDL1fz+/zyuvzp6FbvoddrL6uDd1yGZ5eXldeb18N3fIx7A+58prmhm65DfvDcd0952lu6JabFbD/zVprZj1lzcys+fj9z8xTZtbT8rv8yWlu6BYAIgAAAAAAAAAAAABAM6QXEAEAAAAAAAAAgJ2gnaAIiIA3Q2qAGgAAAAAAAAAAAAAAAAAAAAAAAAAAQJsADkVFAAAAAAA8Bj0GRUAEREAEREAEREAEREAEAAAAAAAAAAB2gnaCIiACPplRA9QANUAERAAAAEVQERQBERCBVlfAcZ3aeZobusUKMGBhV6KUElHGKBERJR6/fxExRkQZl9/lT8S1oVsuhqyYMmPKjCkzvfcCpsxohrwY0Q06EAEAAAAAAAAAAACgGdILiAAAAAAAAAAAwE7QTlAERMCbITVADQAAAAAAAAAAAAAAAAAAAAAAAAAAwKmwQ1ERAAAAAACPQY9BERABERABERABERABERABAAAAAAAAAICdoJ2gCIiAT2bUADVADRABEQAAQBFUBEVABERgEyvAlJm+V4ApM6bMmDJjyowpM6bMdN0LmDKjGfJiRDfoQAQAAAAAAAAAAACAZkgvIAIAAAAAAAAAADtBO0EREAFvhtQANQAAAAAAAAAAAAAAAAAAAAAAAAAAAKfCDkVFAAAAAAA8Bj0GRUAEREAEREAEREAEREAEAAAAAAAAAAB2gnaCIiACPplRA9QANUAERAAAAEVQERQBERCBTawAU2b6XgGmzJgyY8qMKTOmzJgy03UvYMqMZsiLEd2gAxEAAAAAAAAAAAAAmiG9gAgAAAAAAAAAAOwE7QRFQAS8GVID1AAAAAAAAAAAAAAAAAAAAAAAAAAAAJwKOxQVAQAAAADwGPQYFAEREAEREAEREAEREAERAAAAAAAAAADYCdoJioAI+GRGDVAD1AAREAEAABRBRVAEREAENrECTJnpewWYMmPKjCkzpsyYMmPKTNe9gCkzmiEvRnSDDkQAAAAAAAAAAAAAaIb0AiIAAAAAAAAAALATtBMUARHwZkgNUAMAAAAAAAAAAAAAAAAAAAAAAAAAAHAq7FBUBAAAAADAY9BjUAREQAREQAREQAREQAREAAAAAAAAAABgJ2gnKAIi4JMZNUANUANEQAQAAFAEFUEREAER2MQKMGWm7xVgyowpM50PWen9ugNGXz1XaocAFgAAAABJRU5ErkJggg==',
-		Reticle: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDIwQTgsOCAwIDAsMSA0LDEyQTgsOCAwIDAsMSAxMiw0QTgsOCAwIDAsMSAyMCwxMkE4LDggMCAwLDEgMTIsMjBNMTIsMkExMCwxMCAwIDAsMCAyLDEyQTEwLDEwIDAgMCwwIDEyLDIyQTEwLDEwIDAgMCwwIDIyLDEyQTEwLDEwIDAgMCwwIDEyLDJaIiAvPjwvc3ZnPg=='
+		Reticle: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAACzElEQVR42u2bvU8UQRiHn6HVABG/GoNaaCRUNoaOSCgJiQkd/wIlFZWtljYkFPQU/gcaWxorLkYL9GKBihAVr/VnsWMkm5n9uNu995bbp93Zvff5Ze52du5daGlpaRlj3LA+SNJ1YB64B8wCV4BL/nAPOAW6wAfgwDn3zTqcQYUnJC1JeiGpo/J0/LlLkiasfcqIz0h6Kqnbh3SMrr/mjLVflvi0pOeSzioUT3PmP2Pa2jctvy7pqEbxNEeS1q29kTQpaW+I4mn2JE1ayc9JOjSU/8ehpLlhyy9IOrE2P8eJpIV+XEqvAyQ9Al7x/x4+KvSAJefcfm0BSJoHXgPXrG0jHAOPnXMHlQcgaQp4C9y1tszhEHjonPtZZHCZFdZOA+TxNe4UHVwoACX33DVrsxKsqeA6IfcroGTV9Q64aW1Vki/AA+fcj6xBRWbAVgPl8TVv5Q3KnAGSrgIfgcvWNn3yG7jjnPseG5A3AzYaLI+vfSNrQHQGKHkG/wTcsrYYkM/Abefcn9DBrBmweAHk8Q6LsYNZATyxrrxCoi55M+CiEHUJ/gYo2cD8al11xdwIbbTGZsC8dbU1EHSKBXDfutoaCDrFApi1rrYGgk6xAGz22eol6BQLYMq62hoIOjXnH5eaiAVQaDelYQSdYgH8sq62BoJOsQC61tXWQNApFsB762prIOgUC6DwtnKDCDoFA/Br5o51xRXSiTVcZN0G31hXXSFRl6wAXlpXXSFRl3ZLLJpMcsKudfUVsBuTh3ZbPPtZwJ+4bW0xANtZ8tD+NZb/NOgvsGlt0webefKlkG0zVFn2inq1DRJFr+ovuErShjKqHAOrReVLBeBDOABWSBqSRo0esFKmP6h0AD6EfWCZpLt7VDgFlst2iA2ExrlR8lwI49sqmwpiPJulUyEMq13+mUatXT4VxHi+MBEIohGvzLQvTbW0tLSMM38BgDIEjOR+VO0AAAAASUVORK5CYII=',
+		Setting: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAADn0lEQVR42u2bzUsVURjGnyO6CPzAMnTjppAo3LTwH1CqTfaxbeOiRS37A0wXtROFVi1aRBs3LWohSIGbQAQXViBGRhG0UIRKUCpK7q/FnOB2uc6cOXNmRnGe3eW+H8/7zLln3vNxpQoVKlQ4wjBFJAFOSRqX1O7osivpvjHmU1nChBZglvSYLYJbS0EanCvIJzWK+gnsyH34/8OuMaYjb265jwCgz6N4SWq3vodbAEmnS/KtBDgoAgyU5BteAOAkMAPcBroc7PskDWfgN+wyDwBdltMMcDI3tYBnde/pHeARMNTErgd4APzweP834oeN1dMkz5DlsFNn/yyv4kdiSK4At4AO4CqwGaDwRmza2B0210qM7YhrXU59ANAq6bWkwQTTn5KO5fIE0uVYlXTeGLOXFMx1DrjlULwKKN41x6DlnIjEEQCckPRe0okCiguJr5LOGGO+xhm5jICJQ1i8LOeJJKPYEQAMKvrtt5ZdjSf2FM0Fq/sZJI2A6UNcvCz36TiDfUcAcE1SPu/U6Mm8k/TFfu6XdFb5iX3dGPM8lQfwNod3+TowBnQ3yddtv1vPIe+b1JIBiwEJ1IAJ208k5W21trWA+V/5CHAcmAtU/A2P/DcCiTAHHE8tgCVhgLvAXgYCk17Jo/yTGfLuWe7Zd72AC8CWB4n3OAz7mLytNkZabAEXMhfeQKYfWEpJZCxA3rGUOZeA/qDF15FpAz47EvlNk9neI2e3jeWCz0BbmvipNkSMMX8kuSZYM8Z8zyqAjbHmaN5mOeYjgIXrU93MWrxHrNQjrqiDkQMLHwG+OdqF3NN3jeXKzU8AoF1SzdH8XKhJUO7HZDXLMbwAwICkJUULFxe0SbqSVQAbw3Xi7Ze0ZLmGAzAKbHs0JGU1QtvAaIjCW4B7ZOvJy2qFa5a730RPtBiaz0CgnkiZi6F5fBZDVMvho7EhcuS3xJJ2hV9IupgTqaLw0hhzab8vq23xOG/r+LDsKjLgYVzxUnU0ltwK2wDezUyJmEwqXgp/PL4rvxthaeCSI+zxuA10J8ZkWdJNSb2SLkvayKHwDRu71+ZajrG941J8agALDQ3GU/a/IvMkYCPzmCbtLNEVmacNtgs5iP9fYVNEV1Q6Hez7yNZSL+J2SarTcpqiyV2iUkG0IvPFvbz5FbEn+KEk3wMjwMeSfCsBXFBdly9CAPk9ydyffpECuB5tZfVJjaKWueOSfinln6YK4lahQoUKRxd/AcRPGTcQCAUQAAAAAElFTkSuQmCC',
+		ChevronRight: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTguNTksMTYuNThMMTMuMTcsMTJMOC41OSw3LjQxTDEwLDZMMTYsMTJMMTAsMThMOC41OSwxNi41OFoiIC8+PC9zdmc+',
+		Check: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDdMOSwxOUwzLjUsMTMuNUw0LjkxLDEyLjA5TDksMTYuMTdMMTkuNTksNS41OUwyMSw3WiIgLz48L3N2Zz4='
 
 	};
 
@@ -2361,14 +2406,17 @@ GSVPANO.PanoLoader = function (parameters) {
 	 */
 	PANOLENS.Modes = {
 
-		/** Current viewer state is unknown */
+		/** Unknown */
 		UNKNOWN: 0,
 
-		/** Current viewer state is normal */
+		/** Normal */
 		NORMAL: 1,
 
-		/** Current viewer state is in vr mode*/
-		VR: 2
+		/** Google Cardboard*/
+		CARDBOARD: 2,
+
+		/** Stereoscopic **/
+		STEREO: 3
 
 	};
 
@@ -2469,8 +2517,8 @@ GSVPANO.PanoLoader = function (parameters) {
 		image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
 
 		request = new XMLHttpRequest();
-		request.responseType = 'arraybuffer';
 		request.open( 'GET', url, true );
+		request.responseType = 'arraybuffer';
 		request.onprogress = function ( event ) {
 
 		    if ( event.lengthComputable ) {
@@ -2610,7 +2658,70 @@ GSVPANO.PanoLoader = function (parameters) {
 
 	};
 
-})();;( function () {
+})();;/**
+ * Stereographic projection shader
+ * based on http://notlion.github.io/streetview-stereographic
+ * @author pchen66
+ */
+
+PANOLENS.StereographicShader = {
+
+	uniforms: {
+
+		"tDiffuse":   { value: new THREE.Texture() },
+		"resolution": { value: 1.0 },
+		"transform":  { value: new THREE.Matrix4() },
+		"zoom": 	  { value: 1.0 }
+
+	},
+
+	vertexShader: [
+
+		"varying vec2 vUv;",
+
+		"void main() {",
+
+			"vUv = uv;",
+			"gl_Position = vec4( position, 1.0 );",
+
+		"}" 
+
+	].join( "\n" ),
+
+	fragmentShader: [
+
+		"uniform sampler2D tDiffuse;",
+		"uniform float resolution;",
+		"uniform mat4 transform;",
+		"uniform float zoom;",
+
+		"varying vec2 vUv;",
+
+		"const float PI = 3.141592653589793;",
+
+		"void main(){",
+
+			"vec2 position = -1.0 +  2.0 * vUv;",
+
+			"position *= vec2( zoom * resolution, zoom * 0.5 );",
+
+			"float x2y2 = position.x * position.x + position.y * position.y;",
+			"vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );",
+
+			"sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );",
+
+			"vec2 sampleUV = vec2(",
+				"(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,",
+				"(asin(sphere_pnt.z) / PI + 0.5)",
+			");",
+
+			"gl_FragColor = texture2D( tDiffuse, sampleUV );",
+
+		"}"
+
+	].join( "\n" )
+
+};;( function () {
 
 	'use strict';
 
@@ -3222,7 +3333,7 @@ GSVPANO.PanoLoader = function (parameters) {
 	 */
 	PANOLENS.ImagePanorama.prototype.onLoad = function ( texture ) {
 
-		texture.minFilter = texture.maxFilter = THREE.LinearFilter;
+		texture.minFilter = texture.magFilter = THREE.LinearFilter;
 
 		texture.needsUpdate = true;
 
@@ -3483,6 +3594,7 @@ GSVPANO.PanoLoader = function (parameters) {
 		this.videoFramerate = 30;
 
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
+		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
 		this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
 		this.addEventListener( 'leave', this.resetVideo.bind( this ) );
@@ -3513,6 +3625,7 @@ GSVPANO.PanoLoader = function (parameters) {
 		
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
+		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -3521,6 +3634,19 @@ GSVPANO.PanoLoader = function (parameters) {
 			scope.setVideoTexture( scope.videoElement, scope.videoCanvas );
 
 			scope.onLoad();
+
+			if ( scope.videoElement.autoplay && !scope.isMobile ) {
+
+				/**
+				 * Viewer handler event
+				 * @type {object}
+				 * @property {string} method - 'updateVideoPlayButton'
+				 * @property {boolean} data - Pause video or not
+				 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
+				 */
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+
+			}
 
 		}
 
@@ -3556,8 +3682,9 @@ GSVPANO.PanoLoader = function (parameters) {
 		videoContext = canvas.getContext('2d');
 
 		videoTexture = new THREE.Texture( canvas );
+		videoTexture.generateMipmaps = false;
 		videoTexture.minFilter = THREE.LinearFilter;
-		videoTexture.maxFilter = THREE.LinearFilter;
+		videoTexture.magFilter = THREE.LinearFilter;
 
 		videoRenderObject = {
 
@@ -3608,15 +3735,10 @@ GSVPANO.PanoLoader = function (parameters) {
 
 			updateCallback = function () {
 
-				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
 
 					this.videoContext.drawImage( this.video, 0, 0 );
-
-					if ( this.videoTexture ) {
-
-						this.videoTexture.needsUpdate = true;
-
-					}
+					this.videoTexture.needsUpdate = true;
 
 				}
 
@@ -3766,7 +3888,330 @@ GSVPANO.PanoLoader = function (parameters) {
 
 	PANOLENS.EmptyPanorama.prototype.constructor = PANOLENS.EmptyPanorama;
 
-})();;(function(){
+})();;( function () {
+
+	/**
+	 * Little Planet
+	 * @param {string} type 		- Type of little planet basic class
+	 * @param {string} source 		- URL for the image source
+	 * @param {number} [size=10000] - Size of plane geometry
+	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
+	 */
+	PANOLENS.LittlePlanet = function ( type, source, size, ratio ) {
+
+		type = type || 'image';
+
+		type === 'image' && PANOLENS.ImagePanorama.call( this, source, size );
+
+		this.size = size || 10000;
+		this.ratio = ratio || 0.5;
+		this.EPS = 0.000001;
+		this.frameId;
+
+		this.geometry = this.createGeometry();
+		this.material = this.createMaterial( this.size );
+
+		this.dragging = false;
+		this.passiveRendering = false;
+		this.userMouse = new THREE.Vector2();
+
+		this.quatA = new THREE.Quaternion();
+		this.quatB = new THREE.Quaternion();
+		this.quatCur = new THREE.Quaternion();
+		this.quatSlerp = new THREE.Quaternion();
+
+		this.vectorX = new THREE.Vector3( 1, 0, 0 );
+		this.vectorY = new THREE.Vector3( 0, 1, 0 );
+
+		this.addEventListener( 'panolens-passive-rendering', this.onPassiveRendering );
+		this.addEventListener( 'window-resize', this.onWindowResize );
+
+	};
+
+	PANOLENS.LittlePlanet.prototype = Object.create( PANOLENS.ImagePanorama.prototype );
+
+	PANOLENS.LittlePlanet.prototype.constructor = PANOLENS.LittlePlanet;
+
+	PANOLENS.LittlePlanet.prototype.createGeometry = function () {
+
+		return new THREE.PlaneGeometry( this.size, this.size * this.ratio );
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.createMaterial = function ( size ) {
+
+		var uniforms = PANOLENS.StereographicShader.uniforms;
+		uniforms.zoom.value = size;
+
+		return new THREE.ShaderMaterial( {
+
+			uniforms: uniforms,
+			vertexShader: PANOLENS.StereographicShader.vertexShader,
+			fragmentShader: PANOLENS.StereographicShader.fragmentShader
+
+		} );
+		
+	};
+
+	PANOLENS.LittlePlanet.prototype.registerMouseEvents = function () {
+
+		this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), false );
+		this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), false );
+		this.container.addEventListener( 'mouseup', this.onMouseUp.bind( this ), false );
+		this.container.addEventListener( 'touchstart', this.onMouseDown.bind( this ), false );
+		this.container.addEventListener( 'touchmove', this.onMouseMove.bind( this ), false );
+		this.container.addEventListener( 'touchend', this.onMouseUp.bind( this ), false );
+		this.container.addEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
+		this.container.addEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
+		this.container.addEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
+		
+	};
+
+	PANOLENS.LittlePlanet.prototype.unregisterMouseEvents = function () {
+
+		this.container.removeEventListener( 'mousedown', this.onMouseDown.bind( this ), false );
+		this.container.removeEventListener( 'mousemove', this.onMouseMove.bind( this ), false );
+		this.container.removeEventListener( 'mouseup', this.onMouseUp.bind( this ), false );
+		this.container.removeEventListener( 'touchstart', this.onMouseDown.bind( this ), false );
+		this.container.removeEventListener( 'touchmove', this.onMouseMove.bind( this ), false );
+		this.container.removeEventListener( 'touchend', this.onMouseUp.bind( this ), false );
+		this.container.removeEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
+		this.container.removeEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
+		this.container.removeEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
+		
+	};
+
+	PANOLENS.LittlePlanet.prototype.onMouseDown = function ( event ) {
+
+		var x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
+		var y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+
+		var inputCount = ( event.touches && event.touches.length ) || 1 ;
+
+		switch ( inputCount ) {
+
+			case 1:
+
+				this.dragging = true;
+				this.userMouse.set( x, y );
+
+				break;
+
+			case 2:
+
+				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+				var distance = Math.sqrt( dx * dx + dy * dy );
+				this.userMouse.pinchDistance = distance;
+
+				break;
+
+			default:
+
+				break;
+
+		}
+
+		this.onUpdateCallback();
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.onMouseMove = function ( event ) {
+
+		var x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
+		var y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+
+		var inputCount = ( event.touches && event.touches.length ) || 1 ;
+
+		switch ( inputCount ) {
+
+			case 1:
+
+				var angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
+				var angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
+
+				if ( this.dragging ) {
+					this.quatA.setFromAxisAngle( this.vectorY, angleX );
+					this.quatB.setFromAxisAngle( this.vectorX, angleY );
+					this.quatCur.multiply( this.quatA ).multiply( this.quatB );
+					this.userMouse.set( x, y );
+				}
+
+				break;
+
+			case 2:
+
+				var uniforms = this.material.uniforms;
+				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+				var distance = Math.sqrt( dx * dx + dy * dy );
+
+				this.addZoomDelta( this.userMouse.pinchDistance - distance );
+
+				break;
+
+			default:
+
+				break;
+
+		}
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.onMouseUp = function ( event ) {
+
+		this.dragging = false;
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.onMouseWheel = function ( event ) {
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		var delta = 0;
+
+		if ( event.wheelDelta !== undefined ) { // WebKit / Opera / Explorer 9
+
+			delta = event.wheelDelta;
+
+		} else if ( event.detail !== undefined ) { // Firefox
+
+			delta = - event.detail;
+
+		}
+
+		this.addZoomDelta( delta );
+		this.onUpdateCallback();
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.addZoomDelta = function ( delta ) {
+
+		var uniforms = this.material.uniforms;
+		var lowerBound = this.size * 0.1;
+		var upperBound = this.size * 10;
+
+		uniforms.zoom.value += delta;
+
+		if ( uniforms.zoom.value <= lowerBound ) {
+
+			uniforms.zoom.value = lowerBound;
+
+		} else if ( uniforms.zoom.value >= upperBound ) {
+
+			uniforms.zoom.value = upperBound;
+
+		}
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.onUpdateCallback = function () {
+
+		this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
+		
+		this.quatSlerp.slerp( this.quatCur, 0.1 );
+		this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
+		
+		if ( this.passiveRendering ) {
+
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'render' } );
+
+		}
+		
+		if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
+			
+			window.cancelAnimationFrame( this.frameId );
+
+		}
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.reset = function () {
+
+		this.quatCur.set( 0, 0, 0, 1 );
+		this.quatSlerp.set( 0, 0, 0, 1 );
+		this.onUpdateCallback();
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.onLoad = function () {
+
+		this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
+
+		this.registerMouseEvents();
+		this.onUpdateCallback();
+		
+		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' } );
+		
+	};
+
+	PANOLENS.LittlePlanet.prototype.onLeave = function () {
+
+		this.unregisterMouseEvents();
+
+		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: 0 } );
+
+		window.cancelAnimationFrame( this.frameId );
+
+		PANOLENS.Panorama.prototype.onLeave.call( this );
+		
+	};
+
+	PANOLENS.LittlePlanet.prototype.onPassiveRendering = function ( event ) {
+
+		this.passiveRendering = event && event.enabled;
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.onWindowResize = function () {
+
+		this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
+
+	};
+
+	PANOLENS.LittlePlanet.prototype.onContextMenu = function () {
+
+		this.dragging = false;
+
+	};
+
+})();;( function () {
+
+	/**
+	 * Image Little Planet
+	 * @param {string} source 		- URL for the image source
+	 * @param {number} [size=10000] - Size of plane geometry
+	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
+	 */
+	PANOLENS.ImageLittlePlanet = function ( source, size, ratio ) {
+
+		PANOLENS.LittlePlanet.call( this, 'image', source, size, ratio );
+
+	};
+
+	PANOLENS.ImageLittlePlanet.prototype = Object.create( PANOLENS.LittlePlanet.prototype );
+	
+	PANOLENS.ImageLittlePlanet.prototype.constructor = PANOLENS.ImageLittlePlanet;
+
+	PANOLENS.ImageLittlePlanet.prototype.onLoad = function ( texture ) {
+
+		this.updateTexture( texture );
+
+		PANOLENS.ImagePanorama.prototype.onLoad.call( this, texture );
+		PANOLENS.LittlePlanet.prototype.onLoad.call( this );
+
+	};
+
+	PANOLENS.ImageLittlePlanet.prototype.updateTexture = function ( texture ) {
+
+		texture.minFilter = texture.magFilter = THREE.LinearFilter;
+		
+		this.material.uniforms[ "tDiffuse" ].value = texture;
+
+	};
+
+} )();;(function(){
 	
 	/**
 	 * Reticle 3D Sprite
@@ -4490,13 +4935,25 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		THREE.EventDispatcher.call( this );
 
+		this.DEFAULT_TRANSITION  = 'all 0.27s ease';
+		this.TOUCH_ENABLED = 'ontouchstart' in window;
+		this.PREVENT_EVENT_HANDLER = function ( event ) {
+			event.preventDefault();
+			event.stopPropagation();
+		};
+
 		this.container = container;
 
 		this.barElement;
 		this.fullscreenElement;
-		this.navigationElement;
-		this.vrElement;
 		this.videoElement;
+		this.settingElement;
+
+		this.mainMenu;
+
+		this.activeMainItem;
+		this.activeSubMenu;
+		this.mask;
 
 	}
 
@@ -4515,15 +4972,21 @@ GSVPANO.PanoLoader = function (parameters) {
 			return; 
 		}
 
-		var scope = this, bar, styleTranslate, styleOpacity;
+		var scope = this, bar, styleTranslate, styleOpacity, gradientStyle;
+
+		gradientStyle = 'linear-gradient(bottom, rgba(0,0,0,0.2), rgba(0,0,0,0))';
 
 		bar = document.createElement( 'div' );
 		bar.style.width = '100%';
 		bar.style.height = '44px';
 		bar.style.float = 'left';
 		bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = 'translateY(-100%)';
-		bar.style.background = 'rgba( 0, 0, 0, 0.3 )';
-		bar.style.transition = 'all 0.5s ease';
+		bar.style.background = '-webkit-' + gradientStyle;
+		bar.style.background = '-moz-' + gradientStyle;
+		bar.style.background = '-o-' + gradientStyle;
+		bar.style.background = '-ms-' + gradientStyle;
+		bar.style.background = gradientStyle;
+		bar.style.transition = this.DEFAULT_TRANSITION;
 		bar.isHidden = false;
 		bar.toggle = function () {
 			bar.isHidden = !bar.isHidden;
@@ -4532,6 +4995,16 @@ GSVPANO.PanoLoader = function (parameters) {
 			bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = styleTranslate;
 			bar.style.opacity = styleOpacity;
 		};
+
+		// Menu
+		var menu = this.createDefaultMenu();
+		this.mainMenu = this.createMainMenu( menu );
+		bar.appendChild( this.mainMenu );
+
+		// Mask
+		var mask = this.createMask();
+		this.mask = mask;
+		this.container.appendChild( mask );
 
 		// Dispose
 		bar.dispose = function () {
@@ -4544,19 +5017,11 @@ GSVPANO.PanoLoader = function (parameters) {
 
 			}
 
-			if ( scope.navigationElement ) {
+			if ( scope.settingElement ) {
 
-				bar.removeChild( scope.navigationElement );
-				scope.navigationElement.dispose();
-				scope.navigationElement = null;
-
-			}
-
-			if ( scope.vrElement ) {
-
-				bar.removeChild( scope.vrElement );
-				scope.vrElement.dispose();
-				scope.vrElement = null;
+				bar.removeChild( scope.settingElement );
+				scope.settingElement.dispose();
+				scope.settingElement = null;
 
 			}
 
@@ -4572,10 +5037,85 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		this.container.appendChild( bar );
 
+		// Mask events
+		this.mask.addEventListener( 'mousemove', this.PREVENT_EVENT_HANDLER, true );
+		this.mask.addEventListener( 'mouseup', this.PREVENT_EVENT_HANDLER, true );
+		this.mask.addEventListener( 'mousedown', this.PREVENT_EVENT_HANDLER, true );
+		this.mask.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', function ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			scope.mask.hide();
+			scope.settingElement.deactivate();
+
+		}, false );
+
 		// Event listener
 		this.addEventListener( 'control-bar-toggle', bar.toggle );
 
 		this.barElement = bar;
+
+	};
+
+	/**
+	 * Create default menu
+	 */
+	PANOLENS.Widget.prototype.createDefaultMenu = function () {
+
+		var scope = this, handler;
+
+		handler = function ( method, data ) {
+
+			return function () {
+
+				scope.dispatchEvent( { 
+
+					type: 'panolens-viewer-handler', 
+					method: method, 
+					data: data 
+
+				} ); 
+
+			}
+
+		};
+
+		return [
+
+			{ 
+				title: 'Control', 
+				subMenu: [ 
+					{ 
+						title: this.TOUCH_ENABLED ? 'Touch' : 'Mouse', 
+						handler: handler( 'enableControl', 0 )
+					},
+					{ 
+						title: 'Sensor', 
+						handler: handler( 'enableControl', 1 ) 
+					} 
+				]
+			},
+
+			{ 
+				title: 'Mode', 
+				subMenu: [ 
+					{ 
+						title: 'Normal',
+						handler: handler( 'disableEffect' )
+					}, 
+					{ 
+						title: 'Cardboard',
+						handler: handler( 'enableEffect', PANOLENS.Modes.CARDBOARD )
+					},
+					{ 
+						title: 'Stereoscopic',
+						handler: handler( 'enableEffect', PANOLENS.Modes.STEREO )
+					}
+				]
+			}
+
+		];
 
 	};
 
@@ -4585,36 +5125,97 @@ GSVPANO.PanoLoader = function (parameters) {
 	 */
 	PANOLENS.Widget.prototype.addControlButton = function ( name ) {
 
-		this.fullscreenElement = name === 'fullscreen' ? this.createFullscreenButton() : this.fullscreenElement;
-		this.navigationElement = name === 'navigation' ? this.createCameraControlButton() : this.navigationElement;
-		this.vrElement = name === 'vr' ? this.createVRButton() : this.vrElement;
-		this.videoElement = name === 'video' ? this.createVideoControl() : this.videoElement;
+		var element;
 
-		// Add Control Items
-		this.fullscreenElement && this.barElement.appendChild( this.fullscreenElement );
-		this.navigationElement && this.barElement.appendChild( this.navigationElement );
-		this.vrElement && this.barElement.appendChild( this.vrElement );
-		this.videoElement && this.barElement.appendChild( this.videoElement );
+		switch( name ) {
+
+			case 'fullscreen':
+
+				element = this.createFullscreenButton();
+				this.fullscreenElement = element; 
+
+				break;
+
+			case 'setting':
+
+				element = this.createSettingButton();
+				this.settingElement = element;
+
+				break;
+
+			case 'video':
+
+				element = this.createVideoControl();
+				this.videoElement = element;
+
+				break;
+
+			default:
+
+				return;
+
+		}
+
+		if ( !element ) {
+
+			return;
+
+		}
+
+		this.barElement.appendChild( element );
+
+	};
+
+	PANOLENS.Widget.prototype.createMask = function () {
+
+		var element = document.createElement( 'div' );
+		element.style.position = 'absolute';
+		element.style.top = 0;
+		element.style.left = 0;
+		element.style.width = '100%';
+		element.style.height = '100%';
+		element.style.background = 'transparent';
+		element.style.display = 'none';
+
+		element.show = function () {
+
+			this.style.display = 'block';
+
+		};
+
+		element.hide = function () {
+
+			this.style.display = 'none';
+
+		};
+
+		return element;
 
 	};
 
 	/**
-	 * Create VR button
-	 * @return {HTMLSpanElement} - The dom element icon for VR effect
-	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 * Create Setting button to toggle menu
 	 */
-	PANOLENS.Widget.prototype.createVRButton = function () {
+	PANOLENS.Widget.prototype.createSettingButton = function () {
 
 		var scope = this, item;
 
-		function onTap () {
+		function onTap ( event ) {
 
-			/**
-			 * Viewer handler event
-			 * @type {object}
-			 * @property {string} method - 'toggleVR' function call on PANOLENS.Viewer
-			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVR' } );
+			event.preventDefault();
+			event.stopPropagation();
+
+			scope.mainMenu.toggle();
+
+			if ( this.activated ) {
+	
+				this.deactivate();
+
+			} else {
+
+				this.activate();
+
+			}
 
 		}
 
@@ -4622,17 +5223,56 @@ GSVPANO.PanoLoader = function (parameters) {
 
 			style : { 
 
-				backgroundImage : 'url("' + PANOLENS.DataImage.Cardboard + '")' 
+				backgroundImage : 'url("' + PANOLENS.DataImage.Setting + '")',
+				webkitTransition : this.DEFAULT_TRANSITION,
+				transition : this.DEFAULT_TRANSITION
 
 			},
 
-			onTap : onTap
+			onTap: onTap
 
 		} );
 
+		item.activate = function () {
+
+			this.style.transform = 'rotate3d(0,0,1,90deg)';
+			this.activated = true;
+			scope.mask.show();
+
+		};
+
+		item.deactivate = function () {
+
+			this.style.transform = 'rotate3d(0,0,0,0)';
+			this.activated = false;
+			scope.mask.hide();
+
+			if ( scope.mainMenu && scope.mainMenu.visible ) {
+
+				scope.mainMenu.hide();
+				
+			}
+
+			if ( scope.activeSubMenu && scope.activeSubMenu.visible ) {
+
+				scope.activeSubMenu.hide();
+
+			}
+
+			if ( scope.mainMenu && scope.mainMenu._width ) {
+
+				scope.mainMenu.changeSize( scope.mainMenu._width );
+				scope.mainMenu.unslideAll();
+
+			}
+			
+		};
+
+		item.activated = false;
+
 		return item;
 
-	}
+	};
 
 	/**
 	 * Create Fullscreen button
@@ -4718,50 +5358,6 @@ GSVPANO.PanoLoader = function (parameters) {
 			onTap : onTap
 
 		} );
-
-		return item;
-
-	};
-
-	/**
-	 * Create camera control button
-	 * @return {HTMLSpanElement} - The dom element icon for camera navigation
-	 * @fires PANOLENS.Widget#panolens-viewer-handler
-	 */
-	PANOLENS.Widget.prototype.createCameraControlButton = function () {
-
-		var scope = this, item;
-
-		function onTap(){
-
-			/**
-			 * Viewer handler event
-			 * @type {object}
-			 * @property {string} method - 'toggleNextControl' function call on PANOLENS.Viewer
-			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleNextControl' } );
-
-			this.controlName = ( this.controlName === 'orbit' ) ? 'device-orientation' : 'orbit';
-
-			this.style.backgroundImage = 'url("' + ( this.controlName === 'orbit' 
-				? PANOLENS.DataImage.Gyro 
-				: PANOLENS.DataImage.Orbit ) + '")';
-
-		}
-
-		item = this.createCustomItem( {
-
-			style: {
-
-				backgroundImage: 'url("' + PANOLENS.DataImage.Gyro + '")'
-
-			},
-
-			onTap : onTap
-
-		} );
-
-		item.controlName = 'orbit';
 
 		return item;
 
@@ -4856,7 +5452,9 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		item.paused = true;
 
-		item.update = function () {
+		item.update = function ( paused ) {
+
+			this.paused = paused !== undefined ? paused : this.paused;
 
 			this.style.backgroundImage = 'url("' + ( this.paused 
 				? PANOLENS.DataImage.VideoPlay 
@@ -5032,6 +5630,403 @@ GSVPANO.PanoLoader = function (parameters) {
 	};
 
 	/**
+	 * Create menu item
+	 * @param  {string} title - Title to display
+	 * @return {HTMLDomElement} - An anchor tag element
+	 */
+	PANOLENS.Widget.prototype.createMenuItem = function ( title ) {
+
+		var scope = this, item = document.createElement( 'a' );
+		item.textContent = title;
+		item.style.display = 'block';
+		item.style.padding = '10px';
+		item.style.textDecoration = 'none';
+		item.style.cursor = 'pointer';
+		item.style.transition = this.DEFAULT_TRANSITION;
+
+		item.slide = function ( right ) {
+
+			this.style.transform = 'translateX(' + ( right ? '' : '-' ) + '100%)';
+
+		};
+
+		item.unslide = function () {
+
+			this.style.transform = 'translateX(0)';
+
+		};
+
+		item.setIcon = function ( url ) {
+
+			if ( this.icon ) {
+
+				this.icon.style.backgroundImage = 'url(' + url + ')';
+
+			}
+
+		};
+
+		item.setSelectionTitle = function ( title ) {
+
+			if ( this.selection ) {
+
+				this.selection.textContent = title;
+
+			}
+
+		};
+
+		item.addSelection = function ( name ) {
+			
+			var selection = document.createElement( 'span' );
+			selection.style.fontSize = '13px';
+			selection.style.fontWeight = '300';
+			selection.style.float = 'right';
+
+			this.selection = selection;
+			this.setSelectionTitle( name );
+			this.appendChild( selection );
+			
+			return this;
+
+		};
+
+		item.addIcon = function ( url, left, flip ) {
+
+			url = url || PANOLENS.DataImage.ChevronRight;
+			left = left || false;
+			flip = flip || false;
+			
+			var element = document.createElement( 'span' );
+			element.style.float = left ? 'left' : 'right';
+			element.style.width = '17px';
+			element.style.height = '17px';
+			element.style[ 'margin' + ( left ? 'Right' : 'Left' ) ] = '12px';
+			element.style.backgroundSize = 'cover';
+
+			if ( flip ) {
+
+				element.style.transform = 'rotateZ(180deg)';
+
+			}
+
+			this.icon = element;
+			this.setIcon( url );
+			this.appendChild( element );
+
+			return this;
+
+		};
+
+		item.addSubMenu = function ( title, items ) {
+
+			this.subMenu = scope.createSubMenu( title, items );
+
+			return this;
+
+		};
+
+		item.addEventListener( 'mouseenter', function () {
+			
+			this.style.backgroundColor = '#e0e0e0';
+
+		}, false );
+
+		item.addEventListener( 'mouseleave', function () {
+			
+			this.style.backgroundColor = '#fafafa';
+
+		}, false );
+
+		return item;
+
+	};
+
+	/**
+	 * Create menu item header
+	 * @param  {string} title - Title to display
+	 * @return {HTMLDomElement} - An anchor tag element
+	 */
+	PANOLENS.Widget.prototype.createMenuItemHeader = function ( title ) {
+
+		var header = this.createMenuItem( title );
+
+		header.style.borderBottom = '1px solid #333';
+		header.style.paddingBottom = '15px';
+
+		return header;
+
+	};
+
+	/**
+	 * Create main menu
+	 * @param  {array} menus - Menu array list
+	 * @return {HTMLDomElement} - A span element
+	 */
+	PANOLENS.Widget.prototype.createMainMenu = function ( menus ) {
+		
+		var scope = this, menu = this.createMenu(), subMenu;
+
+		menu._width = 200;
+		menu.changeSize( menu._width );
+
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			var mainMenu = scope.mainMenu, subMenu = this.subMenu;
+
+			function onNextTick () {
+
+				mainMenu.changeSize( subMenu.clientWidth );
+				subMenu.show();
+				subMenu.unslideAll();
+
+			}
+
+			mainMenu.hide();
+			mainMenu.slideAll();
+			mainMenu.parentElement.appendChild( subMenu );
+
+			scope.activeMainItem = this;
+			scope.activeSubMenu = subMenu;
+
+			window.requestAnimationFrame( onNextTick );
+
+		};
+
+		for ( var i = 0; i < menus.length; i++ ) {
+
+			var item = menu.addItem( menus[ i ].title );
+
+			item.style.paddingLeft = '20px';
+
+			item.addIcon()
+				.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', onTap, false );
+
+			if ( menus[ i ].subMenu && menus[ i ].subMenu.length > 0 ) {
+
+				var title = menus[ i ].subMenu[ 0 ].title;
+
+				item.addSelection( title )
+					.addSubMenu( menus[ i ].title, menus[ i ].subMenu );
+
+			}
+
+		}
+
+		return menu;
+
+	};
+
+	/**
+	 * Create sub menu
+	 * @param {string} title - Sub menu title
+	 * @param {array} items - Item array list
+	 * @return {HTMLDomElement} - A span element
+	 */
+	PANOLENS.Widget.prototype.createSubMenu = function ( title, items ) {
+
+		var scope = this, menu, subMenu = this.createMenu();
+
+		subMenu.items = items;
+		subMenu.activeItem;
+
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			menu = scope.mainMenu;
+			menu.changeSize( menu._width );
+			menu.unslideAll();
+			menu.show();
+			subMenu.slideAll( true );
+			subMenu.hide();
+
+			if ( this.type !== 'header' ) {
+
+				subMenu.setActiveItem( this );
+				scope.activeMainItem.setSelectionTitle( this.textContent );
+
+				this.handler && this.handler();
+
+			}
+
+		}
+
+		subMenu.addHeader( title ).addIcon( undefined, true, true ).addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', onTap, false );
+
+		for ( var i = 0; i < items.length; i++ ) {
+
+			var item = subMenu.addItem( items[ i ].title );
+
+			item.style.fontWeight = 300;
+			item.handler = items[ i ].handler;
+			item.addIcon( ' ', true );
+			item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', onTap, false );
+
+			if ( !subMenu.activeItem ) {
+
+				subMenu.setActiveItem( item );
+
+			}
+
+		}
+
+		subMenu.slideAll( true );
+
+		return subMenu;
+		
+	};
+
+	/**
+	 * Create general menu
+	 * @return {HTMLDomElement} - A span element
+	 */
+	PANOLENS.Widget.prototype.createMenu = function () {
+
+		var scope = this, menu = document.createElement( 'span' ), style;
+
+		style = menu.style;
+
+		style.padding = '5px 0';
+		style.position = 'fixed';
+		style.bottom = '100%';
+		style.right = '14px';
+		style.backgroundColor = '#fafafa';
+		style.fontFamily = 'Helvetica Neue';
+		style.fontSize = '14px';
+		style.visibility = 'hidden';
+		style.opacity = 0;
+		style.boxShadow = '0 0 12pt rgba(0,0,0,0.25)';
+  		style.borderRadius = '2px';
+		style.overflow = 'hidden';
+		style.willChange = 'width, height, opacity';
+		style.transition = this.DEFAULT_TRANSITION;
+
+		menu.visible = false;
+
+		menu.changeSize = function ( width, height ) {
+
+			if ( width ) {
+
+				this.style.width = width + 'px';
+
+			}
+
+			if ( height ) {
+
+				this.style.height = height + 'px';
+
+			}
+
+		};
+
+		menu.show = function () {
+
+			this.style.opacity = 1;
+			this.style.visibility = 'visible';
+			this.visible = true;
+
+		};
+
+		menu.hide = function () {
+
+			this.style.opacity = 0;
+			this.style.visibility = 'hidden';
+			this.visible = false;
+
+		};
+
+		menu.toggle = function () {
+
+			if ( this.visible ) {
+
+				this.hide();
+
+			} else {
+
+				this.show();
+
+			}
+
+		};
+
+		menu.slideAll = function ( right ) {
+
+			for ( var i = 0; i < menu.children.length; i++ ){
+
+				if ( menu.children[ i ].slide ) {
+
+					menu.children[ i ].slide( right );
+
+				}
+
+			}
+
+		};
+
+		menu.unslideAll = function () {
+
+			for ( var i = 0; i < menu.children.length; i++ ){
+
+				if ( menu.children[ i ].unslide ) {
+
+					menu.children[ i ].unslide();
+
+				}
+
+			}
+
+		};
+
+		menu.addHeader = function ( title ) {
+
+			var header = scope.createMenuItemHeader( title );
+			header.type = 'header';
+
+			this.appendChild( header );
+
+			return header;
+
+		};
+
+		menu.addItem = function ( title ) {
+
+			var item = scope.createMenuItem( title );
+			item.type = 'item';
+
+			this.appendChild( item );
+
+			return item;
+
+		};
+
+		menu.setActiveItem = function ( item ) {
+
+			if ( this.activeItem ) {
+
+				this.activeItem.setIcon( ' ' );
+
+			}
+
+			item.setIcon( PANOLENS.DataImage.Check );
+
+			this.activeItem = item;
+
+		};
+
+		menu.addEventListener( 'mousemove', this.PREVENT_EVENT_HANDLER, true );
+		menu.addEventListener( 'mouseup', this.PREVENT_EVENT_HANDLER, true );
+		menu.addEventListener( 'mousedown', this.PREVENT_EVENT_HANDLER, true );
+
+		return menu;
+
+	};
+
+	/**
 	 * Create custom item element
 	 * @return {HTMLSpanElement} - The dom element icon
 	 */
@@ -5039,8 +6034,8 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		options = options || {};
 
-		var item = options.element || document.createElement( 'span' ),
-			touchEnabled = ( document.ontouchend === undefined ) ? false : true;
+		var scope = this,
+			item = options.element || document.createElement( 'span' );
 
 		item.style.cursor = 'pointer';
 		item.style.float = 'right';
@@ -5052,13 +6047,14 @@ GSVPANO.PanoLoader = function (parameters) {
 		item.style.webkitUserSelect = 
 		item.style.MozUserSelect = 
 		item.style.userSelect = 'none';
+		item.style.position = 'relative';
 
 		// White glow on icon
-		item.addEventListener( touchEnabled ? 'touchstart' : 'mouseenter', function() {
+		item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
 			item.style.filter = 
 			item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
 		});
-		item.addEventListener( touchEnabled ? 'touchend' : 'mouseleave', function() {
+		item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'mouseleave', function() {
 			item.style.filter = 
 			item.style.webkitFilter = '';
 		});
@@ -5067,13 +6063,13 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		if ( options.onTap ) {
 
-			item.addEventListener( touchEnabled ? 'touchend' : 'click', options.onTap, true );
+			item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', options.onTap, false );
 
 		}
 
 		item.dispose = function () {
 
-			item.removeEventListener( touchEnabled ? 'touchend' : 'click', options.onTap, true );
+			item.removeEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', options.onTap, false );
 
 			options.onDispose && options.onDispose();
 
@@ -5154,6 +6150,7 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		this.scale.set( scale, scale, 1 );
 		this.rotation.y = Math.PI;
+		this.scaleFactor = 1.3;
 
 		this.container;
 
@@ -5167,18 +6164,16 @@ GSVPANO.PanoLoader = function (parameters) {
 			texture.wrapS = THREE.RepeatWrapping;
 			texture.repeat.x = - 1;
 
-			texture.image.width = texture.image.naturalWidth || 1;
-			texture.image.height = texture.image.naturalHeight || 1;
+			texture.image.width = texture.image.naturalWidth || 64;
+			texture.image.height = texture.image.naturalHeight || 64;
 
 			ratio = texture.image.width / texture.image.height;
 			scope.scale.set( ratio * scale, scale, 1 );
 
 			startScale = scope.scale.clone();
-			endScale = scope.scale.clone().multiplyScalar( 1.3 );
-			endScale.z = 1;
 
 			scope.scaleUpAnimation = new TWEEN.Tween( scope.scale )
-				.to( { x: endScale.x, y: endScale.y }, duration )
+				.to( { x: startScale.x * scope.scaleFactor, y: startScale.y * scope.scaleFactor }, duration )
 				.easing( TWEEN.Easing.Elastic.Out );
 
 			scope.scaleDownAnimation = new TWEEN.Tween( scope.scale )
@@ -5220,7 +6215,7 @@ GSVPANO.PanoLoader = function (parameters) {
 		this.addEventListener( 'hover', this.onHover );
 		this.addEventListener( 'hoverenter', this.onHoverStart );
 		this.addEventListener( 'hoverleave', this.onHoverEnd );
-		this.addEventListener( 'VR-toggle', this.onToggleVR );
+		this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 		this.addEventListener( 'dismiss', this.onDismiss );
 		this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
@@ -5324,7 +6319,7 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		if ( !this.getContainer() ) { return; }
 
-		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.VR ? 'default' : 'pointer' );
+		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.NORMAL ? 'pointer' : 'default' );
 
 		this.isHovering = true;
 		this.container.style.cursor = cursorStyle;
@@ -5338,7 +6333,7 @@ GSVPANO.PanoLoader = function (parameters) {
 		
 		if ( this.element ) {
 
-			if ( this.mode === PANOLENS.Modes.VR ) {
+			if ( this.mode === PANOLENS.Modes.CARDBOARD ||this.mode === PANOLENS.Modes.STEREO ) {
 
 				this.element.style.display = 'none';
 				this.element.left && ( this.element.left.style.display = 'block' );
@@ -5397,11 +6392,11 @@ GSVPANO.PanoLoader = function (parameters) {
 	};
 
 	/**
-	 * On VR toggle handler
+	 * On dual eye effect handler
 	 * Creates duplicate left and right element
-	 * @param  {object} event - VR toggle event
+	 * @param  {object} event - panolens-dual-eye-effect event
 	 */
-	PANOLENS.Infospot.prototype.onToggleVR = function ( event ) {
+	PANOLENS.Infospot.prototype.onDualEyeEffect = function ( event ) {
 		
 		if ( !this.getContainer() ) { return; }
 
@@ -5427,7 +6422,7 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		}
 
-		if ( this.mode === PANOLENS.Modes.VR ) {
+		if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
 
 			element.left.style.display = element.style.display;
 			element.right.style.display = element.style.display;
@@ -5473,7 +6468,7 @@ GSVPANO.PanoLoader = function (parameters) {
 		left = x - width - container.offsetLeft;
 		top = y - height - delta;
 
-		if ( this.mode === PANOLENS.Modes.VR && element.left && element.right ) {
+		if ( ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) && element.left && element.right ) {
 
 			left = container.clientWidth / 4 - width;
 			top = container.clientHeight / 2 - height - delta;
@@ -5724,7 +6719,7 @@ GSVPANO.PanoLoader = function (parameters) {
 	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
 	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
 	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
-	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'navigation', 'vr', 'video']
+	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'setting', 'video']
 	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
 	 * @param {boolean} [options.autoHideInfospot=true] - Auto hide infospots when click on non-active area
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
@@ -5751,7 +6746,7 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		options = options || {};
 		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
-		options.controlButtons = options.controlButtons || [ 'fullscreen', 'navigation', 'vr', 'video' ];
+		options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
 		options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
 		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
@@ -5795,8 +6790,7 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
-		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
-		this.effect;
+		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
 
 		this.reticle = {};
 		this.tempEnableReticle = this.options.enableReticle;
@@ -5806,7 +6800,11 @@ GSVPANO.PanoLoader = function (parameters) {
 		this.OrbitControls;
 		this.DeviceOrientationControls;
 
+		this.CardboardEffect;
+		this.StereoEffect;
+
 		this.controls;
+		this.effect;
 		this.panorama;
 		this.widget;
 		
@@ -5867,12 +6865,19 @@ GSVPANO.PanoLoader = function (parameters) {
 		
 		}
 
-		// Cardboard effect
-        this.effect = new THREE.CardboardEffect( this.renderer );
-        this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
-
+		// Controls
 		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
 		this.control = this.OrbitControls;
+
+		// Cardboard effect
+		this.CardboardEffect = new THREE.CardboardEffect( this.renderer );
+		this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+
+		// Stereo effect
+		this.StereoEffect = new THREE.StereoEffect( this.renderer );
+		this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+
+		this.effect = this.CardboardEffect;
 
 		// Add default hidden reticle
 		this.addReticle();
@@ -5946,6 +6951,7 @@ GSVPANO.PanoLoader = function (parameters) {
 		if ( object instanceof PANOLENS.Panorama && object.dispatchEvent ) {
 
 			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+			object.dispatchEvent( { type: 'panolens-passive-rendering', enabled: this.options.passiveRendering } );
 
 		}
 
@@ -6037,44 +7043,18 @@ GSVPANO.PanoLoader = function (parameters) {
 
 			this[ event.method ]( event.data );
 
-			this.options.passiveRendering && this.onChange();
+			this.options.passiveRendering && !event.ignoreUpdate && this.onChange();
 
 		}
 
 	};
 
 	/**
-	 * Toggle VR effect mode and broadcast event to infospot descendants
-	 * @fires PANOLENS.Viewer#VR-toggle
-	 * @fires PANOLENS.Infospot#VR-toggle
+	 * Dispatch event to all descendants
+	 * @param  {object} event - Event to be passed along
 	 */
-	PANOLENS.Viewer.prototype.toggleVR = function () {
+	PANOLENS.Viewer.prototype.dispatchEventToChildren = function ( event ) {
 
-		var event;
-
-		if ( this.effect ) {
-
-			if ( this.mode !== PANOLENS.Modes.VR ) {
-
-				this.mode = PANOLENS.Modes.VR;
-
-			} else {
-
-				this.mode = PANOLENS.Modes.NORMAL;
-
-			}
-		}
-
-		event = { type: 'VR-toggle', mode: this.mode };
-
-		/**
-		 * Toggle vr event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#VR-toggle
-		 * @event PANOLENS.Infospot#VR-toggle
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
-		this.dispatchEvent( event );
 		this.scene.traverse( function ( object ) {
 
 			if ( object.dispatchEvent ) {
@@ -6085,61 +7065,114 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		});
 
-		if ( this.mode === PANOLENS.Modes.VR ) {
+	};
 
-			this.enableVR();
+	/**
+	 * Disable additional rendering effect
+	 */
+	PANOLENS.Viewer.prototype.disableEffect = function () {
+
+		if ( this.mode === PANOLENS.Modes.NORMAL ) { return; }
+
+		this.mode = PANOLENS.Modes.NORMAL;
+		this.disableReticleControl();
+
+		/**
+		 * Dual eye effect event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
+		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
+
+		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.render();
+	};
+
+	/**
+	 * Enable rendering effect
+	 * @param  {PANOLENS.Modes} mode - Modes for effects
+	 */
+	PANOLENS.Viewer.prototype.enableEffect = function ( mode ) {
+
+		if ( this.mode === mode ) { return; }
+
+		var fov = this.camera.fov;
+
+		this.mode = mode;
+
+		switch( mode ) {
+
+			case PANOLENS.Modes.CARDBOARD:
+
+				this.effect = this.CardboardEffect;
+				this.enableReticleControl();
+
+				break;
+
+			case PANOLENS.Modes.STEREO:
+
+				this.effect = this.StereoEffect;
+				this.enableReticleControl();
+				
+				break;
+
+			default:
+
+				return;
+
+		}
+
+		/**
+		 * Dual eye effect event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
+		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: mode } );
+
+		// Force effect stereo camera to update by refreshing fov
+		this.camera.fov = fov + 10e-3;
+		this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.render();
+		this.camera.fov = fov;
+
+	};
+
+	/**
+	 * Enable reticle control
+	 */
+	PANOLENS.Viewer.prototype.enableReticleControl = function () {
+
+		this.tempEnableReticle = true;
+
+		// Register reticle event and unregister mouse event
+		this.unregisterMouseAndTouchEvents();
+		this.reticle.show();
+		this.registerReticleEvent();
+		this.updateReticleEvent();
+
+	};
+
+	/**
+	 * Disable reticle control
+	 */
+	PANOLENS.Viewer.prototype.disableReticleControl = function () {
+
+		this.tempEnableReticle = false;
+
+		// Register mouse event and unregister reticle event
+		if ( !this.options.enableReticle ) {
+
+			this.reticle.hide();
+			this.unregisterReticleEvent();
+			this.registerMouseAndTouchEvents();
 
 		} else {
 
-			this.disableVR();
-
-		}
-
-	};
-
-	/**
-	 * Enable VR effect
-	 */
-	PANOLENS.Viewer.prototype.enableVR = function () {
-
-		if ( this.effect && this.mode === PANOLENS.Modes.VR ) {
-
-			this.tempEnableReticle = true;
-
-			// Register reticle event and unregister mouse event
-			this.unregisterMouseAndTouchEvents();
-
-			this.reticle.show();
-			this.registerReticleEvent();
-
-			this.updateReticleEvent( this.mode );
-			
-
-		}
-
-	};
-
-	/**
-	 * Disable VR effect
-	 */
-	PANOLENS.Viewer.prototype.disableVR = function () {
-
-		if ( this.effect && this.mode === PANOLENS.Modes.NORMAL ) {
-
-			this.tempEnableReticle = false;
-
-			// Register mouse event and unregister reticle event
-			if ( !this.options.enableReticle ) {
-
-				this.reticle.hide();
-				this.unregisterReticleEvent();
-				this.registerMouseAndTouchEvents();
-
-			} else {
-
-				this.updateReticleEvent( this.mode );
-
-			}
+			this.updateReticleEvent();
 
 		}
 
@@ -6275,6 +7308,18 @@ GSVPANO.PanoLoader = function (parameters) {
 		 * @event PANOLENS.Viewer#video-control-hide
 		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-control-hide' } );
+
+	};
+
+	PANOLENS.Viewer.prototype.updateVideoPlayButton = function ( paused ) {
+
+		if ( this.widget && 
+			 this.widget.videoElement && 
+			 this.widget.videoElement.controlButton ) {
+
+			this.widget.videoElement.controlButton.update( paused );
+
+		}
 
 	};
 
@@ -6461,6 +7506,15 @@ GSVPANO.PanoLoader = function (parameters) {
 	};
 
 	/**
+	 * Disable current control
+	 */
+	PANOLENS.Viewer.prototype.disableControl = function () {
+
+		this.control.enabled = false;
+
+	};
+
+	/**
 	 * Toggle next control
 	 */
 	PANOLENS.Viewer.prototype.toggleNextControl = function () {
@@ -6508,9 +7562,9 @@ GSVPANO.PanoLoader = function (parameters) {
 	 */
 	PANOLENS.Viewer.prototype.addReticle = function () {
 
-		this.reticle = new PANOLENS.Reticle( 0x1abc9c );
+		this.reticle = new PANOLENS.Reticle( 0xffffff );
 		this.reticle.position.z = -10;
-		this.reticle.scale.multiplyScalar( 0.3 );
+		this.reticle.scale.set( 0.1, 0.1, 1 );
 		this.camera.add( this.reticle );
 		this.scene.add( this.camera );
 
@@ -6613,7 +7667,7 @@ GSVPANO.PanoLoader = function (parameters) {
 		// Update reticle
 		if ( this.options.enableReticle || this.tempEnableReticle ) {
 
-			this.updateReticleEvent( this.mode );
+			this.updateReticleEvent();
 
 		}
 
@@ -6628,6 +7682,15 @@ GSVPANO.PanoLoader = function (parameters) {
 		 * @property {number} height - Height of the window
 		 */
 		this.dispatchEvent( { type: 'window-resize', width: width, height: height });
+		this.scene.traverse( function ( object ) {
+
+			if ( object.dispatchEvent ) {
+
+				object.dispatchEvent( { type: 'window-resize', width: width, height: height });
+
+			}
+
+		} );		
 
 	};
 
@@ -6725,8 +7788,8 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		var intersects, intersect_entity, intersect;
 
-		this.raycasterPoint.x = ( ( event.clientX - this.renderer.domElement.offsetLeft ) / this.renderer.domElement.clientWidth ) * 2 - 1;
-    	this.raycasterPoint.y = - ( ( event.clientY - this.renderer.domElement.offsetTop ) / this.renderer.domElement.clientHeight ) * 2 + 1;
+		this.raycasterPoint.x = ( ( event.clientX - this.container.offsetLeft ) / this.container.clientWidth ) * 2 - 1;
+		this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
@@ -6974,7 +8037,7 @@ GSVPANO.PanoLoader = function (parameters) {
 
 	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
 
-		if ( event.keyCode === 17 || event.keyIdentifier === 'Control' ) {
+		if ( event.key === 'Control' ) {
 
 			this.OUTPUT_INFOSPOT = true;
 
@@ -7006,7 +8069,7 @@ GSVPANO.PanoLoader = function (parameters) {
 	 */
 	PANOLENS.Viewer.prototype.render = function () {
 
-		if ( this.mode === PANOLENS.Modes.VR ) {
+		if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
 
 			this.effect.render( this.scene, this.camera );
 
@@ -7024,14 +8087,14 @@ GSVPANO.PanoLoader = function (parameters) {
 
 		this.update();
 
-        !this.options.passiveRendering && this.render();
+		!this.options.passiveRendering && this.render();
 
 	};
 
 	PANOLENS.Viewer.prototype.onChange = function () {
 
 		this.update();
-        this.render();
+		this.render();
 
 	};
 
@@ -7040,11 +8103,11 @@ GSVPANO.PanoLoader = function (parameters) {
 	 */
 	PANOLENS.Viewer.prototype.registerMouseAndTouchEvents = function () {
 
-		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, true );
-		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, true );
-		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , true );
-		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, true );
-		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , true );
+		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, false );
+		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, false );
+		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , false );
+		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, false );
+		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , false );
 
 	};
 
@@ -7053,11 +8116,11 @@ GSVPANO.PanoLoader = function (parameters) {
 	 */
 	PANOLENS.Viewer.prototype.unregisterMouseAndTouchEvents = function () {
 
-		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, true );
-		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, true );
-		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , true );
-		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, true );
-		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , true );
+		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, false );
+		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, false );
+		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , false );
+		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, false );
+		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , false );
 	};
 
 	/**
@@ -7106,7 +8169,7 @@ GSVPANO.PanoLoader = function (parameters) {
 	/**
 	 * Update reticle event
 	 */
-	PANOLENS.Viewer.prototype.updateReticleEvent = function ( mode ) {
+	PANOLENS.Viewer.prototype.updateReticleEvent = function () {
 
 		var centerX, centerY;
 

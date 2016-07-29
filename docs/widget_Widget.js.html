@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:VR-toggle">PANOLENS.Infospot#event:VR-toggle</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-complete">PANOLENS.Panorama#event:enter-complete</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+					<li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-dual-eye-effect">PANOLENS.Infospot#event:panolens-dual-eye-effect</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-complete">PANOLENS.Panorama#event:enter-complete</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
 				</ul>
 			</li>
 			
@@ -93,13 +93,25 @@
 
 		THREE.EventDispatcher.call( this );
 
+		this.DEFAULT_TRANSITION  = 'all 0.27s ease';
+		this.TOUCH_ENABLED = 'ontouchstart' in window;
+		this.PREVENT_EVENT_HANDLER = function ( event ) {
+			event.preventDefault();
+			event.stopPropagation();
+		};
+
 		this.container = container;
 
 		this.barElement;
 		this.fullscreenElement;
-		this.navigationElement;
-		this.vrElement;
 		this.videoElement;
+		this.settingElement;
+
+		this.mainMenu;
+
+		this.activeMainItem;
+		this.activeSubMenu;
+		this.mask;
 
 	}
 
@@ -118,15 +130,21 @@
 			return; 
 		}
 
-		var scope = this, bar, styleTranslate, styleOpacity;
+		var scope = this, bar, styleTranslate, styleOpacity, gradientStyle;
+
+		gradientStyle = 'linear-gradient(bottom, rgba(0,0,0,0.2), rgba(0,0,0,0))';
 
 		bar = document.createElement( 'div' );
 		bar.style.width = '100%';
 		bar.style.height = '44px';
 		bar.style.float = 'left';
 		bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = 'translateY(-100%)';
-		bar.style.background = 'rgba( 0, 0, 0, 0.3 )';
-		bar.style.transition = 'all 0.5s ease';
+		bar.style.background = '-webkit-' + gradientStyle;
+		bar.style.background = '-moz-' + gradientStyle;
+		bar.style.background = '-o-' + gradientStyle;
+		bar.style.background = '-ms-' + gradientStyle;
+		bar.style.background = gradientStyle;
+		bar.style.transition = this.DEFAULT_TRANSITION;
 		bar.isHidden = false;
 		bar.toggle = function () {
 			bar.isHidden = !bar.isHidden;
@@ -135,6 +153,16 @@
 			bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = styleTranslate;
 			bar.style.opacity = styleOpacity;
 		};
+
+		// Menu
+		var menu = this.createDefaultMenu();
+		this.mainMenu = this.createMainMenu( menu );
+		bar.appendChild( this.mainMenu );
+
+		// Mask
+		var mask = this.createMask();
+		this.mask = mask;
+		this.container.appendChild( mask );
 
 		// Dispose
 		bar.dispose = function () {
@@ -147,19 +175,11 @@
 
 			}
 
-			if ( scope.navigationElement ) {
+			if ( scope.settingElement ) {
 
-				bar.removeChild( scope.navigationElement );
-				scope.navigationElement.dispose();
-				scope.navigationElement = null;
-
-			}
-
-			if ( scope.vrElement ) {
-
-				bar.removeChild( scope.vrElement );
-				scope.vrElement.dispose();
-				scope.vrElement = null;
+				bar.removeChild( scope.settingElement );
+				scope.settingElement.dispose();
+				scope.settingElement = null;
 
 			}
 
@@ -175,10 +195,85 @@
 
 		this.container.appendChild( bar );
 
+		// Mask events
+		this.mask.addEventListener( 'mousemove', this.PREVENT_EVENT_HANDLER, true );
+		this.mask.addEventListener( 'mouseup', this.PREVENT_EVENT_HANDLER, true );
+		this.mask.addEventListener( 'mousedown', this.PREVENT_EVENT_HANDLER, true );
+		this.mask.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', function ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			scope.mask.hide();
+			scope.settingElement.deactivate();
+
+		}, false );
+
 		// Event listener
 		this.addEventListener( 'control-bar-toggle', bar.toggle );
 
 		this.barElement = bar;
+
+	};
+
+	/**
+	 * Create default menu
+	 */
+	PANOLENS.Widget.prototype.createDefaultMenu = function () {
+
+		var scope = this, handler;
+
+		handler = function ( method, data ) {
+
+			return function () {
+
+				scope.dispatchEvent( { 
+
+					type: 'panolens-viewer-handler', 
+					method: method, 
+					data: data 
+
+				} ); 
+
+			}
+
+		};
+
+		return [
+
+			{ 
+				title: 'Control', 
+				subMenu: [ 
+					{ 
+						title: this.TOUCH_ENABLED ? 'Touch' : 'Mouse', 
+						handler: handler( 'enableControl', 0 )
+					},
+					{ 
+						title: 'Sensor', 
+						handler: handler( 'enableControl', 1 ) 
+					} 
+				]
+			},
+
+			{ 
+				title: 'Mode', 
+				subMenu: [ 
+					{ 
+						title: 'Normal',
+						handler: handler( 'disableEffect' )
+					}, 
+					{ 
+						title: 'Cardboard',
+						handler: handler( 'enableEffect', PANOLENS.Modes.CARDBOARD )
+					},
+					{ 
+						title: 'Stereoscopic',
+						handler: handler( 'enableEffect', PANOLENS.Modes.STEREO )
+					}
+				]
+			}
+
+		];
 
 	};
 
@@ -188,36 +283,97 @@
 	 */
 	PANOLENS.Widget.prototype.addControlButton = function ( name ) {
 
-		this.fullscreenElement = name === 'fullscreen' ? this.createFullscreenButton() : this.fullscreenElement;
-		this.navigationElement = name === 'navigation' ? this.createCameraControlButton() : this.navigationElement;
-		this.vrElement = name === 'vr' ? this.createVRButton() : this.vrElement;
-		this.videoElement = name === 'video' ? this.createVideoControl() : this.videoElement;
+		var element;
 
-		// Add Control Items
-		this.fullscreenElement &amp;&amp; this.barElement.appendChild( this.fullscreenElement );
-		this.navigationElement &amp;&amp; this.barElement.appendChild( this.navigationElement );
-		this.vrElement &amp;&amp; this.barElement.appendChild( this.vrElement );
-		this.videoElement &amp;&amp; this.barElement.appendChild( this.videoElement );
+		switch( name ) {
+
+			case 'fullscreen':
+
+				element = this.createFullscreenButton();
+				this.fullscreenElement = element; 
+
+				break;
+
+			case 'setting':
+
+				element = this.createSettingButton();
+				this.settingElement = element;
+
+				break;
+
+			case 'video':
+
+				element = this.createVideoControl();
+				this.videoElement = element;
+
+				break;
+
+			default:
+
+				return;
+
+		}
+
+		if ( !element ) {
+
+			return;
+
+		}
+
+		this.barElement.appendChild( element );
+
+	};
+
+	PANOLENS.Widget.prototype.createMask = function () {
+
+		var element = document.createElement( 'div' );
+		element.style.position = 'absolute';
+		element.style.top = 0;
+		element.style.left = 0;
+		element.style.width = '100%';
+		element.style.height = '100%';
+		element.style.background = 'transparent';
+		element.style.display = 'none';
+
+		element.show = function () {
+
+			this.style.display = 'block';
+
+		};
+
+		element.hide = function () {
+
+			this.style.display = 'none';
+
+		};
+
+		return element;
 
 	};
 
 	/**
-	 * Create VR button
-	 * @return {HTMLSpanElement} - The dom element icon for VR effect
-	 * @fires PANOLENS.Widget#panolens-viewer-handler
+	 * Create Setting button to toggle menu
 	 */
-	PANOLENS.Widget.prototype.createVRButton = function () {
+	PANOLENS.Widget.prototype.createSettingButton = function () {
 
 		var scope = this, item;
 
-		function onTap () {
+		function onTap ( event ) {
 
-			/**
-			 * Viewer handler event
-			 * @type {object}
-			 * @property {string} method - 'toggleVR' function call on PANOLENS.Viewer
-			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVR' } );
+			event.preventDefault();
+			event.stopPropagation();
+
+			scope.mainMenu.toggle();
+
+			if ( this.activated ) {
+	
+				this.deactivate();
+
+			} else {
+
+				this.activate();
+
+			}
 
 		}
 
@@ -225,17 +381,56 @@
 
 			style : { 
 
-				backgroundImage : 'url("' + PANOLENS.DataImage.Cardboard + '")' 
+				backgroundImage : 'url("' + PANOLENS.DataImage.Setting + '")',
+				webkitTransition : this.DEFAULT_TRANSITION,
+				transition : this.DEFAULT_TRANSITION
 
 			},
 
-			onTap : onTap
+			onTap: onTap
 
 		} );
 
+		item.activate = function () {
+
+			this.style.transform = 'rotate3d(0,0,1,90deg)';
+			this.activated = true;
+			scope.mask.show();
+
+		};
+
+		item.deactivate = function () {
+
+			this.style.transform = 'rotate3d(0,0,0,0)';
+			this.activated = false;
+			scope.mask.hide();
+
+			if ( scope.mainMenu &amp;&amp; scope.mainMenu.visible ) {
+
+				scope.mainMenu.hide();
+				
+			}
+
+			if ( scope.activeSubMenu &amp;&amp; scope.activeSubMenu.visible ) {
+
+				scope.activeSubMenu.hide();
+
+			}
+
+			if ( scope.mainMenu &amp;&amp; scope.mainMenu._width ) {
+
+				scope.mainMenu.changeSize( scope.mainMenu._width );
+				scope.mainMenu.unslideAll();
+
+			}
+			
+		};
+
+		item.activated = false;
+
 		return item;
 
-	}
+	};
 
 	/**
 	 * Create Fullscreen button
@@ -321,50 +516,6 @@
 			onTap : onTap
 
 		} );
-
-		return item;
-
-	};
-
-	/**
-	 * Create camera control button
-	 * @return {HTMLSpanElement} - The dom element icon for camera navigation
-	 * @fires PANOLENS.Widget#panolens-viewer-handler
-	 */
-	PANOLENS.Widget.prototype.createCameraControlButton = function () {
-
-		var scope = this, item;
-
-		function onTap(){
-
-			/**
-			 * Viewer handler event
-			 * @type {object}
-			 * @property {string} method - 'toggleNextControl' function call on PANOLENS.Viewer
-			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleNextControl' } );
-
-			this.controlName = ( this.controlName === 'orbit' ) ? 'device-orientation' : 'orbit';
-
-			this.style.backgroundImage = 'url("' + ( this.controlName === 'orbit' 
-				? PANOLENS.DataImage.Gyro 
-				: PANOLENS.DataImage.Orbit ) + '")';
-
-		}
-
-		item = this.createCustomItem( {
-
-			style: {
-
-				backgroundImage: 'url("' + PANOLENS.DataImage.Gyro + '")'
-
-			},
-
-			onTap : onTap
-
-		} );
-
-		item.controlName = 'orbit';
 
 		return item;
 
@@ -459,7 +610,9 @@
 
 		item.paused = true;
 
-		item.update = function () {
+		item.update = function ( paused ) {
+
+			this.paused = paused !== undefined ? paused : this.paused;
 
 			this.style.backgroundImage = 'url("' + ( this.paused 
 				? PANOLENS.DataImage.VideoPlay 
@@ -635,6 +788,403 @@
 	};
 
 	/**
+	 * Create menu item
+	 * @param  {string} title - Title to display
+	 * @return {HTMLDomElement} - An anchor tag element
+	 */
+	PANOLENS.Widget.prototype.createMenuItem = function ( title ) {
+
+		var scope = this, item = document.createElement( 'a' );
+		item.textContent = title;
+		item.style.display = 'block';
+		item.style.padding = '10px';
+		item.style.textDecoration = 'none';
+		item.style.cursor = 'pointer';
+		item.style.transition = this.DEFAULT_TRANSITION;
+
+		item.slide = function ( right ) {
+
+			this.style.transform = 'translateX(' + ( right ? '' : '-' ) + '100%)';
+
+		};
+
+		item.unslide = function () {
+
+			this.style.transform = 'translateX(0)';
+
+		};
+
+		item.setIcon = function ( url ) {
+
+			if ( this.icon ) {
+
+				this.icon.style.backgroundImage = 'url(' + url + ')';
+
+			}
+
+		};
+
+		item.setSelectionTitle = function ( title ) {
+
+			if ( this.selection ) {
+
+				this.selection.textContent = title;
+
+			}
+
+		};
+
+		item.addSelection = function ( name ) {
+			
+			var selection = document.createElement( 'span' );
+			selection.style.fontSize = '13px';
+			selection.style.fontWeight = '300';
+			selection.style.float = 'right';
+
+			this.selection = selection;
+			this.setSelectionTitle( name );
+			this.appendChild( selection );
+			
+			return this;
+
+		};
+
+		item.addIcon = function ( url, left, flip ) {
+
+			url = url || PANOLENS.DataImage.ChevronRight;
+			left = left || false;
+			flip = flip || false;
+			
+			var element = document.createElement( 'span' );
+			element.style.float = left ? 'left' : 'right';
+			element.style.width = '17px';
+			element.style.height = '17px';
+			element.style[ 'margin' + ( left ? 'Right' : 'Left' ) ] = '12px';
+			element.style.backgroundSize = 'cover';
+
+			if ( flip ) {
+
+				element.style.transform = 'rotateZ(180deg)';
+
+			}
+
+			this.icon = element;
+			this.setIcon( url );
+			this.appendChild( element );
+
+			return this;
+
+		};
+
+		item.addSubMenu = function ( title, items ) {
+
+			this.subMenu = scope.createSubMenu( title, items );
+
+			return this;
+
+		};
+
+		item.addEventListener( 'mouseenter', function () {
+			
+			this.style.backgroundColor = '#e0e0e0';
+
+		}, false );
+
+		item.addEventListener( 'mouseleave', function () {
+			
+			this.style.backgroundColor = '#fafafa';
+
+		}, false );
+
+		return item;
+
+	};
+
+	/**
+	 * Create menu item header
+	 * @param  {string} title - Title to display
+	 * @return {HTMLDomElement} - An anchor tag element
+	 */
+	PANOLENS.Widget.prototype.createMenuItemHeader = function ( title ) {
+
+		var header = this.createMenuItem( title );
+
+		header.style.borderBottom = '1px solid #333';
+		header.style.paddingBottom = '15px';
+
+		return header;
+
+	};
+
+	/**
+	 * Create main menu
+	 * @param  {array} menus - Menu array list
+	 * @return {HTMLDomElement} - A span element
+	 */
+	PANOLENS.Widget.prototype.createMainMenu = function ( menus ) {
+		
+		var scope = this, menu = this.createMenu(), subMenu;
+
+		menu._width = 200;
+		menu.changeSize( menu._width );
+
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			var mainMenu = scope.mainMenu, subMenu = this.subMenu;
+
+			function onNextTick () {
+
+				mainMenu.changeSize( subMenu.clientWidth );
+				subMenu.show();
+				subMenu.unslideAll();
+
+			}
+
+			mainMenu.hide();
+			mainMenu.slideAll();
+			mainMenu.parentElement.appendChild( subMenu );
+
+			scope.activeMainItem = this;
+			scope.activeSubMenu = subMenu;
+
+			window.requestAnimationFrame( onNextTick );
+
+		};
+
+		for ( var i = 0; i &lt; menus.length; i++ ) {
+
+			var item = menu.addItem( menus[ i ].title );
+
+			item.style.paddingLeft = '20px';
+
+			item.addIcon()
+				.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', onTap, false );
+
+			if ( menus[ i ].subMenu &amp;&amp; menus[ i ].subMenu.length > 0 ) {
+
+				var title = menus[ i ].subMenu[ 0 ].title;
+
+				item.addSelection( title )
+					.addSubMenu( menus[ i ].title, menus[ i ].subMenu );
+
+			}
+
+		}
+
+		return menu;
+
+	};
+
+	/**
+	 * Create sub menu
+	 * @param {string} title - Sub menu title
+	 * @param {array} items - Item array list
+	 * @return {HTMLDomElement} - A span element
+	 */
+	PANOLENS.Widget.prototype.createSubMenu = function ( title, items ) {
+
+		var scope = this, menu, subMenu = this.createMenu();
+
+		subMenu.items = items;
+		subMenu.activeItem;
+
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			menu = scope.mainMenu;
+			menu.changeSize( menu._width );
+			menu.unslideAll();
+			menu.show();
+			subMenu.slideAll( true );
+			subMenu.hide();
+
+			if ( this.type !== 'header' ) {
+
+				subMenu.setActiveItem( this );
+				scope.activeMainItem.setSelectionTitle( this.textContent );
+
+				this.handler &amp;&amp; this.handler();
+
+			}
+
+		}
+
+		subMenu.addHeader( title ).addIcon( undefined, true, true ).addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', onTap, false );
+
+		for ( var i = 0; i &lt; items.length; i++ ) {
+
+			var item = subMenu.addItem( items[ i ].title );
+
+			item.style.fontWeight = 300;
+			item.handler = items[ i ].handler;
+			item.addIcon( ' ', true );
+			item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', onTap, false );
+
+			if ( !subMenu.activeItem ) {
+
+				subMenu.setActiveItem( item );
+
+			}
+
+		}
+
+		subMenu.slideAll( true );
+
+		return subMenu;
+		
+	};
+
+	/**
+	 * Create general menu
+	 * @return {HTMLDomElement} - A span element
+	 */
+	PANOLENS.Widget.prototype.createMenu = function () {
+
+		var scope = this, menu = document.createElement( 'span' ), style;
+
+		style = menu.style;
+
+		style.padding = '5px 0';
+		style.position = 'fixed';
+		style.bottom = '100%';
+		style.right = '14px';
+		style.backgroundColor = '#fafafa';
+		style.fontFamily = 'Helvetica Neue';
+		style.fontSize = '14px';
+		style.visibility = 'hidden';
+		style.opacity = 0;
+		style.boxShadow = '0 0 12pt rgba(0,0,0,0.25)';
+  		style.borderRadius = '2px';
+		style.overflow = 'hidden';
+		style.willChange = 'width, height, opacity';
+		style.transition = this.DEFAULT_TRANSITION;
+
+		menu.visible = false;
+
+		menu.changeSize = function ( width, height ) {
+
+			if ( width ) {
+
+				this.style.width = width + 'px';
+
+			}
+
+			if ( height ) {
+
+				this.style.height = height + 'px';
+
+			}
+
+		};
+
+		menu.show = function () {
+
+			this.style.opacity = 1;
+			this.style.visibility = 'visible';
+			this.visible = true;
+
+		};
+
+		menu.hide = function () {
+
+			this.style.opacity = 0;
+			this.style.visibility = 'hidden';
+			this.visible = false;
+
+		};
+
+		menu.toggle = function () {
+
+			if ( this.visible ) {
+
+				this.hide();
+
+			} else {
+
+				this.show();
+
+			}
+
+		};
+
+		menu.slideAll = function ( right ) {
+
+			for ( var i = 0; i &lt; menu.children.length; i++ ){
+
+				if ( menu.children[ i ].slide ) {
+
+					menu.children[ i ].slide( right );
+
+				}
+
+			}
+
+		};
+
+		menu.unslideAll = function () {
+
+			for ( var i = 0; i &lt; menu.children.length; i++ ){
+
+				if ( menu.children[ i ].unslide ) {
+
+					menu.children[ i ].unslide();
+
+				}
+
+			}
+
+		};
+
+		menu.addHeader = function ( title ) {
+
+			var header = scope.createMenuItemHeader( title );
+			header.type = 'header';
+
+			this.appendChild( header );
+
+			return header;
+
+		};
+
+		menu.addItem = function ( title ) {
+
+			var item = scope.createMenuItem( title );
+			item.type = 'item';
+
+			this.appendChild( item );
+
+			return item;
+
+		};
+
+		menu.setActiveItem = function ( item ) {
+
+			if ( this.activeItem ) {
+
+				this.activeItem.setIcon( ' ' );
+
+			}
+
+			item.setIcon( PANOLENS.DataImage.Check );
+
+			this.activeItem = item;
+
+		};
+
+		menu.addEventListener( 'mousemove', this.PREVENT_EVENT_HANDLER, true );
+		menu.addEventListener( 'mouseup', this.PREVENT_EVENT_HANDLER, true );
+		menu.addEventListener( 'mousedown', this.PREVENT_EVENT_HANDLER, true );
+
+		return menu;
+
+	};
+
+	/**
 	 * Create custom item element
 	 * @return {HTMLSpanElement} - The dom element icon
 	 */
@@ -642,8 +1192,8 @@
 
 		options = options || {};
 
-		var item = options.element || document.createElement( 'span' ),
-			touchEnabled = ( document.ontouchend === undefined ) ? false : true;
+		var scope = this,
+			item = options.element || document.createElement( 'span' );
 
 		item.style.cursor = 'pointer';
 		item.style.float = 'right';
@@ -655,13 +1205,14 @@
 		item.style.webkitUserSelect = 
 		item.style.MozUserSelect = 
 		item.style.userSelect = 'none';
+		item.style.position = 'relative';
 
 		// White glow on icon
-		item.addEventListener( touchEnabled ? 'touchstart' : 'mouseenter', function() {
+		item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
 			item.style.filter = 
 			item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
 		});
-		item.addEventListener( touchEnabled ? 'touchend' : 'mouseleave', function() {
+		item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'mouseleave', function() {
 			item.style.filter = 
 			item.style.webkitFilter = '';
 		});
@@ -670,13 +1221,13 @@
 
 		if ( options.onTap ) {
 
-			item.addEventListener( touchEnabled ? 'touchend' : 'click', options.onTap, true );
+			item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', options.onTap, false );
 
 		}
 
 		item.dispose = function () {
 
-			item.removeEventListener( touchEnabled ? 'touchend' : 'click', options.onTap, true );
+			item.removeEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', options.onTap, false );
 
 			options.onDispose &amp;&amp; options.onDispose();
 
@@ -763,7 +1314,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-06-21T10:41:42-07:00
+		on 2016-07-28T18:59:27-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

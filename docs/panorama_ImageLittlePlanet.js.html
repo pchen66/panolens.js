@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Source: panorama/CubePanorama.js</title>
+	<title>Documentation Source: panorama/ImageLittlePlanet.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -77,78 +77,47 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: panorama/CubePanorama.js</h1>
+		<h1 class="page-title">Source: panorama/ImageLittlePlanet.js</h1>
     
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript ">(function(){
-	
-	'use strict';
-	
-	/**
-	 * Cubemap-based panorama
-	 * @constructor
-	 * @param {array} images - An array of cubetexture containing six images
-	 * @param {number} [edgeLength=10000] - The length of cube's edge
-	 */
-	PANOLENS.CubePanorama = function ( images, edgeLength ){
-
-		var shader, geometry, material;
-
-		this.images = images || [];
-
-		edgeLength = edgeLength || 10000;
-		shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
-
-		geometry = new THREE.BoxGeometry( edgeLength, edgeLength, edgeLength );
-		material = new THREE.ShaderMaterial( {
-
-			fragmentShader: shader.fragmentShader,
-			vertexShader: shader.vertexShader,
-			uniforms: shader.uniforms,
-			side: THREE.BackSide
-
-		} );
-
-		PANOLENS.Panorama.call( this, geometry, material );
-
-	}
-
-	PANOLENS.CubePanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
-
-	PANOLENS.CubePanorama.prototype.constructor = PANOLENS.CubePanorama;
+            class="sunlight-highlight-javascript ">( function () {
 
 	/**
-	 * Load 6 images and bind listeners
+	 * Image Little Planet
+	 * @param {string} source 		- URL for the image source
+	 * @param {number} [size=10000] - Size of plane geometry
+	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
 	 */
-	PANOLENS.CubePanorama.prototype.load = function () {
+	PANOLENS.ImageLittlePlanet = function ( source, size, ratio ) {
 
-		PANOLENS.Utils.CubeTextureLoader.load( 	
-
-			this.images, 
-
-			this.onLoad.bind( this ), 
-			this.onProgress.bind( this ), 
-			this.onError.bind( this ) 
-
-		);
+		PANOLENS.LittlePlanet.call( this, 'image', source, size, ratio );
 
 	};
 
-	/**
-	 * This will be called when 6 textures are ready
-	 * @param  {THREE.CubeTexture} texture - Cube texture
-	 */
-	PANOLENS.CubePanorama.prototype.onLoad = function ( texture ) {
+	PANOLENS.ImageLittlePlanet.prototype = Object.create( PANOLENS.LittlePlanet.prototype );
+	
+	PANOLENS.ImageLittlePlanet.prototype.constructor = PANOLENS.ImageLittlePlanet;
+
+	PANOLENS.ImageLittlePlanet.prototype.onLoad = function ( texture ) {
+
+		this.updateTexture( texture );
+
+		PANOLENS.ImagePanorama.prototype.onLoad.call( this, texture );
+		PANOLENS.LittlePlanet.prototype.onLoad.call( this );
+
+	};
+
+	PANOLENS.ImageLittlePlanet.prototype.updateTexture = function ( texture ) {
+
+		texture.minFilter = texture.magFilter = THREE.LinearFilter;
 		
-		this.material.uniforms[ 'tCube' ].value = texture;
-
-		PANOLENS.Panorama.prototype.onLoad.call( this );
+		this.material.uniforms[ "tDiffuse" ].value = texture;
 
 	};
 
-})();</pre>
+} )();</pre>
     </article>
 </section>
 

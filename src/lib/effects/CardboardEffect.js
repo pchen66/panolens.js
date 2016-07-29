@@ -15,6 +15,7 @@ THREE.CardboardEffect = function ( renderer ) {
 
 	var _renderTarget = new THREE.WebGLRenderTarget( 512, 512, _params );
 	_renderTarget.scissorTest = true;
+	_renderTarget.texture.generateMipmaps = false;
 
 	// Distortion Mesh ported from:
 	// https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
@@ -62,7 +63,7 @@ THREE.CardboardEffect = function ( renderer ) {
 	//
 
 	// var material = new THREE.MeshBasicMaterial( { wireframe: true } );
-	var material = new THREE.MeshBasicMaterial( { map: _renderTarget } );
+	var material = new THREE.MeshBasicMaterial( { map: _renderTarget.texture } );
 	var mesh = new THREE.Mesh( geometry, material );
 	_scene.add( mesh );
 

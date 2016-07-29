@@ -9,14 +9,17 @@
 	 */
 	PANOLENS.Modes = {
 
-		/** Current viewer state is unknown */
+		/** Unknown */
 		UNKNOWN: 0,
 
-		/** Current viewer state is normal */
+		/** Normal */
 		NORMAL: 1,
 
-		/** Current viewer state is in vr mode*/
-		VR: 2
+		/** Google Cardboard*/
+		CARDBOARD: 2,
+
+		/** Stereoscopic **/
+		STEREO: 3
 
 	};
 

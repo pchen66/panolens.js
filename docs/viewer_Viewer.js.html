@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:VR-toggle">PANOLENS.Infospot#event:VR-toggle</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-complete">PANOLENS.Panorama#event:enter-complete</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+					<li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-dual-eye-effect">PANOLENS.Infospot#event:panolens-dual-eye-effect</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-complete">PANOLENS.Panorama#event:enter-complete</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
 				</ul>
 			</li>
 			
@@ -95,7 +95,7 @@
 	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
 	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
 	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
-	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'navigation', 'vr', 'video']
+	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'setting', 'video']
 	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
 	 * @param {boolean} [options.autoHideInfospot=true] - Auto hide infospots when click on non-active area
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
@@ -122,7 +122,7 @@
 
 		options = options || {};
 		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
-		options.controlButtons = options.controlButtons || [ 'fullscreen', 'navigation', 'vr', 'video' ];
+		options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
 		options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
 		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
@@ -166,8 +166,7 @@
 
 		this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
-		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
-		this.effect;
+		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
 
 		this.reticle = {};
 		this.tempEnableReticle = this.options.enableReticle;
@@ -177,7 +176,11 @@
 		this.OrbitControls;
 		this.DeviceOrientationControls;
 
+		this.CardboardEffect;
+		this.StereoEffect;
+
 		this.controls;
+		this.effect;
 		this.panorama;
 		this.widget;
 		
@@ -238,12 +241,19 @@
 		
 		}
 
-		// Cardboard effect
-        this.effect = new THREE.CardboardEffect( this.renderer );
-        this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
-
+		// Controls
 		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
 		this.control = this.OrbitControls;
+
+		// Cardboard effect
+		this.CardboardEffect = new THREE.CardboardEffect( this.renderer );
+		this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+
+		// Stereo effect
+		this.StereoEffect = new THREE.StereoEffect( this.renderer );
+		this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+
+		this.effect = this.CardboardEffect;
 
 		// Add default hidden reticle
 		this.addReticle();
@@ -317,6 +327,7 @@
 		if ( object instanceof PANOLENS.Panorama &amp;&amp; object.dispatchEvent ) {
 
 			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+			object.dispatchEvent( { type: 'panolens-passive-rendering', enabled: this.options.passiveRendering } );
 
 		}
 
@@ -408,44 +419,18 @@
 
 			this[ event.method ]( event.data );
 
-			this.options.passiveRendering &amp;&amp; this.onChange();
+			this.options.passiveRendering &amp;&amp; !event.ignoreUpdate &amp;&amp; this.onChange();
 
 		}
 
 	};
 
 	/**
-	 * Toggle VR effect mode and broadcast event to infospot descendants
-	 * @fires PANOLENS.Viewer#VR-toggle
-	 * @fires PANOLENS.Infospot#VR-toggle
+	 * Dispatch event to all descendants
+	 * @param  {object} event - Event to be passed along
 	 */
-	PANOLENS.Viewer.prototype.toggleVR = function () {
+	PANOLENS.Viewer.prototype.dispatchEventToChildren = function ( event ) {
 
-		var event;
-
-		if ( this.effect ) {
-
-			if ( this.mode !== PANOLENS.Modes.VR ) {
-
-				this.mode = PANOLENS.Modes.VR;
-
-			} else {
-
-				this.mode = PANOLENS.Modes.NORMAL;
-
-			}
-		}
-
-		event = { type: 'VR-toggle', mode: this.mode };
-
-		/**
-		 * Toggle vr event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#VR-toggle
-		 * @event PANOLENS.Infospot#VR-toggle
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
-		this.dispatchEvent( event );
 		this.scene.traverse( function ( object ) {
 
 			if ( object.dispatchEvent ) {
@@ -456,61 +441,114 @@
 
 		});
 
-		if ( this.mode === PANOLENS.Modes.VR ) {
+	};
 
-			this.enableVR();
+	/**
+	 * Disable additional rendering effect
+	 */
+	PANOLENS.Viewer.prototype.disableEffect = function () {
+
+		if ( this.mode === PANOLENS.Modes.NORMAL ) { return; }
+
+		this.mode = PANOLENS.Modes.NORMAL;
+		this.disableReticleControl();
+
+		/**
+		 * Dual eye effect event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
+		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
+
+		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.render();
+	};
+
+	/**
+	 * Enable rendering effect
+	 * @param  {PANOLENS.Modes} mode - Modes for effects
+	 */
+	PANOLENS.Viewer.prototype.enableEffect = function ( mode ) {
+
+		if ( this.mode === mode ) { return; }
+
+		var fov = this.camera.fov;
+
+		this.mode = mode;
+
+		switch( mode ) {
+
+			case PANOLENS.Modes.CARDBOARD:
+
+				this.effect = this.CardboardEffect;
+				this.enableReticleControl();
+
+				break;
+
+			case PANOLENS.Modes.STEREO:
+
+				this.effect = this.StereoEffect;
+				this.enableReticleControl();
+				
+				break;
+
+			default:
+
+				return;
+
+		}
+
+		/**
+		 * Dual eye effect event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
+		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: mode } );
+
+		// Force effect stereo camera to update by refreshing fov
+		this.camera.fov = fov + 10e-3;
+		this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.render();
+		this.camera.fov = fov;
+
+	};
+
+	/**
+	 * Enable reticle control
+	 */
+	PANOLENS.Viewer.prototype.enableReticleControl = function () {
+
+		this.tempEnableReticle = true;
+
+		// Register reticle event and unregister mouse event
+		this.unregisterMouseAndTouchEvents();
+		this.reticle.show();
+		this.registerReticleEvent();
+		this.updateReticleEvent();
+
+	};
+
+	/**
+	 * Disable reticle control
+	 */
+	PANOLENS.Viewer.prototype.disableReticleControl = function () {
+
+		this.tempEnableReticle = false;
+
+		// Register mouse event and unregister reticle event
+		if ( !this.options.enableReticle ) {
+
+			this.reticle.hide();
+			this.unregisterReticleEvent();
+			this.registerMouseAndTouchEvents();
 
 		} else {
 
-			this.disableVR();
-
-		}
-
-	};
-
-	/**
-	 * Enable VR effect
-	 */
-	PANOLENS.Viewer.prototype.enableVR = function () {
-
-		if ( this.effect &amp;&amp; this.mode === PANOLENS.Modes.VR ) {
-
-			this.tempEnableReticle = true;
-
-			// Register reticle event and unregister mouse event
-			this.unregisterMouseAndTouchEvents();
-
-			this.reticle.show();
-			this.registerReticleEvent();
-
-			this.updateReticleEvent( this.mode );
-			
-
-		}
-
-	};
-
-	/**
-	 * Disable VR effect
-	 */
-	PANOLENS.Viewer.prototype.disableVR = function () {
-
-		if ( this.effect &amp;&amp; this.mode === PANOLENS.Modes.NORMAL ) {
-
-			this.tempEnableReticle = false;
-
-			// Register mouse event and unregister reticle event
-			if ( !this.options.enableReticle ) {
-
-				this.reticle.hide();
-				this.unregisterReticleEvent();
-				this.registerMouseAndTouchEvents();
-
-			} else {
-
-				this.updateReticleEvent( this.mode );
-
-			}
+			this.updateReticleEvent();
 
 		}
 
@@ -646,6 +684,18 @@
 		 * @event PANOLENS.Viewer#video-control-hide
 		 */
 		this.widget &amp;&amp; this.widget.dispatchEvent( { type: 'video-control-hide' } );
+
+	};
+
+	PANOLENS.Viewer.prototype.updateVideoPlayButton = function ( paused ) {
+
+		if ( this.widget &amp;&amp; 
+			 this.widget.videoElement &amp;&amp; 
+			 this.widget.videoElement.controlButton ) {
+
+			this.widget.videoElement.controlButton.update( paused );
+
+		}
 
 	};
 
@@ -832,6 +882,15 @@
 	};
 
 	/**
+	 * Disable current control
+	 */
+	PANOLENS.Viewer.prototype.disableControl = function () {
+
+		this.control.enabled = false;
+
+	};
+
+	/**
 	 * Toggle next control
 	 */
 	PANOLENS.Viewer.prototype.toggleNextControl = function () {
@@ -879,9 +938,9 @@
 	 */
 	PANOLENS.Viewer.prototype.addReticle = function () {
 
-		this.reticle = new PANOLENS.Reticle( 0x1abc9c );
+		this.reticle = new PANOLENS.Reticle( 0xffffff );
 		this.reticle.position.z = -10;
-		this.reticle.scale.multiplyScalar( 0.3 );
+		this.reticle.scale.set( 0.1, 0.1, 1 );
 		this.camera.add( this.reticle );
 		this.scene.add( this.camera );
 
@@ -984,7 +1043,7 @@
 		// Update reticle
 		if ( this.options.enableReticle || this.tempEnableReticle ) {
 
-			this.updateReticleEvent( this.mode );
+			this.updateReticleEvent();
 
 		}
 
@@ -999,6 +1058,15 @@
 		 * @property {number} height - Height of the window
 		 */
 		this.dispatchEvent( { type: 'window-resize', width: width, height: height });
+		this.scene.traverse( function ( object ) {
+
+			if ( object.dispatchEvent ) {
+
+				object.dispatchEvent( { type: 'window-resize', width: width, height: height });
+
+			}
+
+		} );		
 
 	};
 
@@ -1096,8 +1164,8 @@
 
 		var intersects, intersect_entity, intersect;
 
-		this.raycasterPoint.x = ( ( event.clientX - this.renderer.domElement.offsetLeft ) / this.renderer.domElement.clientWidth ) * 2 - 1;
-    	this.raycasterPoint.y = - ( ( event.clientY - this.renderer.domElement.offsetTop ) / this.renderer.domElement.clientHeight ) * 2 + 1;
+		this.raycasterPoint.x = ( ( event.clientX - this.container.offsetLeft ) / this.container.clientWidth ) * 2 - 1;
+		this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
@@ -1345,7 +1413,7 @@
 
 	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
 
-		if ( event.keyCode === 17 || event.keyIdentifier === 'Control' ) {
+		if ( event.key === 'Control' ) {
 
 			this.OUTPUT_INFOSPOT = true;
 
@@ -1377,7 +1445,7 @@
 	 */
 	PANOLENS.Viewer.prototype.render = function () {
 
-		if ( this.mode === PANOLENS.Modes.VR ) {
+		if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
 
 			this.effect.render( this.scene, this.camera );
 
@@ -1395,14 +1463,14 @@
 
 		this.update();
 
-        !this.options.passiveRendering &amp;&amp; this.render();
+		!this.options.passiveRendering &amp;&amp; this.render();
 
 	};
 
 	PANOLENS.Viewer.prototype.onChange = function () {
 
 		this.update();
-        this.render();
+		this.render();
 
 	};
 
@@ -1411,11 +1479,11 @@
 	 */
 	PANOLENS.Viewer.prototype.registerMouseAndTouchEvents = function () {
 
-		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, true );
-		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, true );
-		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , true );
-		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, true );
-		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , true );
+		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, false );
+		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, false );
+		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , false );
+		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, false );
+		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , false );
 
 	};
 
@@ -1424,11 +1492,11 @@
 	 */
 	PANOLENS.Viewer.prototype.unregisterMouseAndTouchEvents = function () {
 
-		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, true );
-		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, true );
-		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , true );
-		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, true );
-		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , true );
+		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, false );
+		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, false );
+		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , false );
+		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, false );
+		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , false );
 	};
 
 	/**
@@ -1477,7 +1545,7 @@
 	/**
 	 * Update reticle event
 	 */
-	PANOLENS.Viewer.prototype.updateReticleEvent = function ( mode ) {
+	PANOLENS.Viewer.prototype.updateReticleEvent = function () {
 
 		var centerX, centerY;
 
@@ -1615,7 +1683,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-06-21T10:41:42-07:00
+		on 2016-07-28T18:59:27-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

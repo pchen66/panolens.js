@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:VR-toggle">PANOLENS.Infospot#event:VR-toggle</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-complete">PANOLENS.Panorama#event:enter-complete</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+					<li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-dual-eye-effect">PANOLENS.Infospot#event:panolens-dual-eye-effect</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-complete">PANOLENS.Panorama#event:enter-complete</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
 				</ul>
 			</li>
 			
@@ -115,6 +115,7 @@
 
 		this.scale.set( scale, scale, 1 );
 		this.rotation.y = Math.PI;
+		this.scaleFactor = 1.3;
 
 		this.container;
 
@@ -128,18 +129,16 @@
 			texture.wrapS = THREE.RepeatWrapping;
 			texture.repeat.x = - 1;
 
-			texture.image.width = texture.image.naturalWidth || 1;
-			texture.image.height = texture.image.naturalHeight || 1;
+			texture.image.width = texture.image.naturalWidth || 64;
+			texture.image.height = texture.image.naturalHeight || 64;
 
 			ratio = texture.image.width / texture.image.height;
 			scope.scale.set( ratio * scale, scale, 1 );
 
 			startScale = scope.scale.clone();
-			endScale = scope.scale.clone().multiplyScalar( 1.3 );
-			endScale.z = 1;
 
 			scope.scaleUpAnimation = new TWEEN.Tween( scope.scale )
-				.to( { x: endScale.x, y: endScale.y }, duration )
+				.to( { x: startScale.x * scope.scaleFactor, y: startScale.y * scope.scaleFactor }, duration )
 				.easing( TWEEN.Easing.Elastic.Out );
 
 			scope.scaleDownAnimation = new TWEEN.Tween( scope.scale )
@@ -181,7 +180,7 @@
 		this.addEventListener( 'hover', this.onHover );
 		this.addEventListener( 'hoverenter', this.onHoverStart );
 		this.addEventListener( 'hoverleave', this.onHoverEnd );
-		this.addEventListener( 'VR-toggle', this.onToggleVR );
+		this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 		this.addEventListener( 'dismiss', this.onDismiss );
 		this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
@@ -285,7 +284,7 @@
 
 		if ( !this.getContainer() ) { return; }
 
-		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.VR ? 'default' : 'pointer' );
+		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.NORMAL ? 'pointer' : 'default' );
 
 		this.isHovering = true;
 		this.container.style.cursor = cursorStyle;
@@ -299,7 +298,7 @@
 		
 		if ( this.element ) {
 
-			if ( this.mode === PANOLENS.Modes.VR ) {
+			if ( this.mode === PANOLENS.Modes.CARDBOARD ||this.mode === PANOLENS.Modes.STEREO ) {
 
 				this.element.style.display = 'none';
 				this.element.left &amp;&amp; ( this.element.left.style.display = 'block' );
@@ -358,11 +357,11 @@
 	};
 
 	/**
-	 * On VR toggle handler
+	 * On dual eye effect handler
 	 * Creates duplicate left and right element
-	 * @param  {object} event - VR toggle event
+	 * @param  {object} event - panolens-dual-eye-effect event
 	 */
-	PANOLENS.Infospot.prototype.onToggleVR = function ( event ) {
+	PANOLENS.Infospot.prototype.onDualEyeEffect = function ( event ) {
 		
 		if ( !this.getContainer() ) { return; }
 
@@ -388,7 +387,7 @@
 
 		}
 
-		if ( this.mode === PANOLENS.Modes.VR ) {
+		if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
 
 			element.left.style.display = element.style.display;
 			element.right.style.display = element.style.display;
@@ -434,7 +433,7 @@
 		left = x - width - container.offsetLeft;
 		top = y - height - delta;
 
-		if ( this.mode === PANOLENS.Modes.VR &amp;&amp; element.left &amp;&amp; element.right ) {
+		if ( ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) &amp;&amp; element.left &amp;&amp; element.right ) {
 
 			left = container.clientWidth / 4 - width;
 			top = container.clientHeight / 2 - height - delta;
@@ -711,7 +710,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-06-21T10:41:42-07:00
+		on 2016-07-28T18:59:27-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
