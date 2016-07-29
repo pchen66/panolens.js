@@ -2669,9 +2669,9 @@ PANOLENS.StereographicShader = {
 	uniforms: {
 
 		"tDiffuse":   { value: new THREE.Texture() },
-        "resolution": { value: 1.0 },
-        "transform":  { value: new THREE.Matrix4() },
-        "zoom": 	  { value: 1.0 }
+		"resolution": { value: 1.0 },
+		"transform":  { value: new THREE.Matrix4() },
+		"zoom": 	  { value: 1.0 }
 
 	},
 
@@ -2679,45 +2679,45 @@ PANOLENS.StereographicShader = {
 
 		"varying vec2 vUv;",
 
-        "void main() {",
+		"void main() {",
 
-        	"vUv = uv;",
-        	"gl_Position = vec4( position, 1.0 );",
+			"vUv = uv;",
+			"gl_Position = vec4( position, 1.0 );",
 
-        "}" 
+		"}" 
 
 	].join( "\n" ),
 
 	fragmentShader: [
 
 		"uniform sampler2D tDiffuse;",
-        "uniform float resolution;",
-        "uniform mat4 transform;",
-        "uniform float zoom;",
+		"uniform float resolution;",
+		"uniform mat4 transform;",
+		"uniform float zoom;",
 
-        "varying vec2 vUv;",
+		"varying vec2 vUv;",
 
-        "const float PI = 3.141592653589793;",
+		"const float PI = 3.141592653589793;",
 
-        "void main(){",
+		"void main(){",
 
-        	"vec2 position = -1.0 +  2.0 * vUv;",
+			"vec2 position = -1.0 +  2.0 * vUv;",
 
-        	"position *= vec2( zoom * resolution, zoom * 0.5 );",
+			"position *= vec2( zoom * resolution, zoom * 0.5 );",
 
-        	"float x2y2 = position.x * position.x + position.y * position.y;",
-        	"vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );",
+			"float x2y2 = position.x * position.x + position.y * position.y;",
+			"vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );",
 
-        	"sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );",
+			"sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );",
 
-        	"vec2 sampleUV = vec2(",
-        		"(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,",
-        		"(asin(sphere_pnt.z) / PI + 0.5)",
-        	");",
+			"vec2 sampleUV = vec2(",
+				"(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,",
+				"(asin(sphere_pnt.z) / PI + 0.5)",
+			");",
 
-        	"gl_FragColor = texture2D( tDiffuse, sampleUV );",
+			"gl_FragColor = texture2D( tDiffuse, sampleUV );",
 
-        "}"
+		"}"
 
 	].join( "\n" )
 
@@ -3941,126 +3941,126 @@ PANOLENS.StereographicShader = {
 	PANOLENS.LittlePlanet.prototype.createMaterial = function ( size ) {
 
 		var uniforms = PANOLENS.StereographicShader.uniforms;
-        uniforms.zoom.value = size;
+		uniforms.zoom.value = size;
 
-        return new THREE.ShaderMaterial( {
+		return new THREE.ShaderMaterial( {
 
-            uniforms: uniforms,
-            vertexShader: PANOLENS.StereographicShader.vertexShader,
-            fragmentShader: PANOLENS.StereographicShader.fragmentShader
+			uniforms: uniforms,
+			vertexShader: PANOLENS.StereographicShader.vertexShader,
+			fragmentShader: PANOLENS.StereographicShader.fragmentShader
 
-        } );
+		} );
 		
 	};
 
 	PANOLENS.LittlePlanet.prototype.registerMouseEvents = function () {
 
 		this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), false );
-        this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), false );
-        this.container.addEventListener( 'mouseup', this.onMouseUp.bind( this ), false );
-        this.container.addEventListener( 'touchstart', this.onMouseDown.bind( this ), false );
-        this.container.addEventListener( 'touchmove', this.onMouseMove.bind( this ), false );
-        this.container.addEventListener( 'touchend', this.onMouseUp.bind( this ), false );
-        this.container.addEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
-        this.container.addEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
-        this.container.addEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
+		this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), false );
+		this.container.addEventListener( 'mouseup', this.onMouseUp.bind( this ), false );
+		this.container.addEventListener( 'touchstart', this.onMouseDown.bind( this ), false );
+		this.container.addEventListener( 'touchmove', this.onMouseMove.bind( this ), false );
+		this.container.addEventListener( 'touchend', this.onMouseUp.bind( this ), false );
+		this.container.addEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
+		this.container.addEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
+		this.container.addEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
 		
 	};
 
 	PANOLENS.LittlePlanet.prototype.unregisterMouseEvents = function () {
 
 		this.container.removeEventListener( 'mousedown', this.onMouseDown.bind( this ), false );
-        this.container.removeEventListener( 'mousemove', this.onMouseMove.bind( this ), false );
-        this.container.removeEventListener( 'mouseup', this.onMouseUp.bind( this ), false );
-        this.container.removeEventListener( 'touchstart', this.onMouseDown.bind( this ), false );
-        this.container.removeEventListener( 'touchmove', this.onMouseMove.bind( this ), false );
-        this.container.removeEventListener( 'touchend', this.onMouseUp.bind( this ), false );
-        this.container.removeEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
-        this.container.removeEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
-        this.container.removeEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
+		this.container.removeEventListener( 'mousemove', this.onMouseMove.bind( this ), false );
+		this.container.removeEventListener( 'mouseup', this.onMouseUp.bind( this ), false );
+		this.container.removeEventListener( 'touchstart', this.onMouseDown.bind( this ), false );
+		this.container.removeEventListener( 'touchmove', this.onMouseMove.bind( this ), false );
+		this.container.removeEventListener( 'touchend', this.onMouseUp.bind( this ), false );
+		this.container.removeEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
+		this.container.removeEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
+		this.container.removeEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
 		
 	};
 
 	PANOLENS.LittlePlanet.prototype.onMouseDown = function ( event ) {
 
 		var x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
-        var y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+		var y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
-        var inputCount = ( event.touches && event.touches.length ) || 1 ;
+		var inputCount = ( event.touches && event.touches.length ) || 1 ;
 
-        switch ( inputCount ) {
+		switch ( inputCount ) {
 
-        	case 1:
+			case 1:
 
-        		this.dragging = true;
-        		this.userMouse.set( x, y );
+				this.dragging = true;
+				this.userMouse.set( x, y );
 
-        		break;
+				break;
 
-        	case 2:
+			case 2:
 
-        		var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 				var distance = Math.sqrt( dx * dx + dy * dy );
 				this.userMouse.pinchDistance = distance;
 
-        		break;
+				break;
 
-        	default:
+			default:
 
-        		break;
+				break;
 
-        }
+		}
 
-        this.onUpdateCallback();
+		this.onUpdateCallback();
 
 	};
 
 	PANOLENS.LittlePlanet.prototype.onMouseMove = function ( event ) {
 
 		var x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
-        var y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+		var y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
-        var inputCount = ( event.touches && event.touches.length ) || 1 ;
+		var inputCount = ( event.touches && event.touches.length ) || 1 ;
 
-        switch ( inputCount ) {
+		switch ( inputCount ) {
 
-        	case 1:
+			case 1:
 
-        		var angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
-		        var angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
+				var angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
+				var angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
 
-		        if ( this.dragging ) {
-		            this.quatA.setFromAxisAngle( this.vectorY, angleX );
-		            this.quatB.setFromAxisAngle( this.vectorX, angleY );
-		            this.quatCur.multiply( this.quatA ).multiply( this.quatB );
-		            this.userMouse.set( x, y );
-		        }
+				if ( this.dragging ) {
+					this.quatA.setFromAxisAngle( this.vectorY, angleX );
+					this.quatB.setFromAxisAngle( this.vectorX, angleY );
+					this.quatCur.multiply( this.quatA ).multiply( this.quatB );
+					this.userMouse.set( x, y );
+				}
 
-        		break;
+				break;
 
-        	case 2:
+			case 2:
 
-        		var uniforms = this.material.uniforms;
-        		var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+				var uniforms = this.material.uniforms;
+				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 				var distance = Math.sqrt( dx * dx + dy * dy );
 
 				this.addZoomDelta( this.userMouse.pinchDistance - distance );
 
-        		break;
+				break;
 
-        	default:
+			default:
 
-        		break;
+				break;
 
-        }
+		}
 
 	};
 
 	PANOLENS.LittlePlanet.prototype.onMouseUp = function ( event ) {
 
-        this.dragging = false;
+		this.dragging = false;
 
 	};
 
@@ -4111,19 +4111,19 @@ PANOLENS.StereographicShader = {
 		this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
 		
 		this.quatSlerp.slerp( this.quatCur, 0.1 );
-        this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
-        
-        if ( this.passiveRendering ) {
+		this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
+		
+		if ( this.passiveRendering ) {
 
-        	this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'render' } );
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'render' } );
 
-        }
-        
-        if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
-        	
-        	window.cancelAnimationFrame( this.frameId );
+		}
+		
+		if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
+			
+			window.cancelAnimationFrame( this.frameId );
 
-        }
+		}
 
 	};
 
@@ -6746,7 +6746,7 @@ PANOLENS.StereographicShader = {
 
 		options = options || {};
 		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
-		options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video'  ];
+		options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
 		options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
 		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
@@ -6870,11 +6870,11 @@ PANOLENS.StereographicShader = {
 		this.control = this.OrbitControls;
 
 		// Cardboard effect
-        this.CardboardEffect = new THREE.CardboardEffect( this.renderer );
-        this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.CardboardEffect = new THREE.CardboardEffect( this.renderer );
+		this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
 
-        // Stereo effect
-        this.StereoEffect = new THREE.StereoEffect( this.renderer );
+		// Stereo effect
+		this.StereoEffect = new THREE.StereoEffect( this.renderer );
 		this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
 
 		this.effect = this.CardboardEffect;
@@ -7789,7 +7789,7 @@ PANOLENS.StereographicShader = {
 		var intersects, intersect_entity, intersect;
 
 		this.raycasterPoint.x = ( ( event.clientX - this.container.offsetLeft ) / this.container.clientWidth ) * 2 - 1;
-    	this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
+		this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
@@ -8087,14 +8087,14 @@ PANOLENS.StereographicShader = {
 
 		this.update();
 
-        !this.options.passiveRendering && this.render();
+		!this.options.passiveRendering && this.render();
 
 	};
 
 	PANOLENS.Viewer.prototype.onChange = function () {
 
 		this.update();
-        this.render();
+		this.render();
 
 	};
 
