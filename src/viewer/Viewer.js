@@ -11,7 +11,7 @@
 	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
 	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
 	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
-	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'navigation', 'vr', 'video']
+	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'setting', 'video']
 	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
 	 * @param {boolean} [options.autoHideInfospot=true] - Auto hide infospots when click on non-active area
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
@@ -38,7 +38,7 @@
 
 		options = options || {};
 		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
-		options.controlButtons = options.controlButtons || [ 'fullscreen', 'navigation', 'vr', 'video' ];
+		options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
 		options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
 		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
 		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
@@ -82,8 +82,7 @@
 
 		this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 		this.scene = options.scene || new THREE.Scene();
-		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: true } );
-		this.effect;
+		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
 
 		this.reticle = {};
 		this.tempEnableReticle = this.options.enableReticle;
@@ -93,7 +92,11 @@
 		this.OrbitControls;
 		this.DeviceOrientationControls;
 
+		this.CardboardEffect;
+		this.StereoEffect;
+
 		this.controls;
+		this.effect;
 		this.panorama;
 		this.widget;
 		
@@ -154,12 +157,19 @@
 		
 		}
 
-		// Cardboard effect
-        this.effect = new THREE.CardboardEffect( this.renderer );
-        this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
-
+		// Controls
 		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
 		this.control = this.OrbitControls;
+
+		// Cardboard effect
+		this.CardboardEffect = new THREE.CardboardEffect( this.renderer );
+		this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+
+		// Stereo effect
+		this.StereoEffect = new THREE.StereoEffect( this.renderer );
+		this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+
+		this.effect = this.CardboardEffect;
 
 		// Add default hidden reticle
 		this.addReticle();
@@ -325,44 +335,18 @@
 
 			this[ event.method ]( event.data );
 
-			this.options.passiveRendering && this.onChange();
+			this.options.passiveRendering && !event.ignoreUpdate && this.onChange();
 
 		}
 
 	};
 
 	/**
-	 * Toggle VR effect mode and broadcast event to infospot descendants
-	 * @fires PANOLENS.Viewer#VR-toggle
-	 * @fires PANOLENS.Infospot#VR-toggle
+	 * Dispatch event to all descendants
+	 * @param  {object} event - Event to be passed along
 	 */
-	PANOLENS.Viewer.prototype.toggleVR = function () {
+	PANOLENS.Viewer.prototype.dispatchEventToChildren = function ( event ) {
 
-		var event;
-
-		if ( this.effect ) {
-
-			if ( this.mode !== PANOLENS.Modes.VR ) {
-
-				this.mode = PANOLENS.Modes.VR;
-
-			} else {
-
-				this.mode = PANOLENS.Modes.NORMAL;
-
-			}
-		}
-
-		event = { type: 'VR-toggle', mode: this.mode };
-
-		/**
-		 * Toggle vr event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#VR-toggle
-		 * @event PANOLENS.Infospot#VR-toggle
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
-		this.dispatchEvent( event );
 		this.scene.traverse( function ( object ) {
 
 			if ( object.dispatchEvent ) {
@@ -373,61 +357,114 @@
 
 		});
 
-		if ( this.mode === PANOLENS.Modes.VR ) {
+	};
 
-			this.enableVR();
+	/**
+	 * Disable additional rendering effect
+	 */
+	PANOLENS.Viewer.prototype.disableEffect = function () {
+
+		if ( this.mode === PANOLENS.Modes.NORMAL ) { return; }
+
+		this.mode = PANOLENS.Modes.NORMAL;
+		this.disableReticleControl();
+
+		/**
+		 * Dual eye effect event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
+		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
+
+		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.render();
+	};
+
+	/**
+	 * Enable rendering effect
+	 * @param  {PANOLENS.Modes} mode - Modes for effects
+	 */
+	PANOLENS.Viewer.prototype.enableEffect = function ( mode ) {
+
+		if ( this.mode === mode ) { return; }
+
+		var fov = this.camera.fov;
+
+		this.mode = mode;
+
+		switch( mode ) {
+
+			case PANOLENS.Modes.CARDBOARD:
+
+				this.effect = this.CardboardEffect;
+				this.enableReticleControl();
+
+				break;
+
+			case PANOLENS.Modes.STEREO:
+
+				this.effect = this.StereoEffect;
+				this.enableReticleControl();
+				
+				break;
+
+			default:
+
+				return;
+
+		}
+
+		/**
+		 * Dual eye effect event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
+		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: mode } );
+
+		// Force effect stereo camera to update by refreshing fov
+		this.camera.fov = fov + 10e-3;
+		this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.render();
+		this.camera.fov = fov;
+
+	};
+
+	/**
+	 * Enable reticle control
+	 */
+	PANOLENS.Viewer.prototype.enableReticleControl = function () {
+
+		this.tempEnableReticle = true;
+
+		// Register reticle event and unregister mouse event
+		this.unregisterMouseAndTouchEvents();
+		this.reticle.show();
+		this.registerReticleEvent();
+		this.updateReticleEvent();
+
+	};
+
+	/**
+	 * Disable reticle control
+	 */
+	PANOLENS.Viewer.prototype.disableReticleControl = function () {
+
+		this.tempEnableReticle = false;
+
+		// Register mouse event and unregister reticle event
+		if ( !this.options.enableReticle ) {
+
+			this.reticle.hide();
+			this.unregisterReticleEvent();
+			this.registerMouseAndTouchEvents();
 
 		} else {
 
-			this.disableVR();
-
-		}
-
-	};
-
-	/**
-	 * Enable VR effect
-	 */
-	PANOLENS.Viewer.prototype.enableVR = function () {
-
-		if ( this.effect && this.mode === PANOLENS.Modes.VR ) {
-
-			this.tempEnableReticle = true;
-
-			// Register reticle event and unregister mouse event
-			this.unregisterMouseAndTouchEvents();
-
-			this.reticle.show();
-			this.registerReticleEvent();
-
-			this.updateReticleEvent( this.mode );
-			
-
-		}
-
-	};
-
-	/**
-	 * Disable VR effect
-	 */
-	PANOLENS.Viewer.prototype.disableVR = function () {
-
-		if ( this.effect && this.mode === PANOLENS.Modes.NORMAL ) {
-
-			this.tempEnableReticle = false;
-
-			// Register mouse event and unregister reticle event
-			if ( !this.options.enableReticle ) {
-
-				this.reticle.hide();
-				this.unregisterReticleEvent();
-				this.registerMouseAndTouchEvents();
-
-			} else {
-
-				this.updateReticleEvent( this.mode );
-
-			}
+			this.updateReticleEvent();
 
 		}
 
@@ -563,6 +600,18 @@
 		 * @event PANOLENS.Viewer#video-control-hide
 		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-control-hide' } );
+
+	};
+
+	PANOLENS.Viewer.prototype.updateVideoPlayButton = function ( paused ) {
+
+		if ( this.widget && 
+			 this.widget.videoElement && 
+			 this.widget.videoElement.controlButton ) {
+
+			this.widget.videoElement.controlButton.update( paused );
+
+		}
 
 	};
 
@@ -805,9 +854,9 @@
 	 */
 	PANOLENS.Viewer.prototype.addReticle = function () {
 
-		this.reticle = new PANOLENS.Reticle( 0x1abc9c );
+		this.reticle = new PANOLENS.Reticle( 0xffffff );
 		this.reticle.position.z = -10;
-		this.reticle.scale.multiplyScalar( 0.3 );
+		this.reticle.scale.set( 0.1, 0.1, 1 );
 		this.camera.add( this.reticle );
 		this.scene.add( this.camera );
 
@@ -910,7 +959,7 @@
 		// Update reticle
 		if ( this.options.enableReticle || this.tempEnableReticle ) {
 
-			this.updateReticleEvent( this.mode );
+			this.updateReticleEvent();
 
 		}
 
@@ -1032,7 +1081,7 @@
 		var intersects, intersect_entity, intersect;
 
 		this.raycasterPoint.x = ( ( event.clientX - this.container.offsetLeft ) / this.container.clientWidth ) * 2 - 1;
-    	this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
+		this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
@@ -1280,7 +1329,7 @@
 
 	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
 
-		if ( event.keyCode === 17 || event.keyIdentifier === 'Control' ) {
+		if ( event.key === 'Control' ) {
 
 			this.OUTPUT_INFOSPOT = true;
 
@@ -1312,7 +1361,7 @@
 	 */
 	PANOLENS.Viewer.prototype.render = function () {
 
-		if ( this.mode === PANOLENS.Modes.VR ) {
+		if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
 
 			this.effect.render( this.scene, this.camera );
 
@@ -1330,14 +1379,14 @@
 
 		this.update();
 
-        !this.options.passiveRendering && this.render();
+		!this.options.passiveRendering && this.render();
 
 	};
 
 	PANOLENS.Viewer.prototype.onChange = function () {
 
 		this.update();
-        this.render();
+		this.render();
 
 	};
 
@@ -1346,11 +1395,11 @@
 	 */
 	PANOLENS.Viewer.prototype.registerMouseAndTouchEvents = function () {
 
-		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, true );
-		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, true );
-		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , true );
-		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, true );
-		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , true );
+		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, false );
+		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, false );
+		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , false );
+		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, false );
+		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , false );
 
 	};
 
@@ -1359,11 +1408,11 @@
 	 */
 	PANOLENS.Viewer.prototype.unregisterMouseAndTouchEvents = function () {
 
-		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, true );
-		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, true );
-		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , true );
-		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, true );
-		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , true );
+		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, false );
+		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, false );
+		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , false );
+		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, false );
+		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , false );
 	};
 
 	/**
@@ -1412,7 +1461,7 @@
 	/**
 	 * Update reticle event
 	 */
-	PANOLENS.Viewer.prototype.updateReticleEvent = function ( mode ) {
+	PANOLENS.Viewer.prototype.updateReticleEvent = function () {
 
 		var centerX, centerY;
 
