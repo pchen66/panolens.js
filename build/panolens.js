@@ -4,7 +4,7 @@
  * @namespace PANOLENS
  */
 
-var PANOLENS = { REVISION: '2' };
+var PANOLENS = { REVISION: '3-dev' };
 ;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
