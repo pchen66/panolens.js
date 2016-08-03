@@ -895,7 +895,7 @@
 		chv = this.camera.getWorldDirection();
 		cvv = chv.clone();
 
-		vptc = this.panorama.getWorldPosition().sub( this.camera.getWorldPosition() );
+		vptc = this.panorama.getWorldPosition().sub( chv );
 
 		hv = vector.clone();
 		// Scale effect
