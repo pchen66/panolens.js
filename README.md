@@ -75,7 +75,11 @@ Move cursor on a specific point in a panorama and press `Ctrl` with mouse clicki
 
 Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) by default
 
-###Future
+###How to contribute
+
+Always make your contributions for the latest `dev` branch, not `master`, so it can be tracked for the next release. 
+
+###Roadmap
 1.	Add dwell animation
 2.	npm packaging
 3.	infospot editor
