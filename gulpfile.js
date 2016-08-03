@@ -9,6 +9,7 @@ var _libfiles = [
 	'src/lib/controls/DeviceOrientationControls.js',
 	'src/lib/modifier/BendModifier.js',
 	'src/lib/effects/CardboardEffect.js',
+	'node_modules/three/examples/js/effects/StereoEffect.js',
 	'src/lib/GSVPano.js'
 ];
 

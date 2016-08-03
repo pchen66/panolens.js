@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:VR-toggle">PANOLENS.Infospot#event:VR-toggle</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-complete">PANOLENS.Panorama#event:enter-complete</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+					<li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-dual-eye-effect">PANOLENS.Infospot#event:panolens-dual-eye-effect</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-complete">PANOLENS.Panorama#event:enter-complete</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
 				</ul>
 			</li>
 			
@@ -93,9 +93,9 @@ PANOLENS.StereographicShader = {
 	uniforms: {
 
 		"tDiffuse":   { value: new THREE.Texture() },
-        "resolution": { value: 1.0 },
-        "transform":  { value: new THREE.Matrix4() },
-        "zoom": 	  { value: 1.0 }
+		"resolution": { value: 1.0 },
+		"transform":  { value: new THREE.Matrix4() },
+		"zoom": 	  { value: 1.0 }
 
 	},
 
@@ -103,45 +103,45 @@ PANOLENS.StereographicShader = {
 
 		"varying vec2 vUv;",
 
-        "void main() {",
+		"void main() {",
 
-        	"vUv = uv;",
-        	"gl_Position = vec4( position, 1.0 );",
+			"vUv = uv;",
+			"gl_Position = vec4( position, 1.0 );",
 
-        "}" 
+		"}" 
 
 	].join( "\n" ),
 
 	fragmentShader: [
 
 		"uniform sampler2D tDiffuse;",
-        "uniform float resolution;",
-        "uniform mat4 transform;",
-        "uniform float zoom;",
+		"uniform float resolution;",
+		"uniform mat4 transform;",
+		"uniform float zoom;",
 
-        "varying vec2 vUv;",
+		"varying vec2 vUv;",
 
-        "const float PI = 3.141592653589793;",
+		"const float PI = 3.141592653589793;",
 
-        "void main(){",
+		"void main(){",
 
-        	"vec2 position = -1.0 +  2.0 * vUv;",
+			"vec2 position = -1.0 +  2.0 * vUv;",
 
-        	"position *= vec2( zoom * resolution, zoom * 0.5 );",
+			"position *= vec2( zoom * resolution, zoom * 0.5 );",
 
-        	"float x2y2 = position.x * position.x + position.y * position.y;",
-        	"vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );",
+			"float x2y2 = position.x * position.x + position.y * position.y;",
+			"vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );",
 
-        	"sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );",
+			"sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );",
 
-        	"vec2 sampleUV = vec2(",
-        		"(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,",
-        		"(asin(sphere_pnt.z) / PI + 0.5)",
-        	");",
+			"vec2 sampleUV = vec2(",
+				"(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,",
+				"(asin(sphere_pnt.z) / PI + 0.5)",
+			");",
 
-        	"gl_FragColor = texture2D( tDiffuse, sampleUV );",
+			"gl_FragColor = texture2D( tDiffuse, sampleUV );",
 
-        "}"
+		"}"
 
 	].join( "\n" )
 
@@ -184,7 +184,7 @@ PANOLENS.StereographicShader = {
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-06-30T09:41:45-07:00
+		on 2016-07-28T18:59:27-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
