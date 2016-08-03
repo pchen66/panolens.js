@@ -892,10 +892,10 @@
 
 		scope = this;
 
-		chv = viewer.camera.getWorldDirection();
+		chv = this.camera.getWorldDirection();
 		cvv = chv.clone();
 
-		vptc = this.panorama.getWorldPosition().sub( viewer.camera.getWorldPosition() );
+		vptc = this.panorama.getWorldPosition().sub( chv );
 
 		hv = vector.clone();
 		// Scale effect
