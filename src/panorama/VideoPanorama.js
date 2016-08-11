@@ -31,6 +31,17 @@
 
 		this.videoFramerate = 30;
 
+		function isSafari10 () {
+			var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+
+			M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+			if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+			if (M[0] === "Safari") {
+				return parseInt(M[1]) >= 10;
+			} else return false;
+		}
+
+		this.isSafari10 = isSafari10();
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
 		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
@@ -39,7 +50,7 @@
 		this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 		this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
-	}
+	};
 
 	PANOLENS.VideoPanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
 
@@ -64,6 +75,9 @@
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
+		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
+		this.videoElement.setAttribute( "webkit-playsinline", ( options["webkit-playsinline"] !== undefined ) ? options["webkit-playsinline"] : "" );
+		this.videoElement.setAttribute( "webkit-playsinline", ( options["webkit-playsinline"] !== undefined ) ? options["webkit-playsinline"] : "" );
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -86,7 +100,7 @@
 
 			}
 
-		}
+		};
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
@@ -133,7 +147,7 @@
 
 		};
 
-		if ( this.isIOS ){
+		if ( this.isIOS && !this.isSafari10 ){
 			
 			videoRenderObject.fps = this.videoFramerate;
 			videoRenderObject.lastTime = Date.now();
@@ -300,4 +314,39 @@
 
 	};
 
+	/**
+	* Check if video is muted
+	* @return {boolean} - is video muted or not
+	*/
+	PANOLENS.VideoPanorama.prototype.isVideoMuted = function () {
+
+		return this.videoRenderObject.video.muted;
+
+	};
+
+	/**
+	 * Mute video
+	 */
+	PANOLENS.VideoPanorama.prototype.muteVideo = function () {
+
+		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoMuted() ) {
+
+			this.videoRenderObject.video.muted = true;
+
+		}
+
+	};
+
+	/**
+	 * Unmute video
+	 */
+	PANOLENS.VideoPanorama.prototype.unmuteVideo = function () {
+
+		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoMuted() ) {
+
+			this.videoRenderObject.video.muted = false;
+
+		}
+
+	};
 })();
