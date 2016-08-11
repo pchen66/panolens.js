@@ -14,29 +14,6 @@ var PANOLENS = { REVISION: '3-dev' };
  * Thank you all, you're awesome!
  */
 
-// Include a performance.now polyfill
-(function () {
-
-	if ('performance' in window === false) {
-		window.performance = {};
-	}
-
-	// IE 8
-	Date.now = (Date.now || function () {
-		return new Date().getTime();
-	});
-
-	if ('now' in window.performance === false) {
-		var offset = window.performance.timing && window.performance.timing.navigationStart ? window.performance.timing.navigationStart
-		                                                                                    : Date.now();
-
-		window.performance.now = function () {
-			return Date.now() - offset;
-		};
-	}
-
-})();
-
 var TWEEN = TWEEN || (function () {
 
 	var _tweens = [];
@@ -71,7 +48,7 @@ var TWEEN = TWEEN || (function () {
 
 		},
 
-		update: function (time) {
+		update: function (time, preserve) {
 
 			if (_tweens.length === 0) {
 				return false;
@@ -79,11 +56,11 @@ var TWEEN = TWEEN || (function () {
 
 			var i = 0;
 
-			time = time !== undefined ? time : window.performance.now();
+			time = time !== undefined ? time : TWEEN.now();
 
 			while (i < _tweens.length) {
 
-				if (_tweens[i].update(time)) {
+				if (_tweens[i].update(time) || preserve) {
 					i++;
 				} else {
 					_tweens.splice(i, 1);
@@ -97,6 +74,40 @@ var TWEEN = TWEEN || (function () {
 	};
 
 })();
+
+
+// Include a performance.now polyfill
+(function () {
+	// In node.js, use process.hrtime.
+	if (this.window === undefined && this.process !== undefined) {
+		TWEEN.now = function () {
+			var time = process.hrtime();
+
+			// Convert [seconds, microseconds] to milliseconds.
+			return time[0] * 1000 + time[1] / 1000;
+		};
+	}
+	// In a browser, use window.performance.now if it is available.
+	else if (this.window !== undefined &&
+	         window.performance !== undefined &&
+		 window.performance.now !== undefined) {
+
+		// This must be bound, because directly assigning this function
+		// leads to an invocation exception in Chrome.
+		TWEEN.now = window.performance.now.bind(window.performance);
+	}
+	// Use Date.now if it is available.
+	else if (Date.now !== undefined) {
+		TWEEN.now = Date.now;
+	}
+	// Otherwise, use 'new Date().getTime()'.
+	else {
+		TWEEN.now = function () {
+			return new Date().getTime();
+		};
+	}
+}).bind(this)();
+
 
 TWEEN.Tween = function (object) {
 
@@ -145,7 +156,7 @@ TWEEN.Tween = function (object) {
 
 		_onStartCallbackFired = false;
 
-		_startTime = time !== undefined ? time : window.performance.now();
+		_startTime = time !== undefined ? time : TWEEN.now();
 		_startTime += _delayTime;
 
 		for (var property in _valuesEnd) {
@@ -323,7 +334,7 @@ TWEEN.Tween = function (object) {
 				// Parses relative end values with start as base (e.g.: +10, -3)
 				if (typeof (end) === 'string') {
 
-					if (end.startsWith('+') || end.startsWith('-')) {
+					if (end.charAt(0) === '+' || end.charAt(0) === '-') {
 						end = start + parseFloat(end, 10);
 					} else {
 						end = parseFloat(end, 10);
@@ -604,10 +615,6 @@ TWEEN.Easing = {
 
 		In: function (k) {
 
-			var s;
-			var a = 0.1;
-			var p = 0.4;
-
 			if (k === 0) {
 				return 0;
 			}
@@ -616,23 +623,12 @@ TWEEN.Easing = {
 				return 1;
 			}
 
-			if (!a || a < 1) {
-				a = 1;
-				s = p / 4;
-			} else {
-				s = p * Math.asin(1 / a) / (2 * Math.PI);
-			}
-
-			return - (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
+			return -Math.pow(2, 10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI);
 
 		},
 
 		Out: function (k) {
 
-			var s;
-			var a = 0.1;
-			var p = 0.4;
-
 			if (k === 0) {
 				return 0;
 			}
@@ -641,23 +637,12 @@ TWEEN.Easing = {
 				return 1;
 			}
 
-			if (!a || a < 1) {
-				a = 1;
-				s = p / 4;
-			} else {
-				s = p * Math.asin(1 / a) / (2 * Math.PI);
-			}
-
-			return (a * Math.pow(2, - 10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
+			return Math.pow(2, -10 * k) * Math.sin((k - 0.1) * 5 * Math.PI) + 1;
 
 		},
 
 		InOut: function (k) {
 
-			var s;
-			var a = 0.1;
-			var p = 0.4;
-
 			if (k === 0) {
 				return 0;
 			}
@@ -666,18 +651,13 @@ TWEEN.Easing = {
 				return 1;
 			}
 
-			if (!a || a < 1) {
-				a = 1;
-				s = p / 4;
-			} else {
-				s = p * Math.asin(1 / a) / (2 * Math.PI);
+			k *= 2;
+
+			if (k < 1) {
+				return -0.5 * Math.pow(2, 10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI);
 			}
 
-			if ((k *= 2) < 1) {
-				return - 0.5 * (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
-			}
-
-			return a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * 0.5 + 1;
+			return 0.5 * Math.pow(2, -10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI) + 1;
 
 		}
 
@@ -3593,6 +3573,17 @@ PANOLENS.StereographicShader = {
 
 		this.videoFramerate = 30;
 
+		function isSafari10 () {
+			var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+
+			M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+			if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+			if (M[0] === "Safari") {
+				return parseInt(M[1]) >= 10;
+			} else return false;
+		}
+
+		this.isSafari10 = isSafari10();
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
 		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
@@ -3601,7 +3592,7 @@ PANOLENS.StereographicShader = {
 		this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 		this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
-	}
+	};
 
 	PANOLENS.VideoPanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
 
@@ -3626,6 +3617,9 @@ PANOLENS.StereographicShader = {
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
+		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
+		this.videoElement.setAttribute( "webkit-playsinline", ( options["webkit-playsinline"] !== undefined ) ? options["webkit-playsinline"] : "" );
+		this.videoElement.setAttribute( "webkit-playsinline", ( options["webkit-playsinline"] !== undefined ) ? options["webkit-playsinline"] : "" );
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -3648,7 +3642,7 @@ PANOLENS.StereographicShader = {
 
 			}
 
-		}
+		};
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
@@ -3695,7 +3689,7 @@ PANOLENS.StereographicShader = {
 
 		};
 
-		if ( this.isIOS ){
+		if ( this.isIOS && !this.isSafari10 ){
 			
 			videoRenderObject.fps = this.videoFramerate;
 			videoRenderObject.lastTime = Date.now();
@@ -3862,6 +3856,41 @@ PANOLENS.StereographicShader = {
 
 	};
 
+	/**
+	* Check if video is muted
+	* @return {boolean} - is video muted or not
+	*/
+	PANOLENS.VideoPanorama.prototype.isVideoMuted = function () {
+
+		return this.videoRenderObject.video.muted;
+
+	};
+
+	/**
+	 * Mute video
+	 */
+	PANOLENS.VideoPanorama.prototype.muteVideo = function () {
+
+		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoMuted() ) {
+
+			this.videoRenderObject.video.muted = true;
+
+		}
+
+	};
+
+	/**
+	 * Unmute video
+	 */
+	PANOLENS.VideoPanorama.prototype.unmuteVideo = function () {
+
+		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoMuted() ) {
+
+			this.videoRenderObject.video.muted = false;
+
+		}
+
+	};
 })();;(function(){
 
 	'use strict';
