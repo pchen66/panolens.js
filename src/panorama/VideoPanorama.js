@@ -9,8 +9,11 @@
 	 * @param {object} [options] - Option for video settings
 	 * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video
 	 * @param {HTMLCanvasElement} [options.videoCanvas] - HTML5 canvas element for drawing the video
-	 * @param {boolean} [options.muted=false] - Mute the video or not
 	 * @param {boolean} [options.loop=true] - Specify if the video should loop in the end
+	 * @param {boolean} [options.muted=false] - Mute the video or not
+	 * @param {boolean} [options.autoplay=false] - Specify if the video should auto play
+	 * @param {boolean} [options.playsinline=false] - Specify if video should play inline for iOS. If you want it to auto play inline, set both autoplay and muted options to true
+	 * @param {string} [options.crossOrigin="anonymous"] - Sets the cross-origin attribute for the video, which allows for cross-origin videos in some browsers (Firefox, Chrome). Set to either "anonymous" or "use-credentials".
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
 	PANOLENS.VideoPanorama = function ( src, options, radius ) {
@@ -76,8 +79,7 @@
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
 		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
-		this.videoElement.setAttribute( "webkit-playsinline", ( options["webkit-playsinline"] !== undefined ) ? options["webkit-playsinline"] : "" );
-		this.videoElement.setAttribute( "webkit-playsinline", ( options["webkit-playsinline"] !== undefined ) ? options["webkit-playsinline"] : "" );
+		if (options.playsinline) this.videoElement.setAttribute( "playsinline", "" );
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
