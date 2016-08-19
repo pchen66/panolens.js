@@ -3830,6 +3830,8 @@ PANOLENS.StereographicShader = {
 
 		}
 
+		this.dispatchEvent( { type: 'play' } )
+
 	};
 
 	/**
@@ -3842,6 +3844,8 @@ PANOLENS.StereographicShader = {
 			this.videoRenderObject.video.pause();
 
 		}
+
+		this.dispatchEvent( { type: 'pause' } )
 
 	};
 
@@ -3879,6 +3883,8 @@ PANOLENS.StereographicShader = {
 
 		}
 
+		this.dispatchEvent( { type: 'volumechange' } );
+
 	};
 
 	/**
@@ -3892,7 +3898,16 @@ PANOLENS.StereographicShader = {
 
 		}
 
+		this.dispatchEvent( { type: 'volumechange' } );
+
 	};
+
+	/**
+	 * Returns the video element
+	 * */
+	PANOLENS.VideoPanorama.prototype.getVideoElement = function () {
+		return this.videoRenderObject.video;
+	}
 })();;(function(){
 
 	'use strict';
