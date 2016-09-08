@@ -4,8 +4,9 @@
  * @namespace PANOLENS
  */
 
-var PANOLENS = { REVISION: '2' };
-;/**
+var PANOLENS = { REVISION: '3-dev' };
+;/*! npm.im/iphone-inline-video */
+var makeVideoPlayableInline=function(){"use strict";function e(e){function r(t){n=requestAnimationFrame(r),e(t-(i||t)),i=t}var n,i;this.start=function(){n||r(0)},this.stop=function(){cancelAnimationFrame(n),n=null,i=0}}function r(e,r,n,i){function t(r){Boolean(e[n])===Boolean(i)&&r.stopImmediatePropagation(),delete e[n]}return e.addEventListener(r,t,!1),t}function n(e,r,n,i){function t(){return n[r]}function d(e){n[r]=e}i&&d(e[r]),Object.defineProperty(e,r,{get:t,set:d})}function i(e,r,n){n.addEventListener(r,function(){return e.dispatchEvent(new Event(r))})}function t(e,r){Promise.resolve().then(function(){e.dispatchEvent(new Event(r))})}function d(e){var r=new Audio;return i(e,"play",r),i(e,"playing",r),i(e,"pause",r),r.crossOrigin=e.crossOrigin,r.src=e.src||e.currentSrc||"data:",r}function a(e,r,n){(f||0)+200<Date.now()&&(e[h]=!0,f=Date.now()),n||(e.currentTime=r),T[++w%3]=100*r|0}function o(e){return e.driver.currentTime>=e.video.duration}function u(e){var r=this;r.video.readyState>=r.video.HAVE_FUTURE_DATA?(r.hasAudio||(r.driver.currentTime=r.video.currentTime+e*r.video.playbackRate/1e3,r.video.loop&&o(r)&&(r.driver.currentTime=0)),a(r.video,r.driver.currentTime)):r.video.networkState!==r.video.NETWORK_IDLE||r.video.buffered.length||r.video.load(),r.video.ended&&(delete r.video[h],r.video.pause(!0))}function s(){var e=this,r=e[g];return e.webkitDisplayingFullscreen?void e[b]():("data:"!==r.driver.src&&r.driver.src!==e.src&&(a(e,0,!0),r.driver.src=e.src),void(e.paused&&(r.paused=!1,e.buffered.length||e.load(),r.driver.play(),r.updater.start(),r.hasAudio||(t(e,"play"),r.video.readyState>=r.video.HAVE_ENOUGH_DATA&&t(e,"playing")))))}function c(e){var r=this,n=r[g];n.driver.pause(),n.updater.stop(),r.webkitDisplayingFullscreen&&r[E](),n.paused&&!e||(n.paused=!0,n.hasAudio||t(r,"pause"),r.ended&&(r[h]=!0,t(r,"ended")))}function v(r,n){var i=r[g]={};i.paused=!0,i.hasAudio=n,i.video=r,i.updater=new e(u.bind(i)),n?i.driver=d(r):(r.addEventListener("canplay",function(){r.paused||t(r,"playing")}),i.driver={src:r.src||r.currentSrc||"data:",muted:!0,paused:!0,pause:function(){i.driver.paused=!0},play:function(){i.driver.paused=!1,o(i)&&a(r,0)},get ended(){return o(i)}}),r.addEventListener("emptied",function(){var e=!i.driver.src||"data:"===i.driver.src;i.driver.src&&i.driver.src!==r.src&&(a(r,0,!0),i.driver.src=r.src,e?i.driver.play():i.updater.stop())},!1),r.addEventListener("webkitbeginfullscreen",function(){r.paused?n&&!i.driver.buffered.length&&i.driver.load():(r.pause(),r[b]())}),n&&(r.addEventListener("webkitendfullscreen",function(){i.driver.currentTime=r.currentTime}),r.addEventListener("seeking",function(){T.indexOf(100*r.currentTime|0)<0&&(i.driver.currentTime=r.currentTime)}))}function p(e){var i=e[g];e[b]=e.play,e[E]=e.pause,e.play=s,e.pause=c,n(e,"paused",i.driver),n(e,"muted",i.driver,!0),n(e,"playbackRate",i.driver,!0),n(e,"ended",i.driver),n(e,"loop",i.driver,!0),r(e,"seeking"),r(e,"seeked"),r(e,"timeupdate",h,!1),r(e,"ended",h,!1)}function l(e,r,n){void 0===r&&(r=!0),void 0===n&&(n=!0),n&&!y||e[g]||(v(e,r),p(e),e.classList.add("IIV"),!r&&e.autoplay&&e.play(),"MacIntel"!==navigator.platform&&"Windows"!==navigator.platform||console.warn("iphone-inline-video is not guaranteed to work in emulated environments"))}var f,m="undefined"==typeof Symbol?function(e){return"@"+(e||"@")+Math.random()}:Symbol,y=/iPhone|iPod/i.test(navigator.userAgent)&&void 0===document.head.style.grid,g=m(),h=m(),b=m("nativeplay"),E=m("nativepause"),T=[],w=0;return l.isWhitelisted=y,l}();;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
  * ----------------------------------------------
@@ -13,29 +14,6 @@ var PANOLENS = { REVISION: '2' };
  * See https://github.com/tweenjs/tween.js/graphs/contributors for the full list of contributors.
  * Thank you all, you're awesome!
  */
-
-// Include a performance.now polyfill
-(function () {
-
-	if ('performance' in window === false) {
-		window.performance = {};
-	}
-
-	// IE 8
-	Date.now = (Date.now || function () {
-		return new Date().getTime();
-	});
-
-	if ('now' in window.performance === false) {
-		var offset = window.performance.timing && window.performance.timing.navigationStart ? window.performance.timing.navigationStart
-		                                                                                    : Date.now();
-
-		window.performance.now = function () {
-			return Date.now() - offset;
-		};
-	}
-
-})();
 
 var TWEEN = TWEEN || (function () {
 
@@ -71,7 +49,7 @@ var TWEEN = TWEEN || (function () {
 
 		},
 
-		update: function (time) {
+		update: function (time, preserve) {
 
 			if (_tweens.length === 0) {
 				return false;
@@ -79,11 +57,11 @@ var TWEEN = TWEEN || (function () {
 
 			var i = 0;
 
-			time = time !== undefined ? time : window.performance.now();
+			time = time !== undefined ? time : TWEEN.now();
 
 			while (i < _tweens.length) {
 
-				if (_tweens[i].update(time)) {
+				if (_tweens[i].update(time) || preserve) {
 					i++;
 				} else {
 					_tweens.splice(i, 1);
@@ -97,6 +75,40 @@ var TWEEN = TWEEN || (function () {
 	};
 
 })();
+
+
+// Include a performance.now polyfill
+(function () {
+	// In node.js, use process.hrtime.
+	if (this.window === undefined && this.process !== undefined) {
+		TWEEN.now = function () {
+			var time = process.hrtime();
+
+			// Convert [seconds, microseconds] to milliseconds.
+			return time[0] * 1000 + time[1] / 1000;
+		};
+	}
+	// In a browser, use window.performance.now if it is available.
+	else if (this.window !== undefined &&
+	         window.performance !== undefined &&
+		 window.performance.now !== undefined) {
+
+		// This must be bound, because directly assigning this function
+		// leads to an invocation exception in Chrome.
+		TWEEN.now = window.performance.now.bind(window.performance);
+	}
+	// Use Date.now if it is available.
+	else if (Date.now !== undefined) {
+		TWEEN.now = Date.now;
+	}
+	// Otherwise, use 'new Date().getTime()'.
+	else {
+		TWEEN.now = function () {
+			return new Date().getTime();
+		};
+	}
+}).bind(this)();
+
 
 TWEEN.Tween = function (object) {
 
@@ -145,7 +157,7 @@ TWEEN.Tween = function (object) {
 
 		_onStartCallbackFired = false;
 
-		_startTime = time !== undefined ? time : window.performance.now();
+		_startTime = time !== undefined ? time : TWEEN.now();
 		_startTime += _delayTime;
 
 		for (var property in _valuesEnd) {
@@ -323,7 +335,7 @@ TWEEN.Tween = function (object) {
 				// Parses relative end values with start as base (e.g.: +10, -3)
 				if (typeof (end) === 'string') {
 
-					if (end.startsWith('+') || end.startsWith('-')) {
+					if (end.charAt(0) === '+' || end.charAt(0) === '-') {
 						end = start + parseFloat(end, 10);
 					} else {
 						end = parseFloat(end, 10);
@@ -604,10 +616,6 @@ TWEEN.Easing = {
 
 		In: function (k) {
 
-			var s;
-			var a = 0.1;
-			var p = 0.4;
-
 			if (k === 0) {
 				return 0;
 			}
@@ -616,23 +624,12 @@ TWEEN.Easing = {
 				return 1;
 			}
 
-			if (!a || a < 1) {
-				a = 1;
-				s = p / 4;
-			} else {
-				s = p * Math.asin(1 / a) / (2 * Math.PI);
-			}
-
-			return - (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
+			return -Math.pow(2, 10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI);
 
 		},
 
 		Out: function (k) {
 
-			var s;
-			var a = 0.1;
-			var p = 0.4;
-
 			if (k === 0) {
 				return 0;
 			}
@@ -641,23 +638,12 @@ TWEEN.Easing = {
 				return 1;
 			}
 
-			if (!a || a < 1) {
-				a = 1;
-				s = p / 4;
-			} else {
-				s = p * Math.asin(1 / a) / (2 * Math.PI);
-			}
-
-			return (a * Math.pow(2, - 10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
+			return Math.pow(2, -10 * k) * Math.sin((k - 0.1) * 5 * Math.PI) + 1;
 
 		},
 
 		InOut: function (k) {
 
-			var s;
-			var a = 0.1;
-			var p = 0.4;
-
 			if (k === 0) {
 				return 0;
 			}
@@ -666,18 +652,13 @@ TWEEN.Easing = {
 				return 1;
 			}
 
-			if (!a || a < 1) {
-				a = 1;
-				s = p / 4;
-			} else {
-				s = p * Math.asin(1 / a) / (2 * Math.PI);
+			k *= 2;
+
+			if (k < 1) {
+				return -0.5 * Math.pow(2, 10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI);
 			}
 
-			if ((k *= 2) < 1) {
-				return - 0.5 * (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
-			}
-
-			return a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * 0.5 + 1;
+			return 0.5 * Math.pow(2, -10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI) + 1;
 
 		}
 
@@ -3571,8 +3552,11 @@ PANOLENS.StereographicShader = {
 	 * @param {object} [options] - Option for video settings
 	 * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video
 	 * @param {HTMLCanvasElement} [options.videoCanvas] - HTML5 canvas element for drawing the video
-	 * @param {boolean} [options.muted=false] - Mute the video or not
 	 * @param {boolean} [options.loop=true] - Specify if the video should loop in the end
+	 * @param {boolean} [options.muted=false] - Mute the video or not
+	 * @param {boolean} [options.autoplay=false] - Specify if the video should auto play
+	 * @param {boolean} [options.playsinline=false] - Specify if video should play inline for iOS. If you want it to auto play inline, set both autoplay and muted options to true
+	 * @param {string} [options.crossOrigin="anonymous"] - Sets the cross-origin attribute for the video, which allows for cross-origin videos in some browsers (Firefox, Chrome). Set to either "anonymous" or "use-credentials".
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
 	PANOLENS.VideoPanorama = function ( src, options, radius ) {
@@ -3593,6 +3577,17 @@ PANOLENS.StereographicShader = {
 
 		this.videoFramerate = 30;
 
+		function isIOS10 () {
+			var ua = navigator.userAgent, tem, M = ua.match( /(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i ) || [];
+
+			M = M[ 2 ] ? [ M[ 1 ], M[ 2 ] ] : [ navigator.appName, navigator.appVersion, '-?' ];
+			if ( ( tem = ua.match( /version\/(\d+)/i ) ) !== null ) {
+				M.splice( 1, 1, tem[ 1 ] );
+			}
+			return ( M[ 0 ] === "Safari" ? parseInt( M[ 1 ] ) >= 10 : false );
+		}
+
+		this.isIOS10 = isIOS10();
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
 		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
@@ -3601,7 +3596,7 @@ PANOLENS.StereographicShader = {
 		this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 		this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
-	}
+	};
 
 	PANOLENS.VideoPanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
 
@@ -3626,6 +3621,8 @@ PANOLENS.StereographicShader = {
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
+		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
+		if (options.playsinline) this.videoElement.setAttribute( "playsinline", "" );
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -3648,7 +3645,7 @@ PANOLENS.StereographicShader = {
 
 			}
 
-		}
+		};
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
@@ -3695,39 +3692,18 @@ PANOLENS.StereographicShader = {
 
 		};
 
-		if ( this.isIOS ){
-			
-			videoRenderObject.fps = this.videoFramerate;
-			videoRenderObject.lastTime = Date.now();
-			videoRenderObject.video.pano_paused = true;
-			videoRenderObject.video.play = function(){
+		if ( this.isIOS && !this.isIOS10 ){
 
-				videoRenderObject.lastTime = Date.now();
-				this.pano_paused = false;
+			makeVideoPlayableInline( video, /* hasAudio */ !this.options.muted );
 
-			};
-			videoRenderObject.video.pause = function(){
-
-				this.pano_paused = true;
-
-			};
 			updateCallback = function () {
 
-				if ( this.video.pano_paused ) { return; }
+				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
 
-				var time = Date.now();
-			    var elapsed = ( time - this.lastTime ) / 1000;
+					this.videoContext.drawImage( this.video, 0, 0 );
+					this.videoTexture.needsUpdate = true;
 
-			    if ( this.video && elapsed >= ( ( 1000 / this.fps ) / 1000 ) ) {
-			    	if ( this.video.currentTime + elapsed >= this.video.duration ) {
-			    		this.video.currentTime = 0;
-			    	} else {
-			    		this.video.currentTime = this.video.currentTime + elapsed;
-			    	}
-			        this.videoContext.drawImage( this.video, 0, 0, this.video.videoWidth, this.video.videoHeight );
-		        	this.videoTexture.needsUpdate = true;
-			        this.lastTime = time;
-			    }
+				}
 
 			};
 
@@ -3799,9 +3775,13 @@ PANOLENS.StereographicShader = {
 
 				this.videoRenderObject.video.play();
 
+				this.dispatchEvent( { type: 'play' } );
+
 			} else {
 
 				this.videoRenderObject.video.pause();
+
+				this.dispatchEvent( { type: 'pause' } );
 
 			}
 
@@ -3834,6 +3814,13 @@ PANOLENS.StereographicShader = {
 
 		}
 
+		/**
+		 * Play event
+		 * @type {object}
+		 * @event 'play'
+		 * */
+		this.dispatchEvent( { type: 'play' } );
+
 	};
 
 	/**
@@ -3846,6 +3833,13 @@ PANOLENS.StereographicShader = {
 			this.videoRenderObject.video.pause();
 
 		}
+
+		/**
+		 * Pause event
+		 * @type {object}
+		 * @event 'pause'
+		 * */
+		this.dispatchEvent( { type: 'pause' } );
 
 	};
 
@@ -3862,6 +3856,52 @@ PANOLENS.StereographicShader = {
 
 	};
 
+	/**
+	* Check if video is muted
+	* @return {boolean} - is video muted or not
+	*/
+	PANOLENS.VideoPanorama.prototype.isVideoMuted = function () {
+
+		return this.videoRenderObject.video.muted;
+
+	};
+
+	/**
+	 * Mute video
+	 */
+	PANOLENS.VideoPanorama.prototype.muteVideo = function () {
+
+		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoMuted() ) {
+
+			this.videoRenderObject.video.muted = true;
+
+		}
+
+		this.dispatchEvent( { type: 'volumechange' } );
+
+	};
+
+	/**
+	 * Unmute video
+	 */
+	PANOLENS.VideoPanorama.prototype.unmuteVideo = function () {
+
+		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoMuted() ) {
+
+			this.videoRenderObject.video.muted = false;
+
+		}
+
+		this.dispatchEvent( { type: 'volumechange' } );
+
+	};
+
+	/**
+	 * Returns the video element
+	 * */
+	PANOLENS.VideoPanorama.prototype.getVideoElement = function () {
+		return this.videoRenderObject.video;
+	}
 })();;(function(){
 
 	'use strict';
