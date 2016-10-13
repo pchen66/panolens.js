@@ -101,7 +101,7 @@
 		this.addEventListener( 'dismiss', this.onDismiss );
 		this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
 
-	}
+	};
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
 
@@ -323,7 +323,7 @@
 		this.container.appendChild( element.left );
 		this.container.appendChild( element.right );
 
-	}
+	};
 
 	/**
 	 * Translate the hovering element by css transform
@@ -587,4 +587,4 @@
 
 	};
 
-} )()
+} )();

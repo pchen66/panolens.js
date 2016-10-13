@@ -79,7 +79,10 @@
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
 		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
-		if (options.playsinline) this.videoElement.setAttribute( "playsinline", "" );
+		if (options.playsinline) {
+			this.videoElement.setAttribute( "playsinline", "" );
+			this.videoElement.setAttribute( "webkit-playsinline", "" );
+		}
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -253,9 +256,13 @@
 
 				this.videoRenderObject.video.play();
 
+				this.dispatchEvent( { type: 'play' } );
+
 			} else {
 
 				this.videoRenderObject.video.pause();
+
+				this.dispatchEvent( { type: 'pause' } );
 
 			}
 
@@ -288,6 +295,13 @@
 
 		}
 
+		/**
+		 * Play event
+		 * @type {object}
+		 * @event 'play'
+		 * */
+		this.dispatchEvent( { type: 'play' } );
+
 	};
 
 	/**
@@ -300,6 +314,13 @@
 			this.videoRenderObject.video.pause();
 
 		}
+
+		/**
+		 * Pause event
+		 * @type {object}
+		 * @event 'pause'
+		 * */
+		this.dispatchEvent( { type: 'pause' } );
 
 	};
 
@@ -337,6 +358,8 @@
 
 		}
 
+		this.dispatchEvent( { type: 'volumechange' } );
+
 	};
 
 	/**
@@ -350,5 +373,14 @@
 
 		}
 
+		this.dispatchEvent( { type: 'volumechange' } );
+
 	};
+
+	/**
+	 * Returns the video element
+	 * */
+	PANOLENS.VideoPanorama.prototype.getVideoElement = function () {
+		return this.videoRenderObject.video;
+	}
 })();
