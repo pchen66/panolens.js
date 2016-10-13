@@ -20,7 +20,7 @@
 		this.visible = false;
 		this.renderOrder = 10;
 
-	}
+	};
 
 	PANOLENS.Reticle.prototype = Object.create( THREE.Sprite.prototype );
 
