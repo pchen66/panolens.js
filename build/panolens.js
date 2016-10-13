@@ -6,7 +6,8 @@
 
 var PANOLENS = { REVISION: '3-dev' };
 ;/*! npm.im/iphone-inline-video */
-var makeVideoPlayableInline=function(){"use strict";function e(e){function r(t){n=requestAnimationFrame(r),e(t-(i||t)),i=t}var n,i;this.start=function(){n||r(0)},this.stop=function(){cancelAnimationFrame(n),n=null,i=0}}function r(e,r,n,i){function t(r){Boolean(e[n])===Boolean(i)&&r.stopImmediatePropagation(),delete e[n]}return e.addEventListener(r,t,!1),t}function n(e,r,n,i){function t(){return n[r]}function d(e){n[r]=e}i&&d(e[r]),Object.defineProperty(e,r,{get:t,set:d})}function i(e,r,n){n.addEventListener(r,function(){return e.dispatchEvent(new Event(r))})}function t(e,r){Promise.resolve().then(function(){e.dispatchEvent(new Event(r))})}function d(e){var r=new Audio;return i(e,"play",r),i(e,"playing",r),i(e,"pause",r),r.crossOrigin=e.crossOrigin,r.src=e.src||e.currentSrc||"data:",r}function a(e,r,n){(f||0)+200<Date.now()&&(e[h]=!0,f=Date.now()),n||(e.currentTime=r),T[++w%3]=100*r|0}function o(e){return e.driver.currentTime>=e.video.duration}function u(e){var r=this;r.video.readyState>=r.video.HAVE_FUTURE_DATA?(r.hasAudio||(r.driver.currentTime=r.video.currentTime+e*r.video.playbackRate/1e3,r.video.loop&&o(r)&&(r.driver.currentTime=0)),a(r.video,r.driver.currentTime)):r.video.networkState!==r.video.NETWORK_IDLE||r.video.buffered.length||r.video.load(),r.video.ended&&(delete r.video[h],r.video.pause(!0))}function s(){var e=this,r=e[g];return e.webkitDisplayingFullscreen?void e[b]():("data:"!==r.driver.src&&r.driver.src!==e.src&&(a(e,0,!0),r.driver.src=e.src),void(e.paused&&(r.paused=!1,e.buffered.length||e.load(),r.driver.play(),r.updater.start(),r.hasAudio||(t(e,"play"),r.video.readyState>=r.video.HAVE_ENOUGH_DATA&&t(e,"playing")))))}function c(e){var r=this,n=r[g];n.driver.pause(),n.updater.stop(),r.webkitDisplayingFullscreen&&r[E](),n.paused&&!e||(n.paused=!0,n.hasAudio||t(r,"pause"),r.ended&&(r[h]=!0,t(r,"ended")))}function v(r,n){var i=r[g]={};i.paused=!0,i.hasAudio=n,i.video=r,i.updater=new e(u.bind(i)),n?i.driver=d(r):(r.addEventListener("canplay",function(){r.paused||t(r,"playing")}),i.driver={src:r.src||r.currentSrc||"data:",muted:!0,paused:!0,pause:function(){i.driver.paused=!0},play:function(){i.driver.paused=!1,o(i)&&a(r,0)},get ended(){return o(i)}}),r.addEventListener("emptied",function(){var e=!i.driver.src||"data:"===i.driver.src;i.driver.src&&i.driver.src!==r.src&&(a(r,0,!0),i.driver.src=r.src,e?i.driver.play():i.updater.stop())},!1),r.addEventListener("webkitbeginfullscreen",function(){r.paused?n&&!i.driver.buffered.length&&i.driver.load():(r.pause(),r[b]())}),n&&(r.addEventListener("webkitendfullscreen",function(){i.driver.currentTime=r.currentTime}),r.addEventListener("seeking",function(){T.indexOf(100*r.currentTime|0)<0&&(i.driver.currentTime=r.currentTime)}))}function p(e){var i=e[g];e[b]=e.play,e[E]=e.pause,e.play=s,e.pause=c,n(e,"paused",i.driver),n(e,"muted",i.driver,!0),n(e,"playbackRate",i.driver,!0),n(e,"ended",i.driver),n(e,"loop",i.driver,!0),r(e,"seeking"),r(e,"seeked"),r(e,"timeupdate",h,!1),r(e,"ended",h,!1)}function l(e,r,n){void 0===r&&(r=!0),void 0===n&&(n=!0),n&&!y||e[g]||(v(e,r),p(e),e.classList.add("IIV"),!r&&e.autoplay&&e.play(),"MacIntel"!==navigator.platform&&"Windows"!==navigator.platform||console.warn("iphone-inline-video is not guaranteed to work in emulated environments"))}var f,m="undefined"==typeof Symbol?function(e){return"@"+(e||"@")+Math.random()}:Symbol,y=/iPhone|iPod/i.test(navigator.userAgent)&&void 0===document.head.style.grid,g=m(),h=m(),b=m("nativeplay"),E=m("nativepause"),T=[],w=0;return l.isWhitelisted=y,l}();;/**
+var makeVideoPlayableInline=function(){"use strict";/*! npm.im/intervalometer */
+function e(e,r,n,i){function t(n){d=r(t,i),e(n-(a||n)),a=n}var d,a;return{start:function(){d||t(0)},stop:function(){n(d),d=null,a=0}}}function r(r){return e(r,requestAnimationFrame,cancelAnimationFrame)}function n(e,r,n,i){function t(r){Boolean(e[n])===Boolean(i)&&r.stopImmediatePropagation(),delete e[n]}return e.addEventListener(r,t,!1),t}function i(e,r,n,i){function t(){return n[r]}function d(e){n[r]=e}i&&d(e[r]),Object.defineProperty(e,r,{get:t,set:d})}function t(e,r,n){n.addEventListener(r,function(){return e.dispatchEvent(new Event(r))})}function d(e,r){Promise.resolve().then(function(){e.dispatchEvent(new Event(r))})}function a(e){var r=new Audio;return t(e,"play",r),t(e,"playing",r),t(e,"pause",r),r.crossOrigin=e.crossOrigin,r.src=e.src||e.currentSrc||"data:",r}function o(e,r,n){(m||0)+200<Date.now()&&(e[b]=!0,m=Date.now()),n||(e.currentTime=r),A[++k%3]=100*r|0}function u(e){return e.driver.currentTime>=e.video.duration}function s(e){var r=this;r.video.readyState>=r.video.HAVE_FUTURE_DATA?(r.hasAudio||(r.driver.currentTime=r.video.currentTime+e*r.video.playbackRate/1e3,r.video.loop&&u(r)&&(r.driver.currentTime=0)),o(r.video,r.driver.currentTime)):r.video.networkState!==r.video.NETWORK_IDLE||r.video.buffered.length||r.video.load(),r.video.ended&&(delete r.video[b],r.video.pause(!0))}function c(){var e=this,r=e[h];return e.webkitDisplayingFullscreen?void e[E]():("data:"!==r.driver.src&&r.driver.src!==e.src&&(o(e,0,!0),r.driver.src=e.src),void(e.paused&&(r.paused=!1,e.buffered.length||e.load(),r.driver.play(),r.updater.start(),r.hasAudio||(d(e,"play"),r.video.readyState>=r.video.HAVE_ENOUGH_DATA&&d(e,"playing")))))}function v(e){var r=this,n=r[h];n.driver.pause(),n.updater.stop(),r.webkitDisplayingFullscreen&&r[T](),n.paused&&!e||(n.paused=!0,n.hasAudio||d(r,"pause"),r.ended&&(r[b]=!0,d(r,"ended")))}function p(e,n){var i=e[h]={};i.paused=!0,i.hasAudio=n,i.video=e,i.updater=r(s.bind(i)),n?i.driver=a(e):(e.addEventListener("canplay",function(){e.paused||d(e,"playing")}),i.driver={src:e.src||e.currentSrc||"data:",muted:!0,paused:!0,pause:function(){i.driver.paused=!0},play:function(){i.driver.paused=!1,u(i)&&o(e,0)},get ended(){return u(i)}}),e.addEventListener("emptied",function(){var r=!i.driver.src||"data:"===i.driver.src;i.driver.src&&i.driver.src!==e.src&&(o(e,0,!0),i.driver.src=e.src,r?i.driver.play():i.updater.stop())},!1),e.addEventListener("webkitbeginfullscreen",function(){e.paused?n&&!i.driver.buffered.length&&i.driver.load():(e.pause(),e[E]())}),n&&(e.addEventListener("webkitendfullscreen",function(){i.driver.currentTime=e.currentTime}),e.addEventListener("seeking",function(){A.indexOf(100*e.currentTime|0)<0&&(i.driver.currentTime=e.currentTime)}))}function l(e){var r=e[h];e[E]=e.play,e[T]=e.pause,e.play=c,e.pause=v,i(e,"paused",r.driver),i(e,"muted",r.driver,!0),i(e,"playbackRate",r.driver,!0),i(e,"ended",r.driver),i(e,"loop",r.driver,!0),n(e,"seeking"),n(e,"seeked"),n(e,"timeupdate",b,!1),n(e,"ended",b,!1)}function f(e,r,n){void 0===r&&(r=!0),void 0===n&&(n=!0),n&&!g||e[h]||(p(e,r),l(e),e.classList.add("IIV"),!r&&e.autoplay&&e.play(),/iPhone|iPod|iPad/.test(navigator.platform)||console.warn("iphone-inline-video is not guaranteed to work in emulated environments"))}var m,y="undefined"==typeof Symbol?function(e){return"@"+(e||"@")+Math.random()}:Symbol,g=/iPhone|iPod/i.test(navigator.userAgent)&&!matchMedia("(-webkit-video-playable-inline)").matches,h=y(),b=y(),E=y("nativeplay"),T=y("nativepause"),A=[],k=0;return f.isWhitelisted=g,f}();;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
  * ----------------------------------------------
@@ -107,7 +108,7 @@ var TWEEN = TWEEN || (function () {
 			return new Date().getTime();
 		};
 	}
-}).bind(this)();
+})();
 
 
 TWEEN.Tween = function (object) {
@@ -1712,13 +1713,19 @@ THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;;/**
  * W3C Device Orientation control (http://w3c.github.io/deviceorientation/spec-source-orientation.html)
  */
 
-THREE.DeviceOrientationControls = function( object ) {
+THREE.DeviceOrientationControls = function( camera, domElement ) {
 
 	var scope = this;
 	var changeEvent = { type: 'change' };
 
-	this.object = object;
-	this.object.rotation.reorder( "YXZ" );
+	var rotY = 0;
+	var rotX = 0;
+	var tempX = 0;
+	var tempY = 0;
+
+	this.camera = camera;
+	this.camera.rotation.reorder( "YXZ" );
+	this.domElement = ( domElement !== undefined ) ? domElement : document;
 
 	this.enabled = true;
 
@@ -1741,9 +1748,34 @@ THREE.DeviceOrientationControls = function( object ) {
 
 	};
 
+	var onTouchStartEvent = function (event) {
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		tempX = event.touches[ 0 ].pageX;
+		tempY = event.touches[ 0 ].pageY;
+
+	};
+
+	var onTouchMoveEvent = function (event) {
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		rotY += THREE.Math.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 );
+		rotX += THREE.Math.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
+
+		scope.updateAlphaOffsetAngle( rotY );
+
+		tempX = event.touches[ 0 ].pageX;
+		tempY = event.touches[ 0 ].pageY;
+
+	};
+
 	// The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
 
-	var setObjectQuaternion = function() {
+	var setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
 
 		var zee = new THREE.Vector3( 0, 0, 1 );
 
@@ -1753,19 +1785,44 @@ THREE.DeviceOrientationControls = function( object ) {
 
 		var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
 
-		return function( quaternion, alpha, beta, gamma, orient ) {
+		var vectorFingerY;
+		var fingerQY = new THREE.Quaternion();
+		var fingerQX = new THREE.Quaternion();
 
-			euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
+		if ( scope.screenOrientation == 0 ) {
 
-			quaternion.setFromEuler( euler ); // orient the device
+			vectorFingerY = new THREE.Vector3( 1, 0, 0 );
+			fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
 
-			quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
+		} else if ( scope.screenOrientation == 180 ) {
 
-			quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
+			vectorFingerY = new THREE.Vector3( 1, 0, 0 );
+			fingerQY.setFromAxisAngle( vectorFingerY, rotX );
+
+		} else if ( scope.screenOrientation == 90 ) {
+
+			vectorFingerY = new THREE.Vector3( 0, 1, 0 );
+			fingerQY.setFromAxisAngle( vectorFingerY, rotX );
+
+		} else if ( scope.screenOrientation == - 90) {
+
+			vectorFingerY = new THREE.Vector3( 0, 1, 0 );
+			fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
 
 		}
 
-	}();
+		q1.multiply( fingerQY );
+		q1.multiply( fingerQX );
+
+		euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
+
+		quaternion.setFromEuler( euler ); // orient the device
+
+		quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
+
+		quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
+
+	};
 
 	this.connect = function() {
 
@@ -1774,6 +1831,9 @@ THREE.DeviceOrientationControls = function( object ) {
 		window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
 		window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
 		window.addEventListener( 'deviceorientation', this.update.bind( this ), false );
+
+		scope.domElement.addEventListener( "touchstart", onTouchStartEvent, false );
+		scope.domElement.addEventListener( "touchmove", onTouchMoveEvent, false );
 
 		scope.enabled = true;
 
@@ -1784,6 +1844,9 @@ THREE.DeviceOrientationControls = function( object ) {
 		window.removeEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
 		window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
 		window.removeEventListener( 'deviceorientation', this.update.bind( this ), false );
+
+		scope.domElement.removeEventListener( "touchstart", onTouchStartEvent, false );
+		scope.domElement.removeEventListener( "touchmove", onTouchMoveEvent, false );
 
 		scope.enabled = false;
 
@@ -1798,7 +1861,7 @@ THREE.DeviceOrientationControls = function( object ) {
 		var gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
 		var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
 
-		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
+		setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
 		this.alpha = alpha;
 
 		ignoreUpdate !== true && this.dispatchEvent( changeEvent );
@@ -3622,7 +3685,10 @@ PANOLENS.StereographicShader = {
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
 		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
-		if (options.playsinline) this.videoElement.setAttribute( "playsinline", "" );
+		if (options.playsinline) {
+			this.videoElement.setAttribute( "playsinline", "" );
+			this.videoElement.setAttribute( "webkit-playsinline", "" );
+		}
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -3696,31 +3762,18 @@ PANOLENS.StereographicShader = {
 
 			makeVideoPlayableInline( video, /* hasAudio */ !this.options.muted );
 
-			updateCallback = function () {
-
-				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
-
-					this.videoContext.drawImage( this.video, 0, 0 );
-					this.videoTexture.needsUpdate = true;
-
-				}
-
-			};
-
-		} else {
-
-			updateCallback = function () {
-
-				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
-
-					this.videoContext.drawImage( this.video, 0, 0 );
-					this.videoTexture.needsUpdate = true;
-
-				}
-
-			};
-
 		}
+
+		updateCallback = function () {
+
+			if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
+
+				this.videoContext.drawImage( this.video, 0, 0 );
+				this.videoTexture.needsUpdate = true;
+
+			}
+
+		};
 
 		// Draw the first frame
 		videoContext.drawImage( video, 0, 0 );
@@ -4273,7 +4326,7 @@ PANOLENS.StereographicShader = {
 		this.visible = false;
 		this.renderOrder = 10;
 
-	}
+	};
 
 	PANOLENS.Reticle.prototype = Object.create( THREE.Sprite.prototype );
 
@@ -6260,7 +6313,7 @@ PANOLENS.StereographicShader = {
 		this.addEventListener( 'dismiss', this.onDismiss );
 		this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
 
-	}
+	};
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
 
@@ -6482,7 +6535,7 @@ PANOLENS.StereographicShader = {
 		this.container.appendChild( element.left );
 		this.container.appendChild( element.right );
 
-	}
+	};
 
 	/**
 	 * Translate the hovering element by css transform
@@ -6746,7 +6799,7 @@ PANOLENS.StereographicShader = {
 
 	};
 
-} )();( function () {
+} )();;( function () {
 
 	'use strict';
 
@@ -6893,7 +6946,7 @@ PANOLENS.StereographicShader = {
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
-		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera );
+		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera, this.container );
 		this.DeviceOrientationControls.name = 'device-orientation';
 		this.DeviceOrientationControls.enabled = false;
 
@@ -6952,7 +7005,7 @@ PANOLENS.StereographicShader = {
 		// Animate
 		this.animate.call( this );
 
-	}
+	};
 
 	PANOLENS.Viewer.prototype = Object.create( THREE.EventDispatcher.prototype );
 
@@ -8186,7 +8239,7 @@ PANOLENS.StereographicShader = {
 
 		}
 
-	}
+	};
 
 	/**
 	 * Register reticle event
