@@ -3683,7 +3683,10 @@ PANOLENS.StereographicShader = {
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
 		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
-		if (options.playsinline) this.videoElement.setAttribute( "playsinline", "" );
+		if (options.playsinline) {
+			this.videoElement.setAttribute( "playsinline", "" );
+			this.videoElement.setAttribute( "webkit-playsinline", "" );
+		}
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -4355,7 +4358,7 @@ PANOLENS.StereographicShader = {
 		this.visible = false;
 		this.renderOrder = 10;
 
-	}
+	};
 
 	PANOLENS.Reticle.prototype = Object.create( THREE.Sprite.prototype );
 
@@ -6342,7 +6345,7 @@ PANOLENS.StereographicShader = {
 		this.addEventListener( 'dismiss', this.onDismiss );
 		this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
 
-	}
+	};
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
 
@@ -6564,7 +6567,7 @@ PANOLENS.StereographicShader = {
 		this.container.appendChild( element.left );
 		this.container.appendChild( element.right );
 
-	}
+	};
 
 	/**
 	 * Translate the hovering element by css transform
@@ -6828,7 +6831,7 @@ PANOLENS.StereographicShader = {
 
 	};
 
-} )();( function () {
+} )();;( function () {
 
 	'use strict';
 
@@ -7034,7 +7037,7 @@ PANOLENS.StereographicShader = {
 		// Animate
 		this.animate.call( this );
 
-	}
+	};
 
 	PANOLENS.Viewer.prototype = Object.create( THREE.EventDispatcher.prototype );
 
@@ -8268,7 +8271,7 @@ PANOLENS.StereographicShader = {
 
 		}
 
-	}
+	};
 
 	/**
 	 * Register reticle event

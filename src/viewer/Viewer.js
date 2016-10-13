@@ -204,7 +204,7 @@
 		// Animate
 		this.animate.call( this );
 
-	}
+	};
 
 	PANOLENS.Viewer.prototype = Object.create( THREE.EventDispatcher.prototype );
 
@@ -1438,7 +1438,7 @@
 
 		}
 
-	}
+	};
 
 	/**
 	 * Register reticle event

@@ -79,7 +79,10 @@
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
 		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
-		if (options.playsinline) this.videoElement.setAttribute( "playsinline", "" );
+		if (options.playsinline) {
+			this.videoElement.setAttribute( "playsinline", "" );
+			this.videoElement.setAttribute( "webkit-playsinline", "" );
+		}
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
