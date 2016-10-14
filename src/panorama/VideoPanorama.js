@@ -153,55 +153,21 @@
 		};
 
 		if ( this.isIOS && !this.isIOS10 ){
-			
-			videoRenderObject.fps = this.videoFramerate;
-			videoRenderObject.lastTime = Date.now();
-			videoRenderObject.video.pano_paused = true;
-			videoRenderObject.video.play = function(){
 
-				videoRenderObject.lastTime = Date.now();
-				this.pano_paused = false;
-
-			};
-			videoRenderObject.video.pause = function(){
-
-				this.pano_paused = true;
-
-			};
-			updateCallback = function () {
-
-				if ( this.video.pano_paused ) { return; }
-
-				var time = Date.now();
-			    var elapsed = ( time - this.lastTime ) / 1000;
-
-			    if ( this.video && elapsed >= ( ( 1000 / this.fps ) / 1000 ) ) {
-			    	if ( this.video.currentTime + elapsed >= this.video.duration ) {
-			    		this.video.currentTime = 0;
-			    	} else {
-			    		this.video.currentTime = this.video.currentTime + elapsed;
-			    	}
-			        this.videoContext.drawImage( this.video, 0, 0, this.video.videoWidth, this.video.videoHeight );
-		        	this.videoTexture.needsUpdate = true;
-			        this.lastTime = time;
-			    }
-
-			};
-
-		} else {
-
-			updateCallback = function () {
-
-				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
-
-					this.videoContext.drawImage( this.video, 0, 0 );
-					this.videoTexture.needsUpdate = true;
-
-				}
-
-			};
+			makeVideoPlayableInline( video, /* hasAudio */ !this.options.muted );
 
 		}
+
+		updateCallback = function () {
+
+			if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
+
+				this.videoContext.drawImage( this.video, 0, 0 );
+				this.videoTexture.needsUpdate = true;
+
+			}
+
+		};
 
 		// Draw the first frame
 		videoContext.drawImage( video, 0, 0 );
