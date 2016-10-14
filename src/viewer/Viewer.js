@@ -151,7 +151,7 @@
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
-		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera );
+		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera, this.container );
 		this.DeviceOrientationControls.name = 'device-orientation';
 		this.DeviceOrientationControls.enabled = false;
 
