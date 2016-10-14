@@ -52,18 +52,16 @@
 			</li>
 			
 		</ul>
-        
-            <div class="col-sm-3 col-md-3">
-                <form class="navbar-form" role="search">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
-                        <div class="input-group-btn">
-                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
-                        </div>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
                     </div>
-                </form>
-            </div>
-        
+                </div>
+            </form>
+        </div>
 	</div>
 
 </div>
@@ -108,11 +106,13 @@
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
+	 * @param {boolean} [options.viewIndicator=true] - Adds an angle view indicator in upper left corner
+	 * @param {number}  [options.indicatorSize=30] - size of View Indicator
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
 		THREE.EventDispatcher.call( this );
-		
+
 		if ( !THREE ) {
 
 			console.error('Three.JS not found');
@@ -135,6 +135,8 @@
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		options.passiveRendering = options.passiveRendering || false;
+		options.viewIndicator = options.viewIndicator || true;
+		options.indicatorSize = options.indicatorSize || 30;
 
 		this.options = options;
 
@@ -153,7 +155,7 @@
 			container.style.height = window.innerHeight + 'px';
 			document.body.appendChild( container );
 
-			// For matching body's width and height dynamically on the next tick to 
+			// For matching body's width and height dynamically on the next tick to
 			// avoid 0 height in the beginning
 			setTimeout( function () {
 				container.style.width = '100%';
@@ -170,6 +172,8 @@
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
 
+		this.viewIndicatorSize = options.indicatorSize;
+
 		this.reticle = {};
 		this.tempEnableReticle = this.options.enableReticle;
 
@@ -185,7 +189,7 @@
 		this.effect;
 		this.panorama;
 		this.widget;
-		
+
 		this.hoverObject;
 		this.infospot;
 		this.pressEntityObject;
@@ -240,7 +244,7 @@
 
 			this.OrbitControls.addEventListener( 'change', this.onChange.bind( this ) );
 			this.DeviceOrientationControls.addEventListener( 'change', this.onChange.bind( this ) );
-		
+
 		}
 
 		// Controls
@@ -259,7 +263,7 @@
 
 		// Add default hidden reticle
 		this.addReticle();
-		
+
 		// Lock horizontal view
 		if ( this.options.horizontalView ) {
 			this.OrbitControls.minPolarAngle = Math.PI / 2;
@@ -269,6 +273,11 @@
 		// Add Control UI
 		if ( this.options.controlBar !== false ) {
 			this.addDefaultControlBar( this.options.controlButtons );
+		}
+
+		// Add View Indicator
+		if ( this.options.viewIndicator ) {
+			this.addViewIndicator();
 		}
 
 		// Reverse dragging direction
@@ -283,7 +292,7 @@
 		} else {
 			this.registerMouseAndTouchEvents();
 		}
-		
+
 		// Register dom event listeners
 		this.registerEventListeners();
 
@@ -1646,6 +1655,71 @@
 
 	};
 
+	/**
+	 * View indicator in upper left
+	 * */
+	PANOLENS.Viewer.prototype.addViewIndicator = function () {
+
+		var indicatorSvg = PANOLENS.DataImage.ViewIndicator;
+
+		var viewIndicatorDiv = document.createElement( "div" );
+		viewIndicatorDiv.innerHTML = indicatorSvg;
+		viewIndicatorDiv.style.width = this.viewIndicatorSize + "px";
+		viewIndicatorDiv.style.height = this.viewIndicatorSize + "px";
+		viewIndicatorDiv.style.position = "absolute";
+		viewIndicatorDiv.style.top = "6px";
+		viewIndicatorDiv.style.left = "6px";
+		viewIndicatorDiv.style.opacity = "0.7";
+		viewIndicatorDiv.style.cursor = "pointer";
+		viewIndicatorDiv.id = "view-indicator-container";
+
+		this.container.appendChild( viewIndicatorDiv );
+
+		var viewIndicator = document.getElementById( "view-indicator" );
+		var indicator = document.getElementById( "indicator" );
+
+		var setIndicatorD = function () {
+
+			this.radius = this.viewIndicatorSize * 0.225;
+			this.currentPanoAngle = this.camera.rotation.y - THREE.Math.degToRad( 90 );
+			this.fovAngle = THREE.Math.degToRad( this.camera.fov ) ;
+			this.leftAngle = -this.currentPanoAngle - this.fovAngle / 2;
+			this.rightAngle = -this.currentPanoAngle + this.fovAngle / 2;
+			this.leftX = this.radius * Math.cos( this.leftAngle );
+			this.leftY = this.radius * Math.sin( this.leftAngle );
+			this.rightX = this.radius * Math.cos( this.rightAngle );
+			this.rightY = this.radius * Math.sin( this.rightAngle );
+			this.indicatorD = "M " + this.leftX + " " + this.leftY + " A " + this.radius + " " + this.radius + " 0 0 1 " + this.rightX + " " + this.rightY;
+
+			if ( this.leftX &amp;&amp; this.leftY &amp;&amp; this.rightX &amp;&amp; this.rightY &amp;&amp; this.radius ) {
+
+				indicator.setAttribute( "d", this.indicatorD );
+
+			}
+
+		}.bind(this);
+
+		this.addUpdateCallback( setIndicatorD );
+
+		var indicatorOnMouseEnter = function () {
+
+			viewIndicatorDiv.style.opacity = "1";
+			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+
+		};
+
+		var indicatorOnMouseLeave = function () {
+
+			viewIndicatorDiv.style.opacity = "0.7";
+			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+
+		};
+
+		viewIndicatorDiv.addEventListener( "mouseenter", indicatorOnMouseEnter );
+		viewIndicatorDiv.addEventListener( "mouseleave", indicatorOnMouseLeave );
+
+	};
+
 } )();
 </pre>
     </article>
@@ -1665,30 +1739,28 @@
 </div>
 </div>
 
-
-    <div class="modal fade" id="searchResults">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Search results</h4>
-          </div>
-          <div class="modal-body"></div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div>
-
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 <footer>
 
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-10-13T16:17:59-07:00
+		on 2016-10-14T16:08:46-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
@@ -1696,9 +1768,7 @@
 
 <script src="scripts/docstrap.lib.js"></script>
 <script src="scripts/toc.js"></script>
-
-    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
-
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
 
 <script>
 $( function () {
@@ -1708,7 +1778,7 @@ $( function () {
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
 
-	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
 		var $this = $( this );
 
 		var example = $this.find( "code" );
@@ -1744,7 +1814,8 @@ $( function () {
 	} );
 	$( "#toc" ).toc( {
 		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
 		},
 		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
 		showAndHide : false,
@@ -1770,13 +1841,11 @@ $( function () {
 <!--Google Analytics-->
 
 
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            SearcherDisplay.init();
-        });
-    </script>
-
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
 
 </body>
 </html>

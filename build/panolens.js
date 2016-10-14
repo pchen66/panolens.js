@@ -6,8 +6,7 @@
 
 var PANOLENS = { REVISION: '3-dev' };
 ;/*! npm.im/iphone-inline-video */
-var makeVideoPlayableInline=function(){"use strict";/*! npm.im/intervalometer */
-function e(e,r,n,i){function t(n){d=r(t,i),e(n-(a||n)),a=n}var d,a;return{start:function(){d||t(0)},stop:function(){n(d),d=null,a=0}}}function r(r){return e(r,requestAnimationFrame,cancelAnimationFrame)}function n(e,r,n,i){function t(r){Boolean(e[n])===Boolean(i)&&r.stopImmediatePropagation(),delete e[n]}return e.addEventListener(r,t,!1),t}function i(e,r,n,i){function t(){return n[r]}function d(e){n[r]=e}i&&d(e[r]),Object.defineProperty(e,r,{get:t,set:d})}function t(e,r,n){n.addEventListener(r,function(){return e.dispatchEvent(new Event(r))})}function d(e,r){Promise.resolve().then(function(){e.dispatchEvent(new Event(r))})}function a(e){var r=new Audio;return t(e,"play",r),t(e,"playing",r),t(e,"pause",r),r.crossOrigin=e.crossOrigin,r.src=e.src||e.currentSrc||"data:",r}function o(e,r,n){(m||0)+200<Date.now()&&(e[b]=!0,m=Date.now()),n||(e.currentTime=r),A[++k%3]=100*r|0}function u(e){return e.driver.currentTime>=e.video.duration}function s(e){var r=this;r.video.readyState>=r.video.HAVE_FUTURE_DATA?(r.hasAudio||(r.driver.currentTime=r.video.currentTime+e*r.video.playbackRate/1e3,r.video.loop&&u(r)&&(r.driver.currentTime=0)),o(r.video,r.driver.currentTime)):r.video.networkState!==r.video.NETWORK_IDLE||r.video.buffered.length||r.video.load(),r.video.ended&&(delete r.video[b],r.video.pause(!0))}function c(){var e=this,r=e[h];return e.webkitDisplayingFullscreen?void e[E]():("data:"!==r.driver.src&&r.driver.src!==e.src&&(o(e,0,!0),r.driver.src=e.src),void(e.paused&&(r.paused=!1,e.buffered.length||e.load(),r.driver.play(),r.updater.start(),r.hasAudio||(d(e,"play"),r.video.readyState>=r.video.HAVE_ENOUGH_DATA&&d(e,"playing")))))}function v(e){var r=this,n=r[h];n.driver.pause(),n.updater.stop(),r.webkitDisplayingFullscreen&&r[T](),n.paused&&!e||(n.paused=!0,n.hasAudio||d(r,"pause"),r.ended&&(r[b]=!0,d(r,"ended")))}function p(e,n){var i=e[h]={};i.paused=!0,i.hasAudio=n,i.video=e,i.updater=r(s.bind(i)),n?i.driver=a(e):(e.addEventListener("canplay",function(){e.paused||d(e,"playing")}),i.driver={src:e.src||e.currentSrc||"data:",muted:!0,paused:!0,pause:function(){i.driver.paused=!0},play:function(){i.driver.paused=!1,u(i)&&o(e,0)},get ended(){return u(i)}}),e.addEventListener("emptied",function(){var r=!i.driver.src||"data:"===i.driver.src;i.driver.src&&i.driver.src!==e.src&&(o(e,0,!0),i.driver.src=e.src,r?i.driver.play():i.updater.stop())},!1),e.addEventListener("webkitbeginfullscreen",function(){e.paused?n&&!i.driver.buffered.length&&i.driver.load():(e.pause(),e[E]())}),n&&(e.addEventListener("webkitendfullscreen",function(){i.driver.currentTime=e.currentTime}),e.addEventListener("seeking",function(){A.indexOf(100*e.currentTime|0)<0&&(i.driver.currentTime=e.currentTime)}))}function l(e){var r=e[h];e[E]=e.play,e[T]=e.pause,e.play=c,e.pause=v,i(e,"paused",r.driver),i(e,"muted",r.driver,!0),i(e,"playbackRate",r.driver,!0),i(e,"ended",r.driver),i(e,"loop",r.driver,!0),n(e,"seeking"),n(e,"seeked"),n(e,"timeupdate",b,!1),n(e,"ended",b,!1)}function f(e,r,n){void 0===r&&(r=!0),void 0===n&&(n=!0),n&&!g||e[h]||(p(e,r),l(e),e.classList.add("IIV"),!r&&e.autoplay&&e.play(),/iPhone|iPod|iPad/.test(navigator.platform)||console.warn("iphone-inline-video is not guaranteed to work in emulated environments"))}var m,y="undefined"==typeof Symbol?function(e){return"@"+(e||"@")+Math.random()}:Symbol,g=/iPhone|iPod/i.test(navigator.userAgent)&&!matchMedia("(-webkit-video-playable-inline)").matches,h=y(),b=y(),E=y("nativeplay"),T=y("nativepause"),A=[],k=0;return f.isWhitelisted=g,f}();;/**
+var makeVideoPlayableInline=function(){"use strict";function e(e){function r(t){n=requestAnimationFrame(r),e(t-(i||t)),i=t}var n,i;this.start=function(){n||r(0)},this.stop=function(){cancelAnimationFrame(n),n=null,i=0}}function r(e,r,n,i){function t(r){Boolean(e[n])===Boolean(i)&&r.stopImmediatePropagation(),delete e[n]}return e.addEventListener(r,t,!1),t}function n(e,r,n,i){function t(){return n[r]}function d(e){n[r]=e}i&&d(e[r]),Object.defineProperty(e,r,{get:t,set:d})}function i(e,r,n){n.addEventListener(r,function(){return e.dispatchEvent(new Event(r))})}function t(e,r){Promise.resolve().then(function(){e.dispatchEvent(new Event(r))})}function d(e){var r=new Audio;return i(e,"play",r),i(e,"playing",r),i(e,"pause",r),r.crossOrigin=e.crossOrigin,r.src=e.src||e.currentSrc||"data:",r}function a(e,r,n){(f||0)+200<Date.now()&&(e[h]=!0,f=Date.now()),n||(e.currentTime=r),T[++w%3]=100*r|0}function o(e){return e.driver.currentTime>=e.video.duration}function u(e){var r=this;r.video.readyState>=r.video.HAVE_FUTURE_DATA?(r.hasAudio||(r.driver.currentTime=r.video.currentTime+e*r.video.playbackRate/1e3,r.video.loop&&o(r)&&(r.driver.currentTime=0)),a(r.video,r.driver.currentTime)):r.video.networkState!==r.video.NETWORK_IDLE||r.video.buffered.length||r.video.load(),r.video.ended&&(delete r.video[h],r.video.pause(!0))}function s(){var e=this,r=e[g];return e.webkitDisplayingFullscreen?void e[b]():("data:"!==r.driver.src&&r.driver.src!==e.src&&(a(e,0,!0),r.driver.src=e.src),void(e.paused&&(r.paused=!1,e.buffered.length||e.load(),r.driver.play(),r.updater.start(),r.hasAudio||(t(e,"play"),r.video.readyState>=r.video.HAVE_ENOUGH_DATA&&t(e,"playing")))))}function c(e){var r=this,n=r[g];n.driver.pause(),n.updater.stop(),r.webkitDisplayingFullscreen&&r[E](),n.paused&&!e||(n.paused=!0,n.hasAudio||t(r,"pause"),r.ended&&(r[h]=!0,t(r,"ended")))}function v(r,n){var i=r[g]={};i.paused=!0,i.hasAudio=n,i.video=r,i.updater=new e(u.bind(i)),n?i.driver=d(r):(r.addEventListener("canplay",function(){r.paused||t(r,"playing")}),i.driver={src:r.src||r.currentSrc||"data:",muted:!0,paused:!0,pause:function(){i.driver.paused=!0},play:function(){i.driver.paused=!1,o(i)&&a(r,0)},get ended(){return o(i)}}),r.addEventListener("emptied",function(){var e=!i.driver.src||"data:"===i.driver.src;i.driver.src&&i.driver.src!==r.src&&(a(r,0,!0),i.driver.src=r.src,e?i.driver.play():i.updater.stop())},!1),r.addEventListener("webkitbeginfullscreen",function(){r.paused?n&&!i.driver.buffered.length&&i.driver.load():(r.pause(),r[b]())}),n&&(r.addEventListener("webkitendfullscreen",function(){i.driver.currentTime=r.currentTime}),r.addEventListener("seeking",function(){T.indexOf(100*r.currentTime|0)<0&&(i.driver.currentTime=r.currentTime)}))}function p(e){var i=e[g];e[b]=e.play,e[E]=e.pause,e.play=s,e.pause=c,n(e,"paused",i.driver),n(e,"muted",i.driver,!0),n(e,"playbackRate",i.driver,!0),n(e,"ended",i.driver),n(e,"loop",i.driver,!0),r(e,"seeking"),r(e,"seeked"),r(e,"timeupdate",h,!1),r(e,"ended",h,!1)}function l(e,r,n){void 0===r&&(r=!0),void 0===n&&(n=!0),n&&!y||e[g]||(v(e,r),p(e),e.classList.add("IIV"),!r&&e.autoplay&&e.play(),"MacIntel"!==navigator.platform&&"Windows"!==navigator.platform||console.warn("iphone-inline-video is not guaranteed to work in emulated environments"))}var f,m="undefined"==typeof Symbol?function(e){return"@"+(e||"@")+Math.random()}:Symbol,y=/iPhone|iPod/i.test(navigator.userAgent)&&void 0===document.head.style.grid,g=m(),h=m(),b=m("nativeplay"),E=m("nativepause"),T=[],w=0;return l.isWhitelisted=y,l}();;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
  * ----------------------------------------------
@@ -108,7 +107,7 @@ var TWEEN = TWEEN || (function () {
 			return new Date().getTime();
 		};
 	}
-})();
+}).bind(this)();
 
 
 TWEEN.Tween = function (object) {
@@ -2435,7 +2434,8 @@ GSVPANO.PanoLoader = function (parameters) {
 		Reticle: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAACzElEQVR42u2bvU8UQRiHn6HVABG/GoNaaCRUNoaOSCgJiQkd/wIlFZWtljYkFPQU/gcaWxorLkYL9GKBihAVr/VnsWMkm5n9uNu995bbp93Zvff5Ze52du5daGlpaRlj3LA+SNJ1YB64B8wCV4BL/nAPOAW6wAfgwDn3zTqcQYUnJC1JeiGpo/J0/LlLkiasfcqIz0h6Kqnbh3SMrr/mjLVflvi0pOeSzioUT3PmP2Pa2jctvy7pqEbxNEeS1q29kTQpaW+I4mn2JE1ayc9JOjSU/8ehpLlhyy9IOrE2P8eJpIV+XEqvAyQ9Al7x/x4+KvSAJefcfm0BSJoHXgPXrG0jHAOPnXMHlQcgaQp4C9y1tszhEHjonPtZZHCZFdZOA+TxNe4UHVwoACX33DVrsxKsqeA6IfcroGTV9Q64aW1Vki/AA+fcj6xBRWbAVgPl8TVv5Q3KnAGSrgIfgcvWNn3yG7jjnPseG5A3AzYaLI+vfSNrQHQGKHkG/wTcsrYYkM/Abefcn9DBrBmweAHk8Q6LsYNZATyxrrxCoi55M+CiEHUJ/gYo2cD8al11xdwIbbTGZsC8dbU1EHSKBXDfutoaCDrFApi1rrYGgk6xAGz22eol6BQLYMq62hoIOjXnH5eaiAVQaDelYQSdYgH8sq62BoJOsQC61tXWQNApFsB762prIOgUC6DwtnKDCDoFA/Br5o51xRXSiTVcZN0G31hXXSFRl6wAXlpXXSFRl3ZLLJpMcsKudfUVsBuTh3ZbPPtZwJ+4bW0xANtZ8tD+NZb/NOgvsGlt0webefKlkG0zVFn2inq1DRJFr+ovuErShjKqHAOrReVLBeBDOABWSBqSRo0esFKmP6h0AD6EfWCZpLt7VDgFlst2iA2ExrlR8lwI49sqmwpiPJulUyEMq13+mUatXT4VxHi+MBEIohGvzLQvTbW0tLSMM38BgDIEjOR+VO0AAAAASUVORK5CYII=',
 		Setting: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAADn0lEQVR42u2bzUsVURjGnyO6CPzAMnTjppAo3LTwH1CqTfaxbeOiRS37A0wXtROFVi1aRBs3LWohSIGbQAQXViBGRhG0UIRKUCpK7q/FnOB2uc6cOXNmRnGe3eW+H8/7zLln3vNxpQoVKlQ4wjBFJAFOSRqX1O7osivpvjHmU1nChBZglvSYLYJbS0EanCvIJzWK+gnsyH34/8OuMaYjb265jwCgz6N4SWq3vodbAEmnS/KtBDgoAgyU5BteAOAkMAPcBroc7PskDWfgN+wyDwBdltMMcDI3tYBnde/pHeARMNTErgd4APzweP834oeN1dMkz5DlsFNn/yyv4kdiSK4At4AO4CqwGaDwRmza2B0210qM7YhrXU59ANAq6bWkwQTTn5KO5fIE0uVYlXTeGLOXFMx1DrjlULwKKN41x6DlnIjEEQCckPRe0okCiguJr5LOGGO+xhm5jICJQ1i8LOeJJKPYEQAMKvrtt5ZdjSf2FM0Fq/sZJI2A6UNcvCz36TiDfUcAcE1SPu/U6Mm8k/TFfu6XdFb5iX3dGPM8lQfwNod3+TowBnQ3yddtv1vPIe+b1JIBiwEJ1IAJ208k5W21trWA+V/5CHAcmAtU/A2P/DcCiTAHHE8tgCVhgLvAXgYCk17Jo/yTGfLuWe7Zd72AC8CWB4n3OAz7mLytNkZabAEXMhfeQKYfWEpJZCxA3rGUOZeA/qDF15FpAz47EvlNk9neI2e3jeWCz0BbmvipNkSMMX8kuSZYM8Z8zyqAjbHmaN5mOeYjgIXrU93MWrxHrNQjrqiDkQMLHwG+OdqF3NN3jeXKzU8AoF1SzdH8XKhJUO7HZDXLMbwAwICkJUULFxe0SbqSVQAbw3Xi7Ze0ZLmGAzAKbHs0JGU1QtvAaIjCW4B7ZOvJy2qFa5a730RPtBiaz0CgnkiZi6F5fBZDVMvho7EhcuS3xJJ2hV9IupgTqaLw0hhzab8vq23xOG/r+LDsKjLgYVzxUnU0ltwK2wDezUyJmEwqXgp/PL4rvxthaeCSI+zxuA10J8ZkWdJNSb2SLkvayKHwDRu71+ZajrG941J8agALDQ3GU/a/IvMkYCPzmCbtLNEVmacNtgs5iP9fYVNEV1Q6Hez7yNZSL+J2SarTcpqiyV2iUkG0IvPFvbz5FbEn+KEk3wMjwMeSfCsBXFBdly9CAPk9ydyffpECuB5tZfVJjaKWueOSfinln6YK4lahQoUKRxd/AcRPGTcQCAUQAAAAAElFTkSuQmCC',
 		ChevronRight: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTguNTksMTYuNThMMTMuMTcsMTJMOC41OSw3LjQxTDEwLDZMMTYsMTJMMTAsMThMOC41OSwxNi41OFoiIC8+PC9zdmc+',
-		Check: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDdMOSwxOUwzLjUsMTMuNUw0LjkxLDEyLjA5TDksMTYuMTdMMTkuNTksNS41OUwyMSw3WiIgLz48L3N2Zz4='
+		Check: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDdMOSwxOUwzLjUsMTMuNUw0LjkxLDEyLjA5TDksMTYuMTdMMTkuNTksNS41OUwyMSw3WiIgLz48L3N2Zz4=',
+		ViewIndicator: '<svg id="view-indicator" height="30" width="30" viewBox="-2.5 -1 30 30"><style type="text/css">.st0{stroke-width:2;stroke-miterlimit:10;fill:none;}.st1{stroke-width:6;stroke-miterlimit:10;}</style><g><path class="st0" d="M 12.5 0 A 12.5 12.5 0 0 0 -12.5 0 A 12.5 12.5 0 0 0 12.5 0" transform="matrix(1,0,0,1,13,15.5)"></path><path class="st2" d="M 13 0 L 10 2 L 16 2 Z"></path><path class="st2" d="M 2 0 A 2 2 0 0 0 -2 0 A 2 2 0 0 0 2 0" transform="matrix(1,0,0,1,13,15.5)"></path><path class="st1" id="indicator" transform="matrix(1,0,0,1,13,15.5)"></path></g></svg>'
 
 	};
 
@@ -6823,11 +6823,13 @@ PANOLENS.StereographicShader = {
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
+	 * @param {boolean} [options.viewIndicator=true] - Adds an angle view indicator in upper left corner
+	 * @param {number}  [options.indicatorSize=30] - size of View Indicator
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
 		THREE.EventDispatcher.call( this );
-		
+
 		if ( !THREE ) {
 
 			console.error('Three.JS not found');
@@ -6850,6 +6852,8 @@ PANOLENS.StereographicShader = {
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		options.passiveRendering = options.passiveRendering || false;
+		options.viewIndicator = options.viewIndicator || true;
+		options.indicatorSize = options.indicatorSize || 30;
 
 		this.options = options;
 
@@ -6868,7 +6872,7 @@ PANOLENS.StereographicShader = {
 			container.style.height = window.innerHeight + 'px';
 			document.body.appendChild( container );
 
-			// For matching body's width and height dynamically on the next tick to 
+			// For matching body's width and height dynamically on the next tick to
 			// avoid 0 height in the beginning
 			setTimeout( function () {
 				container.style.width = '100%';
@@ -6885,6 +6889,8 @@ PANOLENS.StereographicShader = {
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
 
+		this.viewIndicatorSize = options.indicatorSize;
+
 		this.reticle = {};
 		this.tempEnableReticle = this.options.enableReticle;
 
@@ -6900,7 +6906,7 @@ PANOLENS.StereographicShader = {
 		this.effect;
 		this.panorama;
 		this.widget;
-		
+
 		this.hoverObject;
 		this.infospot;
 		this.pressEntityObject;
@@ -6955,7 +6961,7 @@ PANOLENS.StereographicShader = {
 
 			this.OrbitControls.addEventListener( 'change', this.onChange.bind( this ) );
 			this.DeviceOrientationControls.addEventListener( 'change', this.onChange.bind( this ) );
-		
+
 		}
 
 		// Controls
@@ -6974,7 +6980,7 @@ PANOLENS.StereographicShader = {
 
 		// Add default hidden reticle
 		this.addReticle();
-		
+
 		// Lock horizontal view
 		if ( this.options.horizontalView ) {
 			this.OrbitControls.minPolarAngle = Math.PI / 2;
@@ -6984,6 +6990,11 @@ PANOLENS.StereographicShader = {
 		// Add Control UI
 		if ( this.options.controlBar !== false ) {
 			this.addDefaultControlBar( this.options.controlButtons );
+		}
+
+		// Add View Indicator
+		if ( this.options.viewIndicator ) {
+			this.addViewIndicator();
 		}
 
 		// Reverse dragging direction
@@ -6998,7 +7009,7 @@ PANOLENS.StereographicShader = {
 		} else {
 			this.registerMouseAndTouchEvents();
 		}
-		
+
 		// Register dom event listeners
 		this.registerEventListeners();
 
@@ -8358,6 +8369,71 @@ PANOLENS.StereographicShader = {
 		this.dispose();
 		this.render();
 		window.cancelAnimationFrame( this.requestAnimationId );		
+
+	};
+
+	/**
+	 * View indicator in upper left
+	 * */
+	PANOLENS.Viewer.prototype.addViewIndicator = function () {
+
+		var indicatorSvg = PANOLENS.DataImage.ViewIndicator;
+
+		var viewIndicatorDiv = document.createElement( "div" );
+		viewIndicatorDiv.innerHTML = indicatorSvg;
+		viewIndicatorDiv.style.width = this.viewIndicatorSize + "px";
+		viewIndicatorDiv.style.height = this.viewIndicatorSize + "px";
+		viewIndicatorDiv.style.position = "absolute";
+		viewIndicatorDiv.style.top = "6px";
+		viewIndicatorDiv.style.left = "6px";
+		viewIndicatorDiv.style.opacity = "0.7";
+		viewIndicatorDiv.style.cursor = "pointer";
+		viewIndicatorDiv.id = "view-indicator-container";
+
+		this.container.appendChild( viewIndicatorDiv );
+
+		var viewIndicator = document.getElementById( "view-indicator" );
+		var indicator = document.getElementById( "indicator" );
+
+		var setIndicatorD = function () {
+
+			this.radius = this.viewIndicatorSize * 0.225;
+			this.currentPanoAngle = this.camera.rotation.y - THREE.Math.degToRad( 90 );
+			this.fovAngle = THREE.Math.degToRad( this.camera.fov ) ;
+			this.leftAngle = -this.currentPanoAngle - this.fovAngle / 2;
+			this.rightAngle = -this.currentPanoAngle + this.fovAngle / 2;
+			this.leftX = this.radius * Math.cos( this.leftAngle );
+			this.leftY = this.radius * Math.sin( this.leftAngle );
+			this.rightX = this.radius * Math.cos( this.rightAngle );
+			this.rightY = this.radius * Math.sin( this.rightAngle );
+			this.indicatorD = "M " + this.leftX + " " + this.leftY + " A " + this.radius + " " + this.radius + " 0 0 1 " + this.rightX + " " + this.rightY;
+
+			if ( this.leftX && this.leftY && this.rightX && this.rightY && this.radius ) {
+
+				indicator.setAttribute( "d", this.indicatorD );
+
+			}
+
+		}.bind(this);
+
+		this.addUpdateCallback( setIndicatorD );
+
+		var indicatorOnMouseEnter = function () {
+
+			viewIndicatorDiv.style.opacity = "1";
+			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+
+		};
+
+		var indicatorOnMouseLeave = function () {
+
+			viewIndicatorDiv.style.opacity = "0.7";
+			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+
+		};
+
+		viewIndicatorDiv.addEventListener( "mouseenter", indicatorOnMouseEnter );
+		viewIndicatorDiv.addEventListener( "mouseleave", indicatorOnMouseLeave );
 
 	};
 
