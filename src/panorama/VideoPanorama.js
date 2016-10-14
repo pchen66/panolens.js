@@ -9,8 +9,11 @@
 	 * @param {object} [options] - Option for video settings
 	 * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video
 	 * @param {HTMLCanvasElement} [options.videoCanvas] - HTML5 canvas element for drawing the video
-	 * @param {boolean} [options.muted=false] - Mute the video or not
 	 * @param {boolean} [options.loop=true] - Specify if the video should loop in the end
+	 * @param {boolean} [options.muted=false] - Mute the video or not
+	 * @param {boolean} [options.autoplay=false] - Specify if the video should auto play
+	 * @param {boolean} [options.playsinline=false] - Specify if video should play inline for iOS. If you want it to auto play inline, set both autoplay and muted options to true
+	 * @param {string} [options.crossOrigin="anonymous"] - Sets the cross-origin attribute for the video, which allows for cross-origin videos in some browsers (Firefox, Chrome). Set to either "anonymous" or "use-credentials".
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
 	PANOLENS.VideoPanorama = function ( src, options, radius ) {
@@ -31,6 +34,17 @@
 
 		this.videoFramerate = 30;
 
+		function isIOS10 () {
+			var ua = navigator.userAgent, tem, M = ua.match( /(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i ) || [];
+
+			M = M[ 2 ] ? [ M[ 1 ], M[ 2 ] ] : [ navigator.appName, navigator.appVersion, '-?' ];
+			if ( ( tem = ua.match( /version\/(\d+)/i ) ) !== null ) {
+				M.splice( 1, 1, tem[ 1 ] );
+			}
+			return ( M[ 0 ] === "Safari" ? parseInt( M[ 1 ] ) >= 10 : false );
+		}
+
+		this.isIOS10 = isIOS10();
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
 		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
@@ -39,7 +53,7 @@
 		this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 		this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
-	}
+	};
 
 	PANOLENS.VideoPanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
 
@@ -64,6 +78,11 @@
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
+		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
+		if (options.playsinline) {
+			this.videoElement.setAttribute( "playsinline", "" );
+			this.videoElement.setAttribute( "webkit-playsinline", "" );
+		}
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -86,7 +105,7 @@
 
 			}
 
-		}
+		};
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
@@ -133,7 +152,7 @@
 
 		};
 
-		if ( this.isIOS ){
+		if ( this.isIOS && !this.isIOS10 ){
 			
 			videoRenderObject.fps = this.videoFramerate;
 			videoRenderObject.lastTime = Date.now();
@@ -237,9 +256,13 @@
 
 				this.videoRenderObject.video.play();
 
+				this.dispatchEvent( { type: 'play' } );
+
 			} else {
 
 				this.videoRenderObject.video.pause();
+
+				this.dispatchEvent( { type: 'pause' } );
 
 			}
 
@@ -272,6 +295,13 @@
 
 		}
 
+		/**
+		 * Play event
+		 * @type {object}
+		 * @event 'play'
+		 * */
+		this.dispatchEvent( { type: 'play' } );
+
 	};
 
 	/**
@@ -284,6 +314,13 @@
 			this.videoRenderObject.video.pause();
 
 		}
+
+		/**
+		 * Pause event
+		 * @type {object}
+		 * @event 'pause'
+		 * */
+		this.dispatchEvent( { type: 'pause' } );
 
 	};
 
@@ -300,4 +337,50 @@
 
 	};
 
+	/**
+	* Check if video is muted
+	* @return {boolean} - is video muted or not
+	*/
+	PANOLENS.VideoPanorama.prototype.isVideoMuted = function () {
+
+		return this.videoRenderObject.video.muted;
+
+	};
+
+	/**
+	 * Mute video
+	 */
+	PANOLENS.VideoPanorama.prototype.muteVideo = function () {
+
+		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoMuted() ) {
+
+			this.videoRenderObject.video.muted = true;
+
+		}
+
+		this.dispatchEvent( { type: 'volumechange' } );
+
+	};
+
+	/**
+	 * Unmute video
+	 */
+	PANOLENS.VideoPanorama.prototype.unmuteVideo = function () {
+
+		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoMuted() ) {
+
+			this.videoRenderObject.video.muted = false;
+
+		}
+
+		this.dispatchEvent( { type: 'volumechange' } );
+
+	};
+
+	/**
+	 * Returns the video element
+	 * */
+	PANOLENS.VideoPanorama.prototype.getVideoElement = function () {
+		return this.videoRenderObject.video;
+	}
 })();

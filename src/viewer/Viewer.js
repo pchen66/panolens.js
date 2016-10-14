@@ -22,11 +22,13 @@
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
+	 * @param {boolean} [options.viewIndicator=true] - Adds an angle view indicator in upper left corner
+	 * @param {number}  [options.indicatorSize=30] - size of View Indicator
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
 		THREE.EventDispatcher.call( this );
-		
+
 		if ( !THREE ) {
 
 			console.error('Three.JS not found');
@@ -49,6 +51,8 @@
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		options.passiveRendering = options.passiveRendering || false;
+		options.viewIndicator = options.viewIndicator || true;
+		options.indicatorSize = options.indicatorSize || 30;
 
 		this.options = options;
 
@@ -67,7 +71,7 @@
 			container.style.height = window.innerHeight + 'px';
 			document.body.appendChild( container );
 
-			// For matching body's width and height dynamically on the next tick to 
+			// For matching body's width and height dynamically on the next tick to
 			// avoid 0 height in the beginning
 			setTimeout( function () {
 				container.style.width = '100%';
@@ -84,6 +88,8 @@
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
 
+		this.viewIndicatorSize = options.indicatorSize;
+
 		this.reticle = {};
 		this.tempEnableReticle = this.options.enableReticle;
 
@@ -99,7 +105,7 @@
 		this.effect;
 		this.panorama;
 		this.widget;
-		
+
 		this.hoverObject;
 		this.infospot;
 		this.pressEntityObject;
@@ -145,7 +151,7 @@
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
-		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera );
+		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera, this.container );
 		this.DeviceOrientationControls.name = 'device-orientation';
 		this.DeviceOrientationControls.enabled = false;
 
@@ -154,7 +160,7 @@
 
 			this.OrbitControls.addEventListener( 'change', this.onChange.bind( this ) );
 			this.DeviceOrientationControls.addEventListener( 'change', this.onChange.bind( this ) );
-		
+
 		}
 
 		// Controls
@@ -173,7 +179,7 @@
 
 		// Add default hidden reticle
 		this.addReticle();
-		
+
 		// Lock horizontal view
 		if ( this.options.horizontalView ) {
 			this.OrbitControls.minPolarAngle = Math.PI / 2;
@@ -183,6 +189,11 @@
 		// Add Control UI
 		if ( this.options.controlBar !== false ) {
 			this.addDefaultControlBar( this.options.controlButtons );
+		}
+
+		// Add View Indicator
+		if ( this.options.viewIndicator ) {
+			this.addViewIndicator();
 		}
 
 		// Reverse dragging direction
@@ -197,14 +208,14 @@
 		} else {
 			this.registerMouseAndTouchEvents();
 		}
-		
+
 		// Register dom event listeners
 		this.registerEventListeners();
 
 		// Animate
 		this.animate.call( this );
 
-	}
+	};
 
 	PANOLENS.Viewer.prototype = Object.create( THREE.EventDispatcher.prototype );
 
@@ -892,10 +903,10 @@
 
 		scope = this;
 
-		chv = viewer.camera.getWorldDirection();
+		chv = this.camera.getWorldDirection();
 		cvv = chv.clone();
 
-		vptc = this.panorama.getWorldPosition().sub( viewer.camera.getWorldPosition() );
+		vptc = this.panorama.getWorldPosition().sub( chv );
 
 		hv = vector.clone();
 		// Scale effect
@@ -1438,7 +1449,7 @@
 
 		}
 
-	}
+	};
 
 	/**
 	 * Register reticle event
@@ -1557,6 +1568,71 @@
 		this.dispose();
 		this.render();
 		window.cancelAnimationFrame( this.requestAnimationId );		
+
+	};
+
+	/**
+	 * View indicator in upper left
+	 * */
+	PANOLENS.Viewer.prototype.addViewIndicator = function () {
+
+		var indicatorSvg = PANOLENS.DataImage.ViewIndicator;
+
+		var viewIndicatorDiv = document.createElement( "div" );
+		viewIndicatorDiv.innerHTML = indicatorSvg;
+		viewIndicatorDiv.style.width = this.viewIndicatorSize + "px";
+		viewIndicatorDiv.style.height = this.viewIndicatorSize + "px";
+		viewIndicatorDiv.style.position = "absolute";
+		viewIndicatorDiv.style.top = "6px";
+		viewIndicatorDiv.style.left = "6px";
+		viewIndicatorDiv.style.opacity = "0.7";
+		viewIndicatorDiv.style.cursor = "pointer";
+		viewIndicatorDiv.id = "view-indicator-container";
+
+		this.container.appendChild( viewIndicatorDiv );
+
+		var viewIndicator = document.getElementById( "view-indicator" );
+		var indicator = document.getElementById( "indicator" );
+
+		var setIndicatorD = function () {
+
+			this.radius = this.viewIndicatorSize * 0.225;
+			this.currentPanoAngle = this.camera.rotation.y - THREE.Math.degToRad( 90 );
+			this.fovAngle = THREE.Math.degToRad( this.camera.fov ) ;
+			this.leftAngle = -this.currentPanoAngle - this.fovAngle / 2;
+			this.rightAngle = -this.currentPanoAngle + this.fovAngle / 2;
+			this.leftX = this.radius * Math.cos( this.leftAngle );
+			this.leftY = this.radius * Math.sin( this.leftAngle );
+			this.rightX = this.radius * Math.cos( this.rightAngle );
+			this.rightY = this.radius * Math.sin( this.rightAngle );
+			this.indicatorD = "M " + this.leftX + " " + this.leftY + " A " + this.radius + " " + this.radius + " 0 0 1 " + this.rightX + " " + this.rightY;
+
+			if ( this.leftX && this.leftY && this.rightX && this.rightY && this.radius ) {
+
+				indicator.setAttribute( "d", this.indicatorD );
+
+			}
+
+		}.bind(this);
+
+		this.addUpdateCallback( setIndicatorD );
+
+		var indicatorOnMouseEnter = function () {
+
+			viewIndicatorDiv.style.opacity = "1";
+			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+
+		};
+
+		var indicatorOnMouseLeave = function () {
+
+			viewIndicatorDiv.style.opacity = "0.7";
+			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+
+		};
+
+		viewIndicatorDiv.addEventListener( "mouseenter", indicatorOnMouseEnter );
+		viewIndicatorDiv.addEventListener( "mouseleave", indicatorOnMouseLeave );
 
 	};
 
