@@ -22,7 +22,7 @@
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
-	 * @param {boolean} [options.viewIndicator=true] - Adds an angle view indicator in upper left corner
+	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
 	 * @param {number}  [options.indicatorSize=30] - size of View Indicator
 	 */
 	PANOLENS.Viewer = function ( options ) {
@@ -51,7 +51,7 @@
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		options.passiveRendering = options.passiveRendering || false;
-		options.viewIndicator = options.viewIndicator || true;
+		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
 		options.indicatorSize = options.indicatorSize || 30;
 
 		this.options = options;
@@ -906,7 +906,7 @@
 		chv = this.camera.getWorldDirection();
 		cvv = chv.clone();
 
-		vptc = this.panorama.getWorldPosition().sub( chv );
+		vptc = this.panorama.getWorldPosition().sub( this.camera.getWorldPosition() );
 
 		hv = vector.clone();
 		// Scale effect
