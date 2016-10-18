@@ -5,7 +5,8 @@
  */
 
 var PANOLENS = { REVISION: '3-dev' };
-;/**
+;/*! npm.im/iphone-inline-video */
+var makeVideoPlayableInline=function(){"use strict";function e(e){function r(t){n=requestAnimationFrame(r),e(t-(i||t)),i=t}var n,i;this.start=function(){n||r(0)},this.stop=function(){cancelAnimationFrame(n),n=null,i=0}}function r(e,r,n,i){function t(r){Boolean(e[n])===Boolean(i)&&r.stopImmediatePropagation(),delete e[n]}return e.addEventListener(r,t,!1),t}function n(e,r,n,i){function t(){return n[r]}function d(e){n[r]=e}i&&d(e[r]),Object.defineProperty(e,r,{get:t,set:d})}function i(e,r,n){n.addEventListener(r,function(){return e.dispatchEvent(new Event(r))})}function t(e,r){Promise.resolve().then(function(){e.dispatchEvent(new Event(r))})}function d(e){var r=new Audio;return i(e,"play",r),i(e,"playing",r),i(e,"pause",r),r.crossOrigin=e.crossOrigin,r.src=e.src||e.currentSrc||"data:",r}function a(e,r,n){(f||0)+200<Date.now()&&(e[h]=!0,f=Date.now()),n||(e.currentTime=r),T[++w%3]=100*r|0}function o(e){return e.driver.currentTime>=e.video.duration}function u(e){var r=this;r.video.readyState>=r.video.HAVE_FUTURE_DATA?(r.hasAudio||(r.driver.currentTime=r.video.currentTime+e*r.video.playbackRate/1e3,r.video.loop&&o(r)&&(r.driver.currentTime=0)),a(r.video,r.driver.currentTime)):r.video.networkState!==r.video.NETWORK_IDLE||r.video.buffered.length||r.video.load(),r.video.ended&&(delete r.video[h],r.video.pause(!0))}function s(){var e=this,r=e[g];return e.webkitDisplayingFullscreen?void e[b]():("data:"!==r.driver.src&&r.driver.src!==e.src&&(a(e,0,!0),r.driver.src=e.src),void(e.paused&&(r.paused=!1,e.buffered.length||e.load(),r.driver.play(),r.updater.start(),r.hasAudio||(t(e,"play"),r.video.readyState>=r.video.HAVE_ENOUGH_DATA&&t(e,"playing")))))}function c(e){var r=this,n=r[g];n.driver.pause(),n.updater.stop(),r.webkitDisplayingFullscreen&&r[E](),n.paused&&!e||(n.paused=!0,n.hasAudio||t(r,"pause"),r.ended&&(r[h]=!0,t(r,"ended")))}function v(r,n){var i=r[g]={};i.paused=!0,i.hasAudio=n,i.video=r,i.updater=new e(u.bind(i)),n?i.driver=d(r):(r.addEventListener("canplay",function(){r.paused||t(r,"playing")}),i.driver={src:r.src||r.currentSrc||"data:",muted:!0,paused:!0,pause:function(){i.driver.paused=!0},play:function(){i.driver.paused=!1,o(i)&&a(r,0)},get ended(){return o(i)}}),r.addEventListener("emptied",function(){var e=!i.driver.src||"data:"===i.driver.src;i.driver.src&&i.driver.src!==r.src&&(a(r,0,!0),i.driver.src=r.src,e?i.driver.play():i.updater.stop())},!1),r.addEventListener("webkitbeginfullscreen",function(){r.paused?n&&!i.driver.buffered.length&&i.driver.load():(r.pause(),r[b]())}),n&&(r.addEventListener("webkitendfullscreen",function(){i.driver.currentTime=r.currentTime}),r.addEventListener("seeking",function(){T.indexOf(100*r.currentTime|0)<0&&(i.driver.currentTime=r.currentTime)}))}function p(e){var i=e[g];e[b]=e.play,e[E]=e.pause,e.play=s,e.pause=c,n(e,"paused",i.driver),n(e,"muted",i.driver,!0),n(e,"playbackRate",i.driver,!0),n(e,"ended",i.driver),n(e,"loop",i.driver,!0),r(e,"seeking"),r(e,"seeked"),r(e,"timeupdate",h,!1),r(e,"ended",h,!1)}function l(e,r,n){void 0===r&&(r=!0),void 0===n&&(n=!0),n&&!y||e[g]||(v(e,r),p(e),e.classList.add("IIV"),!r&&e.autoplay&&e.play(),"MacIntel"!==navigator.platform&&"Windows"!==navigator.platform||console.warn("iphone-inline-video is not guaranteed to work in emulated environments"))}var f,m="undefined"==typeof Symbol?function(e){return"@"+(e||"@")+Math.random()}:Symbol,y=/iPhone|iPod/i.test(navigator.userAgent)&&void 0===document.head.style.grid,g=m(),h=m(),b=m("nativeplay"),E=m("nativepause"),T=[],w=0;return l.isWhitelisted=y,l}();;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
  * ----------------------------------------------
@@ -13,29 +14,6 @@ var PANOLENS = { REVISION: '3-dev' };
  * See https://github.com/tweenjs/tween.js/graphs/contributors for the full list of contributors.
  * Thank you all, you're awesome!
  */
-
-// Include a performance.now polyfill
-(function () {
-
-	if ('performance' in window === false) {
-		window.performance = {};
-	}
-
-	// IE 8
-	Date.now = (Date.now || function () {
-		return new Date().getTime();
-	});
-
-	if ('now' in window.performance === false) {
-		var offset = window.performance.timing && window.performance.timing.navigationStart ? window.performance.timing.navigationStart
-		                                                                                    : Date.now();
-
-		window.performance.now = function () {
-			return Date.now() - offset;
-		};
-	}
-
-})();
 
 var TWEEN = TWEEN || (function () {
 
@@ -71,7 +49,7 @@ var TWEEN = TWEEN || (function () {
 
 		},
 
-		update: function (time) {
+		update: function (time, preserve) {
 
 			if (_tweens.length === 0) {
 				return false;
@@ -79,11 +57,11 @@ var TWEEN = TWEEN || (function () {
 
 			var i = 0;
 
-			time = time !== undefined ? time : window.performance.now();
+			time = time !== undefined ? time : TWEEN.now();
 
 			while (i < _tweens.length) {
 
-				if (_tweens[i].update(time)) {
+				if (_tweens[i].update(time) || preserve) {
 					i++;
 				} else {
 					_tweens.splice(i, 1);
@@ -97,6 +75,40 @@ var TWEEN = TWEEN || (function () {
 	};
 
 })();
+
+
+// Include a performance.now polyfill
+(function () {
+	// In node.js, use process.hrtime.
+	if (this.window === undefined && this.process !== undefined) {
+		TWEEN.now = function () {
+			var time = process.hrtime();
+
+			// Convert [seconds, microseconds] to milliseconds.
+			return time[0] * 1000 + time[1] / 1000;
+		};
+	}
+	// In a browser, use window.performance.now if it is available.
+	else if (this.window !== undefined &&
+	         window.performance !== undefined &&
+		 window.performance.now !== undefined) {
+
+		// This must be bound, because directly assigning this function
+		// leads to an invocation exception in Chrome.
+		TWEEN.now = window.performance.now.bind(window.performance);
+	}
+	// Use Date.now if it is available.
+	else if (Date.now !== undefined) {
+		TWEEN.now = Date.now;
+	}
+	// Otherwise, use 'new Date().getTime()'.
+	else {
+		TWEEN.now = function () {
+			return new Date().getTime();
+		};
+	}
+}).bind(this)();
+
 
 TWEEN.Tween = function (object) {
 
@@ -145,7 +157,7 @@ TWEEN.Tween = function (object) {
 
 		_onStartCallbackFired = false;
 
-		_startTime = time !== undefined ? time : window.performance.now();
+		_startTime = time !== undefined ? time : TWEEN.now();
 		_startTime += _delayTime;
 
 		for (var property in _valuesEnd) {
@@ -323,7 +335,7 @@ TWEEN.Tween = function (object) {
 				// Parses relative end values with start as base (e.g.: +10, -3)
 				if (typeof (end) === 'string') {
 
-					if (end.startsWith('+') || end.startsWith('-')) {
+					if (end.charAt(0) === '+' || end.charAt(0) === '-') {
 						end = start + parseFloat(end, 10);
 					} else {
 						end = parseFloat(end, 10);
@@ -604,10 +616,6 @@ TWEEN.Easing = {
 
 		In: function (k) {
 
-			var s;
-			var a = 0.1;
-			var p = 0.4;
-
 			if (k === 0) {
 				return 0;
 			}
@@ -616,23 +624,12 @@ TWEEN.Easing = {
 				return 1;
 			}
 
-			if (!a || a < 1) {
-				a = 1;
-				s = p / 4;
-			} else {
-				s = p * Math.asin(1 / a) / (2 * Math.PI);
-			}
-
-			return - (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
+			return -Math.pow(2, 10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI);
 
 		},
 
 		Out: function (k) {
 
-			var s;
-			var a = 0.1;
-			var p = 0.4;
-
 			if (k === 0) {
 				return 0;
 			}
@@ -641,23 +638,12 @@ TWEEN.Easing = {
 				return 1;
 			}
 
-			if (!a || a < 1) {
-				a = 1;
-				s = p / 4;
-			} else {
-				s = p * Math.asin(1 / a) / (2 * Math.PI);
-			}
-
-			return (a * Math.pow(2, - 10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
+			return Math.pow(2, -10 * k) * Math.sin((k - 0.1) * 5 * Math.PI) + 1;
 
 		},
 
 		InOut: function (k) {
 
-			var s;
-			var a = 0.1;
-			var p = 0.4;
-
 			if (k === 0) {
 				return 0;
 			}
@@ -666,18 +652,13 @@ TWEEN.Easing = {
 				return 1;
 			}
 
-			if (!a || a < 1) {
-				a = 1;
-				s = p / 4;
-			} else {
-				s = p * Math.asin(1 / a) / (2 * Math.PI);
+			k *= 2;
+
+			if (k < 1) {
+				return -0.5 * Math.pow(2, 10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI);
 			}
 
-			if ((k *= 2) < 1) {
-				return - 0.5 * (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
-			}
-
-			return a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * 0.5 + 1;
+			return 0.5 * Math.pow(2, -10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI) + 1;
 
 		}
 
@@ -1731,13 +1712,19 @@ THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;;/**
  * W3C Device Orientation control (http://w3c.github.io/deviceorientation/spec-source-orientation.html)
  */
 
-THREE.DeviceOrientationControls = function( object ) {
+THREE.DeviceOrientationControls = function( camera, domElement ) {
 
 	var scope = this;
 	var changeEvent = { type: 'change' };
 
-	this.object = object;
-	this.object.rotation.reorder( "YXZ" );
+	var rotY = 0;
+	var rotX = 0;
+	var tempX = 0;
+	var tempY = 0;
+
+	this.camera = camera;
+	this.camera.rotation.reorder( "YXZ" );
+	this.domElement = ( domElement !== undefined ) ? domElement : document;
 
 	this.enabled = true;
 
@@ -1760,9 +1747,34 @@ THREE.DeviceOrientationControls = function( object ) {
 
 	};
 
+	var onTouchStartEvent = function (event) {
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		tempX = event.touches[ 0 ].pageX;
+		tempY = event.touches[ 0 ].pageY;
+
+	};
+
+	var onTouchMoveEvent = function (event) {
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		rotY += THREE.Math.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 );
+		rotX += THREE.Math.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
+
+		scope.updateAlphaOffsetAngle( rotY );
+
+		tempX = event.touches[ 0 ].pageX;
+		tempY = event.touches[ 0 ].pageY;
+
+	};
+
 	// The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
 
-	var setObjectQuaternion = function() {
+	var setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
 
 		var zee = new THREE.Vector3( 0, 0, 1 );
 
@@ -1772,19 +1784,44 @@ THREE.DeviceOrientationControls = function( object ) {
 
 		var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
 
-		return function( quaternion, alpha, beta, gamma, orient ) {
+		var vectorFingerY;
+		var fingerQY = new THREE.Quaternion();
+		var fingerQX = new THREE.Quaternion();
 
-			euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
+		if ( scope.screenOrientation == 0 ) {
 
-			quaternion.setFromEuler( euler ); // orient the device
+			vectorFingerY = new THREE.Vector3( 1, 0, 0 );
+			fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
 
-			quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
+		} else if ( scope.screenOrientation == 180 ) {
 
-			quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
+			vectorFingerY = new THREE.Vector3( 1, 0, 0 );
+			fingerQY.setFromAxisAngle( vectorFingerY, rotX );
+
+		} else if ( scope.screenOrientation == 90 ) {
+
+			vectorFingerY = new THREE.Vector3( 0, 1, 0 );
+			fingerQY.setFromAxisAngle( vectorFingerY, rotX );
+
+		} else if ( scope.screenOrientation == - 90) {
+
+			vectorFingerY = new THREE.Vector3( 0, 1, 0 );
+			fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
 
 		}
 
-	}();
+		q1.multiply( fingerQY );
+		q1.multiply( fingerQX );
+
+		euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
+
+		quaternion.setFromEuler( euler ); // orient the device
+
+		quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
+
+		quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
+
+	};
 
 	this.connect = function() {
 
@@ -1793,6 +1830,9 @@ THREE.DeviceOrientationControls = function( object ) {
 		window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
 		window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
 		window.addEventListener( 'deviceorientation', this.update.bind( this ), false );
+
+		scope.domElement.addEventListener( "touchstart", onTouchStartEvent, false );
+		scope.domElement.addEventListener( "touchmove", onTouchMoveEvent, false );
 
 		scope.enabled = true;
 
@@ -1803,6 +1843,9 @@ THREE.DeviceOrientationControls = function( object ) {
 		window.removeEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
 		window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
 		window.removeEventListener( 'deviceorientation', this.update.bind( this ), false );
+
+		scope.domElement.removeEventListener( "touchstart", onTouchStartEvent, false );
+		scope.domElement.removeEventListener( "touchmove", onTouchMoveEvent, false );
 
 		scope.enabled = false;
 
@@ -1817,7 +1860,7 @@ THREE.DeviceOrientationControls = function( object ) {
 		var gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
 		var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
 
-		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
+		setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
 		this.alpha = alpha;
 
 		ignoreUpdate !== true && this.dispatchEvent( changeEvent );
@@ -2391,7 +2434,8 @@ GSVPANO.PanoLoader = function (parameters) {
 		Reticle: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAACzElEQVR42u2bvU8UQRiHn6HVABG/GoNaaCRUNoaOSCgJiQkd/wIlFZWtljYkFPQU/gcaWxorLkYL9GKBihAVr/VnsWMkm5n9uNu995bbp93Zvff5Ze52du5daGlpaRlj3LA+SNJ1YB64B8wCV4BL/nAPOAW6wAfgwDn3zTqcQYUnJC1JeiGpo/J0/LlLkiasfcqIz0h6Kqnbh3SMrr/mjLVflvi0pOeSzioUT3PmP2Pa2jctvy7pqEbxNEeS1q29kTQpaW+I4mn2JE1ayc9JOjSU/8ehpLlhyy9IOrE2P8eJpIV+XEqvAyQ9Al7x/x4+KvSAJefcfm0BSJoHXgPXrG0jHAOPnXMHlQcgaQp4C9y1tszhEHjonPtZZHCZFdZOA+TxNe4UHVwoACX33DVrsxKsqeA6IfcroGTV9Q64aW1Vki/AA+fcj6xBRWbAVgPl8TVv5Q3KnAGSrgIfgcvWNn3yG7jjnPseG5A3AzYaLI+vfSNrQHQGKHkG/wTcsrYYkM/Abefcn9DBrBmweAHk8Q6LsYNZATyxrrxCoi55M+CiEHUJ/gYo2cD8al11xdwIbbTGZsC8dbU1EHSKBXDfutoaCDrFApi1rrYGgk6xAGz22eol6BQLYMq62hoIOjXnH5eaiAVQaDelYQSdYgH8sq62BoJOsQC61tXWQNApFsB762prIOgUC6DwtnKDCDoFA/Br5o51xRXSiTVcZN0G31hXXSFRl6wAXlpXXSFRl3ZLLJpMcsKudfUVsBuTh3ZbPPtZwJ+4bW0xANtZ8tD+NZb/NOgvsGlt0webefKlkG0zVFn2inq1DRJFr+ovuErShjKqHAOrReVLBeBDOABWSBqSRo0esFKmP6h0AD6EfWCZpLt7VDgFlst2iA2ExrlR8lwI49sqmwpiPJulUyEMq13+mUatXT4VxHi+MBEIohGvzLQvTbW0tLSMM38BgDIEjOR+VO0AAAAASUVORK5CYII=',
 		Setting: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAADn0lEQVR42u2bzUsVURjGnyO6CPzAMnTjppAo3LTwH1CqTfaxbeOiRS37A0wXtROFVi1aRBs3LWohSIGbQAQXViBGRhG0UIRKUCpK7q/FnOB2uc6cOXNmRnGe3eW+H8/7zLln3vNxpQoVKlQ4wjBFJAFOSRqX1O7osivpvjHmU1nChBZglvSYLYJbS0EanCvIJzWK+gnsyH34/8OuMaYjb265jwCgz6N4SWq3vodbAEmnS/KtBDgoAgyU5BteAOAkMAPcBroc7PskDWfgN+wyDwBdltMMcDI3tYBnde/pHeARMNTErgd4APzweP834oeN1dMkz5DlsFNn/yyv4kdiSK4At4AO4CqwGaDwRmza2B0210qM7YhrXU59ANAq6bWkwQTTn5KO5fIE0uVYlXTeGLOXFMx1DrjlULwKKN41x6DlnIjEEQCckPRe0okCiguJr5LOGGO+xhm5jICJQ1i8LOeJJKPYEQAMKvrtt5ZdjSf2FM0Fq/sZJI2A6UNcvCz36TiDfUcAcE1SPu/U6Mm8k/TFfu6XdFb5iX3dGPM8lQfwNod3+TowBnQ3yddtv1vPIe+b1JIBiwEJ1IAJ208k5W21trWA+V/5CHAcmAtU/A2P/DcCiTAHHE8tgCVhgLvAXgYCk17Jo/yTGfLuWe7Zd72AC8CWB4n3OAz7mLytNkZabAEXMhfeQKYfWEpJZCxA3rGUOZeA/qDF15FpAz47EvlNk9neI2e3jeWCz0BbmvipNkSMMX8kuSZYM8Z8zyqAjbHmaN5mOeYjgIXrU93MWrxHrNQjrqiDkQMLHwG+OdqF3NN3jeXKzU8AoF1SzdH8XKhJUO7HZDXLMbwAwICkJUULFxe0SbqSVQAbw3Xi7Ze0ZLmGAzAKbHs0JGU1QtvAaIjCW4B7ZOvJy2qFa5a730RPtBiaz0CgnkiZi6F5fBZDVMvho7EhcuS3xJJ2hV9IupgTqaLw0hhzab8vq23xOG/r+LDsKjLgYVzxUnU0ltwK2wDezUyJmEwqXgp/PL4rvxthaeCSI+zxuA10J8ZkWdJNSb2SLkvayKHwDRu71+ZajrG941J8agALDQ3GU/a/IvMkYCPzmCbtLNEVmacNtgs5iP9fYVNEV1Q6Hez7yNZSL+J2SarTcpqiyV2iUkG0IvPFvbz5FbEn+KEk3wMjwMeSfCsBXFBdly9CAPk9ydyffpECuB5tZfVJjaKWueOSfinln6YK4lahQoUKRxd/AcRPGTcQCAUQAAAAAElFTkSuQmCC',
 		ChevronRight: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTguNTksMTYuNThMMTMuMTcsMTJMOC41OSw3LjQxTDEwLDZMMTYsMTJMMTAsMThMOC41OSwxNi41OFoiIC8+PC9zdmc+',
-		Check: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDdMOSwxOUwzLjUsMTMuNUw0LjkxLDEyLjA5TDksMTYuMTdMMTkuNTksNS41OUwyMSw3WiIgLz48L3N2Zz4='
+		Check: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDdMOSwxOUwzLjUsMTMuNUw0LjkxLDEyLjA5TDksMTYuMTdMMTkuNTksNS41OUwyMSw3WiIgLz48L3N2Zz4=',
+		ViewIndicator: '<svg id="view-indicator" height="30" width="30" viewBox="-2.5 -1 30 30"><style type="text/css">.st0{stroke-width:2;stroke-miterlimit:10;fill:none;}.st1{stroke-width:6;stroke-miterlimit:10;}</style><g><path class="st0" d="M 12.5 0 A 12.5 12.5 0 0 0 -12.5 0 A 12.5 12.5 0 0 0 12.5 0" transform="matrix(1,0,0,1,13,15.5)"></path><path class="st2" d="M 13 0 L 10 2 L 16 2 Z"></path><path class="st2" d="M 2 0 A 2 2 0 0 0 -2 0 A 2 2 0 0 0 2 0" transform="matrix(1,0,0,1,13,15.5)"></path><path class="st1" id="indicator" transform="matrix(1,0,0,1,13,15.5)"></path></g></svg>'
 
 	};
 
@@ -3571,8 +3615,11 @@ PANOLENS.StereographicShader = {
 	 * @param {object} [options] - Option for video settings
 	 * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video
 	 * @param {HTMLCanvasElement} [options.videoCanvas] - HTML5 canvas element for drawing the video
-	 * @param {boolean} [options.muted=false] - Mute the video or not
 	 * @param {boolean} [options.loop=true] - Specify if the video should loop in the end
+	 * @param {boolean} [options.muted=false] - Mute the video or not
+	 * @param {boolean} [options.autoplay=false] - Specify if the video should auto play
+	 * @param {boolean} [options.playsinline=false] - Specify if video should play inline for iOS. If you want it to auto play inline, set both autoplay and muted options to true
+	 * @param {string} [options.crossOrigin="anonymous"] - Sets the cross-origin attribute for the video, which allows for cross-origin videos in some browsers (Firefox, Chrome). Set to either "anonymous" or "use-credentials".
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
 	PANOLENS.VideoPanorama = function ( src, options, radius ) {
@@ -3593,6 +3640,17 @@ PANOLENS.StereographicShader = {
 
 		this.videoFramerate = 30;
 
+		function isIOS10 () {
+			var ua = navigator.userAgent, tem, M = ua.match( /(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i ) || [];
+
+			M = M[ 2 ] ? [ M[ 1 ], M[ 2 ] ] : [ navigator.appName, navigator.appVersion, '-?' ];
+			if ( ( tem = ua.match( /version\/(\d+)/i ) ) !== null ) {
+				M.splice( 1, 1, tem[ 1 ] );
+			}
+			return ( M[ 0 ] === "Safari" ? parseInt( M[ 1 ] ) >= 10 : false );
+		}
+
+		this.isIOS10 = isIOS10();
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
 		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
@@ -3601,7 +3659,7 @@ PANOLENS.StereographicShader = {
 		this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 		this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
-	}
+	};
 
 	PANOLENS.VideoPanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
 
@@ -3626,6 +3684,11 @@ PANOLENS.StereographicShader = {
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
+		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
+		if (options.playsinline) {
+			this.videoElement.setAttribute( "playsinline", "" );
+			this.videoElement.setAttribute( "webkit-playsinline", "" );
+		}
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
@@ -3648,7 +3711,7 @@ PANOLENS.StereographicShader = {
 
 			}
 
-		}
+		};
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
@@ -3695,56 +3758,22 @@ PANOLENS.StereographicShader = {
 
 		};
 
-		if ( this.isIOS ){
-			
-			videoRenderObject.fps = this.videoFramerate;
-			videoRenderObject.lastTime = Date.now();
-			videoRenderObject.video.pano_paused = true;
-			videoRenderObject.video.play = function(){
+		if ( this.isIOS && !this.isIOS10 ){
 
-				videoRenderObject.lastTime = Date.now();
-				this.pano_paused = false;
-
-			};
-			videoRenderObject.video.pause = function(){
-
-				this.pano_paused = true;
-
-			};
-			updateCallback = function () {
-
-				if ( this.video.pano_paused ) { return; }
-
-				var time = Date.now();
-			    var elapsed = ( time - this.lastTime ) / 1000;
-
-			    if ( this.video && elapsed >= ( ( 1000 / this.fps ) / 1000 ) ) {
-			    	if ( this.video.currentTime + elapsed >= this.video.duration ) {
-			    		this.video.currentTime = 0;
-			    	} else {
-			    		this.video.currentTime = this.video.currentTime + elapsed;
-			    	}
-			        this.videoContext.drawImage( this.video, 0, 0, this.video.videoWidth, this.video.videoHeight );
-		        	this.videoTexture.needsUpdate = true;
-			        this.lastTime = time;
-			    }
-
-			};
-
-		} else {
-
-			updateCallback = function () {
-
-				if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
-
-					this.videoContext.drawImage( this.video, 0, 0 );
-					this.videoTexture.needsUpdate = true;
-
-				}
-
-			};
+			makeVideoPlayableInline( video, /* hasAudio */ !this.options.muted );
 
 		}
+
+		updateCallback = function () {
+
+			if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
+
+				this.videoContext.drawImage( this.video, 0, 0 );
+				this.videoTexture.needsUpdate = true;
+
+			}
+
+		};
 
 		// Draw the first frame
 		videoContext.drawImage( video, 0, 0 );
@@ -3799,9 +3828,13 @@ PANOLENS.StereographicShader = {
 
 				this.videoRenderObject.video.play();
 
+				this.dispatchEvent( { type: 'play' } );
+
 			} else {
 
 				this.videoRenderObject.video.pause();
+
+				this.dispatchEvent( { type: 'pause' } );
 
 			}
 
@@ -3834,6 +3867,13 @@ PANOLENS.StereographicShader = {
 
 		}
 
+		/**
+		 * Play event
+		 * @type {object}
+		 * @event 'play'
+		 * */
+		this.dispatchEvent( { type: 'play' } );
+
 	};
 
 	/**
@@ -3846,6 +3886,13 @@ PANOLENS.StereographicShader = {
 			this.videoRenderObject.video.pause();
 
 		}
+
+		/**
+		 * Pause event
+		 * @type {object}
+		 * @event 'pause'
+		 * */
+		this.dispatchEvent( { type: 'pause' } );
 
 	};
 
@@ -3862,6 +3909,52 @@ PANOLENS.StereographicShader = {
 
 	};
 
+	/**
+	* Check if video is muted
+	* @return {boolean} - is video muted or not
+	*/
+	PANOLENS.VideoPanorama.prototype.isVideoMuted = function () {
+
+		return this.videoRenderObject.video.muted;
+
+	};
+
+	/**
+	 * Mute video
+	 */
+	PANOLENS.VideoPanorama.prototype.muteVideo = function () {
+
+		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoMuted() ) {
+
+			this.videoRenderObject.video.muted = true;
+
+		}
+
+		this.dispatchEvent( { type: 'volumechange' } );
+
+	};
+
+	/**
+	 * Unmute video
+	 */
+	PANOLENS.VideoPanorama.prototype.unmuteVideo = function () {
+
+		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoMuted() ) {
+
+			this.videoRenderObject.video.muted = false;
+
+		}
+
+		this.dispatchEvent( { type: 'volumechange' } );
+
+	};
+
+	/**
+	 * Returns the video element
+	 * */
+	PANOLENS.VideoPanorama.prototype.getVideoElement = function () {
+		return this.videoRenderObject.video;
+	}
 })();;(function(){
 
 	'use strict';
@@ -4233,7 +4326,7 @@ PANOLENS.StereographicShader = {
 		this.visible = false;
 		this.renderOrder = 10;
 
-	}
+	};
 
 	PANOLENS.Reticle.prototype = Object.create( THREE.Sprite.prototype );
 
@@ -6220,7 +6313,7 @@ PANOLENS.StereographicShader = {
 		this.addEventListener( 'dismiss', this.onDismiss );
 		this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
 
-	}
+	};
 
 	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
 
@@ -6442,7 +6535,7 @@ PANOLENS.StereographicShader = {
 		this.container.appendChild( element.left );
 		this.container.appendChild( element.right );
 
-	}
+	};
 
 	/**
 	 * Translate the hovering element by css transform
@@ -6706,7 +6799,7 @@ PANOLENS.StereographicShader = {
 
 	};
 
-} )();( function () {
+} )();;( function () {
 
 	'use strict';
 
@@ -6730,11 +6823,13 @@ PANOLENS.StereographicShader = {
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
+	 * @param {boolean} [options.viewIndicator=true] - Adds an angle view indicator in upper left corner
+	 * @param {number}  [options.indicatorSize=30] - size of View Indicator
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
 		THREE.EventDispatcher.call( this );
-		
+
 		if ( !THREE ) {
 
 			console.error('Three.JS not found');
@@ -6757,6 +6852,8 @@ PANOLENS.StereographicShader = {
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		options.passiveRendering = options.passiveRendering || false;
+		options.viewIndicator = options.viewIndicator || true;
+		options.indicatorSize = options.indicatorSize || 30;
 
 		this.options = options;
 
@@ -6775,7 +6872,7 @@ PANOLENS.StereographicShader = {
 			container.style.height = window.innerHeight + 'px';
 			document.body.appendChild( container );
 
-			// For matching body's width and height dynamically on the next tick to 
+			// For matching body's width and height dynamically on the next tick to
 			// avoid 0 height in the beginning
 			setTimeout( function () {
 				container.style.width = '100%';
@@ -6792,6 +6889,8 @@ PANOLENS.StereographicShader = {
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
 
+		this.viewIndicatorSize = options.indicatorSize;
+
 		this.reticle = {};
 		this.tempEnableReticle = this.options.enableReticle;
 
@@ -6807,7 +6906,7 @@ PANOLENS.StereographicShader = {
 		this.effect;
 		this.panorama;
 		this.widget;
-		
+
 		this.hoverObject;
 		this.infospot;
 		this.pressEntityObject;
@@ -6853,7 +6952,7 @@ PANOLENS.StereographicShader = {
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
-		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera );
+		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera, this.container );
 		this.DeviceOrientationControls.name = 'device-orientation';
 		this.DeviceOrientationControls.enabled = false;
 
@@ -6862,7 +6961,7 @@ PANOLENS.StereographicShader = {
 
 			this.OrbitControls.addEventListener( 'change', this.onChange.bind( this ) );
 			this.DeviceOrientationControls.addEventListener( 'change', this.onChange.bind( this ) );
-		
+
 		}
 
 		// Controls
@@ -6881,7 +6980,7 @@ PANOLENS.StereographicShader = {
 
 		// Add default hidden reticle
 		this.addReticle();
-		
+
 		// Lock horizontal view
 		if ( this.options.horizontalView ) {
 			this.OrbitControls.minPolarAngle = Math.PI / 2;
@@ -6891,6 +6990,11 @@ PANOLENS.StereographicShader = {
 		// Add Control UI
 		if ( this.options.controlBar !== false ) {
 			this.addDefaultControlBar( this.options.controlButtons );
+		}
+
+		// Add View Indicator
+		if ( this.options.viewIndicator ) {
+			this.addViewIndicator();
 		}
 
 		// Reverse dragging direction
@@ -6905,14 +7009,14 @@ PANOLENS.StereographicShader = {
 		} else {
 			this.registerMouseAndTouchEvents();
 		}
-		
+
 		// Register dom event listeners
 		this.registerEventListeners();
 
 		// Animate
 		this.animate.call( this );
 
-	}
+	};
 
 	PANOLENS.Viewer.prototype = Object.create( THREE.EventDispatcher.prototype );
 
@@ -7600,10 +7704,10 @@ PANOLENS.StereographicShader = {
 
 		scope = this;
 
-		chv = viewer.camera.getWorldDirection();
+		chv = this.camera.getWorldDirection();
 		cvv = chv.clone();
 
-		vptc = this.panorama.getWorldPosition().sub( viewer.camera.getWorldPosition() );
+		vptc = this.panorama.getWorldPosition().sub( chv );
 
 		hv = vector.clone();
 		// Scale effect
@@ -8146,7 +8250,7 @@ PANOLENS.StereographicShader = {
 
 		}
 
-	}
+	};
 
 	/**
 	 * Register reticle event
@@ -8268,7 +8372,73 @@ PANOLENS.StereographicShader = {
 
 	};
 
-} )();;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+	/**
+	 * View indicator in upper left
+	 * */
+	PANOLENS.Viewer.prototype.addViewIndicator = function () {
+
+		var indicatorSvg = PANOLENS.DataImage.ViewIndicator;
+
+		var viewIndicatorDiv = document.createElement( "div" );
+		viewIndicatorDiv.innerHTML = indicatorSvg;
+		viewIndicatorDiv.style.width = this.viewIndicatorSize + "px";
+		viewIndicatorDiv.style.height = this.viewIndicatorSize + "px";
+		viewIndicatorDiv.style.position = "absolute";
+		viewIndicatorDiv.style.top = "6px";
+		viewIndicatorDiv.style.left = "6px";
+		viewIndicatorDiv.style.opacity = "0.7";
+		viewIndicatorDiv.style.cursor = "pointer";
+		viewIndicatorDiv.id = "view-indicator-container";
+
+		this.container.appendChild( viewIndicatorDiv );
+
+		var viewIndicator = document.getElementById( "view-indicator" );
+		var indicator = document.getElementById( "indicator" );
+
+		var setIndicatorD = function () {
+
+			this.radius = this.viewIndicatorSize * 0.225;
+			this.currentPanoAngle = this.camera.rotation.y - THREE.Math.degToRad( 90 );
+			this.fovAngle = THREE.Math.degToRad( this.camera.fov ) ;
+			this.leftAngle = -this.currentPanoAngle - this.fovAngle / 2;
+			this.rightAngle = -this.currentPanoAngle + this.fovAngle / 2;
+			this.leftX = this.radius * Math.cos( this.leftAngle );
+			this.leftY = this.radius * Math.sin( this.leftAngle );
+			this.rightX = this.radius * Math.cos( this.rightAngle );
+			this.rightY = this.radius * Math.sin( this.rightAngle );
+			this.indicatorD = "M " + this.leftX + " " + this.leftY + " A " + this.radius + " " + this.radius + " 0 0 1 " + this.rightX + " " + this.rightY;
+
+			if ( this.leftX && this.leftY && this.rightX && this.rightY && this.radius ) {
+
+				indicator.setAttribute( "d", this.indicatorD );
+
+			}
+
+		}.bind(this);
+
+		this.addUpdateCallback( setIndicatorD );
+
+		var indicatorOnMouseEnter = function () {
+
+			viewIndicatorDiv.style.opacity = "1";
+			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+
+		};
+
+		var indicatorOnMouseLeave = function () {
+
+			viewIndicatorDiv.style.opacity = "0.7";
+			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+
+		};
+
+		viewIndicatorDiv.addEventListener( "mouseenter", indicatorOnMouseEnter );
+		viewIndicatorDiv.addEventListener( "mouseleave", indicatorOnMouseLeave );
+
+	};
+
+} )();
+;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 	var createLayout = require('layout-bmfont-text')
 	var inherits = require('inherits')
 	var createIndices = require('quad-indices')

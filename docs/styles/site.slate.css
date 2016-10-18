@@ -2545,7 +2545,7 @@ output {
   color: #272B30;
   background-color: #fff;
   background-image: none;
-  border: 1px solid #ccc;
+  border: 1px solid #000;
   border-radius: 4px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
@@ -3888,7 +3888,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   color: #272B30;
   text-align: center;
   background-color: #999;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.6);
   border-radius: 4px;
 }
 .input-group-addon.input-sm {
@@ -6948,8 +6948,8 @@ textarea {
   border-color: #f89406;
 }
 .has-warning .input-group-addon {
-  background-color: #272B30;
-  border: none;
+  background-color: #3A3F44;
+  border-color: rgba(0, 0, 0, 0.6);
 }
 .has-error .help-block,
 .has-error .control-label,
@@ -6969,8 +6969,8 @@ textarea {
   border-color: #ee5f5b;
 }
 .has-error .input-group-addon {
-  background-color: #272B30;
-  border: none;
+  background-color: #3A3F44;
+  border-color: rgba(0, 0, 0, 0.6);
 }
 .has-success .help-block,
 .has-success .control-label,
@@ -6990,21 +6990,21 @@ textarea {
   border-color: #62c462;
 }
 .has-success .input-group-addon {
-  background-color: #272B30;
-  border: none;
+  background-color: #3A3F44;
+  border-color: rgba(0, 0, 0, 0.6);
 }
 legend {
   color: #fff;
 }
 .input-group-addon {
-  border-color: rgba(0, 0, 0, 0.6);
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  background-color: #3A3F44;
   background-image: -webkit-linear-gradient(#484e55, #3A3F44 60%, #313539);
   background-image: -o-linear-gradient(#484e55, #3A3F44 60%, #313539);
   background-image: linear-gradient(#484e55, #3A3F44 60%, #313539);
   background-repeat: no-repeat;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff484e55', endColorstr='#ff313539', GradientType=0);
   filter: none;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
   color: #fff;
 }
 .nav .open > a,
