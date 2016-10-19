@@ -2,6 +2,7 @@
 	
 	/**
 	 * Reticle 3D Sprite
+	 * @constructor
 	 * @param {THREE.Color} [color=0xfffff] - Color of the reticle sprite
 	 * @param {boolean} [autoSelect=true] - Auto selection
 	 * @param {string} [idleImageUrl=PANOLENS.DataImage.ReticleIdle] - Image asset url
@@ -140,7 +141,7 @@
 			return;
 
 		}
-		
+
 		this.startTime = performance.now();
 		this.updateStatus( this.DWELLING );
 		this.select( completeCallback );

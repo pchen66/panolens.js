@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Class: Widget</title>
+	<title>Documentation Class: Reticle</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -77,7 +77,7 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: Widget</h1>
+	<h1 class="page-title">Class: Reticle</h1>
 <section>
 
 <header>
@@ -85,7 +85,7 @@
         <h2>
             <span class="ancestors"><a href="PANOLENS.html">PANOLENS</a>.</span>
         
-        Widget
+        Reticle
         </h2>
         
     
@@ -98,7 +98,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="Widget"><span class="type-signature"></span>new Widget(container)</h4>
+    <h4 class="name" id="Reticle"><span class="type-signature"></span>new Reticle(<span class="optional">color</span>, <span class="optional">autoSelect</span>, <span class="optional">idleImageUrl</span>, <span class="optional">dwellImageUrl</span>, <span class="optional">dwellTime</span>, <span class="optional">dwellSpriteAmount</span>)</h4>
     
     
 </dt>
@@ -106,7 +106,7 @@
 
     
     <div class="description">
-        Widget for controls
+        Reticle 3D Sprite
     </div>
     
 
@@ -129,7 +129,11 @@
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -141,13 +145,13 @@
 
         <tr>
             
-                <td class="name"><code>container</code></td>
+                <td class="name"><code>color</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">HTMLElement</span>
+<span class="param-type">THREE.Color</span>
 
 
 
@@ -155,10 +159,226 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last">A domElement where default control widget will be attached to</td>
+            
+                <td class="default">
+                
+                    0xfffff
+                
+                </td>
+            
+
+            <td class="description last">Color of the reticle sprite</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoSelect</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">Auto selection</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>idleImageUrl</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    PANOLENS.DataImage.ReticleIdle
+                
+                </td>
+            
+
+            <td class="description last">Image asset url</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dwellImageUrl</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    PANOLENS.DataImage.ReticleDwell
+                
+                </td>
+            
+
+            <td class="description last">Image asset url</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dwellTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    1500
+                
+                </td>
+            
+
+            <td class="description last">Duration for dwelling sequence to complete</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dwellSpriteAmount</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    45
+                
+                </td>
+            
+
+            <td class="description last">Number of dwelling sprite sequence</td>
         </tr>
 
     
@@ -202,7 +422,7 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
 			</li>
 		</ul>
 	</dd>
@@ -253,7 +473,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="addControlBar"><span class="type-signature"></span>addControlBar()</h4>
+    <h4 class="name" id="cancelDwelling"><span class="type-signature"></span>cancelDwelling()</h4>
     
     
 </dt>
@@ -261,7 +481,7 @@
 
     
     <div class="description">
-        Add control bar
+        Cancel dwelling
     </div>
     
 
@@ -307,7 +527,7 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
 			</li>
 		</ul>
 	</dd>
@@ -340,7 +560,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="addControlButton"><span class="type-signature"></span>addControlButton(name)</h4>
+    <h4 class="name" id="clearTimer"><span class="type-signature"></span>clearTimer()</h4>
     
     
 </dt>
@@ -348,7 +568,268 @@
 
     
     <div class="description">
-        Add buttons on top of control bar
+        Clear and reset reticle timer
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="completeDwelling"><span class="type-signature"></span>completeDwelling()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Complete dwelling
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="hide"><span class="type-signature"></span>hide()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Make reticle invisible
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="select"><span class="type-signature"></span>select(completeCallback)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Start reticle timer selection
     </div>
     
 
@@ -383,13 +864,13 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>completeCallback</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">function</span>
 
 
 
@@ -400,7 +881,7 @@
 
             
 
-            <td class="description last">The control button name to be created</td>
+            <td class="description last">Callback after dwell completes</td>
         </tr>
 
     
@@ -444,7 +925,7 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
 			</li>
 		</ul>
 	</dd>
@@ -477,7 +958,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="createCustomItem"><span class="type-signature"></span>createCustomItem()</h4>
+    <h4 class="name" id="setupDwellSprite"><span class="type-signature"></span>setupDwellSprite()</h4>
     
     
 </dt>
@@ -485,7 +966,7 @@
 
     
     <div class="description">
-        Create custom item element
+        Setup dwell sprite animation
     </div>
     
 
@@ -531,7 +1012,7 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
 			</li>
 		</ul>
 	</dd>
@@ -556,30 +1037,6 @@
     
 
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - The dom element icon
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLSpanElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>
@@ -588,7 +1045,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="createDefaultMenu"><span class="type-signature"></span>createDefaultMenu()</h4>
+    <h4 class="name" id="show"><span class="type-signature"></span>show()</h4>
     
     
 </dt>
@@ -596,7 +1053,7 @@
 
     
     <div class="description">
-        Create default menu
+        Make reticle visible
     </div>
     
 
@@ -642,7 +1099,7 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
 			</li>
 		</ul>
 	</dd>
@@ -675,7 +1132,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="createFullscreenButton"><span class="type-signature"></span>createFullscreenButton()</h4>
+    <h4 class="name" id="startDwelling"><span class="type-signature"></span>startDwelling()</h4>
     
     
 </dt>
@@ -683,7 +1140,7 @@
 
     
     <div class="description">
-        Create Fullscreen button
+        Start dwelling sequence
     </div>
     
 
@@ -729,7 +1186,7 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
 			</li>
 		</ul>
 	</dd>
@@ -746,11 +1203,6 @@
     
 
     
-    <h5>Fires:</h5>
-    <ul>
-        <li>PANOLENS.Widget#event:panolens-viewer-handler</li>
-    </ul>
-    
 
     
 
@@ -759,30 +1211,6 @@
     
 
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - The dom element icon for fullscreen
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLSpanElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>
@@ -791,7 +1219,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="createMainMenu"><span class="type-signature"></span>createMainMenu(menus)</h4>
+    <h4 class="name" id="updateDwelling"><span class="type-signature"></span>updateDwelling(time)</h4>
     
     
 </dt>
@@ -799,7 +1227,7 @@
 
     
     <div class="description">
-        Create main menu
+        Update dwelling sequence
     </div>
     
 
@@ -834,13 +1262,13 @@
 
         <tr>
             
-                <td class="name"><code>menus</code></td>
+                <td class="name"><code>time</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">array</span>
+<span class="param-type">number</span>
 
 
 
@@ -851,7 +1279,7 @@
 
             
 
-            <td class="description last">Menu array list</td>
+            <td class="description last">Timestamp for elasped time</td>
         </tr>
 
     
@@ -895,7 +1323,7 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
 			</li>
 		</ul>
 	</dd>
@@ -920,30 +1348,6 @@
     
 
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - A span element
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLDomElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>
@@ -952,7 +1356,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="createMenu"><span class="type-signature"></span>createMenu()</h4>
+    <h4 class="name" id="updateStatus"><span class="type-signature"></span>updateStatus(status)</h4>
     
     
 </dt>
@@ -960,118 +1364,7 @@
 
     
     <div class="description">
-        Create general menu
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - A span element
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLDomElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="createMenuItem"><span class="type-signature"></span>createMenuItem(title)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Create menu item
+        Update reticle status
     </div>
     
 
@@ -1106,13 +1399,13 @@
 
         <tr>
             
-                <td class="name"><code>title</code></td>
+                <td class="name"><code>status</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">number</span>
 
 
 
@@ -1123,7 +1416,7 @@
 
             
 
-            <td class="description last">Title to display</td>
+            <td class="description last">Reticle status</td>
         </tr>
 
     
@@ -1167,7 +1460,7 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
+				<a href="interface_Reticle.js.html">interface/Reticle.js</a>
 			</li>
 		</ul>
 	</dd>
@@ -1192,1078 +1485,6 @@
     
 
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - An anchor tag element
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLDomElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="createMenuItemHeader"><span class="type-signature"></span>createMenuItemHeader(title)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Create menu item header
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>title</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Title to display</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - An anchor tag element
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLDomElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="createSettingButton"><span class="type-signature"></span>createSettingButton()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Create Setting button to toggle menu
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="createSubMenu"><span class="type-signature"></span>createSubMenu(title, items)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Create sub menu
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>title</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Sub menu title</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>items</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">array</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Item array list</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - A span element
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLDomElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="createVideoControl"><span class="type-signature"></span>createVideoControl()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Create video control container
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - The dom element icon for video control
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLSpanElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="createVideoControlButton"><span class="type-signature"></span>createVideoControlButton()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Create video control button
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-    <h5>Fires:</h5>
-    <ul>
-        <li>PANOLENS.Widget#event:panolens-viewer-handler</li>
-    </ul>
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - The dom element icon for video control
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLSpanElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="createVideoControlSeekbar"><span class="type-signature"></span>createVideoControlSeekbar()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Create video seekbar
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-    <h5>Fires:</h5>
-    <ul>
-        <li>PANOLENS.Widget#event:panolens-viewer-handler</li>
-    </ul>
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - The dom element icon for video seekbar
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLSpanElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="dispose"><span class="type-signature"></span>dispose()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Dispose widgets by detaching dom elements from container
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="mergeStyleOptions"><span class="type-signature"></span>mergeStyleOptions(element, options)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Merge item css style
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>element</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">HTMLDOMElement</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The element to be merged with style</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The style options</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="widget_Widget.js.html">widget/Widget.js</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    - The same element with merged styles
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">HTMLDOMElement</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>

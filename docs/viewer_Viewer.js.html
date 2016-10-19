@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.BasicPanorama.html">PANOLENS.BasicPanorama</a></li><li><a href="PANOLENS.CubePanorama.html">PANOLENS.CubePanorama</a></li><li><a href="PANOLENS.EmptyPanorama.html">PANOLENS.EmptyPanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">PANOLENS.GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImagePanorama.html">PANOLENS.ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">PANOLENS.Infospot</a></li><li><a href="PANOLENS.Panorama.html">PANOLENS.Panorama</a></li><li><a href="PANOLENS.SpriteText.html">PANOLENS.SpriteText</a></li><li><a href="PANOLENS.Tile.html">PANOLENS.Tile</a></li><li><a href="PANOLENS.TileGroup.html">PANOLENS.TileGroup</a></li><li><a href="PANOLENS.VideoPanorama.html">PANOLENS.VideoPanorama</a></li><li><a href="PANOLENS.Viewer.html">PANOLENS.Viewer</a></li><li><a href="PANOLENS.Widget.html">PANOLENS.Widget</a></li>
+					<li><a href="PANOLENS.BasicPanorama.html">PANOLENS.BasicPanorama</a></li><li><a href="PANOLENS.CubePanorama.html">PANOLENS.CubePanorama</a></li><li><a href="PANOLENS.EmptyPanorama.html">PANOLENS.EmptyPanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">PANOLENS.GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImageLittlePlanet.html">PANOLENS.ImageLittlePlanet</a></li><li><a href="PANOLENS.ImagePanorama.html">PANOLENS.ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">PANOLENS.Infospot</a></li><li><a href="PANOLENS.LittlePlanet.html">PANOLENS.LittlePlanet</a></li><li><a href="PANOLENS.Panorama.html">PANOLENS.Panorama</a></li><li><a href="PANOLENS.Reticle.html">PANOLENS.Reticle</a></li><li><a href="PANOLENS.SpriteText.html">PANOLENS.SpriteText</a></li><li><a href="PANOLENS.Tile.html">PANOLENS.Tile</a></li><li><a href="PANOLENS.TileGroup.html">PANOLENS.TileGroup</a></li><li><a href="PANOLENS.VideoPanorama.html">PANOLENS.VideoPanorama</a></li><li><a href="PANOLENS.Viewer.html">PANOLENS.Viewer</a></li><li><a href="PANOLENS.Widget.html">PANOLENS.Widget</a></li>
 				</ul>
 			</li>
 			
@@ -106,7 +106,7 @@
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
-	 * @param {boolean} [options.viewIndicator=true] - Adds an angle view indicator in upper left corner
+	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
 	 * @param {number}  [options.indicatorSize=30] - size of View Indicator
 	 */
 	PANOLENS.Viewer = function ( options ) {
@@ -135,7 +135,7 @@
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		options.passiveRendering = options.passiveRendering || false;
-		options.viewIndicator = options.viewIndicator || true;
+		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
 		options.indicatorSize = options.indicatorSize || 30;
 
 		this.options = options;
@@ -949,9 +949,13 @@
 	 */
 	PANOLENS.Viewer.prototype.addReticle = function () {
 
-		this.reticle = new PANOLENS.Reticle( 0xffffff );
+		this.reticle = new PANOLENS.Reticle( 0xffffff, 
+			this.options.autoReticleSelect,
+			PANOLENS.DataImage.ReticleIdle, 
+			PANOLENS.DataImage.ReticleDwell, 
+			this.options.dwellTime,
+			45 );
 		this.reticle.position.z = -10;
-		this.reticle.scale.set( 0.1, 0.1, 1 );
 		this.camera.add( this.reticle );
 		this.scene.add( this.camera );
 
@@ -990,7 +994,7 @@
 		chv = this.camera.getWorldDirection();
 		cvv = chv.clone();
 
-		vptc = this.panorama.getWorldPosition().sub( chv );
+		vptc = this.panorama.getWorldPosition().sub( this.camera.getWorldPosition() );
 
 		hv = vector.clone();
 		// Scale effect
@@ -1251,11 +1255,8 @@
 
 					this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
 
-					// Reset reticle timer
-					if ( this.reticle.timerId ) {
-						window.cancelAnimationFrame( this.reticle.timerId );
-						this.reticle.timerId = null;
-					}
+					// Cancel dwelling
+					this.reticle.cancelDwelling();
 
 				}
 
@@ -1275,8 +1276,7 @@
 
 						// Start reticle timer
 						if ( this.options.autoReticleSelect &amp;&amp; this.options.enableReticle || this.tempEnableReticle ) {
-							this.reticle.startTime = window.performance.now();
-							this.reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, event ) );
+							this.reticle.startDwelling( this.onTap.bind( this, event, 'click' ) );
 						}
 
 					}
@@ -1511,31 +1511,6 @@
 	};
 
 	/**
-	 * Reticle selection
-	 * @param  {object} mouseEvent - Mouse event to be passed in
-	 */
-	PANOLENS.Viewer.prototype.reticleSelect = function ( mouseEvent ) {
-		
-		var reticle = this.reticle;
-
-		if ( performance.now() - reticle.startTime >= this.options.dwellTime ) {
-
-			// Reticle select
-			this.onTap( mouseEvent, 'click' );
-
-			window.cancelAnimationFrame( reticle.timerId );
-			reticle.timerId = null;
-			
-
-		} else if ( this.options.autoReticleSelect ){
-
-			reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, mouseEvent ) );
-
-		}
-
-	};
-
-	/**
 	 * Register reticle event
 	 */
 	PANOLENS.Viewer.prototype.registerReticleEvent = function () {
@@ -1760,7 +1735,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-10-14T16:08:46-07:00
+		on 2016-10-18T21:41:09-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
