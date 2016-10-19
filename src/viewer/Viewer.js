@@ -865,9 +865,12 @@
 	 */
 	PANOLENS.Viewer.prototype.addReticle = function () {
 
-		this.reticle = new PANOLENS.Reticle( 0xffffff );
+		this.reticle = new PANOLENS.Reticle( 0xffffff, 
+			PANOLENS.DataImage.ReticleIdle, 
+			PANOLENS.DataImage.ReticleDwell, 
+			this.options.dwellTime,
+			45 );
 		this.reticle.position.z = -10;
-		this.reticle.scale.set( 0.1, 0.1, 1 );
 		this.camera.add( this.reticle );
 		this.scene.add( this.camera );
 
@@ -1169,6 +1172,7 @@
 
 					// Reset reticle timer
 					if ( this.reticle.timerId ) {
+						this.reticle.cancelDwelling();
 						window.cancelAnimationFrame( this.reticle.timerId );
 						this.reticle.timerId = null;
 					}
@@ -1191,7 +1195,7 @@
 
 						// Start reticle timer
 						if ( this.options.autoReticleSelect && this.options.enableReticle || this.tempEnableReticle ) {
-							this.reticle.startTime = window.performance.now();
+							this.reticle.startTime = performance.now();
 							this.reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, event ) );
 						}
 
@@ -1434,16 +1438,23 @@
 		
 		var reticle = this.reticle;
 
-		if ( performance.now() - reticle.startTime >= this.options.dwellTime ) {
+		if ( performance.now() - reticle.startTime >= reticle.dwellTime ) {
+
+			reticle.completeDwelling();	
 
 			// Reticle select
 			this.onTap( mouseEvent, 'click' );
 
 			window.cancelAnimationFrame( reticle.timerId );
-			reticle.timerId = null;
-			
+			reticle.timerId = null;	
 
 		} else if ( this.options.autoReticleSelect ){
+
+			if ( reticle.status === reticle.IDLE ) {
+				reticle.startDwelling();
+			} else {
+				reticle.updateDwelling( performance.now() );
+			}
 
 			reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, mouseEvent ) );
 

@@ -3,22 +3,44 @@
 	/**
 	 * Reticle 3D Sprite
 	 * @param {THREE.Color} [color=0xfffff] - Color of the reticle sprite
-	 * @param {string} [url=PANOLENS.DataImage.Reticle] - Image asset url
+	 * @param {string} [idleImageUrl=PANOLENS.DataImage.ReticleIdle] - Image asset url
+	 * @param {string} [dwellImageUrl=PANOLENS.DataImage.ReticleDwell] - Image asset url
+	 * @param {number} [dwellTime=1500] - Duration for dwelling sequence to complete
+	 * @param {number} [dwellSpriteAmount=45] - Number of dwelling sprite sequence
 	 */
-	PANOLENS.Reticle = function ( color, url ) {
-
-		var map, material;
+	PANOLENS.Reticle = function ( color, idleImageUrl, dwellImageUrl, dwellTime, dwellSpriteAmount ) {
 
 		color = color || 0xffffff;
-		url = url || PANOLENS.DataImage.Reticle;
+		idleImageUrl = idleImageUrl || PANOLENS.DataImage.ReticleIdle;
+		dwellImageUrl = dwellImageUrl || PANOLENS.DataImage.ReticleDwell;
 
-		map = PANOLENS.Utils.TextureLoader.load( url );
-		material = new THREE.SpriteMaterial( { map: map, color: color, depthTest: false } );
+		this.dwellTime = dwellTime || 1500;
+		this.dwellSpriteAmount = dwellSpriteAmount || 45;
+		this.dwellInterval = this.dwellTime / this.dwellSpriteAmount;
 
-		THREE.Sprite.call( this, material );
+		this.IDLE = 0;
+		this.DWELLING = 1;
+		this.status;
+
+		this.scaleIdle = new THREE.Vector3( 0.2, 0.2, 1 );
+		this.scaleDwell = new THREE.Vector3( 1, 0.8, 1 );
+
+		this.idleTexture = PANOLENS.Utils.TextureLoader.load( idleImageUrl );
+		this.dwellTexture = PANOLENS.Utils.TextureLoader.load( dwellImageUrl );
+
+		this.setupDwellSprite( this.dwellTexture );
+
+		THREE.Sprite.call( this, new THREE.SpriteMaterial( { map: this.idleTexture, color: color, depthTest: false } ) );
+
+		this.currentTile = 0;
+		this.startTime = 0;
 
 		this.visible = false;
 		this.renderOrder = 10;
+		this.timerId;
+
+		// initial update
+		this.updateStatus( this.IDLE );
 
 	};
 
@@ -42,6 +64,80 @@
 
 		this.visible = false;
 
+	};
+
+	/**
+	 * Setup dwell sprite animation
+	 */
+	PANOLENS.Reticle.prototype.setupDwellSprite = function ( texture ) {
+
+		texture.wrapS = THREE.RepeatWrapping;
+		texture.repeat.set( 1 / this.dwellSpriteAmount, 1 );
+
+	}
+
+	/**
+	 * Update reticle status
+	 * @param {number} status - Reticle status
+	 */
+	PANOLENS.Reticle.prototype.updateStatus = function ( status ) {
+
+		this.status = status;
+
+		if ( status === this.IDLE ) {
+			this.scale.copy( this.scaleIdle );
+			this.material.map = this.idleTexture;
+		} else if ( status === this.DWELLING ) {
+			this.scale.copy( this.scaleDwell );
+			this.material.map = this.dwellTexture;
+		}
+
+		this.currentTile = 0;
+		this.material.map.offset.x = 0;
+
+	};
+
+	/**
+	 * Start dwelling sequence
+	 */
+	PANOLENS.Reticle.prototype.startDwelling = function () {
+
+		this.updateStatus( this.DWELLING );
+
+	};
+
+	/**
+	 * Update dwelling sequence
+	 * @param  {number} time - Timestamp for elasped time
+	 */
+	PANOLENS.Reticle.prototype.updateDwelling = function ( time ) {
+
+		var elasped = time - this.startTime;
+
+		if ( this.currentTile <= this.dwellSpriteAmount ) {
+			this.currentTile = Math.floor( elasped / this.dwellTime * this.dwellSpriteAmount );
+			this.material.map.offset.x = this.currentTile / this.dwellSpriteAmount;
+		} else {
+			this.updateStatus( this.IDLE );
+		}
+
+	};
+
+	/**
+	 * Cancel dwelling
+	 */
+	PANOLENS.Reticle.prototype.cancelDwelling = function () {
+
+		this.updateStatus( this.IDLE );
+
+	};
+
+	/**
+	 * Complete dwelling
+	 */
+	PANOLENS.Reticle.prototype.completeDwelling = function () {
+
+		this.updateStatus( this.IDLE );
 	};
 
 })();
