@@ -866,6 +866,7 @@
 	PANOLENS.Viewer.prototype.addReticle = function () {
 
 		this.reticle = new PANOLENS.Reticle( 0xffffff, 
+			this.options.autoReticleSelect,
 			PANOLENS.DataImage.ReticleIdle, 
 			PANOLENS.DataImage.ReticleDwell, 
 			this.options.dwellTime,
@@ -1170,12 +1171,8 @@
 
 					this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
 
-					// Reset reticle timer
-					if ( this.reticle.timerId ) {
-						this.reticle.cancelDwelling();
-						window.cancelAnimationFrame( this.reticle.timerId );
-						this.reticle.timerId = null;
-					}
+					// Cancel dwelling
+					this.reticle.cancelDwelling();
 
 				}
 
@@ -1195,8 +1192,7 @@
 
 						// Start reticle timer
 						if ( this.options.autoReticleSelect && this.options.enableReticle || this.tempEnableReticle ) {
-							this.reticle.startTime = performance.now();
-							this.reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, event ) );
+							this.reticle.startDwelling( this.onTap.bind( this, event, 'click' ) );
 						}
 
 					}
@@ -1428,38 +1424,6 @@
 		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , false );
 		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, false );
 		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , false );
-	};
-
-	/**
-	 * Reticle selection
-	 * @param  {object} mouseEvent - Mouse event to be passed in
-	 */
-	PANOLENS.Viewer.prototype.reticleSelect = function ( mouseEvent ) {
-		
-		var reticle = this.reticle;
-
-		if ( performance.now() - reticle.startTime >= reticle.dwellTime ) {
-
-			reticle.completeDwelling();	
-
-			// Reticle select
-			this.onTap( mouseEvent, 'click' );
-
-			window.cancelAnimationFrame( reticle.timerId );
-			reticle.timerId = null;	
-
-		} else if ( this.options.autoReticleSelect ){
-
-			if ( reticle.status === reticle.IDLE ) {
-				reticle.startDwelling();
-			} else {
-				reticle.updateDwelling( performance.now() );
-			}
-
-			reticle.timerId = window.requestAnimationFrame( this.reticleSelect.bind( this, mouseEvent ) );
-
-		}
-
 	};
 
 	/**

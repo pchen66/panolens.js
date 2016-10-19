@@ -3,16 +3,19 @@
 	/**
 	 * Reticle 3D Sprite
 	 * @param {THREE.Color} [color=0xfffff] - Color of the reticle sprite
+	 * @param {boolean} [autoSelect=true] - Auto selection
 	 * @param {string} [idleImageUrl=PANOLENS.DataImage.ReticleIdle] - Image asset url
 	 * @param {string} [dwellImageUrl=PANOLENS.DataImage.ReticleDwell] - Image asset url
 	 * @param {number} [dwellTime=1500] - Duration for dwelling sequence to complete
 	 * @param {number} [dwellSpriteAmount=45] - Number of dwelling sprite sequence
 	 */
-	PANOLENS.Reticle = function ( color, idleImageUrl, dwellImageUrl, dwellTime, dwellSpriteAmount ) {
+	PANOLENS.Reticle = function ( color, autoSelect, idleImageUrl, dwellImageUrl, dwellTime, dwellSpriteAmount ) {
 
 		color = color || 0xffffff;
 		idleImageUrl = idleImageUrl || PANOLENS.DataImage.ReticleIdle;
 		dwellImageUrl = dwellImageUrl || PANOLENS.DataImage.ReticleDwell;
+
+		this.autoSelect = autoSelect != undefined ? autoSelect : true;
 
 		this.dwellTime = dwellTime || 1500;
 		this.dwellSpriteAmount = dwellSpriteAmount || 45;
@@ -67,6 +70,36 @@
 	};
 
 	/**
+	 * Start reticle timer selection
+	 * @param  {function} completeCallback - Callback after dwell completes
+	 */
+	PANOLENS.Reticle.prototype.select = function ( completeCallback ) {
+
+		if ( performance.now() - this.startTime >= this.dwellTime ) {
+
+			this.completeDwelling();
+			completeCallback();
+
+		} else if ( this.autoSelect ){
+
+			this.updateDwelling( performance.now() );
+			this.timerId = window.requestAnimationFrame( this.select.bind( this, completeCallback ) );
+
+		}
+
+	};
+
+	/**
+	 * Clear and reset reticle timer
+	 */
+	PANOLENS.Reticle.prototype.clearTimer = function () {
+
+		window.cancelAnimationFrame( this.timerId );
+		this.timerId = null;
+
+	};
+
+	/**
 	 * Setup dwell sprite animation
 	 */
 	PANOLENS.Reticle.prototype.setupDwellSprite = function ( texture ) {
@@ -100,9 +133,17 @@
 	/**
 	 * Start dwelling sequence
 	 */
-	PANOLENS.Reticle.prototype.startDwelling = function () {
+	PANOLENS.Reticle.prototype.startDwelling = function ( completeCallback ) {
 
+		if ( !this.autoSelect ) {
+
+			return;
+
+		}
+		
+		this.startTime = performance.now();
 		this.updateStatus( this.DWELLING );
+		this.select( completeCallback );
 
 	};
 
@@ -127,7 +168,7 @@
 	 * Cancel dwelling
 	 */
 	PANOLENS.Reticle.prototype.cancelDwelling = function () {
-
+		this.clearTimer();
 		this.updateStatus( this.IDLE );
 
 	};
@@ -136,7 +177,7 @@
 	 * Complete dwelling
 	 */
 	PANOLENS.Reticle.prototype.completeDwelling = function () {
-
+		this.clearTimer();	
 		this.updateStatus( this.IDLE );
 	};
 
