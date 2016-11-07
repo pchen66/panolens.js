@@ -1,6 +1,6 @@
 {
   "name": "panolens.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Javascript panorama viewer",
   "main": "index.js",
   "scripts": {
@@ -26,10 +26,11 @@
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
-    "gulp-jsdoc3": "^0.2.1",
+    "gulp-jsdoc3": "^1.0.0",
     "gulp-strip-debug": "^1.1.0",
     "gulp-uglify": "^1.5.2",
     "three": "^0.78.0",
-    "tween.js": "^16.3.4"
+    "tween.js": "^16.3.5",
+    "iphone-inline-video": "^1.9.3"
   }
 }

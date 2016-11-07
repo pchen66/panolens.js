@@ -2,6 +2,7 @@
 
 	/**
 	 * Image Little Planet
+	 * @constructor
 	 * @param {string} source 		- URL for the image source
 	 * @param {number} [size=10000] - Size of plane geometry
 	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width

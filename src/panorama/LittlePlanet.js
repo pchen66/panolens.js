@@ -2,6 +2,7 @@
 
 	/**
 	 * Little Planet
+	 * @constructor
 	 * @param {string} type 		- Type of little planet basic class
 	 * @param {string} source 		- URL for the image source
 	 * @param {number} [size=10000] - Size of plane geometry
