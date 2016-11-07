@@ -92,7 +92,7 @@ THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 	var scope = this;
 
-	var EPS = 0.000001;
+	var EPS = 10e-8;
 	var MEPS = 10e-5;
 
 	var rotateStart = new THREE.Vector2();
