@@ -28,6 +28,8 @@ THREE.CardboardEffect = function ( renderer ) {
 	var uvs = geometry.attributes.uv.array;
 
 	// duplicate
+	geometry.attributes.position.count *= 2;
+	geometry.attributes.uv.count *= 2;
 
 	var positions2 = new Float32Array( positions.length * 2 );
 	positions2.set( positions );
