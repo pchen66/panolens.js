@@ -4,10 +4,10 @@
  * @namespace PANOLENS
  */
 
-var PANOLENS = { REVISION: '3' };
+var PANOLENS = { REVISION: '4-dev' };
 ;/*! npm.im/iphone-inline-video */
 var makeVideoPlayableInline=function(){"use strict";/*! npm.im/intervalometer */
-function e(e,r,n,i){function t(n){d=r(t,i),e(n-(a||n)),a=n}var d,a;return{start:function(){d||t(0)},stop:function(){n(d),d=null,a=0}}}function r(r){return e(r,requestAnimationFrame,cancelAnimationFrame)}function n(e,r,n,i){function t(r){Boolean(e[n])===Boolean(i)&&r.stopImmediatePropagation(),delete e[n]}return e.addEventListener(r,t,!1),t}function i(e,r,n,i){function t(){return n[r]}function d(e){n[r]=e}i&&d(e[r]),Object.defineProperty(e,r,{get:t,set:d})}function t(e,r,n){n.addEventListener(r,function(){return e.dispatchEvent(new Event(r))})}function d(e,r){Promise.resolve().then(function(){e.dispatchEvent(new Event(r))})}function a(e){var r=new Audio;return t(e,"play",r),t(e,"playing",r),t(e,"pause",r),r.crossOrigin=e.crossOrigin,r.src=e.src||e.currentSrc||"data:",r}function o(e,r,n){(m||0)+200<Date.now()&&(e[b]=!0,m=Date.now()),n||(e.currentTime=r),A[++k%3]=100*r|0}function u(e){return e.driver.currentTime>=e.video.duration}function s(e){var r=this;r.video.readyState>=r.video.HAVE_FUTURE_DATA?(r.hasAudio||(r.driver.currentTime=r.video.currentTime+e*r.video.playbackRate/1e3,r.video.loop&&u(r)&&(r.driver.currentTime=0)),o(r.video,r.driver.currentTime)):r.video.networkState!==r.video.NETWORK_IDLE||r.video.buffered.length||r.video.load(),r.video.ended&&(delete r.video[b],r.video.pause(!0))}function c(){var e=this,r=e[h];return e.webkitDisplayingFullscreen?void e[E]():("data:"!==r.driver.src&&r.driver.src!==e.src&&(o(e,0,!0),r.driver.src=e.src),void(e.paused&&(r.paused=!1,e.buffered.length||e.load(),r.driver.play(),r.updater.start(),r.hasAudio||(d(e,"play"),r.video.readyState>=r.video.HAVE_ENOUGH_DATA&&d(e,"playing")))))}function v(e){var r=this,n=r[h];n.driver.pause(),n.updater.stop(),r.webkitDisplayingFullscreen&&r[T](),n.paused&&!e||(n.paused=!0,n.hasAudio||d(r,"pause"),r.ended&&(r[b]=!0,d(r,"ended")))}function p(e,n){var i=e[h]={};i.paused=!0,i.hasAudio=n,i.video=e,i.updater=r(s.bind(i)),n?i.driver=a(e):(e.addEventListener("canplay",function(){e.paused||d(e,"playing")}),i.driver={src:e.src||e.currentSrc||"data:",muted:!0,paused:!0,pause:function(){i.driver.paused=!0},play:function(){i.driver.paused=!1,u(i)&&o(e,0)},get ended(){return u(i)}}),e.addEventListener("emptied",function(){var r=!i.driver.src||"data:"===i.driver.src;i.driver.src&&i.driver.src!==e.src&&(o(e,0,!0),i.driver.src=e.src,r?i.driver.play():i.updater.stop())},!1),e.addEventListener("webkitbeginfullscreen",function(){e.paused?n&&!i.driver.buffered.length&&i.driver.load():(e.pause(),e[E]())}),n&&(e.addEventListener("webkitendfullscreen",function(){i.driver.currentTime=e.currentTime}),e.addEventListener("seeking",function(){A.indexOf(100*e.currentTime|0)<0&&(i.driver.currentTime=e.currentTime)}))}function l(e){var r=e[h];e[E]=e.play,e[T]=e.pause,e.play=c,e.pause=v,i(e,"paused",r.driver),i(e,"muted",r.driver,!0),i(e,"playbackRate",r.driver,!0),i(e,"ended",r.driver),i(e,"loop",r.driver,!0),n(e,"seeking"),n(e,"seeked"),n(e,"timeupdate",b,!1),n(e,"ended",b,!1)}function f(e,r,n){void 0===r&&(r=!0),void 0===n&&(n=!0),n&&!g||e[h]||(p(e,r),l(e),e.classList.add("IIV"),!r&&e.autoplay&&e.play(),/iPhone|iPod|iPad/.test(navigator.platform)||console.warn("iphone-inline-video is not guaranteed to work in emulated environments"))}var m,y="undefined"==typeof Symbol?function(e){return"@"+(e||"@")+Math.random()}:Symbol,g=/iPhone|iPod/i.test(navigator.userAgent)&&!matchMedia("(-webkit-video-playable-inline)").matches,h=y(),b=y(),E=y("nativeplay"),T=y("nativepause"),A=[],k=0;return f.isWhitelisted=g,f}();;/**
+function e(e,n,r,i){function t(r){d=n(t,i),e(r-(a||r)),a=r}var d,a;return{start:function(){d||t(0)},stop:function(){r(d),d=null,a=0}}}function n(n){return e(n,requestAnimationFrame,cancelAnimationFrame)}function r(e,n,r,i){function t(n){Boolean(e[r])===Boolean(i)&&n.stopImmediatePropagation(),delete e[r]}return e.addEventListener(n,t,!1),t}function i(e,n,r,i){function t(){return r[n]}function d(e){r[n]=e}i&&d(e[n]),Object.defineProperty(e,n,{get:t,set:d})}function t(e,n,r){r.addEventListener(n,function(){return e.dispatchEvent(new Event(n))})}function d(e,n){Promise.resolve().then(function(){e.dispatchEvent(new Event(n))})}function a(e){var n=new Audio;return t(e,"play",n),t(e,"playing",n),t(e,"pause",n),n.crossOrigin=e.crossOrigin,n.src=e.src||e.currentSrc||"data:",n}function o(e,n,r){(m||0)+200<Date.now()&&(e[g]=!0,m=Date.now()),r||(e.currentTime=n),A[++k%3]=100*n|0}function u(e){return e.driver.currentTime>=e.video.duration}function s(e){var n=this;n.video.readyState>=n.video.HAVE_FUTURE_DATA?(n.hasAudio||(n.driver.currentTime=n.video.currentTime+e*n.video.playbackRate/1e3,n.video.loop&&u(n)&&(n.driver.currentTime=0)),o(n.video,n.driver.currentTime)):n.video.networkState!==n.video.NETWORK_IDLE||n.video.buffered.length||n.video.load(),n.video.ended&&(delete n.video[g],n.video.pause(!0))}function c(){var e=this,n=e[b];return e.webkitDisplayingFullscreen?void e[E]():("data:"!==n.driver.src&&n.driver.src!==e.src&&(o(e,0,!0),n.driver.src=e.src),void(e.paused&&(n.paused=!1,e.buffered.length||e.load(),n.driver.play(),n.updater.start(),n.hasAudio||(d(e,"play"),n.video.readyState>=n.video.HAVE_ENOUGH_DATA&&d(e,"playing")))))}function v(e){var n=this,r=n[b];r.driver.pause(),r.updater.stop(),n.webkitDisplayingFullscreen&&n[T](),r.paused&&!e||(r.paused=!0,r.hasAudio||d(n,"pause"),n.ended&&(n[g]=!0,d(n,"ended")))}function p(e,r){var i=e[b]={};i.paused=!0,i.hasAudio=r,i.video=e,i.updater=n(s.bind(i)),r?i.driver=a(e):(e.addEventListener("canplay",function(){e.paused||d(e,"playing")}),i.driver={src:e.src||e.currentSrc||"data:",muted:!0,paused:!0,pause:function(){i.driver.paused=!0},play:function(){i.driver.paused=!1,u(i)&&o(e,0)},get ended(){return u(i)}}),e.addEventListener("emptied",function(){var n=!i.driver.src||"data:"===i.driver.src;i.driver.src&&i.driver.src!==e.src&&(o(e,0,!0),i.driver.src=e.src,n?i.driver.play():i.updater.stop())},!1),e.addEventListener("webkitbeginfullscreen",function(){e.paused?r&&!i.driver.buffered.length&&i.driver.load():(e.pause(),e[E]())}),r&&(e.addEventListener("webkitendfullscreen",function(){i.driver.currentTime=e.currentTime}),e.addEventListener("seeking",function(){A.indexOf(100*e.currentTime|0)<0&&(i.driver.currentTime=e.currentTime)}))}function l(e){var n=e[b];e[E]=e.play,e[T]=e.pause,e.play=c,e.pause=v,i(e,"paused",n.driver),i(e,"muted",n.driver,!0),i(e,"playbackRate",n.driver,!0),i(e,"ended",n.driver),i(e,"loop",n.driver,!0),r(e,"seeking"),r(e,"seeked"),r(e,"timeupdate",g,!1),r(e,"ended",g,!1)}function f(e,n,r){void 0===n&&(n=!0),void 0===r&&(r=!0),r&&!h||e[b]||(p(e,n),l(e),e.classList.add("IIV"),!n&&e.autoplay&&e.play(),/iPhone|iPod|iPad/.test(navigator.platform)||console.warn("iphone-inline-video is not guaranteed to work in emulated environments"))}var m,y="undefined"==typeof Symbol?function(e){return"@"+(e||"@")+Math.random()}:Symbol,h="object-fit"in document.head.style&&/iPhone|iPod/i.test(navigator.userAgent)&&!matchMedia("(-webkit-video-playable-inline)").matches,b=y(),g=y(),E=y("nativeplay"),T=y("nativepause"),A=[],k=0;return f.isWhitelisted=h,f}();;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
  * ----------------------------------------------
@@ -78,37 +78,34 @@ var TWEEN = TWEEN || (function () {
 })();
 
 
-// Include a performance.now polyfill
-(function () {
-	// In node.js, use process.hrtime.
-	if (this.window === undefined && this.process !== undefined) {
-		TWEEN.now = function () {
-			var time = process.hrtime();
+// Include a performance.now polyfill.
+// In node.js, use process.hrtime.
+if (typeof (window) === 'undefined' && typeof (process) !== 'undefined') {
+	TWEEN.now = function () {
+		var time = process.hrtime();
 
-			// Convert [seconds, microseconds] to milliseconds.
-			return time[0] * 1000 + time[1] / 1000;
-		};
-	}
-	// In a browser, use window.performance.now if it is available.
-	else if (this.window !== undefined &&
-	         window.performance !== undefined &&
+		// Convert [seconds, nanoseconds] to milliseconds.
+		return time[0] * 1000 + time[1] / 1000000;
+	};
+}
+// In a browser, use window.performance.now if it is available.
+else if (typeof (window) !== 'undefined' &&
+         window.performance !== undefined &&
 		 window.performance.now !== undefined) {
-
-		// This must be bound, because directly assigning this function
-		// leads to an invocation exception in Chrome.
-		TWEEN.now = window.performance.now.bind(window.performance);
-	}
-	// Use Date.now if it is available.
-	else if (Date.now !== undefined) {
-		TWEEN.now = Date.now;
-	}
-	// Otherwise, use 'new Date().getTime()'.
-	else {
-		TWEEN.now = function () {
-			return new Date().getTime();
-		};
-	}
-})();
+	// This must be bound, because directly assigning this function
+	// leads to an invocation exception in Chrome.
+	TWEEN.now = window.performance.now.bind(window.performance);
+}
+// Use Date.now if it is available.
+else if (Date.now !== undefined) {
+	TWEEN.now = Date.now;
+}
+// Otherwise, use 'new Date().getTime()'.
+else {
+	TWEEN.now = function () {
+		return new Date().getTime();
+	};
+}
 
 
 TWEEN.Tween = function (object) {
@@ -119,6 +116,7 @@ TWEEN.Tween = function (object) {
 	var _valuesStartRepeat = {};
 	var _duration = 1000;
 	var _repeat = 0;
+	var _repeatDelayTime;
 	var _yoyo = false;
 	var _isPlaying = false;
 	var _reversed = false;
@@ -133,18 +131,13 @@ TWEEN.Tween = function (object) {
 	var _onCompleteCallback = null;
 	var _onStopCallback = null;
 
-	// Set all starting values present on the target object
-	for (var field in object) {
-		_valuesStart[field] = parseFloat(object[field], 10);
-	}
-
 	this.to = function (properties, duration) {
+
+		_valuesEnd = properties;
 
 		if (duration !== undefined) {
 			_duration = duration;
 		}
-
-		_valuesEnd = properties;
 
 		return this;
 
@@ -177,10 +170,11 @@ TWEEN.Tween = function (object) {
 
 			// If `to()` specifies a property that doesn't exist in the source object,
 			// we should not set that property in the object
-			if (_valuesStart[property] === undefined) {
+			if (_object[property] === undefined) {
 				continue;
 			}
 
+			// Save the starting value.
 			_valuesStart[property] = _object[property];
 
 			if ((_valuesStart[property] instanceof Array) === false) {
@@ -205,10 +199,17 @@ TWEEN.Tween = function (object) {
 		_isPlaying = false;
 
 		if (_onStopCallback !== null) {
-			_onStopCallback.call(_object);
+			_onStopCallback.call(_object, _object);
 		}
 
 		this.stopChainedTweens();
+		return this;
+
+	};
+
+	this.end = function () {
+
+		this.update(_startTime + _duration);
 		return this;
 
 	};
@@ -231,6 +232,13 @@ TWEEN.Tween = function (object) {
 	this.repeat = function (times) {
 
 		_repeat = times;
+		return this;
+
+	};
+
+	this.repeatDelay = function (amount) {
+
+		_repeatDelayTime = amount;
 		return this;
 
 	};
@@ -305,11 +313,10 @@ TWEEN.Tween = function (object) {
 		if (_onStartCallbackFired === false) {
 
 			if (_onStartCallback !== null) {
-				_onStartCallback.call(_object);
+				_onStartCallback.call(_object, _object);
 			}
 
 			_onStartCallbackFired = true;
-
 		}
 
 		elapsed = (time - _startTime) / _duration;
@@ -337,9 +344,9 @@ TWEEN.Tween = function (object) {
 				if (typeof (end) === 'string') {
 
 					if (end.charAt(0) === '+' || end.charAt(0) === '-') {
-						end = start + parseFloat(end, 10);
+						end = start + parseFloat(end);
 					} else {
-						end = parseFloat(end, 10);
+						end = parseFloat(end);
 					}
 				}
 
@@ -368,7 +375,7 @@ TWEEN.Tween = function (object) {
 				for (property in _valuesStartRepeat) {
 
 					if (typeof (_valuesEnd[property]) === 'string') {
-						_valuesStartRepeat[property] = _valuesStartRepeat[property] + parseFloat(_valuesEnd[property], 10);
+						_valuesStartRepeat[property] = _valuesStartRepeat[property] + parseFloat(_valuesEnd[property]);
 					}
 
 					if (_yoyo) {
@@ -386,14 +393,19 @@ TWEEN.Tween = function (object) {
 					_reversed = !_reversed;
 				}
 
-				_startTime = time + _delayTime;
+				if (_repeatDelayTime !== undefined) {
+					_startTime = time + _repeatDelayTime;
+				} else {
+					_startTime = time + _delayTime;
+				}
 
 				return true;
 
 			} else {
 
 				if (_onCompleteCallback !== null) {
-					_onCompleteCallback.call(_object);
+
+					_onCompleteCallback.call(_object, _object);
 				}
 
 				for (var i = 0, numChainedTweens = _chainedTweens.length; i < numChainedTweens; i++) {
@@ -2066,6 +2078,8 @@ THREE.CardboardEffect = function ( renderer ) {
 	var uvs = geometry.attributes.uv.array;
 
 	// duplicate
+	geometry.attributes.position.count *= 2;
+	geometry.attributes.uv.count *= 2;
 
 	var positions2 = new Float32Array( positions.length * 2 );
 	positions2.set( positions );
@@ -2152,6 +2166,12 @@ THREE.StereoEffect = function ( renderer ) {
 	var _stereo = new THREE.StereoCamera();
 	_stereo.aspect = 0.5;
 
+	this.setEyeSeparation = function ( eyeSep ) {
+
+		_stereo.eyeSep = eyeSep;
+
+	};
+
 	this.setSize = function ( width, height ) {
 
 		renderer.setSize( width, height );
@@ -2168,8 +2188,8 @@ THREE.StereoEffect = function ( renderer ) {
 
 		var size = renderer.getSize();
 
+		if ( renderer.autoClear ) renderer.clear();
 		renderer.setScissorTest( true );
-		renderer.clear();
 
 		renderer.setScissor( 0, 0, size.width / 2, size.height );
 		renderer.setViewport( 0, 0, size.width / 2, size.height );
