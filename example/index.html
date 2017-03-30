@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js panorama video</title>
+    <style>
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      a:link, a:visited{
+        color: #bdc3c7;
+      }
+
+      .credit{
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        padding: 20px 0;
+        color: #fff;
+      }
+    </style>
+  </head>
+
+  <body>
+
+  <script src="../node_modules/three/build/three.min.js"></script>
+
+  <script src="../node_modules/iphone-inline-video/dist/iphone-inline-video.min.js"></script>
+  <script src="../node_modules/tween.js/src/Tween.js"></script>
+  <script src="../src/lib/controls/OrbitControls.js"></script>
+  <script src="../src/lib/controls/DeviceOrientationControls.js"></script>
+  <script src="../src/lib/modifier/BendModifier.js"></script>
+  <script src="../src/lib/effects/CardboardEffect.js"></script>
+  <script src="../node_modules/three/examples/js/effects/StereoEffect.js"></script>
+  <script src="../src/lib/GSVPano.js"></script>
+
+  <script src="../src/Panolens.js"></script>
+  <script src="../src/DataImage.js"></script>
+  <script src="../src/Modes.js"></script>
+  <script src="../src/util/Utils.js"></script>
+  <script src="../src/util/ImageLoader.js"></script>
+  <script src="../src/util/TextureLoader.js"></script>
+  <script src="../src/util/CubeTextureLoader.js"></script>
+  <script src="../src/shaders/StereographicShader.js"></script>
+  <script src="../src/panorama/Panorama.js"></script>
+  <script src="../src/panorama/ImagePanorama.js"></script>
+  <script src="../src/panorama/GoogleStreetviewPanorama.js"></script>
+  <script src="../src/panorama/CubePanorama.js"></script>
+  <script src="../src/panorama/BasicPanorama.js"></script>
+  <script src="../src/panorama/VideoPanorama.js"></script>
+  <script src="../src/panorama/EmptyPanorama.js"></script>
+  <script src="../src/panorama/LittlePlanet.js"></script>
+  <script src="../src/panorama/ImageLittlePlanet.js"></script>
+  <script src="../src/interface/Reticle.js"></script>
+  <script src="../src/interface/Tile.js"></script>
+  <script src="../src/interface/TileGroup.js"></script>
+  <script src="../src/interface/SpriteText.js"></script>
+  <script src="../src/widget/Widget.js"></script>
+  <script src="../src/infospot/Infospot.js"></script>
+  <script src="../src/viewer/Viewer.js"></script>
+  <script src="../src/util/font/Bmfont.js"></script>
+
+    <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> panorama video example. 360 Video from <a href="http://supercell.com/en/games/clashofclans/" target="_blank">Clash of clans</a></div>
+
+    <script>
+
+      var panorama_video, panorama_image, viewer;
+
+      viewer = new PANOLENS.Viewer();
+
+      panorama_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: false, muted: true, loop: false } );
+
+      panorama_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
+      panorama_image.position.set( 0, 0, -1000 );
+
+      panorama_video.link( panorama_image );
+
+      
+      viewer.add( panorama_video );
+      viewer.add( panorama_image );
+
+    </script>
+
+  </body>
+</html>
