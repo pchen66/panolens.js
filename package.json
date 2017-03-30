@@ -24,13 +24,13 @@
   },
   "homepage": "https://github.com/pchen66/panolens.js#readme",
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-jsdoc3": "^1.0.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-jsdoc3": "^1.0.1",
     "gulp-strip-debug": "^1.1.0",
-    "gulp-uglify": "^1.5.2",
+    "gulp-uglify": "^2.1.2",
     "three": "^0.84.0",
-    "tween.js": "^16.3.5",
+    "tween.js": "^16.6.0",
     "iphone-inline-video": "^2.0.2"
   }
 }
