@@ -1,6 +1,6 @@
 {
   "name": "panolens.js",
-  "version": "0.5.0",
+  "version": "0.6.0-dev",
   "description": "Javascript panorama viewer",
   "main": "index.js",
   "scripts": {
