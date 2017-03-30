@@ -4,10 +4,8 @@
  * @namespace PANOLENS
  */
 
-var PANOLENS = { REVISION: '4' };
-;/*! npm.im/iphone-inline-video */
-var makeVideoPlayableInline=function(){"use strict";/*! npm.im/intervalometer */
-function e(e,n,r,i){function t(r){d=n(t,i),e(r-(a||r)),a=r}var d,a;return{start:function(){d||t(0)},stop:function(){r(d),d=null,a=0}}}function n(n){return e(n,requestAnimationFrame,cancelAnimationFrame)}function r(e,n,r,i){function t(n){Boolean(e[r])===Boolean(i)&&n.stopImmediatePropagation(),delete e[r]}return e.addEventListener(n,t,!1),t}function i(e,n,r,i){function t(){return r[n]}function d(e){r[n]=e}i&&d(e[n]),Object.defineProperty(e,n,{get:t,set:d})}function t(e,n,r){r.addEventListener(n,function(){return e.dispatchEvent(new Event(n))})}function d(e,n){Promise.resolve().then(function(){e.dispatchEvent(new Event(n))})}function a(e){var n=new Audio;return t(e,"play",n),t(e,"playing",n),t(e,"pause",n),n.crossOrigin=e.crossOrigin,n.src=e.src||e.currentSrc||"data:",n}function o(e,n,r){(m||0)+200<Date.now()&&(e[g]=!0,m=Date.now()),r||(e.currentTime=n),A[++k%3]=100*n|0}function u(e){return e.driver.currentTime>=e.video.duration}function s(e){var n=this;n.video.readyState>=n.video.HAVE_FUTURE_DATA?(n.hasAudio||(n.driver.currentTime=n.video.currentTime+e*n.video.playbackRate/1e3,n.video.loop&&u(n)&&(n.driver.currentTime=0)),o(n.video,n.driver.currentTime)):n.video.networkState!==n.video.NETWORK_IDLE||n.video.buffered.length||n.video.load(),n.video.ended&&(delete n.video[g],n.video.pause(!0))}function c(){var e=this,n=e[b];return e.webkitDisplayingFullscreen?void e[E]():("data:"!==n.driver.src&&n.driver.src!==e.src&&(o(e,0,!0),n.driver.src=e.src),void(e.paused&&(n.paused=!1,e.buffered.length||e.load(),n.driver.play(),n.updater.start(),n.hasAudio||(d(e,"play"),n.video.readyState>=n.video.HAVE_ENOUGH_DATA&&d(e,"playing")))))}function v(e){var n=this,r=n[b];r.driver.pause(),r.updater.stop(),n.webkitDisplayingFullscreen&&n[T](),r.paused&&!e||(r.paused=!0,r.hasAudio||d(n,"pause"),n.ended&&(n[g]=!0,d(n,"ended")))}function p(e,r){var i=e[b]={};i.paused=!0,i.hasAudio=r,i.video=e,i.updater=n(s.bind(i)),r?i.driver=a(e):(e.addEventListener("canplay",function(){e.paused||d(e,"playing")}),i.driver={src:e.src||e.currentSrc||"data:",muted:!0,paused:!0,pause:function(){i.driver.paused=!0},play:function(){i.driver.paused=!1,u(i)&&o(e,0)},get ended(){return u(i)}}),e.addEventListener("emptied",function(){var n=!i.driver.src||"data:"===i.driver.src;i.driver.src&&i.driver.src!==e.src&&(o(e,0,!0),i.driver.src=e.src,n?i.driver.play():i.updater.stop())},!1),e.addEventListener("webkitbeginfullscreen",function(){e.paused?r&&!i.driver.buffered.length&&i.driver.load():(e.pause(),e[E]())}),r&&(e.addEventListener("webkitendfullscreen",function(){i.driver.currentTime=e.currentTime}),e.addEventListener("seeking",function(){A.indexOf(100*e.currentTime|0)<0&&(i.driver.currentTime=e.currentTime)}))}function l(e){var n=e[b];e[E]=e.play,e[T]=e.pause,e.play=c,e.pause=v,i(e,"paused",n.driver),i(e,"muted",n.driver,!0),i(e,"playbackRate",n.driver,!0),i(e,"ended",n.driver),i(e,"loop",n.driver,!0),r(e,"seeking"),r(e,"seeked"),r(e,"timeupdate",g,!1),r(e,"ended",g,!1)}function f(e,n,r){void 0===n&&(n=!0),void 0===r&&(r=!0),r&&!h||e[b]||(p(e,n),l(e),e.classList.add("IIV"),!n&&e.autoplay&&e.play(),/iPhone|iPod|iPad/.test(navigator.platform)||console.warn("iphone-inline-video is not guaranteed to work in emulated environments"))}var m,y="undefined"==typeof Symbol?function(e){return"@"+(e||"@")+Math.random()}:Symbol,h="object-fit"in document.head.style&&/iPhone|iPod/i.test(navigator.userAgent)&&!matchMedia("(-webkit-video-playable-inline)").matches,b=y(),g=y(),E=y("nativeplay"),T=y("nativepause"),A=[],k=0;return f.isWhitelisted=h,f}();;/**
+var PANOLENS = { REVISION: '5-dev' };
+;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
  * ----------------------------------------------
@@ -3636,11 +3634,10 @@ PANOLENS.StereographicShader = {
 	 * @param {string} src - Equirectangular video url
 	 * @param {object} [options] - Option for video settings
 	 * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video
-	 * @param {HTMLCanvasElement} [options.videoCanvas] - HTML5 canvas element for drawing the video
 	 * @param {boolean} [options.loop=true] - Specify if the video should loop in the end
 	 * @param {boolean} [options.muted=false] - Mute the video or not
 	 * @param {boolean} [options.autoplay=false] - Specify if the video should auto play
-	 * @param {boolean} [options.playsinline=false] - Specify if video should play inline for iOS. If you want it to auto play inline, set both autoplay and muted options to true
+	 * @param {boolean} [options.playsinline=true] - Specify if video should play inline for iOS. If you want it to auto play inline, set both autoplay and muted options to true
 	 * @param {string} [options.crossOrigin="anonymous"] - Sets the cross-origin attribute for the video, which allows for cross-origin videos in some browsers (Firefox, Chrome). Set to either "anonymous" or "use-credentials".
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
@@ -3655,24 +3652,11 @@ PANOLENS.StereographicShader = {
 
 		this.src = src;
 		this.options = options;
+		this.options.playsinline = options.playsinline !== false ? true : false;
 
 		this.videoElement = undefined;
-		this.videoCanvas = undefined;
 		this.videoRenderObject = undefined;
 
-		this.videoFramerate = 30;
-
-		function isIOS10 () {
-			var ua = navigator.userAgent, tem, M = ua.match( /(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i ) || [];
-
-			M = M[ 2 ] ? [ M[ 1 ], M[ 2 ] ] : [ navigator.appName, navigator.appVersion, '-?' ];
-			if ( ( tem = ua.match( /version\/(\d+)/i ) ) !== null ) {
-				M.splice( 1, 1, tem[ 1 ] );
-			}
-			return ( M[ 0 ] === "Safari" ? parseInt( M[ 1 ] ) >= 10 : false );
-		}
-
-		this.isIOS10 = isIOS10();
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
 		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
@@ -3690,7 +3674,7 @@ PANOLENS.StereographicShader = {
 	/**
 	 * [load description]
 	 * @param  {string} src     - The video url
-	 * @param  {object} options - Option object containing videoElement and videoCanvas
+	 * @param  {object} options - Option object containing videoElement
 	 * @fires  PANOLENS.Panorama#panolens-viewer-handler
 	 */
 	PANOLENS.VideoPanorama.prototype.load = function ( src, options ) {
@@ -3701,26 +3685,28 @@ PANOLENS.StereographicShader = {
 		options = ( options || this.options ) || {};
 
 		this.videoElement = options.videoElement || document.createElement( 'video' );
-		this.videoCanvas = options.videoCanvas || document.createElement( 'canvas' );
 		
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
 		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
+		
+		// iphone inline player
 		if (options.playsinline) {
 			this.videoElement.setAttribute( "playsinline", "" );
 			this.videoElement.setAttribute( "webkit-playsinline", "" );
-		}
+		} 
+
 		this.videoElement.src =  src;
 		this.videoElement.load();
 
 		this.videoElement.onloadeddata = function(){
 
-			scope.setVideoTexture( scope.videoElement, scope.videoCanvas );
+			scope.setVideoTexture( scope.videoElement );
 
 			scope.onLoad();
 
-			if ( scope.videoElement.autoplay && !scope.isMobile ) {
+			if ( scope.videoElement.autoplay ) {
 
 				/**
 				 * Viewer handler event
@@ -3731,6 +3717,36 @@ PANOLENS.StereographicShader = {
 				 */
 				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
 
+			}
+
+			// For mobile silent autoplay
+			if ( scope.isIOS ) {
+
+				if ( scope.videoElement.autoplay && scope.videoElement.muted ) {
+
+					/**
+					 * Viewer handler event
+					 * @type {object}
+					 * @property {string} method - 'updateVideoPlayButton'
+					 * @property {boolean} data - Pause video or not
+					 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
+					 */
+					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+
+				} else {
+
+					/**
+					 * Viewer handler event
+					 * @type {object}
+					 * @property {string} method - 'updateVideoPlayButton'
+					 * @property {boolean} data - Pause video or not
+					 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
+					 */
+					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
+
+
+				}
+				
 			}
 
 		};
@@ -3747,81 +3763,57 @@ PANOLENS.StereographicShader = {
 
 		};
 
+		this.videoElement.addEventListener( 'ended', function () {
+			
+			if ( !scope.options.loop ) {
+
+				scope.resetVideo();
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
+
+			}
+
+		}, false ); 
+
 	};
 
 	/**
 	 * Set video texture
 	 * @param {HTMLVideoElement} video  - The html5 video element
-	 * @param {HTMLCanvasElement} canvas - The canvas for video to be drawn on
 	 * @fires PANOLENS.Panorama#panolens-viewer-handler
 	 */
-	PANOLENS.VideoPanorama.prototype.setVideoTexture = function ( video, canvas ) {
+	PANOLENS.VideoPanorama.prototype.setVideoTexture = function ( video ) {
 
-		var videoTexture, videoRenderObject, videoContext, scene, updateCallback;
+		var videoTexture, videoRenderObject, scene;
 
-		if ( !video || !canvas ) return;
+		if ( !video ) return;
 
-		canvas.width = video.videoWidth;
-		canvas.height = video.videoHeight;
-
-		videoContext = canvas.getContext('2d');
-
-		videoTexture = new THREE.Texture( canvas );
-		videoTexture.generateMipmaps = false;
+		videoTexture = new THREE.VideoTexture( video );
 		videoTexture.minFilter = THREE.LinearFilter;
 		videoTexture.magFilter = THREE.LinearFilter;
+		videoTexture.format = THREE.RGBFormat;
 
 		videoRenderObject = {
 
 			video : video,
-			videoContext : videoContext,
-			videoTexture: videoTexture,
-			target : this
+			videoTexture: videoTexture
 
 		};
 
-		if ( this.isIOS && !this.isIOS10 ){
+		if ( this.isIOS ){
 
-			makeVideoPlayableInline( video, /* hasAudio */ !this.options.muted );
+			enableInlineVideo( video );
 
 		}
-
-		updateCallback = function () {
-
-			if ( this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.video.paused ) {
-
-				this.videoContext.drawImage( this.video, 0, 0 );
-				this.videoTexture.needsUpdate = true;
-
-			}
-
-		};
-
-		// Draw the first frame
-		videoContext.drawImage( video, 0, 0 );
-		videoTexture.needsUpdate = true;
 
 		this.updateTexture( videoTexture );
 
 		this.videoRenderObject = videoRenderObject;
-
-		// Notify Viewer to render object
-		/**
-		 * Viewer handler event
-		 * @type {object}
-		 * @event PANOLENS.Panorama#panolens-viewer-handler
-		 * @property {string} method - 'addUpdateCallback'
-		 * @property {*} data - The callback function to update video
-		 */
-		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'addUpdateCallback', data: updateCallback.bind( videoRenderObject ) } );
-		
+	
 	};
 
 	PANOLENS.VideoPanorama.prototype.reset = function () {
 
-		this.videoElement = undefined;
-
-		this.videoCanvas = undefined;	
+		this.videoElement = undefined;	
 
 		PANOLENS.Panorama.prototype.reset.call( this );
 
@@ -3833,9 +3825,7 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.isVideoPaused = function () {
 
-		return ( this.isIOS ) 
-			? this.videoRenderObject.video.pano_paused 
-			: this.videoRenderObject.video.paused;
+		return this.videoRenderObject.video.paused;
 
 	};
 
@@ -3850,13 +3840,10 @@ PANOLENS.StereographicShader = {
 
 				this.videoRenderObject.video.play();
 
-				this.dispatchEvent( { type: 'play' } );
 
 			} else {
 
 				this.videoRenderObject.video.pause();
-
-				this.dispatchEvent( { type: 'pause' } );
 
 			}
 
