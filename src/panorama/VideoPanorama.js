@@ -25,8 +25,8 @@
 		PANOLENS.Panorama.call( this, geometry, material );
 
 		this.src = src;
-		this.options = options;
-		this.options.playsinline = options.playsinline !== false ? true : false;
+		this.options = options || {};
+		this.options.playsinline = this.options.playsinline !== false ? true : false;
 
 		this.videoElement = undefined;
 		this.videoRenderObject = undefined;
