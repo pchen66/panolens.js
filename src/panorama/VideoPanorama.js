@@ -71,11 +71,7 @@
 			this.videoElement.setAttribute( "webkit-playsinline", "" );
 		} 
 
-		this.videoElement.src =  src;
-		this.videoElement.load();
-
-		this.videoElement.onloadeddata = function(){
-
+		var onloadeddata = function(){
 			scope.setVideoTexture( scope.videoElement );
 
 			scope.onLoad();
@@ -122,8 +118,17 @@
 				}
 				
 			}
-
 		};
+
+		if (this.videoElement.readyState > 2) {
+			onloadeddata();
+		} else {
+			if (!this.videoElement.querySelectorAll('source').length || !this.videoElement.src) this.videoElement.src =  src;
+			this.videoElement.load();
+		}
+
+		this.videoElement.onloadeddata = onloadeddata;
+		
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
