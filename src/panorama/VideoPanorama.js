@@ -71,10 +71,7 @@
 			this.videoElement.setAttribute( "webkit-playsinline", "" );
 		} 
 
-		this.videoElement.src =  src;
-		this.videoElement.load();
-
-		this.videoElement.onloadeddata = function(){
+		var onloadeddata = function(){
 
 			scope.setVideoTexture( scope.videoElement );
 
@@ -122,8 +119,33 @@
 				}
 				
 			}
-
 		};
+
+		/**
+		 * Ready state of the audio/video element
+		 * 0 = HAVE_NOTHING - no information whether or not the audio/video is ready
+		 * 1 = HAVE_METADATA - metadata for the audio/video is ready
+		 * 2 = HAVE_CURRENT_DATA - data for the current playback position is available, but not enough data to play next frame/millisecond
+		 * 3 = HAVE_FUTURE_DATA - data for the current and at least the next frame is available
+		 * 4 = HAVE_ENOUGH_DATA - enough data available to start playing
+		 */
+		if ( this.videoElement.readyState > 2 ) {
+
+			onloadeddata();
+
+		} else {
+
+			if ( !this.videoElement.querySelectorAll('source').length || !this.videoElement.src ) {
+
+				this.videoElement.src =  src;
+
+			}
+
+			this.videoElement.load();
+		}
+
+		this.videoElement.onloadeddata = onloadeddata;
+		
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
