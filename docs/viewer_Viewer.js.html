@@ -203,6 +203,9 @@
 		this.updateCallbacks = [];
 		this.requestAnimationId;
 
+		this.cameraFrustum = new THREE.Frustum();
+		this.cameraViewProjectionMatrix = new THREE.Matrix4();
+
 		// Handler references
 		this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
 		this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
@@ -457,26 +460,75 @@
 	};
 
 	/**
-	 * Disable additional rendering effect
+	 * Set widget content
+	 * @param  {integer} controlIndex - Control index
+	 * @param  {PANOLENS.Modes} mode - Modes for effects
 	 */
-	PANOLENS.Viewer.prototype.disableEffect = function () {
+	PANOLENS.Viewer.prototype.activateWidgetItem = function ( controlIndex, mode ) {
 
-		if ( this.mode === PANOLENS.Modes.NORMAL ) { return; }
+		var mainMenu = this.widget.mainMenu;
+		var ControlMenuItem = mainMenu.children[ 0 ];
+		var ModeMenuItem = mainMenu.children[ 1 ];
 
-		this.mode = PANOLENS.Modes.NORMAL;
-		this.disableReticleControl();
+		var item;
 
-		/**
-		 * Dual eye effect event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
-		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
-		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
+		if ( controlIndex !== undefined ) {
 
-		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
-		this.render();
+			switch ( controlIndex ) {
+
+				case 0:
+
+					item = ControlMenuItem.subMenu.children[ 1 ];
+
+					break;
+
+				case 1:
+
+					item = ControlMenuItem.subMenu.children[ 2 ];
+
+					break;
+					
+				default:
+
+					item = ControlMenuItem.subMenu.children[ 1 ];
+
+					break;	
+
+			}
+
+			ControlMenuItem.subMenu.setActiveItem( item )
+			ControlMenuItem.setSelectionTitle( item.textContent );
+
+		}
+
+		if ( mode !== undefined ) {
+
+			switch( mode ) {
+
+				case PANOLENS.Modes.CARDBOARD:
+
+					item = ModeMenuItem.subMenu.children[ 2 ];
+
+					break;
+
+				case PANOLENS.Modes.STEREO:
+
+					item = ModeMenuItem.subMenu.children[ 3 ];
+					
+					break;
+
+				default:
+
+					item = ModeMenuItem.subMenu.children[ 1 ];
+
+					break;
+			}
+
+			ModeMenuItem.subMenu.setActiveItem( item )
+			ModeMenuItem.setSelectionTitle( item.textContent );
+
+		}
+
 	};
 
 	/**
@@ -486,10 +538,10 @@
 	PANOLENS.Viewer.prototype.enableEffect = function ( mode ) {
 
 		if ( this.mode === mode ) { return; }
+		if ( mode === PANOLENS.Modes.NORMAL ) { this.disableEffect(); return; }
+		else { this.mode = mode; }
 
 		var fov = this.camera.fov;
-
-		this.mode = mode;
 
 		switch( mode ) {
 
@@ -509,9 +561,14 @@
 
 			default:
 
-				return;
+				this.effect = null;
+				this.disableReticleControl();
+
+				break;
 
 		}
+
+		this.activateWidgetItem( undefined, this.mode );
 
 		/**
 		 * Dual eye effect event
@@ -520,7 +577,7 @@
 		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
 		 * @property {PANOLENS.Modes} mode - Current display mode
 		 */
-		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: mode } );
+		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
 
 		// Force effect stereo camera to update by refreshing fov
 		this.camera.fov = fov + 10e-3;
@@ -531,9 +588,36 @@
 	};
 
 	/**
+	 * Disable additional rendering effect
+	 */
+	PANOLENS.Viewer.prototype.disableEffect = function () {
+
+		if ( this.mode === PANOLENS.Modes.NORMAL ) { return; }
+
+		this.mode = PANOLENS.Modes.NORMAL;
+		this.disableReticleControl();
+
+		this.activateWidgetItem( undefined, this.mode );
+
+		/**
+		 * Dual eye effect event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
+		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
+
+		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.render();
+	};
+
+	/**
 	 * Enable reticle control
 	 */
 	PANOLENS.Viewer.prototype.enableReticleControl = function () {
+
+		if ( this.reticle.visible ) { return; }
 
 		this.tempEnableReticle = true;
 
@@ -866,7 +950,7 @@
 
 	/**
 	 * Enable control by index
-	 * @param  {number} index - Index of camera control
+	 * @param  {PANOLENS.Controls} index - Index of camera control
 	 */
 	PANOLENS.Viewer.prototype.enableControl = function ( index ) {
 
@@ -878,19 +962,29 @@
 
 		this.control.enabled = true;
 
-		switch ( this.control.name ) {
-			case 'orbit':
+		switch ( index ) {
+
+			case PANOLENS.Controls.ORBIT:
+
 				this.camera.position.copy( this.panorama.position );
 				this.camera.position.z += 1;
+
 				break;
-			case 'device-orientation':
+
+			case PANOLENS.Controls.DEVICEORIENTATION:
+
 				this.camera.position.copy( this.panorama.position );
+
 				break;
+
 			default:
+
 				break;
 		}
 
 		this.control.update();
+
+		this.activateWidgetItem( index, undefined );
 
 	};
 
@@ -933,6 +1027,38 @@
 		}
 
 		this.onWindowResize();
+
+	};
+
+	/**
+	 * Screen Space Projection
+	 */
+	PANOLENS.Viewer.prototype.getScreenVector = function ( worldVector ) {
+
+		var vector = worldVector.clone();
+		var widthHalf = ( window.innerWidth - this.container.offsetLeft ) / 2;
+		var heightHalf = window.innerHeight / 2;
+
+		vector.project( this.camera );
+
+		vector.x = ( vector.x * widthHalf ) + widthHalf;
+		vector.y = - ( vector.y * heightHalf ) + heightHalf;
+		vector.z = 0;
+
+		return vector;
+
+	};
+
+	/**
+	 * Check Sprite in Viewport
+	 */
+	PANOLENS.Viewer.prototype.checkSpriteInViewport = function ( sprite ) {
+
+		this.camera.matrixWorldInverse.getInverse( this.camera.matrixWorld );
+		this.cameraViewProjectionMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse );
+		this.cameraFrustum.setFromMatrix( this.cameraViewProjectionMatrix );
+
+		return sprite.visible &amp;&amp; this.cameraFrustum.intersectsSprite( sprite );
 
 	};
 
@@ -1049,8 +1175,8 @@
 
 		expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
 
-		width = expand ? window.innerWidth : this.container._width;
-		height = expand ? window.innerHeight : this.container._height;
+		width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container._width;
+		height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container._height;
 
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
@@ -1377,7 +1503,7 @@
 
 		for ( var i = 0; i &lt; intersects.length; i++ ) {
 
-			if ( intersects[i].object &amp;&amp; !intersects[i].object.passThrough ) {
+			if ( intersects[i].distance >= 0 &amp;&amp; intersects[i].object &amp;&amp; !intersects[i].object.passThrough ) {
 
 				if ( intersects[i].object.entity &amp;&amp; intersects[i].object.entity.passThrough ) {
 					continue;
@@ -1450,6 +1576,23 @@
 		this.updateCallbacks.forEach( function( callback ){ callback(); } );
 
 		!this.options.passiveRendering &amp;&amp; this.control.update();
+
+		this.scene.traverse( function( child ){
+			if ( child instanceof PANOLENS.Infospot 
+				&amp;&amp; child.element 
+				&amp;&amp; ( this.hoverObject === child 
+					|| child.element.style.display !== 'none' 
+					|| (child.element.left &amp;&amp; child.element.left.style.display !== 'none')
+					|| (child.element.right &amp;&amp; child.element.right.style.display !== 'none') ) ) {
+				if ( this.checkSpriteInViewport( child ) ) {
+					var vector = this.getScreenVector( child.getWorldPosition() );
+					child.translateElement( vector.x, vector.y );
+				} else {
+					child.onDismiss();
+				}
+				
+			}
+		}.bind(this) );
 
 	};
 
@@ -1739,7 +1882,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on 2017-03-29T23:37:26-07:00
+		on 2017-06-01T17:40:20-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

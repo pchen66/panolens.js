@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Source: panorama/BasicPanorama.js</title>
+	<title>Documentation Source: Constants.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: panorama/BasicPanorama.js</h1>
+		<h1 class="page-title">Source: Constants.js</h1>
     
 <section>
     <article>
@@ -87,23 +87,41 @@
             class="sunlight-highlight-javascript ">(function(){
 
 	'use strict';
+	
+	/**
+	 * Control Index Enum
+	 * @memberOf PANOLENS
+	 * @enum {number}
+	 */
+	
+	PANOLENS.Controls = {
+
+		ORBIT: 0,
+
+		DEVICEORIENTATION: 1
+
+	};
 
 	/**
-	 * Basic panorama with 6 faces tile images
-	 * @constructor
-	 * @param {number} [edgeLength=10000] - The length of cube's edge
+	 * Effect Mode Enum
+	 * @memberOf PANOLENS
+	 * @enum {number}
 	 */
-	PANOLENS.BasicPanorama = function ( edgeLength ) {
-		
-		var tile = PANOLENS.DataImage.WhiteTile;
+	PANOLENS.Modes = {
 
-		PANOLENS.CubePanorama.call( this, [ tile, tile, tile, tile, tile, tile ], edgeLength );
+		/** Unknown */
+		UNKNOWN: 0,
 
-	}
+		/** Normal */
+		NORMAL: 1,
 
-	PANOLENS.BasicPanorama.prototype = Object.create( PANOLENS.CubePanorama.prototype );
+		/** Google Cardboard*/
+		CARDBOARD: 2,
 
-	PANOLENS.BasicPanorama.prototype.constructor = PANOLENS.BasicPanorama;
+		/** Stereoscopic **/
+		STEREO: 3
+
+	};
 
 })();</pre>
     </article>

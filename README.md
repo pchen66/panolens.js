@@ -1,12 +1,12 @@
 # [Panolens.js](http://pchen66.github.io/Panolens)
 
-###Javascript Panorama Viewer
+### Javascript Panorama Viewer
 
 Panolens.js is an event-driven and WebGL based panorama viewer. It's built on top of [Three.JS](https://github.com/mrdoob/three.js). 
 
 ![Panorama Demo](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens.gif?raw=true)
 
-###Usage
+### Usage
 
 Include `three.min.js` and `panolens.min.js`
 
@@ -29,7 +29,7 @@ This code creates a 360 image panorama. The first panorama added to the viewer w
 </script>
 ```
 
-###PANOLENS.Viewer Configuration
+### PANOLENS.Viewer Configuration
 All attributes are optional
 ```html
 <script>
@@ -50,11 +50,11 @@ All attributes are optional
 </script>
 ```
 
-###Examples
+### Examples
 
 Check Panolens [example page](http://pchen66.github.io/Panolens/#Example)
 
-###Features
+### Features
 
 1.	Support equirectangular image
 2.	Support cubemap images
@@ -65,20 +65,20 @@ Check Panolens [example page](http://pchen66.github.io/Panolens/#Example)
 7.	Built-in fullscreen and video control widgets
 8.	Convert equirectangular image into little planet (Stereographic projection)
 
-###How to add an infospot (hotspot)
+### How to add an infospot (hotspot)
 
 Move cursor on a specific point in a panorama and press `Ctrl` with mouse clicking or hovering, which will generate position (x, y, z) in the console. See [Panorama Infospot](http://pchen66.github.io/Panolens/examples/panorama_infospot.html) example for creating and attaching infospots.
 
 ![Panorama Finding Infospot Position](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_add_infospot_480p.gif?raw=true)
 
-###Dependency
+### Dependency
 
-Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) by default
+Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) and [iphone-inline-video](https://github.com/bfred-it/iphone-inline-video) by default
 
-###How to contribute
+### How to contribute
 
 Always make your contributions for the latest `dev` branch, not `master`, so it can be tracked for the next release. 
 
-###Roadmap
+### Roadmap
 1.	npm packaging
 2.	infospot editor

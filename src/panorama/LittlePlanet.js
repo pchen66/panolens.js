@@ -261,7 +261,7 @@
 
 		this.unregisterMouseEvents();
 
-		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: 0 } );
+		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: PANOLENS.Controls.ORBIT } );
 
 		window.cancelAnimationFrame( this.frameId );
 
