@@ -1,9 +1,23 @@
 (function(){
 
 	'use strict';
+	
+	/**
+	 * Control Index Enum
+	 * @memberOf PANOLENS
+	 * @enum {number}
+	 */
+	
+	PANOLENS.Controls = {
+
+		ORBIT: 0,
+
+		DEVICEORIENTATION: 1
+
+	};
 
 	/**
-	 * Modes
+	 * Effect Mode Enum
 	 * @memberOf PANOLENS
 	 * @enum {number}
 	 */

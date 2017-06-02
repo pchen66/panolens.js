@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Source: panorama/EmptyPanorama.js</title>
+	<title>Documentation Source: Constants.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: panorama/EmptyPanorama.js</h1>
+		<h1 class="page-title">Source: Constants.js</h1>
     
 <section>
     <article>
@@ -87,28 +87,41 @@
             class="sunlight-highlight-javascript ">(function(){
 
 	'use strict';
+	
+	/**
+	 * Control Index Enum
+	 * @memberOf PANOLENS
+	 * @enum {number}
+	 */
+	
+	PANOLENS.Controls = {
+
+		ORBIT: 0,
+
+		DEVICEORIENTATION: 1
+
+	};
 
 	/**
-	 * Empty panorama
-	 * @constructor
-	 * @param {number} [radius=5000] - Radius of panorama
+	 * Effect Mode Enum
+	 * @memberOf PANOLENS
+	 * @enum {number}
 	 */
-	PANOLENS.EmptyPanorama = function ( radius ) {
+	PANOLENS.Modes = {
 
-		radius = radius || 5000;
+		/** Unknown */
+		UNKNOWN: 0,
 
-		var geometry = new THREE.Geometry(),
-			material = new THREE.MeshBasicMaterial( { 
-				color: 0x000000, opacity: 1, transparent: true 
-			} );
+		/** Normal */
+		NORMAL: 1,
 
-		PANOLENS.Panorama.call( this, geometry, material );
+		/** Google Cardboard*/
+		CARDBOARD: 2,
 
-	}
+		/** Stereoscopic **/
+		STEREO: 3
 
-	PANOLENS.EmptyPanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
-
-	PANOLENS.EmptyPanorama.prototype.constructor = PANOLENS.EmptyPanorama;
+	};
 
 })();</pre>
     </article>

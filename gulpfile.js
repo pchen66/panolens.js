@@ -17,7 +17,7 @@ var _libfiles = [
 var _panolensfiles = [
 	'src/Panolens.js',
 	'src/DataImage.js',
-	'src/Modes.js',
+	'src/Constants.js',
 	'src/util/Utils.js',
 	'src/util/ImageLoader.js',
 	'src/util/TextureLoader.js',

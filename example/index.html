@@ -41,7 +41,7 @@
 
   <script src="../src/Panolens.js"></script>
   <script src="../src/DataImage.js"></script>
-  <script src="../src/Modes.js"></script>
+  <script src="../src/Constants.js"></script>
   <script src="../src/util/Utils.js"></script>
   <script src="../src/util/ImageLoader.js"></script>
   <script src="../src/util/TextureLoader.js"></script>
@@ -69,20 +69,36 @@
 
     <script>
 
-      var panorama_video, panorama_image, viewer;
+      var panorama_video, panorama_image, viewer, infospot;
 
       viewer = new PANOLENS.Viewer();
 
-      panorama_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: false, muted: true, loop: false } );
+      panorama_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: true, loop: false } );
 
       panorama_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
       panorama_image.position.set( 0, 0, -1000 );
 
       panorama_video.link( panorama_image );
 
+      infospot = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
+      infospot.position.set( 3957.4, -744.48, 2956.61 );
+      infospot.addHoverText( 'Hovering Infospot' );
+      panorama_video.add( infospot );
       
-      viewer.add( panorama_video );
       viewer.add( panorama_image );
+      viewer.add( panorama_video );
+
+      viewer.enableControl( PANOLENS.Controls.DEVICEORIENTATION );
+      viewer.enableEffect( PANOLENS.Modes.CARDBOARD );
+
+      /*viewer.enableControl( PANOLENS.Controls.ORBIT );
+      viewer.enableEffect( PANOLENS.Modes.NORMAL );
+
+      viewer.enableControl( PANOLENS.Controls.DEVICEORIENTATION );
+      viewer.enableEffect( PANOLENS.Modes.CARDBOARD );
+
+      viewer.enableControl( PANOLENS.Controls.ORBIT );
+      viewer.enableEffect( PANOLENS.Modes.NORMAL );*/
 
     </script>
 

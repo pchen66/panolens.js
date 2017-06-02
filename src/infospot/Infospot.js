@@ -153,7 +153,7 @@
 
 		if ( this.element && this.getContainer() ) {
 
-			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+			this.onHoverStart( event );
 
 			// Lock element
 			this.lockHoverElement();
@@ -207,14 +207,14 @@
 		
 		if ( this.animated ) {
 
-			this.scaleDownAnimation.stop();
-			this.scaleUpAnimation.start();
+			this.scaleDownAnimation && this.scaleDownAnimation.stop();
+			this.scaleUpAnimation && this.scaleUpAnimation.start();
 
 		}
 		
-		if ( this.element ) {
+		if ( this.element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
 
-			if ( this.mode === PANOLENS.Modes.CARDBOARD ||this.mode === PANOLENS.Modes.STEREO ) {
+			if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
 
 				this.element.style.display = 'none';
 				this.element.left && ( this.element.left.style.display = 'block' );
@@ -236,7 +236,7 @@
 
 			}
 
-			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+				this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 			
 		}
 
@@ -255,8 +255,8 @@
 
 		if ( this.animated ) {
 
-			this.scaleUpAnimation.stop();
-			this.scaleDownAnimation.start();
+			this.scaleUpAnimation && this.scaleUpAnimation.stop();
+			this.scaleDownAnimation && this.scaleDownAnimation.start();
 
 		}
 
@@ -346,13 +346,15 @@
 		height = element._height;
 		delta = 30;
 
-		left = x - width - container.offsetLeft;
+		left = x - width;
 		top = y - height - delta;
 
-		if ( ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) && element.left && element.right ) {
+		if ( ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) 
+				&& element.left && element.right
+				&& !( x === container.clientWidth / 2 && y === container.clientHeight / 2 ) ) {
 
-			left = container.clientWidth / 4 - width;
-			top = container.clientHeight / 2 - height - delta;
+			left = container.clientWidth / 4 - width + ( x - container.clientWidth / 2 );
+			top = container.clientHeight / 2 - height - delta + ( y - container.clientHeight / 2 );
 
 			this.setElementStyle( 'transform', element.left, 'translate(' + left + 'px, ' + top + 'px)' );
 

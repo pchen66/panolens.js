@@ -162,11 +162,11 @@
 				subMenu: [ 
 					{ 
 						title: this.TOUCH_ENABLED ? 'Touch' : 'Mouse', 
-						handler: handler( 'enableControl', 0 )
+						handler: handler( 'enableControl', PANOLENS.Controls.ORBIT )
 					},
 					{ 
 						title: 'Sensor', 
-						handler: handler( 'enableControl', 1 ) 
+						handler: handler( 'enableControl', PANOLENS.Controls.DEVICEORIENTATION ) 
 					} 
 				]
 			},

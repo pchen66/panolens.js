@@ -4,7 +4,7 @@
  * @namespace PANOLENS
  */
 
-var PANOLENS = { REVISION: '5' };
+var PANOLENS = { REVISION: '6-dev' };
 ;/*! npm.im/iphone-inline-video 2.0.2 */
 var enableInlineVideo=function(){"use strict";/*! npm.im/intervalometer */
 function e(e,i,n,r){function t(n){d=i(t,r),e(n-(a||n)),a=n}var d,a;return{start:function(){d||t(0)},stop:function(){n(d),d=null,a=0}}}function i(i){return e(i,requestAnimationFrame,cancelAnimationFrame)}function n(e,i,n,r){function t(i){Boolean(e[n])===Boolean(r)&&i.stopImmediatePropagation(),delete e[n]}return e.addEventListener(i,t,!1),t}function r(e,i,n,r){function t(){return n[i]}function d(e){n[i]=e}r&&d(e[i]),Object.defineProperty(e,i,{get:t,set:d})}function t(e,i,n){n.addEventListener(i,function(){return e.dispatchEvent(new Event(i))})}function d(e,i){Promise.resolve().then(function(){e.dispatchEvent(new Event(i))})}function a(e){var i=new Audio;return t(e,"play",i),t(e,"playing",i),t(e,"pause",i),i.crossOrigin=e.crossOrigin,i.src=e.src||e.currentSrc||"data:",i}function o(e,i,n){(m||0)+200<Date.now()&&(e[b]=!0,m=Date.now()),n||(e.currentTime=i),w[++T%3]=100*i|0}function u(e){return e.driver.currentTime>=e.video.duration}function s(e){var i=this;i.video.readyState>=i.video.HAVE_FUTURE_DATA?(i.hasAudio||(i.driver.currentTime=i.video.currentTime+e*i.video.playbackRate/1e3,i.video.loop&&u(i)&&(i.driver.currentTime=0)),o(i.video,i.driver.currentTime)):i.video.networkState===i.video.NETWORK_IDLE&&0===i.video.buffered.length&&i.video.load(),i.video.ended&&(delete i.video[b],i.video.pause(!0))}function c(){var e=this,i=e[h];return e.webkitDisplayingFullscreen?void e[g]():("data:"!==i.driver.src&&i.driver.src!==e.src&&(o(e,0,!0),i.driver.src=e.src),void(e.paused&&(i.paused=!1,0===e.buffered.length&&e.load(),i.driver.play(),i.updater.start(),i.hasAudio||(d(e,"play"),i.video.readyState>=i.video.HAVE_ENOUGH_DATA&&d(e,"playing")))))}function v(e){var i=this,n=i[h];n.driver.pause(),n.updater.stop(),i.webkitDisplayingFullscreen&&i[E](),n.paused&&!e||(n.paused=!0,n.hasAudio||d(i,"pause"),i.ended&&(i[b]=!0,d(i,"ended")))}function p(e,n){var r=e[h]={};r.paused=!0,r.hasAudio=n,r.video=e,r.updater=i(s.bind(r)),n?r.driver=a(e):(e.addEventListener("canplay",function(){e.paused||d(e,"playing")}),r.driver={src:e.src||e.currentSrc||"data:",muted:!0,paused:!0,pause:function(){r.driver.paused=!0},play:function(){r.driver.paused=!1,u(r)&&o(e,0)},get ended(){return u(r)}}),e.addEventListener("emptied",function(){var i=!r.driver.src||"data:"===r.driver.src;r.driver.src&&r.driver.src!==e.src&&(o(e,0,!0),r.driver.src=e.src,i?r.driver.play():r.updater.stop())},!1),e.addEventListener("webkitbeginfullscreen",function(){e.paused?n&&0===r.driver.buffered.length&&r.driver.load():(e.pause(),e[g]())}),n&&(e.addEventListener("webkitendfullscreen",function(){r.driver.currentTime=e.currentTime}),e.addEventListener("seeking",function(){w.indexOf(100*e.currentTime|0)<0&&(r.driver.currentTime=e.currentTime)}))}function l(e){var i=e[h];e[g]=e.play,e[E]=e.pause,e.play=c,e.pause=v,r(e,"paused",i.driver),r(e,"muted",i.driver,!0),r(e,"playbackRate",i.driver,!0),r(e,"ended",i.driver),r(e,"loop",i.driver,!0),n(e,"seeking"),n(e,"seeked"),n(e,"timeupdate",b,!1),n(e,"ended",b,!1)}function f(e,i){if(void 0===i&&(i={}),!e[h]){if(!i.everywhere){if(!y)return;if(!(i.iPad||i.ipad?/iPhone|iPod|iPad/:/iPhone|iPod/).test(navigator.userAgent))return}!e.paused&&e.webkitDisplayingFullscreen&&e.pause(),p(e,!e.muted),l(e),e.classList.add("IIV"),e.muted&&e.autoplay&&e.play(),/iPhone|iPod|iPad/.test(navigator.platform)||console.warn("iphone-inline-video is not guaranteed to work in emulated environments")}}var m,y="object"==typeof document&&"object-fit"in document.head.style&&!matchMedia("(-webkit-video-playable-inline)").matches,h="bfred-it:iphone-inline-video",b="bfred-it:iphone-inline-video:event",g="bfred-it:iphone-inline-video:nativeplay",E="bfred-it:iphone-inline-video:nativepause",w=[],T=0;return f}();
@@ -2465,9 +2465,23 @@ GSVPANO.PanoLoader = function (parameters) {
 })();;(function(){
 
 	'use strict';
+	
+	/**
+	 * Control Index Enum
+	 * @memberOf PANOLENS
+	 * @enum {number}
+	 */
+	
+	PANOLENS.Controls = {
+
+		ORBIT: 0,
+
+		DEVICEORIENTATION: 1
+
+	};
 
 	/**
-	 * Modes
+	 * Effect Mode Enum
 	 * @memberOf PANOLENS
 	 * @enum {number}
 	 */
@@ -4256,7 +4270,7 @@ PANOLENS.StereographicShader = {
 
 		this.unregisterMouseEvents();
 
-		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: 0 } );
+		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: PANOLENS.Controls.ORBIT } );
 
 		window.cancelAnimationFrame( this.frameId );
 
@@ -5333,11 +5347,11 @@ PANOLENS.StereographicShader = {
 				subMenu: [ 
 					{ 
 						title: this.TOUCH_ENABLED ? 'Touch' : 'Mouse', 
-						handler: handler( 'enableControl', 0 )
+						handler: handler( 'enableControl', PANOLENS.Controls.ORBIT )
 					},
 					{ 
 						title: 'Sensor', 
-						handler: handler( 'enableControl', 1 ) 
+						handler: handler( 'enableControl', PANOLENS.Controls.DEVICEORIENTATION ) 
 					} 
 				]
 			},
@@ -6517,7 +6531,7 @@ PANOLENS.StereographicShader = {
 
 		if ( this.element && this.getContainer() ) {
 
-			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+			this.onHoverStart( event );
 
 			// Lock element
 			this.lockHoverElement();
@@ -6571,14 +6585,14 @@ PANOLENS.StereographicShader = {
 		
 		if ( this.animated ) {
 
-			this.scaleDownAnimation.stop();
-			this.scaleUpAnimation.start();
+			this.scaleDownAnimation && this.scaleDownAnimation.stop();
+			this.scaleUpAnimation && this.scaleUpAnimation.start();
 
 		}
 		
-		if ( this.element ) {
+		if ( this.element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
 
-			if ( this.mode === PANOLENS.Modes.CARDBOARD ||this.mode === PANOLENS.Modes.STEREO ) {
+			if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
 
 				this.element.style.display = 'none';
 				this.element.left && ( this.element.left.style.display = 'block' );
@@ -6600,7 +6614,7 @@ PANOLENS.StereographicShader = {
 
 			}
 
-			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
+				this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 			
 		}
 
@@ -6619,8 +6633,8 @@ PANOLENS.StereographicShader = {
 
 		if ( this.animated ) {
 
-			this.scaleUpAnimation.stop();
-			this.scaleDownAnimation.start();
+			this.scaleUpAnimation && this.scaleUpAnimation.stop();
+			this.scaleDownAnimation && this.scaleDownAnimation.start();
 
 		}
 
@@ -6710,13 +6724,15 @@ PANOLENS.StereographicShader = {
 		height = element._height;
 		delta = 30;
 
-		left = x - width - container.offsetLeft;
+		left = x - width;
 		top = y - height - delta;
 
-		if ( ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) && element.left && element.right ) {
+		if ( ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) 
+				&& element.left && element.right
+				&& !( x === container.clientWidth / 2 && y === container.clientHeight / 2 ) ) {
 
-			left = container.clientWidth / 4 - width;
-			top = container.clientHeight / 2 - height - delta;
+			left = container.clientWidth / 4 - width + ( x - container.clientWidth / 2 );
+			top = container.clientHeight / 2 - height - delta + ( y - container.clientHeight / 2 );
 
 			this.setElementStyle( 'transform', element.left, 'translate(' + left + 'px, ' + top + 'px)' );
 
@@ -7070,6 +7086,9 @@ PANOLENS.StereographicShader = {
 		this.updateCallbacks = [];
 		this.requestAnimationId;
 
+		this.cameraFrustum = new THREE.Frustum();
+		this.cameraViewProjectionMatrix = new THREE.Matrix4();
+
 		// Handler references
 		this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
 		this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
@@ -7324,26 +7343,75 @@ PANOLENS.StereographicShader = {
 	};
 
 	/**
-	 * Disable additional rendering effect
+	 * Set widget content
+	 * @param  {integer} controlIndex - Control index
+	 * @param  {PANOLENS.Modes} mode - Modes for effects
 	 */
-	PANOLENS.Viewer.prototype.disableEffect = function () {
+	PANOLENS.Viewer.prototype.activateWidgetItem = function ( controlIndex, mode ) {
 
-		if ( this.mode === PANOLENS.Modes.NORMAL ) { return; }
+		var mainMenu = this.widget.mainMenu;
+		var ControlMenuItem = mainMenu.children[ 0 ];
+		var ModeMenuItem = mainMenu.children[ 1 ];
 
-		this.mode = PANOLENS.Modes.NORMAL;
-		this.disableReticleControl();
+		var item;
 
-		/**
-		 * Dual eye effect event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
-		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
-		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
+		if ( controlIndex !== undefined ) {
 
-		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
-		this.render();
+			switch ( controlIndex ) {
+
+				case 0:
+
+					item = ControlMenuItem.subMenu.children[ 1 ];
+
+					break;
+
+				case 1:
+
+					item = ControlMenuItem.subMenu.children[ 2 ];
+
+					break;
+					
+				default:
+
+					item = ControlMenuItem.subMenu.children[ 1 ];
+
+					break;	
+
+			}
+
+			ControlMenuItem.subMenu.setActiveItem( item )
+			ControlMenuItem.setSelectionTitle( item.textContent );
+
+		}
+
+		if ( mode !== undefined ) {
+
+			switch( mode ) {
+
+				case PANOLENS.Modes.CARDBOARD:
+
+					item = ModeMenuItem.subMenu.children[ 2 ];
+
+					break;
+
+				case PANOLENS.Modes.STEREO:
+
+					item = ModeMenuItem.subMenu.children[ 3 ];
+					
+					break;
+
+				default:
+
+					item = ModeMenuItem.subMenu.children[ 1 ];
+
+					break;
+			}
+
+			ModeMenuItem.subMenu.setActiveItem( item )
+			ModeMenuItem.setSelectionTitle( item.textContent );
+
+		}
+
 	};
 
 	/**
@@ -7353,10 +7421,10 @@ PANOLENS.StereographicShader = {
 	PANOLENS.Viewer.prototype.enableEffect = function ( mode ) {
 
 		if ( this.mode === mode ) { return; }
+		if ( mode === PANOLENS.Modes.NORMAL ) { this.disableEffect(); return; }
+		else { this.mode = mode; }
 
 		var fov = this.camera.fov;
-
-		this.mode = mode;
 
 		switch( mode ) {
 
@@ -7376,9 +7444,14 @@ PANOLENS.StereographicShader = {
 
 			default:
 
-				return;
+				this.effect = null;
+				this.disableReticleControl();
+
+				break;
 
 		}
+
+		this.activateWidgetItem( undefined, this.mode );
 
 		/**
 		 * Dual eye effect event
@@ -7387,7 +7460,7 @@ PANOLENS.StereographicShader = {
 		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
 		 * @property {PANOLENS.Modes} mode - Current display mode
 		 */
-		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: mode } );
+		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
 
 		// Force effect stereo camera to update by refreshing fov
 		this.camera.fov = fov + 10e-3;
@@ -7398,9 +7471,36 @@ PANOLENS.StereographicShader = {
 	};
 
 	/**
+	 * Disable additional rendering effect
+	 */
+	PANOLENS.Viewer.prototype.disableEffect = function () {
+
+		if ( this.mode === PANOLENS.Modes.NORMAL ) { return; }
+
+		this.mode = PANOLENS.Modes.NORMAL;
+		this.disableReticleControl();
+
+		this.activateWidgetItem( undefined, this.mode );
+
+		/**
+		 * Dual eye effect event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
+		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
+
+		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+		this.render();
+	};
+
+	/**
 	 * Enable reticle control
 	 */
 	PANOLENS.Viewer.prototype.enableReticleControl = function () {
+
+		if ( this.reticle.visible ) { return; }
 
 		this.tempEnableReticle = true;
 
@@ -7733,7 +7833,7 @@ PANOLENS.StereographicShader = {
 
 	/**
 	 * Enable control by index
-	 * @param  {number} index - Index of camera control
+	 * @param  {PANOLENS.Controls} index - Index of camera control
 	 */
 	PANOLENS.Viewer.prototype.enableControl = function ( index ) {
 
@@ -7745,19 +7845,29 @@ PANOLENS.StereographicShader = {
 
 		this.control.enabled = true;
 
-		switch ( this.control.name ) {
-			case 'orbit':
+		switch ( index ) {
+
+			case PANOLENS.Controls.ORBIT:
+
 				this.camera.position.copy( this.panorama.position );
 				this.camera.position.z += 1;
+
 				break;
-			case 'device-orientation':
+
+			case PANOLENS.Controls.DEVICEORIENTATION:
+
 				this.camera.position.copy( this.panorama.position );
+
 				break;
+
 			default:
+
 				break;
 		}
 
 		this.control.update();
+
+		this.activateWidgetItem( index, undefined );
 
 	};
 
@@ -7800,6 +7910,38 @@ PANOLENS.StereographicShader = {
 		}
 
 		this.onWindowResize();
+
+	};
+
+	/**
+	 * Screen Space Projection
+	 */
+	PANOLENS.Viewer.prototype.getScreenVector = function ( worldVector ) {
+
+		var vector = worldVector.clone();
+		var widthHalf = ( window.innerWidth - this.container.offsetLeft ) / 2;
+		var heightHalf = window.innerHeight / 2;
+
+		vector.project( this.camera );
+
+		vector.x = ( vector.x * widthHalf ) + widthHalf;
+		vector.y = - ( vector.y * heightHalf ) + heightHalf;
+		vector.z = 0;
+
+		return vector;
+
+	};
+
+	/**
+	 * Check Sprite in Viewport
+	 */
+	PANOLENS.Viewer.prototype.checkSpriteInViewport = function ( sprite ) {
+
+		this.camera.matrixWorldInverse.getInverse( this.camera.matrixWorld );
+		this.cameraViewProjectionMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse );
+		this.cameraFrustum.setFromMatrix( this.cameraViewProjectionMatrix );
+
+		return sprite.visible && this.cameraFrustum.intersectsSprite( sprite );
 
 	};
 
@@ -7916,8 +8058,8 @@ PANOLENS.StereographicShader = {
 
 		expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
 
-		width = expand ? window.innerWidth : this.container._width;
-		height = expand ? window.innerHeight : this.container._height;
+		width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container._width;
+		height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container._height;
 
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
@@ -8244,7 +8386,7 @@ PANOLENS.StereographicShader = {
 
 		for ( var i = 0; i < intersects.length; i++ ) {
 
-			if ( intersects[i].object && !intersects[i].object.passThrough ) {
+			if ( intersects[i].distance >= 0 && intersects[i].object && !intersects[i].object.passThrough ) {
 
 				if ( intersects[i].object.entity && intersects[i].object.entity.passThrough ) {
 					continue;
@@ -8317,6 +8459,23 @@ PANOLENS.StereographicShader = {
 		this.updateCallbacks.forEach( function( callback ){ callback(); } );
 
 		!this.options.passiveRendering && this.control.update();
+
+		this.scene.traverse( function( child ){
+			if ( child instanceof PANOLENS.Infospot 
+				&& child.element 
+				&& ( this.hoverObject === child 
+					|| child.element.style.display !== 'none' 
+					|| (child.element.left && child.element.left.style.display !== 'none')
+					|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
+				if ( this.checkSpriteInViewport( child ) ) {
+					var vector = this.getScreenVector( child.getWorldPosition() );
+					child.translateElement( vector.x, vector.y );
+				} else {
+					child.onDismiss();
+				}
+				
+			}
+		}.bind(this) );
 
 	};
 
