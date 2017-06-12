@@ -65,28 +65,32 @@
   <script src="../src/viewer/Viewer.js"></script>
   <script src="../src/util/font/Bmfont.js"></script>
 
-    <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> panorama video example. 360 Video from <a href="http://supercell.com/en/games/clashofclans/" target="_blank">Clash of clans</a></div>
+    <div class="credit">Panolens.js Test</div>
 
     <script>
 
-      var panorama_video, panorama_image, viewer, infospot;
+      var panorama_video, panorama_image, viewer, infospot, infospot2;
 
       viewer = new PANOLENS.Viewer();
 
       panorama_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: true, loop: false } );
 
       panorama_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
-      panorama_image.position.set( 0, 0, -1000 );
+      panorama_image.position.set( 4964.41, 366.98, 404.06 );
+
+      infospot2 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
+      infospot2.position.set(  3841.27, 2625.37, 1819.79 );
+      infospot2.addHoverText( 'Hovering Infospot' );
+      panorama_image.add( infospot2 );
 
       panorama_video.link( panorama_image );
 
       infospot = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
-      infospot.position.set( 3957.4, -744.48, 2956.61 );
+      infospot.position.set( 298.05, -1190.83, -4839.57 );
       infospot.addHoverText( 'Hovering Infospot' );
       panorama_video.add( infospot );
       
-      viewer.add( panorama_image );
-      viewer.add( panorama_video );
+      viewer.add( panorama_video, panorama_image );
 
       viewer.enableControl( PANOLENS.Controls.DEVICEORIENTATION );
       viewer.enableEffect( PANOLENS.Modes.CARDBOARD );

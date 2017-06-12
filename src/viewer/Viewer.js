@@ -1132,18 +1132,20 @@
 	 */
 	PANOLENS.Viewer.prototype.outputInfospotPosition = function () {
 
-		var intersects, point;
+		var intersects, point, panoramaWorldPosition;
 
 		intersects = this.raycaster.intersectObject( this.panorama, true );
 
 		if ( intersects.length > 0 ) {
 
-			point = intersects[0].point.clone();
+			point = intersects[0].point;
+			panoramaWorldPosition = this.panorama.getWorldPosition();
 
+			// All panorama is scaled -1 on X axis
 			console.info( '{ ' 
-				+ -point.x.toFixed(2) + ', '
-				+  point.y.toFixed(2) + ', '
-				+  point.z.toFixed(2) + ' }' );
+				+  ((point.x - panoramaWorldPosition.x).toFixed(2) * -1) + ', '
+				+  ((point.y - panoramaWorldPosition.y).toFixed(2)) + ', '
+				+  ((point.z - panoramaWorldPosition.z).toFixed(2)) + ' }' );
 
 		}
 
