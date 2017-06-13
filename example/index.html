@@ -65,13 +65,11 @@
   <script src="../src/viewer/Viewer.js"></script>
   <script src="../src/util/font/Bmfont.js"></script>
 
-    <div class="credit">Panolens.js Test</div>
-
     <script>
 
       var panorama_video, panorama_image, viewer, infospot, infospot2;
 
-      viewer = new PANOLENS.Viewer();
+      viewer = new PANOLENS.Viewer({ outputInfospotPosition: 'overlay', viewIndicator: true });
 
       panorama_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: true, loop: false } );
 
@@ -86,8 +84,8 @@
       panorama_video.link( panorama_image );
 
       infospot = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
-      infospot.position.set( 298.05, -1190.83, -4839.57 );
-      infospot.addHoverText( 'Hovering Infospot' );
+      infospot.position.set( 4548.66, 960.40, -1813.03 );
+      infospot.addHoverText( 'Mountain Tip' );
       panorama_video.add( infospot );
       
       viewer.add( panorama_video, panorama_image );

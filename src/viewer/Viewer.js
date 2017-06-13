@@ -23,7 +23,8 @@
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
 	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
-	 * @param {number}  [options.indicatorSize=30] - size of View Indicator
+	 * @param {number}  [options.indicatorSize=30] - Size of View Indicator
+	 * @param {boolean} [options.outputInfospotPosition=false] - Whether and where to output infospot position. Could be 'console' or 'overlay'. Defaults to false
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -53,6 +54,7 @@
 		options.passiveRendering = options.passiveRendering || false;
 		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
 		options.indicatorSize = options.indicatorSize || 30;
+		options.outputInfospotPosition = options.outputInfospotPosition !== undefined ? options.outputInfospotPosition : false;
 
 		this.options = options;
 
@@ -210,6 +212,10 @@
 			this.registerReticleEvent();
 		} else {
 			this.registerMouseAndTouchEvents();
+		}
+
+		if ( this.options.outputInfospotPosition === 'overlay' ) {
+			this.addOutputElement();
 		}
 
 		// Register dom event listeners
@@ -1127,25 +1133,53 @@
 
 	};
 
+	PANOLENS.Viewer.prototype.addOutputElement = function () {
+
+		var element = document.createElement( 'div' );
+		element.style.position = 'absolute';
+		element.style.right = '10px';
+		element.style.top = '10px';
+		element.style.color = "#fff";
+		this.container.appendChild( element );
+		this.outputDivElement = element;
+
+	};
+
 	/**
 	 * Output infospot attach position in developer console by holding down Ctrl button
 	 */
 	PANOLENS.Viewer.prototype.outputInfospotPosition = function () {
 
-		var intersects, point, panoramaWorldPosition;
+		var intersects, point, panoramaWorldPosition, outputPosition;
 
 		intersects = this.raycaster.intersectObject( this.panorama, true );
 
-		if ( intersects.length > 0 ) {
+		if ( intersects.length > 0 && intersects[0].object instanceof PANOLENS.Panorama ) {
 
 			point = intersects[0].point;
 			panoramaWorldPosition = this.panorama.getWorldPosition();
 
-			// All panorama is scaled -1 on X axis
-			console.info( '{ ' 
-				+  ((point.x - panoramaWorldPosition.x).toFixed(2) * -1) + ', '
-				+  ((point.y - panoramaWorldPosition.y).toFixed(2)) + ', '
-				+  ((point.z - panoramaWorldPosition.z).toFixed(2)) + ' }' );
+			// Panorama is scaled -1 on X axis
+			outputPosition = new THREE.Vector3(
+				(point.x - panoramaWorldPosition.x).toFixed(2) * -1,
+				(point.y - panoramaWorldPosition.y).toFixed(2),
+				(point.z - panoramaWorldPosition.z).toFixed(2)
+			);
+
+			switch ( this.options.outputInfospotPosition ) {
+
+				case 'console':
+					console.info( outputPosition.x + ', ' + outputPosition.y + ', ' + outputPosition.z );
+					break;
+
+				case 'overlay':
+					this.outputDivElement.textContent = outputPosition.x + ', ' + outputPosition.y + ', ' + outputPosition.z;
+					break;
+
+				default:
+					break;
+
+			}
 
 		}
 
@@ -1236,7 +1270,7 @@
 		}
 
 		// output infospot information
-		if ( this.OUTPUT_INFOSPOT ) { 
+		if ( event.type !== 'mousedown' && PANOLENS.Utils.checkTouchSupported() || this.OUTPUT_INFOSPOT ) { 
 
 			this.outputInfospotPosition(); 
 
@@ -1468,7 +1502,7 @@
 
 	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
 
-		if ( event.key === 'Control' ) {
+		if ( this.options.outputInfospotPosition && event.key === 'Control' ) {
 
 			this.OUTPUT_INFOSPOT = true;
 
