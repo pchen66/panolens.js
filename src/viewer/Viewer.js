@@ -122,6 +122,8 @@
 		this.cameraFrustum = new THREE.Frustum();
 		this.cameraViewProjectionMatrix = new THREE.Matrix4();
 
+		this.outputDivElement;
+
 		// Handler references
 		this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
 		this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
