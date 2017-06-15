@@ -10,7 +10,7 @@
 		THREE.EventDispatcher.call( this );
 
 		this.DEFAULT_TRANSITION  = 'all 0.27s ease';
-		this.TOUCH_ENABLED = 'ontouchstart' in window;
+		this.TOUCH_ENABLED = PANOLENS.Utils.checkTouchSupported();
 		this.PREVENT_EVENT_HANDLER = function ( event ) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -373,7 +373,6 @@
 			    scope.container.mozRequestFullScreen && scope.container.mozRequestFullScreen();
 			    scope.container.webkitRequestFullscreen && scope.container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
 				isFullscreen = true;
-				attachInfospotsToContainer();
 			} else {
 			    document.exitFullscreen && document.exitFullscreen();
 			    document.msExitFullscreen && document.msExitFullscreen();
@@ -403,23 +402,6 @@
 		document.addEventListener( 'webkitfullscreenchange', onFullScreenChange, false );
 		document.addEventListener( 'mozfullscreenchange', onFullScreenChange, false );
 		document.addEventListener( 'MSFullscreenChange', onFullScreenChange, false );
-
-		// Attach infospot to container when fullscreen
-		function attachInfospotsToContainer () {
-
-			var infospotElements = document.querySelectorAll( '.panolens-infospot' );
-
-			for ( var i = 0; i < infospotElements.length; i++ ) {
-
-				if ( infospotElements[ i ].parentElement !== scope.container ) {
-
-					scope.container.appendChild( infospotElements[ i ] );
-
-				}
-				
-			}
-
-		}
 
 		item = this.createCustomItem( { 
 
