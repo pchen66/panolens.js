@@ -184,12 +184,6 @@
 	 */
 	PANOLENS.Infospot.prototype.onHover = function ( event ) {
 
-		if ( this.element && !this.element.locked && this.getContainer() ) {
-
-			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
-
-		}
-
 	};
 
 	/**
@@ -235,8 +229,6 @@
 				this.element._height = this.element.clientHeight;
 
 			}
-
-				this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 			
 		}
 
@@ -343,8 +335,8 @@
 		container = this.container;
 		element = this.element;
 		width = element._width / 2;
-		height = element._height;
-		delta = 30;
+		height = element._height / 2;
+		delta = element.verticalDelta !== undefined ? element.verticalDelta : 40;
 
 		left = x - width;
 		top = y - height - delta;
@@ -414,13 +406,13 @@
 	/**
 	 * Add hovering text element
 	 * @param {string} text - Text to be displayed
+	 * @param {number} [delta=40] - Vertical delta to the infospot
 	 */
-	PANOLENS.Infospot.prototype.addHoverText = function ( text ) {
+	PANOLENS.Infospot.prototype.addHoverText = function ( text, delta ) {
 
 		if ( !this.element ) {
 
 			this.element = document.createElement( 'div' );
-
 			this.element.style.display = 'none';
 			this.element.style.color = '#fff';
 			this.element.style.top = 0;
@@ -428,8 +420,9 @@
 			this.element.style.maxHeight = '50%';
 			this.element.style.textShadow = '0 0 3px #000000';
 			this.element.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
-			this.element.style.position = 'fixed';
+			this.element.style.position = 'absolute';
 			this.element.classList.add( 'panolens-infospot' );
+			this.element.verticalDelta = delta !== undefined ? delta : 40;
 
 		}
 
@@ -440,16 +433,18 @@
 	/**
 	 * Add hovering element by cloning an element
 	 * @param {HTMLDOMElement} el - Element to be cloned and displayed
+	 * @param {number} [delta=40] - Vertical delta to the infospot
 	 */
-	PANOLENS.Infospot.prototype.addHoverElement = function ( el ) {
+	PANOLENS.Infospot.prototype.addHoverElement = function ( el, delta ) {
 
 		if ( !this.element ) { 
 
 			this.element = el.cloneNode( true );
 			this.element.style.display = 'none';
 			this.element.style.top = 0;
-			this.element.style.position = 'fixed';
+			this.element.style.position = 'absolute';
 			this.element.classList.add( 'panolens-infospot' );
+			this.element.verticalDelta = delta !== undefined ? delta : 40;
 
 		}
 

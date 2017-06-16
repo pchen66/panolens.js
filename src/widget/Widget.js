@@ -10,7 +10,7 @@
 		THREE.EventDispatcher.call( this );
 
 		this.DEFAULT_TRANSITION  = 'all 0.27s ease';
-		this.TOUCH_ENABLED = 'ontouchstart' in window;
+		this.TOUCH_ENABLED = PANOLENS.Utils.checkTouchSupported();
 		this.PREVENT_EVENT_HANDLER = function ( event ) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -355,7 +355,7 @@
 	 */
 	PANOLENS.Widget.prototype.createFullscreenButton = function () {
 
-		var scope = this, item, isFullscreen = false;
+		var scope = this, item, isFullscreen = false, tapSkipped = true;
 
 		// Don't create button if no support
 		if ( !document.fullscreenEnabled       && 
@@ -367,13 +367,14 @@
 
 		function onTap () {
 
+			tapSkipped = false;
+
 			if ( !isFullscreen ) {
 			    scope.container.requestFullscreen && scope.container.requestFullscreen();
 			    scope.container.msRequestFullscreen && scope.container.msRequestFullscreen();
 			    scope.container.mozRequestFullScreen && scope.container.mozRequestFullScreen();
 			    scope.container.webkitRequestFullscreen && scope.container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
 				isFullscreen = true;
-				attachInfospotsToContainer();
 			} else {
 			    document.exitFullscreen && document.exitFullscreen();
 			    document.msExitFullscreen && document.msExitFullscreen();
@@ -385,10 +386,20 @@
 			this.style.backgroundImage = ( isFullscreen ) 
 				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
 				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
-			
+
 		}
 
-		function onFullScreenChange () {
+		function onFullScreenChange (e) {
+
+			if ( tapSkipped ) {
+
+				isFullscreen = !isFullscreen; 
+
+				item.style.backgroundImage = ( isFullscreen ) 
+				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
+				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
+
+			}
 
 			/**
 			 * Viewer handler event
@@ -397,29 +408,14 @@
 			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
 
+			tapSkipped = true;
+
 		}
 
 		document.addEventListener( 'fullscreenchange', onFullScreenChange, false );
 		document.addEventListener( 'webkitfullscreenchange', onFullScreenChange, false );
 		document.addEventListener( 'mozfullscreenchange', onFullScreenChange, false );
 		document.addEventListener( 'MSFullscreenChange', onFullScreenChange, false );
-
-		// Attach infospot to container when fullscreen
-		function attachInfospotsToContainer () {
-
-			var infospotElements = document.querySelectorAll( '.panolens-infospot' );
-
-			for ( var i = 0; i < infospotElements.length; i++ ) {
-
-				if ( infospotElements[ i ].parentElement !== scope.container ) {
-
-					scope.container.appendChild( infospotElements[ i ] );
-
-				}
-				
-			}
-
-		}
 
 		item = this.createCustomItem( { 
 
