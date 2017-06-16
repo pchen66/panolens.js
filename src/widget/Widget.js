@@ -355,7 +355,7 @@
 	 */
 	PANOLENS.Widget.prototype.createFullscreenButton = function () {
 
-		var scope = this, item, isFullscreen = false;
+		var scope = this, item, isFullscreen = false, tapSkipped = true;
 
 		// Don't create button if no support
 		if ( !document.fullscreenEnabled       && 
@@ -366,6 +366,8 @@
 		}
 
 		function onTap () {
+
+			tapSkipped = false;
 
 			if ( !isFullscreen ) {
 			    scope.container.requestFullscreen && scope.container.requestFullscreen();
@@ -384,10 +386,20 @@
 			this.style.backgroundImage = ( isFullscreen ) 
 				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
 				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
-			
+
 		}
 
-		function onFullScreenChange () {
+		function onFullScreenChange (e) {
+
+			if ( tapSkipped ) {
+
+				isFullscreen = !isFullscreen; 
+
+				item.style.backgroundImage = ( isFullscreen ) 
+				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
+				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
+
+			}
 
 			/**
 			 * Viewer handler event
@@ -395,6 +407,8 @@
 			 * @property {string} method - 'toggleFullscreen' function call on PANOLENS.Viewer
 			 */
 			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
+
+			tapSkipped = true;
 
 		}
 
