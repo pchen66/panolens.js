@@ -184,12 +184,6 @@
 	 */
 	PANOLENS.Infospot.prototype.onHover = function ( event ) {
 
-		if ( this.element && !this.element.locked && this.getContainer() ) {
-
-			this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
-
-		}
-
 	};
 
 	/**
@@ -235,8 +229,6 @@
 				this.element._height = this.element.clientHeight;
 
 			}
-
-				this.translateElement( event.mouseEvent.clientX, event.mouseEvent.clientY );
 			
 		}
 
