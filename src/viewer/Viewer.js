@@ -1097,8 +1097,8 @@
 
 		expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
 
-		width = expand ? Math.min( this.container.clientWidth, window.innerWidth ) : this.container._width;
-		height = expand ? Math.min( this.container.clientHeight, window.innerHeight ) : this.container._height;
+		width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container._width;
+		height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container._height;
 
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
