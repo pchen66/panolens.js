@@ -1728,67 +1728,85 @@
 	};
 
 	/**
+	 * Load ajax call
+	 * @param {string} url - URL to be requested
+	 * @param {function} [callback] - Callback after request completes
+	 */
+	PANOLENS.Viewer.prototype.loadAsyncRequest = function ( url, callback ) {
+
+		var request = new XMLHttpRequest();
+		request.onloadend = function ( event ) {
+			callback && callback( event );
+		};
+		request.open( "GET", url, true );
+		request.send( null );
+
+	};
+
+	/**
 	 * View indicator in upper left
 	 * */
 	PANOLENS.Viewer.prototype.addViewIndicator = function () {
 
-		var indicatorSvg = PANOLENS.DataImage.ViewIndicator;
+		var scope = this;
 
-		var viewIndicatorDiv = document.createElement( "div" );
-		viewIndicatorDiv.innerHTML = indicatorSvg;
-		viewIndicatorDiv.style.width = this.viewIndicatorSize + "px";
-		viewIndicatorDiv.style.height = this.viewIndicatorSize + "px";
-		viewIndicatorDiv.style.position = "absolute";
-		viewIndicatorDiv.style.top = "6px";
-		viewIndicatorDiv.style.left = "6px";
-		viewIndicatorDiv.style.opacity = "0.7";
-		viewIndicatorDiv.style.cursor = "pointer";
-		viewIndicatorDiv.id = "view-indicator-container";
+		function loadViewIndicator ( asyncEvent ) {
 
-		this.container.appendChild( viewIndicatorDiv );
+			if ( asyncEvent.loaded === 0 ) return;
 
-		var viewIndicator = document.getElementById( "view-indicator" );
-		var indicator = document.getElementById( "indicator" );
+			var viewIndicatorDiv = asyncEvent.target.responseXML.documentElement;
+			viewIndicatorDiv.style.width = scope.viewIndicatorSize + "px";
+			viewIndicatorDiv.style.height = scope.viewIndicatorSize + "px";
+			viewIndicatorDiv.style.position = "absolute";
+			viewIndicatorDiv.style.top = "10px";
+			viewIndicatorDiv.style.left = "10px";
+			viewIndicatorDiv.style.opacity = "0.5";
+			viewIndicatorDiv.style.cursor = "pointer";
+			viewIndicatorDiv.id = "panolens-view-indicator-container";
 
-		var setIndicatorD = function () {
+			scope.container.appendChild( viewIndicatorDiv );
 
-			this.radius = this.viewIndicatorSize * 0.225;
-			this.currentPanoAngle = this.camera.rotation.y - THREE.Math.degToRad( 90 );
-			this.fovAngle = THREE.Math.degToRad( this.camera.fov ) ;
-			this.leftAngle = -this.currentPanoAngle - this.fovAngle / 2;
-			this.rightAngle = -this.currentPanoAngle + this.fovAngle / 2;
-			this.leftX = this.radius * Math.cos( this.leftAngle );
-			this.leftY = this.radius * Math.sin( this.leftAngle );
-			this.rightX = this.radius * Math.cos( this.rightAngle );
-			this.rightY = this.radius * Math.sin( this.rightAngle );
-			this.indicatorD = "M " + this.leftX + " " + this.leftY + " A " + this.radius + " " + this.radius + " 0 0 1 " + this.rightX + " " + this.rightY;
+			var indicator = viewIndicatorDiv.querySelector( "#indicator" );
+			var setIndicatorD = function () {
 
-			if ( this.leftX && this.leftY && this.rightX && this.rightY && this.radius ) {
+				scope.radius = scope.viewIndicatorSize * 0.225;
+				scope.currentPanoAngle = scope.camera.rotation.y - THREE.Math.degToRad( 90 );
+				scope.fovAngle = THREE.Math.degToRad( scope.camera.fov ) ;
+				scope.leftAngle = -scope.currentPanoAngle - scope.fovAngle / 2;
+				scope.rightAngle = -scope.currentPanoAngle + scope.fovAngle / 2;
+				scope.leftX = scope.radius * Math.cos( scope.leftAngle );
+				scope.leftY = scope.radius * Math.sin( scope.leftAngle );
+				scope.rightX = scope.radius * Math.cos( scope.rightAngle );
+				scope.rightY = scope.radius * Math.sin( scope.rightAngle );
+				scope.indicatorD = "M " + scope.leftX + " " + scope.leftY + " A " + scope.radius + " " + scope.radius + " 0 0 1 " + scope.rightX + " " + scope.rightY;
 
-				indicator.setAttribute( "d", this.indicatorD );
+				if ( scope.leftX && scope.leftY && scope.rightX && scope.rightY && scope.radius ) {
 
-			}
+					indicator.setAttribute( "d", scope.indicatorD );
 
-		}.bind(this);
+				}
 
-		this.addUpdateCallback( setIndicatorD );
+			};
 
-		var indicatorOnMouseEnter = function () {
+			scope.addUpdateCallback( setIndicatorD );
 
-			viewIndicatorDiv.style.opacity = "1";
-			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+			var indicatorOnMouseEnter = function () {
 
-		};
+				this.style.opacity = "1";
 
-		var indicatorOnMouseLeave = function () {
+			};
 
-			viewIndicatorDiv.style.opacity = "0.7";
-			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+			var indicatorOnMouseLeave = function () {
 
-		};
+				this.style.opacity = "0.5";
 
-		viewIndicatorDiv.addEventListener( "mouseenter", indicatorOnMouseEnter );
-		viewIndicatorDiv.addEventListener( "mouseleave", indicatorOnMouseLeave );
+			};
+
+			viewIndicatorDiv.addEventListener( "mouseenter", indicatorOnMouseEnter );
+			viewIndicatorDiv.addEventListener( "mouseleave", indicatorOnMouseLeave );
+		}
+
+		this.loadAsyncRequest( PANOLENS.DataImage.ViewIndicator, loadViewIndicator );
 
 	};
 
