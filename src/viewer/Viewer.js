@@ -540,6 +540,7 @@
 	PANOLENS.Viewer.prototype.enableReticleControl = function () {
 
 		if ( this.reticle.visible ) { return; }
+		if ( !this.reticle.textureLoaded ) { this.reticle.loadTextures(); }
 
 		this.tempEnableReticle = true;
 
