@@ -4373,8 +4373,6 @@ PANOLENS.StereographicShader = {
 	PANOLENS.Reticle = function ( color, autoSelect, idleImageUrl, dwellImageUrl, dwellTime, dwellSpriteAmount ) {
 
 		color = color || 0xffffff;
-		idleImageUrl = idleImageUrl || PANOLENS.DataImage.ReticleIdle;
-		dwellImageUrl = dwellImageUrl || PANOLENS.DataImage.ReticleDwell;
 
 		this.autoSelect = autoSelect != undefined ? autoSelect : true;
 
@@ -4389,12 +4387,13 @@ PANOLENS.StereographicShader = {
 		this.scaleIdle = new THREE.Vector3( 0.2, 0.2, 1 );
 		this.scaleDwell = new THREE.Vector3( 1, 0.8, 1 );
 
-		this.idleTexture = PANOLENS.Utils.TextureLoader.load( idleImageUrl );
-		this.dwellTexture = PANOLENS.Utils.TextureLoader.load( dwellImageUrl );
+		this.textureLoaded = false;
+		this.idleImageUrl = idleImageUrl || PANOLENS.DataImage.ReticleIdle;
+		this.dwellImageUrl = dwellImageUrl || PANOLENS.DataImage.ReticleDwell;
+		this.idleTexture = new THREE.Texture();
+		this.dwellTexture = new THREE.Texture();
 
-		this.setupDwellSprite( this.dwellTexture );
-
-		THREE.Sprite.call( this, new THREE.SpriteMaterial( { map: this.idleTexture, color: color, depthTest: false } ) );
+		THREE.Sprite.call( this, new THREE.SpriteMaterial( { color: color, depthTest: false } ) );
 
 		this.currentTile = 0;
 		this.startTime = 0;
@@ -4427,6 +4426,20 @@ PANOLENS.StereographicShader = {
 	PANOLENS.Reticle.prototype.hide = function () {
 
 		this.visible = false;
+
+	};
+
+	/**
+	 * Load reticle textures
+	 */
+	PANOLENS.Reticle.prototype.loadTextures = function () {
+
+		this.idleTexture = PANOLENS.Utils.TextureLoader.load( this.idleImageUrl );
+		this.dwellTexture = PANOLENS.Utils.TextureLoader.load( this.dwellImageUrl );
+
+		this.material.map = this.idleTexture;
+		this.setupDwellSprite( this.dwellTexture );
+		this.textureLoaded = true;
 
 	};
 
@@ -4483,6 +4496,7 @@ PANOLENS.StereographicShader = {
 			this.material.map = this.idleTexture;
 		} else if ( status === this.DWELLING ) {
 			this.scale.copy( this.scaleDwell );
+			console.log('asd');
 			this.material.map = this.dwellTexture;
 		}
 
@@ -7526,6 +7540,7 @@ PANOLENS.StereographicShader = {
 	PANOLENS.Viewer.prototype.enableReticleControl = function () {
 
 		if ( this.reticle.visible ) { return; }
+		if ( !this.reticle.textureLoaded ) { this.reticle.loadTextures(); }
 
 		this.tempEnableReticle = true;
 
