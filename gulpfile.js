@@ -73,7 +73,8 @@ var _offline_sources = _panolensfiles.slice( 0, 1 )
     .concat( _offlineResouces )
     .concat( _panolensfiles.slice( 1 ) );
 
-gulp.task( 'default', [ 'minify', 'minify-offline', 'docs' ] );
+gulp.task( 'default', [ 'mini', 'docs' ] );
+gulp.task( 'mini', [ 'minify', 'minify-offline' ] );
 
 gulp.task( 'minify', function() {
   return gulp.src( _sources )
