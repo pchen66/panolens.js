@@ -4,4 +4,4 @@
  * @namespace PANOLENS
  */
 
-var PANOLENS = { REVISION: '7' };
+var PANOLENS = { REVISION: '8-dev' };
