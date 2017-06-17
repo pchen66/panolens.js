@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="view-indicator" height="30" width="30" viewBox="-2.5 -1 30 30">
+	<style type="text/css">.st0{stroke-width:2;stroke-miterlimit:10;fill:none;}.st1{stroke-width:6;stroke-miterlimit:10;}
+	</style>
+	<g>
+		<path class="st0" d="M 12.5 0 A 12.5 12.5 0 0 0 -12.5 0 A 12.5 12.5 0 0 0 12.5 0" transform="matrix(1,0,0,1,13,15.5)"></path>
+		<path class="st2" d="M 13 0 L 10 2 L 16 2 Z"></path>
+		<path class="st2" d="M 2 0 A 2 2 0 0 0 -2 0 A 2 2 0 0 0 2 0" transform="matrix(1,0,0,1,13,15.5)"></path>
+		<path class="st1" id="indicator" transform="matrix(1,0,0,1,13,15.5)"></path>
+	</g>
+</svg>
