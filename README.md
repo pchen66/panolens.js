@@ -1,5 +1,7 @@
 # [Panolens.js](http://pchen66.github.io/Panolens)
 
+[![License][license-badge]][license-badge-url]
+
 ### Javascript Panorama Viewer
 
 Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight (47KB gzipped) and flexible. It's built on top of [Three.JS](https://github.com/mrdoob/three.js).
@@ -86,3 +88,6 @@ Always make your contributions for the latest `dev` branch, not `master`, so it 
 ### Roadmap
 1.	npm packaging
 2.	infospot editor
+
+[license-badge]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat
+[license-badge-url]: ./LICENSE
