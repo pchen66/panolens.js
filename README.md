@@ -1,10 +1,12 @@
 # [Panolens.js](http://pchen66.github.io/Panolens)
 
+[![Release][release-badge]][release-badge-url]
 [![License][license-badge]][license-badge-url]
+![GzipSize][gzip-size-badge]
 
 ### Javascript Panorama Viewer
 
-Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight (47KB gzipped) and flexible. It's built on top of [Three.JS](https://github.com/mrdoob/three.js).
+Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible. It's built on top of [Three.JS](https://github.com/mrdoob/three.js).
 
 ![Panorama Demo](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens.gif?raw=true)
 
@@ -89,5 +91,8 @@ Always make your contributions for the latest `dev` branch, not `master`, so it 
 1.	npm packaging
 2.	infospot editor
 
-[license-badge]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat
+[release-badge]: https://img.shields.io/github/release/pchen66/panolens.js.svg
+[release-badge-url]:https://github.com/pchen66/panolens.js/releases
+[license-badge]: https://img.shields.io/github/license/pchen66/panolens.js.svg
 [license-badge-url]: ./LICENSE
+[gzip-size-badge]: http://img.badgesize.io/https://raw.githubusercontent.com/pchen66/panolens.js/master/build/panolens.min.js?compression=gzip&label=gzip%20size
