@@ -454,7 +454,7 @@
 			item.style.display = 'none';
 			item.controlButton.paused = true;
 			item.controlButton.update();
-			item.seekBar.setProgress( 0 );
+
 		};
 
 		item.controlButton = this.createVideoControlButton();
