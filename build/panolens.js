@@ -3683,12 +3683,13 @@ PANOLENS.StereographicShader = {
 
 		this.videoElement = undefined;
 		this.videoRenderObject = undefined;
+		this.videoProgress = 0;
 
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
 		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
+		this.addEventListener( 'enter', this.resumeVideoProgress.bind( this ) );
 		this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
-		this.addEventListener( 'leave', this.resetVideo.bind( this ) );
 		this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 		this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
@@ -3699,7 +3700,7 @@ PANOLENS.StereographicShader = {
 	PANOLENS.VideoPanorama.constructor = PANOLENS.VideoPanorama;
 
 	/**
-	 * [load description]
+	 * Load video panorama
 	 * @param  {string} src     - The video url
 	 * @param  {object} options - Option object containing videoElement
 	 * @fires  PANOLENS.Panorama#panolens-viewer-handler
@@ -3802,13 +3803,15 @@ PANOLENS.StereographicShader = {
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
+			scope.videoProgress = this.duration >= 0 ? this.currentTime / this.duration : 0;
+
 			/**
 			 * Viewer handler event
 			 * @type {object}
 			 * @property {string} method - 'onVideoUpdate'
 			 * @property {number} data - The percentage of video progress. Range from 0.0 to 1.0
 			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: this.currentTime / this.duration } );
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: scope.videoProgress } );
 
 		};
 
@@ -3906,9 +3909,11 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.setVideoCurrentTime = function ( event ) {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && event.percentage !== 1 ) {
+		if ( this.videoRenderObject && this.videoRenderObject.video && !Number.isNaN(event.percentage) && event.percentage !== 1 ) {
 
 			this.videoRenderObject.video.currentTime = this.videoRenderObject.video.duration * event.percentage;
+
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: event.percentage } );
 
 		}
 
@@ -3951,6 +3956,15 @@ PANOLENS.StereographicShader = {
 		 * @event 'pause'
 		 * */
 		this.dispatchEvent( { type: 'pause' } );
+
+	};
+
+	/**
+	 * Resume video
+	 */
+	PANOLENS.VideoPanorama.prototype.resumeVideoProgress = function () {
+
+		this.setVideoCurrentTime( { percentage: this.videoProgress } );
 
 	};
 
@@ -5685,7 +5699,7 @@ PANOLENS.StereographicShader = {
 			item.style.display = 'none';
 			item.controlButton.paused = true;
 			item.controlButton.update();
-			item.seekBar.setProgress( 0 );
+
 		};
 
 		item.controlButton = this.createVideoControlButton();
