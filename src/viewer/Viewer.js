@@ -329,8 +329,10 @@
 	/**
 	 * Set a panorama to be the current one
 	 * @param {PANOLENS.Panorama} pano - Panorama to be set
+	 * @param {boolean} [leavingDisabled=undefined] - Whether to disable default leaving transition
+	 * @param {boolean} [enteringDisabled=undefined] - Whether to disable default entering transition
 	 */
-	PANOLENS.Viewer.prototype.setPanorama = function ( pano ) {
+	PANOLENS.Viewer.prototype.setPanorama = function ( pano, leavingDisabled, enteringDisabled ) {
 
 		if ( pano.type === 'panorama' ) {
 			
@@ -338,10 +340,10 @@
 			this.hideInfospot();
 
 			// Reset Current Panorama
-			this.panorama && this.panorama.onLeave();
+			this.panorama && this.panorama.onLeave( leavingDisabled );
 
 			// Assign and enter panorama
-			(this.panorama = pano).onEnter();
+			(this.panorama = pano).onEnter( enteringDisabled );
 			
 		}
 
@@ -728,7 +730,7 @@
 		var scope = this;
 
 		// Set camera control on every panorama
-		pano.addEventListener( 'enter-animation-start', this.setCameraControl.bind( this ) );
+		pano.addEventListener( 'enter', this.setCameraControl.bind( this ) );
 
 		// Start panorama leaves
 		pano.addEventListener( 'leave', function () {

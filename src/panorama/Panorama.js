@@ -443,24 +443,24 @@
 	 * This will be called when entering a panorama 
 	 * @fires PANOLENS.Panorama#enter
 	 * @fires PANOLENS.Panorama#enter-animation-start
+	 * @param {boolean} [disabled=undefined] - Whether to disable default animation
 	 */
-	PANOLENS.Panorama.prototype.onEnter = function () {
+	PANOLENS.Panorama.prototype.onEnter = function ( disabled ) {
 
-		new TWEEN.Tween( this )
-		.to( {}, this.animationDuration )
-		.easing( TWEEN.Easing.Quartic.Out )
-		.onStart( function () {
-
-			/**
-			 * Enter panorama and animation starting event
-			 * @event PANOLENS.Panorama#enter-animation-start
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'enter-animation-start' } );
+		if ( disabled ) {
 
 			if ( this.loaded ) {
 
-				this.fadeIn();
+				this.material.opacity = 1;
+				this.toggleInfospotVisibility( true, 0 );
+
+				/**
+				 * Enter panorama complete event
+				 * @event PANOLENS.Panorama#enter-complete
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'enter-complete' } );
+
 
 			} else {
 
@@ -470,9 +470,49 @@
 
 			this.visible = true;
 			this.material.visible = true;
-		} )
-		.delay( this.animationDuration )
-		.start();
+
+		} else {
+
+			new TWEEN.Tween( this )
+			.to( {}, this.animationDuration )
+			.easing( TWEEN.Easing.Quartic.Out )
+			.onStart( function () {
+
+				/**
+				 * Enter panorama and animation starting event
+				 * @event PANOLENS.Panorama#enter-animation-start
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'enter-animation-start' } );
+				
+				if ( this.loaded ) {
+
+					this.fadeIn();
+
+				} else {
+
+					this.load();
+
+				}
+
+				this.visible = true;
+				this.material.visible = true;
+				
+			} )
+			.delay( this.animationDuration )
+			.onComplete( function () {
+
+				/**
+				 * Enter panorama and animation complete event
+				 * @event PANOLENS.Panorama#enter-animation-complete
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'enter-animation-complete' } );
+
+			} )
+			.start();
+
+		}
 
 		/**
 		 * Enter panorama event
@@ -486,25 +526,58 @@
 	/**
 	 * This will be called when leaving a panorama
 	 * @fires PANOLENS.Panorama#leave
+	 * @param {boolean} [disabled=undefined] - Whether to disable default animation
 	 */
-	PANOLENS.Panorama.prototype.onLeave = function () {
+	PANOLENS.Panorama.prototype.onLeave = function ( disabled ) {
 
-		new TWEEN.Tween( this )
-		.to( {}, this.animationDuration )
-		.easing( TWEEN.Easing.Quartic.Out )
-		.onStart( function () {
+		if ( disabled ) {
 
-			this.fadeOut();
-			this.toggleInfospotVisibility( false );
-
-		} )
-		.onComplete( function () {
-
+			this.material.opacity = 0;
+			this.toggleInfospotVisibility( false, 0 );
 			this.visible = false;
-			this.material.visible = true;
+			this.material.visible = false;
 
-		} )
-		.start();
+			/**
+			 * Leave panorama complete event
+			 * @event PANOLENS.Panorama#leave-complete
+			 * @type {object} 
+			 */
+			this.dispatchEvent( { type: 'leave-complete' } );
+
+		} else {
+
+			new TWEEN.Tween( this )
+			.to( {}, this.animationDuration )
+			.easing( TWEEN.Easing.Quartic.Out )
+			.onStart( function () {
+
+				/**
+				 * Leave panorama and animation starting event
+				 * @event PANOLENS.Panorama#leave-animation-start
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'leave-animation-start' } );
+
+				this.fadeOut();
+				this.toggleInfospotVisibility( false );
+
+			} )
+			.onComplete( function () {
+
+				this.visible = false;
+				this.material.visible = true;
+
+				/**
+				 * Leave panorama complete event
+				 * @event PANOLENS.Panorama#leave-complete
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'leave-complete' } );
+
+			} )
+			.start();
+
+		}
 
 		/**
 		 * Leave panorama event
