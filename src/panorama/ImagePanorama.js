@@ -49,7 +49,6 @@
 
 		}
 
-		
 	};
 
 	/**
@@ -64,8 +63,22 @@
 
 		this.updateTexture( texture );
 
-		PANOLENS.Panorama.prototype.onLoad.call( this );
+		window.requestAnimationFrame(function(){
+
+			this.visible = true;
+			this.material.visible = true;
+
+			window.requestAnimationFrame(function(){
+
+				PANOLENS.Panorama.prototype.onLoad.call( this );
+				
+
+			}.bind(this));
+
+		}.bind(this));
+
 		
+
 	};
 
 	PANOLENS.ImagePanorama.prototype.reset = function () {

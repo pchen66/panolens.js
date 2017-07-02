@@ -18,7 +18,6 @@
         height: 150px;
         right: 0;
         top: 100px;
-        background-color: #ff0;
       }
 
       #panolens-separate-container:-webkit-full-screen{
@@ -88,19 +87,20 @@
       var infospot1, infospot2, infospot3;
 
       // Main panorama
-      viewer_main = new PANOLENS.Viewer({ outputInfospotPosition: 'overlay', viewIndicator: true });
+      viewer_main = new PANOLENS.Viewer({ outputInfospotPosition: 'console', viewIndicator: true });
 
       panorama_main_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: true });
       
       panorama_main_video2 = new PANOLENS.VideoPanorama( 'asset/textures/video/1941-battle-low.mp4', { autoplay: false, muted: true });
-      panorama_main_video2.position.set( 2382.49, -477.54, -4361.42 );
       panorama_main_video2.setLinkingImage( 'asset/textures/1941-battle-thumb.jpg' );
 
-      panorama_main_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
-      panorama_main_image.position.set( 4964.41, 366.98, 404.06 );
+      panorama_main_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/road.jpg' );
 
-      panorama_main_video.link( panorama_main_video2 );
-      panorama_main_video.link( panorama_main_image );
+      panorama_main_video.link( panorama_main_video2, new THREE.Vector3( 2382.49, -477.54, -4361.42 ) );
+      panorama_main_video2.link( panorama_main_video, new THREE.Vector3( -2615.55, 1357.43, -4026.71 ) );
+
+      panorama_main_video.link( panorama_main_image, new THREE.Vector3( 4964.41, 366.98, 404.06 ) );
+      panorama_main_image.link( panorama_main_video, new THREE.Vector3( -4588.72, 1419.24, -1359.43 ) );
 
       infospot2 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
       infospot2.position.set(  3841.27, 2625.37, 1819.79 );
@@ -131,6 +131,25 @@
       panorama_side_image.add( infospot3 );
 
       viewer_side.add( panorama_side_image );
+
+      var item = viewer_main.appendControlItem( { 
+
+        style : { 
+
+          backgroundImage : 'url("' + "asset/textures/equirectangular/sunset.jpg" + '")',
+          float: 'left'
+
+        },
+
+        onTap: function(){
+
+          viewer_main.setPanorama( panorama_main_image );
+
+        },
+
+        group: 'video'
+
+      } );
 
     </script>
 

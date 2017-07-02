@@ -147,6 +147,7 @@
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.renderer.setClearColor( 0x000000, 1 );
+		this.renderer.sortObjects = false;
 
 		// Append Renderer Element to container
 		this.renderer.domElement.classList.add( 'panolens-canvas' );
@@ -334,13 +335,24 @@
 	 */
 	PANOLENS.Viewer.prototype.setPanorama = function ( pano, leavingDisabled, enteringDisabled ) {
 
+		var scope = this, leavingPanorama = this.panorama;
+
 		if ( pano.type === 'panorama' ) {
-			
+
 			// Clear exisiting infospot
 			this.hideInfospot();
 
+			var afterEnterComplete = function () {
+
+				leavingPanorama && leavingPanorama.onLeave( leavingDisabled );
+				pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
+
+			};
+
+			pano.addEventListener( 'enter-fade-start', afterEnterComplete );
+
 			// Reset Current Panorama
-			this.panorama && this.panorama.onLeave( leavingDisabled );
+			//this.panorama && this.panorama.onLeave( leavingDisabled );
 
 			// Assign and enter panorama
 			(this.panorama = pano).onEnter( enteringDisabled );
@@ -730,7 +742,7 @@
 		var scope = this;
 
 		// Set camera control on every panorama
-		pano.addEventListener( 'enter', this.setCameraControl.bind( this ) );
+		pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
 
 		// Start panorama leaves
 		pano.addEventListener( 'leave', function () {
@@ -741,7 +753,7 @@
 		} );
 
 		// Render view once enter completes
-		pano.addEventListener( 'enter-complete', function(){
+		pano.addEventListener( 'enter-fade-complete', function(){
 			if ( scope.options.passiveRendering ) {
 				scope.control.update( true );
 				scope.render();
@@ -759,8 +771,16 @@
 		// Show and hide widget event only when it's PANOLENS.VideoPanorama
 		if ( pano instanceof PANOLENS.VideoPanorama ) {
 
-			pano.addEventListener( 'enter', this.showVideoWidget.bind( this ) );
-			pano.addEventListener( 'leave', this.hideVideoWidget.bind( this ) );
+			pano.addEventListener( 'enter-fade-start', this.showVideoWidget.bind( this ) );
+			pano.addEventListener( 'leave', function () {
+
+				if ( !(this.panorama instanceof PANOLENS.VideoPanorama) ) {
+
+					this.hideVideoWidget.call( this );
+
+				}
+				
+			}.bind( this ) );
 
 		}
 
@@ -1731,6 +1751,25 @@
 	};
 
 	/**
+	 * On panorama dispose
+	 */
+	PANOLENS.Viewer.prototype.onPanoramaDispose = function ( panorama ) {
+
+		if ( panorama instanceof PANOLENS.VideoPanorama ) {
+
+			this.hideVideoWidget();
+
+		}
+
+		if ( panorama === this.panorama ) {
+
+			this.panorama = null;
+
+		}
+
+	};
+
+	/**
 	 * Load ajax call
 	 * @param {string} url - URL to be requested
 	 * @param {function} [callback] - Callback after request completes
@@ -1810,6 +1849,28 @@
 		}
 
 		this.loadAsyncRequest( PANOLENS.DataImage.ViewIndicator, loadViewIndicator );
+
+	};
+
+	/**
+	 * Append custom control item to existing control bar
+	 * @param {object} [option={}] - Style object to overwirte default element style. It takes 'style', 'onTap' and 'group' properties.
+	 */
+	PANOLENS.Viewer.prototype.appendControlItem = function ( option ) {
+
+		var item = this.widget.createCustomItem( option );		
+
+		if ( option.group === 'video' ) {
+
+			this.widget.videoElement.appendChild( item );
+
+		} else {
+
+			this.widget.barElement.appendChild( item );
+
+		}
+
+		return item;
 
 	};
 
