@@ -3,7 +3,7 @@
 	/**
 	 * Information spot attached to panorama
 	 * @constructor
-	 * @param {number} [scale=1] - Infospot scale
+	 * @param {number} [scale=300] - Infospot scale
 	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
 	 * @param {boolean} [animated=true] - Enable default hover animation
 	 */
@@ -11,7 +11,7 @@
 		
 		var scope = this, ratio, startScale, endScale, duration;
 
-		scale = scale || 1;
+		scale = scale || 300;
 		imageSrc = imageSrc || PANOLENS.DataImage.Info;
 		duration = 500;
 
