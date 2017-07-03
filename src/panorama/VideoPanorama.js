@@ -90,7 +90,7 @@
 			}
 
 			// For mobile silent autoplay
-			if ( scope.isIOS ) {
+			if ( scope.isMobile ) {
 
 				if ( scope.videoElement.autoplay && scope.videoElement.muted ) {
 
@@ -310,7 +310,7 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.resumeVideoProgress = function () {
 
-		if ( this.videoElement.autoplay ) {
+		if ( this.videoElement.autoplay && !this.isMobile ) {
 
 			this.playVideo();
 
