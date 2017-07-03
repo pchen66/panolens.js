@@ -39,6 +39,7 @@
 
 		this.material = material;
 		this.material.side = THREE.DoubleSide;
+		this.material.depthTest = false;
 		this.material.visible = false;
 
 		this.scale.x *= -1;
@@ -430,15 +431,16 @@
 		.to( { opacity: 1 }, this.animationDuration )
 		.easing( TWEEN.Easing.Quartic.Out )
 		.onStart( function () {
+
 			this.visible = true;
 			this.material.visible = true;
+
 			/**
 			 * Enter panorama fade in start event
 			 * @event PANOLENS.Panorama#enter-fade-start
 			 * @type {object} 
 			 */
 			this.dispatchEvent( { type: 'enter-fade-start' } );
-			
 
 		}.bind( this ) )
 		.onComplete( function () {

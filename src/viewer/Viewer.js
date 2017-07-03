@@ -211,8 +211,7 @@
 
 		// Register event if reticle is enabled, otherwise defaults to mouse
 		if ( this.options.enableReticle ) {
-			this.reticle.show();
-			this.registerReticleEvent();
+			this.enableReticleControl();
 		} else {
 			this.registerMouseAndTouchEvents();
 		}
@@ -270,6 +269,13 @@
 
 		}
 
+		if ( object instanceof PANOLENS.VideoPanorama && this.options.passiveRendering ) {
+
+			console.warn( "Passive rendering does not support VideoPanorama yet");
+			return;
+
+		}
+
 		// Hookup default panorama event listeners
 		if ( object.type === 'panorama' ) {
 
@@ -278,6 +284,7 @@
 			if ( !this.panorama ) {
 
 				this.setPanorama( object );
+				this.enableControl( PANOLENS.Controls.ORBIT );
 
 			}
 
@@ -350,9 +357,6 @@
 			};
 
 			pano.addEventListener( 'enter-fade-start', afterEnterComplete );
-
-			// Reset Current Panorama
-			//this.panorama && this.panorama.onLeave( leavingDisabled );
 
 			// Assign and enter panorama
 			(this.panorama = pano).onEnter( enteringDisabled );
@@ -791,8 +795,8 @@
 	 */
 	PANOLENS.Viewer.prototype.setCameraControl = function () {
 
-		this.camera.position.copy( this.panorama.position );
-		this.camera.position.z += 1;
+		this.panorama.rotation.y = this.camera.rotation.y;
+		
 		this.OrbitControls.target.copy( this.panorama.position );
 
 	};

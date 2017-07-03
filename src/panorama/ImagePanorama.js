@@ -63,10 +63,8 @@
 
 		this.updateTexture( texture );
 
+		// Call onLoad after second frame being painted
 		window.requestAnimationFrame(function(){
-
-			this.visible = true;
-			this.material.visible = true;
 
 			window.requestAnimationFrame(function(){
 
