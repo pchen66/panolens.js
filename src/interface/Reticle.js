@@ -136,7 +136,6 @@
 			this.material.map = this.idleTexture;
 		} else if ( status === this.DWELLING ) {
 			this.scale.copy( this.scaleDwell );
-			console.log('asd');
 			this.material.map = this.dwellTexture;
 		}
 
