@@ -8,9 +8,10 @@
 	 * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
 	 * @constructor
 	 * @param {string} panoId - Panorama id from Google Streetview 
+	 * @param {string} apiKey - Google Map api key (@Link https://developers.google.com/maps/documentation/javascript/get-api-key)
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
-	PANOLENS.GoogleStreetviewPanorama = function ( panoId, radius ) {
+	PANOLENS.GoogleStreetviewPanorama = function ( panoId, apiKey, radius ) {
 
 		PANOLENS.ImagePanorama.call( this, undefined, radius );
 
@@ -18,7 +19,7 @@
 
 		this.gsvLoader = undefined;
 
-		this.setupGoogleMapAPI();
+		this.setupGoogleMapAPI( apiKey );
 
 	}
 
@@ -49,10 +50,16 @@
 	/**
 	 * Setup Google Map API
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function () {
+	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function ( apiKey ) {
+
+		if ( !apiKey ) {
+
+			console.warn( 'Please specify Google Map API key. Otherwise access will be limited' );
+
+		}
 
 		var script = document.createElement( 'script' );
-		script.src = 'https://maps.googleapis.com/maps/api/js';
+		script.src = 'https://maps.googleapis.com/maps/api/js' + ( apiKey ? '?key=' + apiKey : '' );
 		script.onreadystatechange = this.setGSVLoader.bind( this );
     	script.onload = this.setGSVLoader.bind( this );
 
