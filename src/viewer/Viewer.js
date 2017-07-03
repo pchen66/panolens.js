@@ -162,6 +162,7 @@
 		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera, this.container );
 		this.DeviceOrientationControls.name = 'device-orientation';
 		this.DeviceOrientationControls.enabled = false;
+		this.camera.position.z = 1;
 
 		// Register change event if passiveRenering
 		if ( this.options.passiveRendering ) {
@@ -284,7 +285,6 @@
 			if ( !this.panorama ) {
 
 				this.setPanorama( object );
-				this.enableControl( PANOLENS.Controls.ORBIT );
 
 			}
 
