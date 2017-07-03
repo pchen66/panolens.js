@@ -796,7 +796,6 @@
 	PANOLENS.Viewer.prototype.setCameraControl = function () {
 
 		this.panorama.rotation.y = this.camera.rotation.y;
-		
 		this.OrbitControls.target.copy( this.panorama.position );
 
 	};

@@ -44,7 +44,7 @@
 
 		this.scale.x *= -1;
 
-		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration );
+		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
 
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
@@ -445,7 +445,7 @@
 		}.bind( this ) )
 		.onComplete( function () {
 
-			this.toggleInfospotVisibility( true, this.animationDuration );
+			this.toggleInfospotVisibility( true, this.animationDuration / 2 );
 
 			/**
 			 * Enter panorama fade complete event
