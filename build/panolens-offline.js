@@ -5,9 +5,9 @@
  */
 
 var PANOLENS = { REVISION: '8-dev' };
-;/*! npm.im/iphone-inline-video 2.0.2 */
+;/*! npm.im/iphone-inline-video 2.2.2 */
 var enableInlineVideo=function(){"use strict";/*! npm.im/intervalometer */
-function e(e,i,n,r){function t(n){d=i(t,r),e(n-(a||n)),a=n}var d,a;return{start:function(){d||t(0)},stop:function(){n(d),d=null,a=0}}}function i(i){return e(i,requestAnimationFrame,cancelAnimationFrame)}function n(e,i,n,r){function t(i){Boolean(e[n])===Boolean(r)&&i.stopImmediatePropagation(),delete e[n]}return e.addEventListener(i,t,!1),t}function r(e,i,n,r){function t(){return n[i]}function d(e){n[i]=e}r&&d(e[i]),Object.defineProperty(e,i,{get:t,set:d})}function t(e,i,n){n.addEventListener(i,function(){return e.dispatchEvent(new Event(i))})}function d(e,i){Promise.resolve().then(function(){e.dispatchEvent(new Event(i))})}function a(e){var i=new Audio;return t(e,"play",i),t(e,"playing",i),t(e,"pause",i),i.crossOrigin=e.crossOrigin,i.src=e.src||e.currentSrc||"data:",i}function o(e,i,n){(m||0)+200<Date.now()&&(e[b]=!0,m=Date.now()),n||(e.currentTime=i),w[++T%3]=100*i|0}function u(e){return e.driver.currentTime>=e.video.duration}function s(e){var i=this;i.video.readyState>=i.video.HAVE_FUTURE_DATA?(i.hasAudio||(i.driver.currentTime=i.video.currentTime+e*i.video.playbackRate/1e3,i.video.loop&&u(i)&&(i.driver.currentTime=0)),o(i.video,i.driver.currentTime)):i.video.networkState===i.video.NETWORK_IDLE&&0===i.video.buffered.length&&i.video.load(),i.video.ended&&(delete i.video[b],i.video.pause(!0))}function c(){var e=this,i=e[h];return e.webkitDisplayingFullscreen?void e[g]():("data:"!==i.driver.src&&i.driver.src!==e.src&&(o(e,0,!0),i.driver.src=e.src),void(e.paused&&(i.paused=!1,0===e.buffered.length&&e.load(),i.driver.play(),i.updater.start(),i.hasAudio||(d(e,"play"),i.video.readyState>=i.video.HAVE_ENOUGH_DATA&&d(e,"playing")))))}function v(e){var i=this,n=i[h];n.driver.pause(),n.updater.stop(),i.webkitDisplayingFullscreen&&i[E](),n.paused&&!e||(n.paused=!0,n.hasAudio||d(i,"pause"),i.ended&&(i[b]=!0,d(i,"ended")))}function p(e,n){var r=e[h]={};r.paused=!0,r.hasAudio=n,r.video=e,r.updater=i(s.bind(r)),n?r.driver=a(e):(e.addEventListener("canplay",function(){e.paused||d(e,"playing")}),r.driver={src:e.src||e.currentSrc||"data:",muted:!0,paused:!0,pause:function(){r.driver.paused=!0},play:function(){r.driver.paused=!1,u(r)&&o(e,0)},get ended(){return u(r)}}),e.addEventListener("emptied",function(){var i=!r.driver.src||"data:"===r.driver.src;r.driver.src&&r.driver.src!==e.src&&(o(e,0,!0),r.driver.src=e.src,i?r.driver.play():r.updater.stop())},!1),e.addEventListener("webkitbeginfullscreen",function(){e.paused?n&&0===r.driver.buffered.length&&r.driver.load():(e.pause(),e[g]())}),n&&(e.addEventListener("webkitendfullscreen",function(){r.driver.currentTime=e.currentTime}),e.addEventListener("seeking",function(){w.indexOf(100*e.currentTime|0)<0&&(r.driver.currentTime=e.currentTime)}))}function l(e){var i=e[h];e[g]=e.play,e[E]=e.pause,e.play=c,e.pause=v,r(e,"paused",i.driver),r(e,"muted",i.driver,!0),r(e,"playbackRate",i.driver,!0),r(e,"ended",i.driver),r(e,"loop",i.driver,!0),n(e,"seeking"),n(e,"seeked"),n(e,"timeupdate",b,!1),n(e,"ended",b,!1)}function f(e,i){if(void 0===i&&(i={}),!e[h]){if(!i.everywhere){if(!y)return;if(!(i.iPad||i.ipad?/iPhone|iPod|iPad/:/iPhone|iPod/).test(navigator.userAgent))return}!e.paused&&e.webkitDisplayingFullscreen&&e.pause(),p(e,!e.muted),l(e),e.classList.add("IIV"),e.muted&&e.autoplay&&e.play(),/iPhone|iPod|iPad/.test(navigator.platform)||console.warn("iphone-inline-video is not guaranteed to work in emulated environments")}}var m,y="object"==typeof document&&"object-fit"in document.head.style&&!matchMedia("(-webkit-video-playable-inline)").matches,h="bfred-it:iphone-inline-video",b="bfred-it:iphone-inline-video:event",g="bfred-it:iphone-inline-video:nativeplay",E="bfred-it:iphone-inline-video:nativepause",w=[],T=0;return f}();
+function e(e,i,n,r){function t(n){d=i(t,r),e(n-(a||n)),a=n}var d,a;return{start:function(){d||t(0)},stop:function(){n(d),d=null,a=0}}}function i(i){return e(i,requestAnimationFrame,cancelAnimationFrame)}function n(e,i,n){function r(r){n&&!n(e,i)||r.stopImmediatePropagation()}return e.addEventListener(i,r),r}function r(e,i,n,r){function t(){return n[i]}function d(e){n[i]=e}r&&d(e[i]),Object.defineProperty(e,i,{get:t,set:d})}function t(e,i,n){n.addEventListener(i,function(){return e.dispatchEvent(new Event(i))})}function d(e,i){Promise.resolve().then(function(){e.dispatchEvent(new Event(i))})}function a(e){var i=new Audio;return t(e,"play",i),t(e,"playing",i),t(e,"pause",i),i.crossOrigin=e.crossOrigin,i.src=e.src||e.currentSrc||"data:",i}function u(e,i,n){(m||0)+200<Date.now()&&(e[h]=!0,m=Date.now()),n||(e.currentTime=i),k[++T%3]=100*i|0}function o(e){return e.driver.currentTime>=e.video.duration}function s(e){var i=this;i.video.readyState>=i.video.HAVE_FUTURE_DATA?(i.hasAudio||(i.driver.currentTime=i.video.currentTime+e*i.video.playbackRate/1e3,i.video.loop&&o(i)&&(i.driver.currentTime=0)),u(i.video,i.driver.currentTime)):i.video.networkState===i.video.NETWORK_IDLE&&0===i.video.buffered.length&&i.video.load(),i.video.ended&&(delete i.video[h],i.video.pause(!0))}function c(){var e=this,i=e[g];if(e.webkitDisplayingFullscreen)return void e[E]();"data:"!==i.driver.src&&i.driver.src!==e.src&&(u(e,0,!0),i.driver.src=e.src),e.paused&&(i.paused=!1,0===e.buffered.length&&e.load(),i.driver.play(),i.updater.start(),i.hasAudio||(d(e,"play"),i.video.readyState>=i.video.HAVE_ENOUGH_DATA&&d(e,"playing")))}function v(e){var i=this,n=i[g];n.driver.pause(),n.updater.stop(),i.webkitDisplayingFullscreen&&i[w](),n.paused&&!e||(n.paused=!0,n.hasAudio||d(i,"pause"),i.ended&&!i.webkitDisplayingFullscreen&&(i[h]=!0,d(i,"ended")))}function p(e,n){var r={};e[g]=r,r.paused=!0,r.hasAudio=n,r.video=e,r.updater=i(s.bind(r)),n?r.driver=a(e):(e.addEventListener("canplay",function(){e.paused||d(e,"playing")}),r.driver={src:e.src||e.currentSrc||"data:",muted:!0,paused:!0,pause:function(){r.driver.paused=!0},play:function(){r.driver.paused=!1,o(r)&&u(e,0)},get ended(){return o(r)}}),e.addEventListener("emptied",function(){var i=!r.driver.src||"data:"===r.driver.src;r.driver.src&&r.driver.src!==e.src&&(u(e,0,!0),r.driver.src=e.src,i||!n&&e.autoplay?r.driver.play():r.updater.stop())},!1),e.addEventListener("webkitbeginfullscreen",function(){e.paused?n&&0===r.driver.buffered.length&&r.driver.load():(e.pause(),e[E]())}),n&&(e.addEventListener("webkitendfullscreen",function(){r.driver.currentTime=e.currentTime}),e.addEventListener("seeking",function(){k.indexOf(100*e.currentTime|0)<0&&(r.driver.currentTime=e.currentTime)}))}function l(e){var i=e[h];return delete e[h],!e.webkitDisplayingFullscreen&&!i}function f(e){var i=e[g];e[E]=e.play,e[w]=e.pause,e.play=c,e.pause=v,r(e,"paused",i.driver),r(e,"muted",i.driver,!0),r(e,"playbackRate",i.driver,!0),r(e,"ended",i.driver),r(e,"loop",i.driver,!0),n(e,"seeking",function(e){return!e.webkitDisplayingFullscreen}),n(e,"seeked",function(e){return!e.webkitDisplayingFullscreen}),n(e,"timeupdate",l),n(e,"ended",l)}function y(e,i){if(void 0===i&&(i={}),!e[g]){if(!i.everywhere){if(!b)return;if(!(i.iPad||i.ipad?/iPhone|iPod|iPad/:/iPhone|iPod/).test(navigator.userAgent))return}e.pause();var n=e.autoplay;e.autoplay=!1,p(e,!e.muted),f(e),e.classList.add("IIV"),e.muted&&n&&(e.play(),e.addEventListener("playing",function i(){e.autoplay=!0,e.removeEventListener("playing",i)})),/iPhone|iPod|iPad/.test(navigator.platform)||console.warn("iphone-inline-video is not guaranteed to work in emulated environments")}}var m,b="object"==typeof document&&"object-fit"in document.head.style&&!matchMedia("(-webkit-video-playable-inline)").matches,g="bfred-it:iphone-inline-video",h="bfred-it:iphone-inline-video:event",E="bfred-it:iphone-inline-video:nativeplay",w="bfred-it:iphone-inline-video:nativepause",k=[],T=0;return y}();
 ;/**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
@@ -2828,7 +2828,7 @@ PANOLENS.StereographicShader = {
 		this.ImageQualityHigh = 4;
 		this.ImageQualitySuperHigh = 5;
 
-		this.animationDuration = 500;
+		this.animationDuration = 1000;
 
 		this.defaultInfospotSize = 350;
 
@@ -2847,11 +2847,12 @@ PANOLENS.StereographicShader = {
 
 		this.material = material;
 		this.material.side = THREE.DoubleSide;
+		this.material.depthTest = false;
 		this.material.visible = false;
 
 		this.scale.x *= -1;
 
-		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration );
+		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
 
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
@@ -3146,36 +3147,60 @@ PANOLENS.StereographicShader = {
 	};
 
 	/**
-	 * Link two panorama bidirectionally by attaching infospot on each other
+	 * Link one-way panorama
 	 * @param  {PANOLENS.Panorama} pano  - The panorama to be linked to
-	 * @param  {boolean} ended - If this linking is the second / last iteration
+	 * @param  {THREE.Vector3} position - The position of infospot which navigates to the pano
+	 * @param  {number} [imageScale=300] - Image scale of linked infospot
+	 * @param  {string} [imageSrc=PANOLENS.DataImage.Arrow] - The image source of linked infospot
 	 */
-	PANOLENS.Panorama.prototype.link = function ( pano, ended ) {
+	PANOLENS.Panorama.prototype.link = function ( pano, position, imageScale, imageSrc ) {
 
-		var scope = this, spot, raycaster, intersect, point;
+		var scope = this, spot, scale, img;
 
 		this.visible = true;
 
-		raycaster = new THREE.Raycaster();
-		raycaster.set( this.position, pano.position.clone().sub( this.position ).normalize() );
-		intersect = raycaster.intersectObject( this );
+		if ( !position ) {
 
-		if ( intersect.length > 0 ) {
+			console.warn( 'Please specify infospot position for linking' );
 
-			point = intersect[ intersect.length - 1 ].point.clone().multiplyScalar( 0.99 );
-
-		} else {
-
-			console.warn( 'Panoramas should be at different position' );
 			return;
 
 		}
 
-		spot = new PANOLENS.Infospot( 
-			pano.linkingImageScale !== undefined ? pano.linkingImageScale : this.defaultInfospotSize, 
-			pano.linkingImageURL !== undefined ? pano.linkingImageURL : PANOLENS.DataImage.Arrow 
-		);
-        spot.position.copy( point );
+		// Infospot scale
+		if ( imageScale !== undefined ) {
+
+			scale = imageScale;
+
+		} else if ( pano.linkingImageScale !== undefined ) {
+
+			scale = pano.linkingImageScale;
+
+		} else {
+
+			scale = 300;
+
+		}
+
+
+		// Infospot image
+		if ( imageSrc ) {
+
+			img = imageSrc
+
+		} else if ( pano.linkingImageURL ) {
+
+			img = pano.linkingImageURL;
+
+		} else {
+
+			img = PANOLENS.DataImage.Arrow;
+
+		}
+
+		// Creates a new infospot
+		spot = new PANOLENS.Infospot( scale, img );
+        spot.position.copy( position );
         spot.toPanorama = pano;
         spot.addEventListener( 'click', function () {
 
@@ -3196,12 +3221,6 @@ PANOLENS.StereographicShader = {
 
         this.visible = false;
 
-        if ( !ended ) {
-
-        	pano.link( this, true );
-
-        }
-
 	};
 
 	PANOLENS.Panorama.prototype.reset = function () {
@@ -3219,16 +3238,29 @@ PANOLENS.StereographicShader = {
 		new TWEEN.Tween( this.material )
 		.to( { opacity: 1 }, this.animationDuration )
 		.easing( TWEEN.Easing.Quartic.Out )
-		.onComplete( function () {
+		.onStart( function () {
 
-			this.toggleInfospotVisibility( true, this.animationDuration );
+			this.visible = true;
+			this.material.visible = true;
 
 			/**
-			 * Enter panorama complete event
-			 * @event PANOLENS.Panorama#enter-complete
+			 * Enter panorama fade in start event
+			 * @event PANOLENS.Panorama#enter-fade-start
 			 * @type {object} 
 			 */
-			this.dispatchEvent( { type: 'enter-complete' } );
+			this.dispatchEvent( { type: 'enter-fade-start' } );
+
+		}.bind( this ) )
+		.onComplete( function () {
+
+			this.toggleInfospotVisibility( true, this.animationDuration / 2 );
+
+			/**
+			 * Enter panorama fade complete event
+			 * @event PANOLENS.Panorama#enter-fade-complete
+			 * @type {object} 
+			 */
+			this.dispatchEvent( { type: 'enter-fade-complete' } );
 
 		}.bind( this ) )
 		.start();
@@ -3243,6 +3275,19 @@ PANOLENS.StereographicShader = {
 		new TWEEN.Tween( this.material )
 		.to( { opacity: 0 }, this.animationDuration )
 		.easing( TWEEN.Easing.Quartic.Out )
+		.onComplete(function(){
+
+			this.visible = false;
+			this.material.visible = true;
+
+			/**
+			 * Leave panorama complete event
+			 * @event PANOLENS.Panorama#leave-complete
+			 * @type {object} 
+			 */
+			this.dispatchEvent( { type: 'leave-complete' } );
+
+		}.bind( this ))
 		.start();
 
 	};
@@ -3256,6 +3301,13 @@ PANOLENS.StereographicShader = {
 	PANOLENS.Panorama.prototype.onEnter = function ( disabled ) {
 
 		if ( disabled ) {
+
+			/**
+			 * Enter panorama and animation starting event
+			 * @event PANOLENS.Panorama#enter-animation-start
+			 * @type {object} 
+			 */
+			this.dispatchEvent( { type: 'enter-animation-start' } );
 
 			if ( this.loaded ) {
 
@@ -3302,12 +3354,8 @@ PANOLENS.StereographicShader = {
 					this.load();
 
 				}
-
-				this.visible = true;
-				this.material.visible = true;
 				
 			} )
-			.delay( this.animationDuration )
 			.onComplete( function () {
 
 				/**
@@ -3340,10 +3388,17 @@ PANOLENS.StereographicShader = {
 
 		if ( disabled ) {
 
+			/**
+			 * Leave panorama and animation starting event
+			 * @event PANOLENS.Panorama#leave-animation-start
+			 * @type {object} 
+			 */
+			this.dispatchEvent( { type: 'leave-animation-start' } );
+
 			this.material.opacity = 0;
 			this.toggleInfospotVisibility( false, 0 );
 			this.visible = false;
-			this.material.visible = false;
+			this.material.visible = true;
 
 			/**
 			 * Leave panorama complete event
@@ -3370,19 +3425,6 @@ PANOLENS.StereographicShader = {
 				this.toggleInfospotVisibility( false );
 
 			} )
-			.onComplete( function () {
-
-				this.visible = false;
-				this.material.visible = true;
-
-				/**
-				 * Leave panorama complete event
-				 * @event PANOLENS.Panorama#leave-complete
-				 * @type {object} 
-				 */
-				this.dispatchEvent( { type: 'leave-complete' } );
-
-			} )
 			.start();
 
 		}
@@ -3400,6 +3442,15 @@ PANOLENS.StereographicShader = {
 	 * Dispose panorama
 	 */
 	PANOLENS.Panorama.prototype.dispose = function () {
+
+		/**
+    	 * On panorama dispose handler
+    	 * @type {object}
+    	 * @event PANOLENS.Panorama#panolens-viewer-handler
+    	 * @property {string} method - Viewer function name
+    	 * @property {*} data - The argument to be passed into the method
+    	 */
+    	this.dispatchEvent( { type : 'panolens-viewer-handler', method: 'onPanoramaDispose', data: this } );
 
 		// recursive disposal on 3d objects
 		function recursiveDispose ( object ) {
@@ -3482,7 +3533,6 @@ PANOLENS.StereographicShader = {
 
 		}
 
-		
 	};
 
 	/**
@@ -3497,8 +3547,20 @@ PANOLENS.StereographicShader = {
 
 		this.updateTexture( texture );
 
-		PANOLENS.Panorama.prototype.onLoad.call( this );
+		// Call onLoad after second frame being painted
+		window.requestAnimationFrame(function(){
+
+			window.requestAnimationFrame(function(){
+
+				PANOLENS.Panorama.prototype.onLoad.call( this );
+				
+
+			}.bind(this));
+
+		}.bind(this));
+
 		
+
 	};
 
 	PANOLENS.ImagePanorama.prototype.reset = function () {
@@ -3517,9 +3579,10 @@ PANOLENS.StereographicShader = {
 	 * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
 	 * @constructor
 	 * @param {string} panoId - Panorama id from Google Streetview 
+	 * @param {string} apiKey - Google Map api key (@Link https://developers.google.com/maps/documentation/javascript/get-api-key)
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
-	PANOLENS.GoogleStreetviewPanorama = function ( panoId, radius ) {
+	PANOLENS.GoogleStreetviewPanorama = function ( panoId, apiKey, radius ) {
 
 		PANOLENS.ImagePanorama.call( this, undefined, radius );
 
@@ -3527,7 +3590,7 @@ PANOLENS.StereographicShader = {
 
 		this.gsvLoader = undefined;
 
-		this.setupGoogleMapAPI();
+		this.setupGoogleMapAPI( apiKey );
 
 	}
 
@@ -3558,10 +3621,16 @@ PANOLENS.StereographicShader = {
 	/**
 	 * Setup Google Map API
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function () {
+	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function ( apiKey ) {
+
+		if ( !apiKey ) {
+
+			console.warn( 'Please specify Google Map API key. Otherwise access will be limited' );
+
+		}
 
 		var script = document.createElement( 'script' );
-		script.src = 'https://maps.googleapis.com/maps/api/js';
+		script.src = 'https://maps.googleapis.com/maps/api/js' + ( apiKey ? '?key=' + apiKey : '' );
 		script.onreadystatechange = this.setGSVLoader.bind( this );
     	script.onload = this.setGSVLoader.bind( this );
 
@@ -3755,8 +3824,8 @@ PANOLENS.StereographicShader = {
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
 		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
-		this.addEventListener( 'enter', this.resumeVideoProgress.bind( this ) );
 		this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
+		this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
 		this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 		this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
@@ -3780,7 +3849,7 @@ PANOLENS.StereographicShader = {
 		options = ( options || this.options ) || {};
 
 		this.videoElement = options.videoElement || document.createElement( 'video' );
-		
+
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
@@ -3796,8 +3865,6 @@ PANOLENS.StereographicShader = {
 
 			scope.setVideoTexture( scope.videoElement );
 
-			scope.onLoad();
-
 			if ( scope.videoElement.autoplay ) {
 
 				/**
@@ -3812,7 +3879,7 @@ PANOLENS.StereographicShader = {
 			}
 
 			// For mobile silent autoplay
-			if ( scope.isIOS ) {
+			if ( scope.isMobile ) {
 
 				if ( scope.videoElement.autoplay && scope.videoElement.muted ) {
 
@@ -3836,10 +3903,11 @@ PANOLENS.StereographicShader = {
 					 */
 					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
 
-
 				}
 				
 			}
+
+			scope.onLoad();
 		};
 
 		/**
@@ -4031,6 +4099,34 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.resumeVideoProgress = function () {
 
+		if ( this.videoElement.autoplay && !this.isMobile ) {
+
+			this.playVideo();
+
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'updateVideoPlayButton'
+			 * @property {boolean} data - Pause video or not
+			 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
+			 */
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+
+		} else {
+
+			this.pauseVideo();
+
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'updateVideoPlayButton'
+			 * @property {boolean} data - Pause video or not
+			 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
+			 */
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
+
+		}
+
 		this.setVideoCurrentTime( { percentage: this.videoProgress } );
 
 	};
@@ -4090,10 +4186,30 @@ PANOLENS.StereographicShader = {
 
 	/**
 	 * Returns the video element
-	 * */
+	 */
 	PANOLENS.VideoPanorama.prototype.getVideoElement = function () {
+
 		return this.videoRenderObject.video;
-	}
+
+	};
+
+	/**
+	 * Dispose video panorama
+	 */
+	PANOLENS.VideoPanorama.prototype.dispose = function () {
+
+		this.resetVideo();
+		this.pauseVideo();
+		
+		this.removeEventListener( 'leave', this.pauseVideo.bind( this ) );
+		this.removeEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
+		this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
+		this.removeEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
+
+		PANOLENS.Panorama.prototype.dispose.call( this );
+
+	};
+
 })();;(function(){
 
 	'use strict';
@@ -4583,7 +4699,6 @@ PANOLENS.StereographicShader = {
 			this.material.map = this.idleTexture;
 		} else if ( status === this.DWELLING ) {
 			this.scale.copy( this.scaleDwell );
-			console.log('asd');
 			this.material.map = this.dwellTexture;
 		}
 
@@ -5373,6 +5488,7 @@ PANOLENS.StereographicShader = {
 		bar.style.background = '-ms-' + gradientStyle;
 		bar.style.background = gradientStyle;
 		bar.style.transition = this.DEFAULT_TRANSITION;
+		bar.style.pointerEvents = 'none';
 		bar.isHidden = false;
 		bar.toggle = function () {
 			bar.isHidden = !bar.isHidden;
@@ -6024,6 +6140,7 @@ PANOLENS.StereographicShader = {
 		item.style.padding = '10px';
 		item.style.textDecoration = 'none';
 		item.style.cursor = 'pointer';
+		item.style.pointerEvents = 'auto';
 		item.style.transition = this.DEFAULT_TRANSITION;
 
 		item.slide = function ( right ) {
@@ -6286,6 +6403,7 @@ PANOLENS.StereographicShader = {
   		style.borderRadius = '2px';
 		style.overflow = 'hidden';
 		style.willChange = 'width, height, opacity';
+		style.pointerEvents = 'auto';
 		style.transition = this.DEFAULT_TRANSITION;
 
 		menu.visible = false;
@@ -6430,6 +6548,7 @@ PANOLENS.StereographicShader = {
 		item.style.MozUserSelect = 
 		item.style.userSelect = 'none';
 		item.style.position = 'relative';
+		item.style.pointerEvents = 'auto';
 
 		// White glow on icon
 		item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
@@ -6504,7 +6623,7 @@ PANOLENS.StereographicShader = {
 	/**
 	 * Information spot attached to panorama
 	 * @constructor
-	 * @param {number} [scale=1] - Infospot scale
+	 * @param {number} [scale=300] - Infospot scale
 	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
 	 * @param {boolean} [animated=true] - Enable default hover animation
 	 */
@@ -6512,7 +6631,7 @@ PANOLENS.StereographicShader = {
 		
 		var scope = this, ratio, startScale, endScale, duration;
 
-		scale = scale || 1;
+		scale = scale || 300;
 		imageSrc = imageSrc || PANOLENS.DataImage.Info;
 		duration = 500;
 
@@ -7234,6 +7353,7 @@ PANOLENS.StereographicShader = {
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.renderer.setClearColor( 0x000000, 1 );
+		this.renderer.sortObjects = false;
 
 		// Append Renderer Element to container
 		this.renderer.domElement.classList.add( 'panolens-canvas' );
@@ -7248,6 +7368,7 @@ PANOLENS.StereographicShader = {
 		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera, this.container );
 		this.DeviceOrientationControls.name = 'device-orientation';
 		this.DeviceOrientationControls.enabled = false;
+		this.camera.position.z = 1;
 
 		// Register change event if passiveRenering
 		if ( this.options.passiveRendering ) {
@@ -7297,8 +7418,7 @@ PANOLENS.StereographicShader = {
 
 		// Register event if reticle is enabled, otherwise defaults to mouse
 		if ( this.options.enableReticle ) {
-			this.reticle.show();
-			this.registerReticleEvent();
+			this.enableReticleControl();
 		} else {
 			this.registerMouseAndTouchEvents();
 		}
@@ -7353,6 +7473,13 @@ PANOLENS.StereographicShader = {
 
 			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
 			object.dispatchEvent( { type: 'panolens-passive-rendering', enabled: this.options.passiveRendering } );
+
+		}
+
+		if ( object instanceof PANOLENS.VideoPanorama && this.options.passiveRendering ) {
+
+			console.warn( "Passive rendering does not support VideoPanorama yet");
+			return;
 
 		}
 
@@ -7421,13 +7548,21 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.Viewer.prototype.setPanorama = function ( pano, leavingDisabled, enteringDisabled ) {
 
+		var scope = this, leavingPanorama = this.panorama;
+
 		if ( pano.type === 'panorama' ) {
-			
+
 			// Clear exisiting infospot
 			this.hideInfospot();
 
-			// Reset Current Panorama
-			this.panorama && this.panorama.onLeave( leavingDisabled );
+			var afterEnterComplete = function () {
+
+				leavingPanorama && leavingPanorama.onLeave( leavingDisabled );
+				pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
+
+			};
+
+			pano.addEventListener( 'enter-fade-start', afterEnterComplete );
 
 			// Assign and enter panorama
 			(this.panorama = pano).onEnter( enteringDisabled );
@@ -7817,7 +7952,7 @@ PANOLENS.StereographicShader = {
 		var scope = this;
 
 		// Set camera control on every panorama
-		pano.addEventListener( 'enter', this.setCameraControl.bind( this ) );
+		pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
 
 		// Start panorama leaves
 		pano.addEventListener( 'leave', function () {
@@ -7828,7 +7963,7 @@ PANOLENS.StereographicShader = {
 		} );
 
 		// Render view once enter completes
-		pano.addEventListener( 'enter-complete', function(){
+		pano.addEventListener( 'enter-fade-complete', function(){
 			if ( scope.options.passiveRendering ) {
 				scope.control.update( true );
 				scope.render();
@@ -7846,8 +7981,16 @@ PANOLENS.StereographicShader = {
 		// Show and hide widget event only when it's PANOLENS.VideoPanorama
 		if ( pano instanceof PANOLENS.VideoPanorama ) {
 
-			pano.addEventListener( 'enter', this.showVideoWidget.bind( this ) );
-			pano.addEventListener( 'leave', this.hideVideoWidget.bind( this ) );
+			pano.addEventListener( 'enter-fade-start', this.showVideoWidget.bind( this ) );
+			pano.addEventListener( 'leave', function () {
+
+				if ( !(this.panorama instanceof PANOLENS.VideoPanorama) ) {
+
+					this.hideVideoWidget.call( this );
+
+				}
+				
+			}.bind( this ) );
 
 		}
 
@@ -7858,8 +8001,7 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.Viewer.prototype.setCameraControl = function () {
 
-		this.camera.position.copy( this.panorama.position );
-		this.camera.position.z += 1;
+		this.panorama.rotation.y = this.camera.rotation.y;
 		this.OrbitControls.target.copy( this.panorama.position );
 
 	};
@@ -8818,6 +8960,25 @@ PANOLENS.StereographicShader = {
 	};
 
 	/**
+	 * On panorama dispose
+	 */
+	PANOLENS.Viewer.prototype.onPanoramaDispose = function ( panorama ) {
+
+		if ( panorama instanceof PANOLENS.VideoPanorama ) {
+
+			this.hideVideoWidget();
+
+		}
+
+		if ( panorama === this.panorama ) {
+
+			this.panorama = null;
+
+		}
+
+	};
+
+	/**
 	 * Load ajax call
 	 * @param {string} url - URL to be requested
 	 * @param {function} [callback] - Callback after request completes
@@ -8897,6 +9058,28 @@ PANOLENS.StereographicShader = {
 		}
 
 		this.loadAsyncRequest( PANOLENS.DataImage.ViewIndicator, loadViewIndicator );
+
+	};
+
+	/**
+	 * Append custom control item to existing control bar
+	 * @param {object} [option={}] - Style object to overwirte default element style. It takes 'style', 'onTap' and 'group' properties.
+	 */
+	PANOLENS.Viewer.prototype.appendControlItem = function ( option ) {
+
+		var item = this.widget.createCustomItem( option );		
+
+		if ( option.group === 'video' ) {
+
+			this.widget.videoElement.appendChild( item );
+
+		} else {
+
+			this.widget.barElement.appendChild( item );
+
+		}
+
+		return item;
 
 	};
 
