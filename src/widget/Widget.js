@@ -61,6 +61,7 @@
 		bar.style.background = '-ms-' + gradientStyle;
 		bar.style.background = gradientStyle;
 		bar.style.transition = this.DEFAULT_TRANSITION;
+		bar.style.pointerEvents = 'none';
 		bar.isHidden = false;
 		bar.toggle = function () {
 			bar.isHidden = !bar.isHidden;
@@ -712,6 +713,7 @@
 		item.style.padding = '10px';
 		item.style.textDecoration = 'none';
 		item.style.cursor = 'pointer';
+		item.style.pointerEvents = 'auto';
 		item.style.transition = this.DEFAULT_TRANSITION;
 
 		item.slide = function ( right ) {
@@ -974,6 +976,7 @@
   		style.borderRadius = '2px';
 		style.overflow = 'hidden';
 		style.willChange = 'width, height, opacity';
+		style.pointerEvents = 'auto';
 		style.transition = this.DEFAULT_TRANSITION;
 
 		menu.visible = false;
@@ -1118,6 +1121,7 @@
 		item.style.MozUserSelect = 
 		item.style.userSelect = 'none';
 		item.style.position = 'relative';
+		item.style.pointerEvents = 'auto';
 
 		// White glow on icon
 		item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
