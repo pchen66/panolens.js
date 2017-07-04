@@ -50,6 +50,8 @@
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 		this.addEventListener( 'click', this.onClick.bind( this ) );
 
+		this.setupTransitions();
+
 	}
 
 	PANOLENS.Panorama.prototype = Object.create( THREE.Mesh.prototype );
@@ -421,40 +423,82 @@
 
 	};
 
+	PANOLENS.Panorama.prototype.setupTransitions = function () {
+
+		this.fadeInAnimation = new TWEEN.Tween( this.material )
+			.easing( TWEEN.Easing.Quartic.Out )
+			.onStart( function () {
+
+				this.visible = true;
+				this.material.visible = true;
+
+				/**
+				 * Enter panorama fade in start event
+				 * @event PANOLENS.Panorama#enter-fade-start
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'enter-fade-start' } );
+
+			}.bind( this ) );
+
+		this.fadeOutAnimation = new TWEEN.Tween( this.material )
+			.easing( TWEEN.Easing.Quartic.Out )
+			.onComplete( function () {
+
+				this.visible = false;
+				this.material.visible = true;
+
+				/**
+				 * Leave panorama complete event
+				 * @event PANOLENS.Panorama#leave-complete
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'leave-complete' } );
+
+			}.bind( this ) );
+
+		this.enterTransition = new TWEEN.Tween( this )
+			.easing( TWEEN.Easing.Quartic.Out )
+			.onComplete( function () {
+
+				/**
+				 * Enter panorama and animation complete event
+				 * @event PANOLENS.Panorama#enter-animation-complete
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'enter-animation-complete' } );
+
+			}.bind ( this ) )
+			.start();
+
+		this.leaveTransition = new TWEEN.Tween( this )
+			.easing( TWEEN.Easing.Quartic.Out );
+
+	};
+
 	/**
 	 * Start fading in animation
 	 * @fires PANOLENS.Panorama#enter-complete
 	 */
-	PANOLENS.Panorama.prototype.fadeIn = function () {
+	PANOLENS.Panorama.prototype.fadeIn = function ( duration ) {
 
-		new TWEEN.Tween( this.material )
-		.to( { opacity: 1 }, this.animationDuration )
-		.easing( TWEEN.Easing.Quartic.Out )
-		.onStart( function () {
+		duration = duration >= 0 ? duration : this.animationDuration;
 
-			this.visible = true;
-			this.material.visible = true;
-
-			/**
-			 * Enter panorama fade in start event
-			 * @event PANOLENS.Panorama#enter-fade-start
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'enter-fade-start' } );
-
-		}.bind( this ) )
+		this.fadeOutAnimation.stop();
+		this.fadeInAnimation
+		.to( { opacity: 1 }, duration )
 		.onComplete( function () {
 
-			this.toggleInfospotVisibility( true, this.animationDuration / 2 );
+				this.toggleInfospotVisibility( true, duration / 2 );
 
-			/**
-			 * Enter panorama fade complete event
-			 * @event PANOLENS.Panorama#enter-fade-complete
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'enter-fade-complete' } );
+				/**
+				 * Enter panorama fade complete event
+				 * @event PANOLENS.Panorama#enter-fade-complete
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'enter-fade-complete' } );			
 
-		}.bind( this ) )
+			}.bind( this ) )
 		.start();
 
 	};
@@ -462,25 +506,12 @@
 	/**
 	 * Start fading out animation
 	 */
-	PANOLENS.Panorama.prototype.fadeOut = function () {
+	PANOLENS.Panorama.prototype.fadeOut = function ( duration ) {
 
-		new TWEEN.Tween( this.material )
-		.to( { opacity: 0 }, this.animationDuration )
-		.easing( TWEEN.Easing.Quartic.Out )
-		.onComplete(function(){
+		duration = duration >= 0 ? duration : this.animationDuration;
 
-			this.visible = false;
-			this.material.visible = true;
-
-			/**
-			 * Leave panorama complete event
-			 * @event PANOLENS.Panorama#leave-complete
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'leave-complete' } );
-
-		}.bind( this ))
-		.start();
+		this.fadeInAnimation.stop();
+		this.fadeOutAnimation.to( { opacity: 0 }, duration ).start();
 
 	};
 
@@ -488,46 +519,14 @@
 	 * This will be called when entering a panorama 
 	 * @fires PANOLENS.Panorama#enter
 	 * @fires PANOLENS.Panorama#enter-animation-start
-	 * @param {boolean} [disabled=undefined] - Whether to disable default animation
 	 */
-	PANOLENS.Panorama.prototype.onEnter = function ( disabled ) {
+	PANOLENS.Panorama.prototype.onEnter = function () {
 
-		if ( disabled ) {
+		var duration = this.animationDuration;
 
-			/**
-			 * Enter panorama and animation starting event
-			 * @event PANOLENS.Panorama#enter-animation-start
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'enter-animation-start' } );
-
-			if ( this.loaded ) {
-
-				this.material.opacity = 1;
-				this.toggleInfospotVisibility( true, 0 );
-
-				/**
-				 * Enter panorama complete event
-				 * @event PANOLENS.Panorama#enter-complete
-				 * @type {object} 
-				 */
-				this.dispatchEvent( { type: 'enter-complete' } );
-
-
-			} else {
-
-				this.load();
-
-			}
-
-			this.visible = true;
-			this.material.visible = true;
-
-		} else {
-
-			new TWEEN.Tween( this )
-			.to( {}, this.animationDuration )
-			.easing( TWEEN.Easing.Quartic.Out )
+		this.leaveTransition.stop();
+		this.enterTransition
+			.to( {}, duration )
 			.onStart( function () {
 
 				/**
@@ -539,7 +538,7 @@
 				
 				if ( this.loaded ) {
 
-					this.fadeIn();
+					this.fadeIn( duration );
 
 				} else {
 
@@ -547,20 +546,8 @@
 
 				}
 				
-			} )
-			.onComplete( function () {
-
-				/**
-				 * Enter panorama and animation complete event
-				 * @event PANOLENS.Panorama#enter-animation-complete
-				 * @type {object} 
-				 */
-				this.dispatchEvent( { type: 'enter-animation-complete' } );
-
-			} )
+			}.bind( this ) )
 			.start();
-
-		}
 
 		/**
 		 * Enter panorama event
@@ -574,36 +561,14 @@
 	/**
 	 * This will be called when leaving a panorama
 	 * @fires PANOLENS.Panorama#leave
-	 * @param {boolean} [disabled=undefined] - Whether to disable default animation
 	 */
-	PANOLENS.Panorama.prototype.onLeave = function ( disabled ) {
+	PANOLENS.Panorama.prototype.onLeave = function () {
 
-		if ( disabled ) {
+		var duration = this.animationDuration;
 
-			/**
-			 * Leave panorama and animation starting event
-			 * @event PANOLENS.Panorama#leave-animation-start
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'leave-animation-start' } );
-
-			this.material.opacity = 0;
-			this.toggleInfospotVisibility( false, 0 );
-			this.visible = false;
-			this.material.visible = true;
-
-			/**
-			 * Leave panorama complete event
-			 * @event PANOLENS.Panorama#leave-complete
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'leave-complete' } );
-
-		} else {
-
-			new TWEEN.Tween( this )
-			.to( {}, this.animationDuration )
-			.easing( TWEEN.Easing.Quartic.Out )
+		this.enterTransition.stop();
+		this.leaveTransition
+			.to( {}, duration )
 			.onStart( function () {
 
 				/**
@@ -613,13 +578,11 @@
 				 */
 				this.dispatchEvent( { type: 'leave-animation-start' } );
 
-				this.fadeOut();
+				this.fadeOut( duration );
 				this.toggleInfospotVisibility( false );
 
-			} )
+			}.bind( this ) )
 			.start();
-
-		}
 
 		/**
 		 * Leave panorama event

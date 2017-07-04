@@ -337,21 +337,19 @@
 	/**
 	 * Set a panorama to be the current one
 	 * @param {PANOLENS.Panorama} pano - Panorama to be set
-	 * @param {boolean} [leavingDisabled=undefined] - Whether to disable default leaving transition
-	 * @param {boolean} [enteringDisabled=undefined] - Whether to disable default entering transition
 	 */
-	PANOLENS.Viewer.prototype.setPanorama = function ( pano, leavingDisabled, enteringDisabled ) {
+	PANOLENS.Viewer.prototype.setPanorama = function ( pano ) {
 
 		var scope = this, leavingPanorama = this.panorama;
 
-		if ( pano.type === 'panorama' ) {
+		if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
 
 			// Clear exisiting infospot
 			this.hideInfospot();
 
 			var afterEnterComplete = function () {
 
-				leavingPanorama && leavingPanorama.onLeave( leavingDisabled );
+				leavingPanorama && leavingPanorama.onLeave();
 				pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
 
 			};
@@ -359,7 +357,7 @@
 			pano.addEventListener( 'enter-fade-start', afterEnterComplete );
 
 			// Assign and enter panorama
-			(this.panorama = pano).onEnter( enteringDisabled );
+			(this.panorama = pano).onEnter();
 			
 		}
 
