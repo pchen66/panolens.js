@@ -478,7 +478,7 @@
 
 	/**
 	 * Start fading in animation
-	 * @fires PANOLENS.Panorama#enter-complete
+	 * @fires PANOLENS.Panorama#enter-fade-complete
 	 */
 	PANOLENS.Panorama.prototype.fadeIn = function ( duration ) {
 

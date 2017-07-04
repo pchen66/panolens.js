@@ -15,7 +15,7 @@
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
 //    Pan - right mouse, or arrow keys / touch: three finter swipe
 
-THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
+THREE.OrbitControls = function ( object, domElement ) {
 
 	this.object = object;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
@@ -25,8 +25,6 @@ THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 	// Set to false to disable this control
 	this.enabled = true;
-
-	this.passiveUpdate = passiveUpdate;
 
 	// "target" sets the location of focus, where the control orbits around
 	// and where it pans with respect to.
@@ -383,19 +381,6 @@ THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 		}
 
-		// Passive update with autonomous animation frame
-		if ( ignoreUpdate !== true && this.passiveUpdate ) {
-
-			window.cancelAnimationFrame( this.frameId );
-			this.frameId = window.requestAnimationFrame( this.update.bind( this ) );
-
-			if( state === STATE.NONE 
-				&& Math.abs(momentumLeft) < MEPS 
-				&& Math.abs(momentumUp) < MEPS ) {
-				window.cancelAnimationFrame( this.frameId );
-			}
-		}
-
 	};
 
 
@@ -542,7 +527,7 @@ THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 		}
 
-		if ( state !== STATE.NONE && !this.passiveUpdate ) scope.update();
+		if ( state !== STATE.NONE ) scope.update();
 
 	}
 

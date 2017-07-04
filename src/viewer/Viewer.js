@@ -21,7 +21,6 @@
 	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
-	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
 	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
 	 * @param {number}  [options.indicatorSize=30] - Size of View Indicator
 	 * @param {boolean} [options.outputInfospotPosition=false] - Whether and where to output infospot position. Could be 'console' or 'overlay'. Defaults to false
@@ -51,7 +50,6 @@
 		options.enableReticle = options.enableReticle || false;
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
-		options.passiveRendering = options.passiveRendering || false;
 		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
 		options.indicatorSize = options.indicatorSize || 30;
 		options.outputInfospotPosition = options.outputInfospotPosition !== undefined ? options.outputInfospotPosition : false;
@@ -155,7 +153,7 @@
 		this.container.appendChild( this.renderer.domElement );
 
 		// Camera Controls
-		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container, this.options.passiveRendering );
+		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container );
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
@@ -167,8 +165,7 @@
 		// Register change event if passiveRenering
 		if ( this.options.passiveRendering ) {
 
-			this.OrbitControls.addEventListener( 'change', this.onChange.bind( this ) );
-			this.DeviceOrientationControls.addEventListener( 'change', this.onChange.bind( this ) );
+			console.warn( 'passiveRendering is now deprecated' );
 
 		}
 
@@ -266,14 +263,6 @@
 		if ( object instanceof PANOLENS.Panorama && object.dispatchEvent ) {
 
 			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
-			object.dispatchEvent( { type: 'panolens-passive-rendering', enabled: this.options.passiveRendering } );
-
-		}
-
-		if ( object instanceof PANOLENS.VideoPanorama && this.options.passiveRendering ) {
-
-			console.warn( "Passive rendering does not support VideoPanorama yet");
-			return;
 
 		}
 
@@ -372,8 +361,6 @@
 		if ( event.method && this[ event.method ] ) {
 
 			this[ event.method ]( event.data );
-
-			this.options.passiveRendering && !event.ignoreUpdate && this.onChange();
 
 		}
 
@@ -605,25 +592,6 @@
 			 */
 			this.panorama.dispatchEvent( { type: 'video-toggle', pause: pause } );
 
-			if ( this.options.passiveRendering ) {
-
-				if ( !pause ) {
-
-					var loop = function (){
-						this.requestAnimationId = window.requestAnimationFrame( loop.bind( this ) );
-						this.onChange();
-					}.bind(this);
-
-					loop();
-
-				} else {
-
-					window.cancelAnimationFrame( this.requestAnimationId );
-
-				}
-
-			}
-
 		}
 
 	};
@@ -746,30 +714,6 @@
 		// Set camera control on every panorama
 		pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
 
-		// Start panorama leaves
-		pano.addEventListener( 'leave', function () {
-			if ( scope.options.passiveRendering ) { 
-				window.cancelAnimationFrame( scope.requestAnimationId );
-				scope.animate(); 
-			}
-		} );
-
-		// Render view once enter completes
-		pano.addEventListener( 'enter-fade-complete', function(){
-			if ( scope.options.passiveRendering ) {
-				scope.control.update( true );
-				scope.render();
-			}
-		} );
-
-		// Stop animation when infospot finally shows up
-		pano.addEventListener( 'infospot-animation-complete', function( event ) {
-			if ( scope.options.passiveRendering && event.visible ) {
-				window.cancelAnimationFrame( scope.requestAnimationId );
-				scope.render();
-			}
-		} );
-
 		// Show and hide widget event only when it's PANOLENS.VideoPanorama
 		if ( pano instanceof PANOLENS.VideoPanorama ) {
 
@@ -793,7 +737,6 @@
 	 */
 	PANOLENS.Viewer.prototype.setCameraControl = function () {
 
-		this.panorama.rotation.y = this.camera.rotation.y;
 		this.OrbitControls.target.copy( this.panorama.position );
 
 	};
@@ -1135,9 +1078,6 @@
 			this.updateReticleEvent();
 
 		}
-
-		// Passive render after window size changes
-		this.options.passiveRendering && this.render();
 
 		/**
 		 * Window resizing event
@@ -1551,7 +1491,7 @@
 
 		this.updateCallbacks.forEach( function( callback ){ callback(); } );
 
-		!this.options.passiveRendering && this.control.update();
+		this.control.update();
 
 		this.scene.traverse( function( child ){
 			if ( child instanceof PANOLENS.Infospot 
@@ -1593,9 +1533,7 @@
 
 		this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
-		this.update();
-
-		!this.options.passiveRendering && this.render();
+		this.onChange();
 
 	};
 

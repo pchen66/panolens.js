@@ -83,9 +83,8 @@
 				 * @type {object}
 				 * @property {string} method - 'updateVideoPlayButton'
 				 * @property {boolean} data - Pause video or not
-				 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 				 */
-				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
 			}
 
@@ -99,9 +98,8 @@
 					 * @type {object}
 					 * @property {string} method - 'updateVideoPlayButton'
 					 * @property {boolean} data - Pause video or not
-					 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 					 */
-					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
 				} else {
 
@@ -110,9 +108,8 @@
 					 * @type {object}
 					 * @property {string} method - 'updateVideoPlayButton'
 					 * @property {boolean} data - Pause video or not
-					 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 					 */
-					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
+					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
 				}
 				
@@ -166,7 +163,7 @@
 			if ( !scope.options.loop ) {
 
 				scope.resetVideo();
-				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
 			}
 
@@ -319,9 +316,8 @@
 			 * @type {object}
 			 * @property {string} method - 'updateVideoPlayButton'
 			 * @property {boolean} data - Pause video or not
-			 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 			 */
-			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
 		} else {
 
@@ -332,9 +328,8 @@
 			 * @type {object}
 			 * @property {string} method - 'updateVideoPlayButton'
 			 * @property {boolean} data - Pause video or not
-			 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 			 */
-			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
 		}
 
