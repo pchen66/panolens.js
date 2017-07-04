@@ -50,10 +50,9 @@ All attributes are optional
 		enableReticle: false,			// Enable reticle for mouseless interaction
 		dwellTime: 1500,			// Dwell time for reticle selection in millisecond
 		autoReticleSelect: true,		// Auto select a clickable target after dwellTime
-		passiveRendering: false,		// Render only when control triggered by user input 
 		viewIndicator: false,			// Adds an angle view indicator in upper left corner
 		indicatorSize: 30,			// Size of View Indicator
-		outputInfospotPosition: false		// Whether and where to output infospot position. Could be 'console' or 'overlay'
+		output: 'console'		// Whether and where to output infospot position. Could be 'console' or 'overlay'
 	});
 </script>
 ```

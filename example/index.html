@@ -88,7 +88,7 @@
       var infospot1, infospot2, infospot3;
 
       // Main panorama
-      viewer_main = new PANOLENS.Viewer({ outputInfospotPosition: 'console', viewIndicator: true });
+      viewer_main = new PANOLENS.Viewer({ output: 'console', viewIndicator: true });
 
       panorama_main_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: true });
 
@@ -113,7 +113,7 @@
       panorama_main_image.add( infospot2 );
 
       infospot1 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
-      infospot1.position.set( 4548.66, 960.40, -1813.03 );
+      infospot1.position.set( 3566.39, 1152.86, -3303.91 );
       infospot1.addHoverText( 'Mountain Tip' );
       infospot1.addEventListener( 'click', function(){
         viewer_main.tweenControlCenter( cube.position );
@@ -129,7 +129,7 @@
       viewer_main.enableEffect( PANOLENS.Modes.NORMAL );
 
       // Side panorama
-      viewer_side = new PANOLENS.Viewer({ outputInfospotPosition: 'overlay', container: document.querySelector( '#panolens-separate-container' ) });
+      viewer_side = new PANOLENS.Viewer({ output: 'overlay', container: document.querySelector( '#panolens-separate-container' ) });
 
       panorama_side_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/sunset.jpg' );
 

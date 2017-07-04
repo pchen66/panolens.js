@@ -23,7 +23,7 @@
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
 	 * @param {number}  [options.indicatorSize=30] - Size of View Indicator
-	 * @param {boolean} [options.outputInfospotPosition=false] - Whether and where to output infospot position. Could be 'console' or 'overlay'. Defaults to false
+	 * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -52,7 +52,7 @@
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
 		options.indicatorSize = options.indicatorSize || 30;
-		options.outputInfospotPosition = options.outputInfospotPosition !== undefined ? options.outputInfospotPosition : false;
+		options.output = options.output ? options.output : 'none';
 
 		this.options = options;
 
@@ -214,7 +214,7 @@
 			this.registerMouseAndTouchEvents();
 		}
 
-		if ( this.options.outputInfospotPosition === 'overlay' ) {
+		if ( this.options.output === 'overlay' ) {
 			this.addOutputElement();
 		}
 
@@ -1118,7 +1118,7 @@
 
 		intersects = this.raycaster.intersectObject( this.panorama, true );
 
-		if ( intersects.length > 0 && intersects[0].object instanceof PANOLENS.Panorama ) {
+		if ( intersects.length > 0 ) {
 
 			point = intersects[0].point;
 			panoramaWorldPosition = this.panorama.getWorldPosition();
@@ -1129,7 +1129,7 @@
 				(point.z - panoramaWorldPosition.z).toFixed(2)
 			);
 
-			switch ( this.options.outputInfospotPosition ) {
+			switch ( this.options.output ) {
 
 				case 'console':
 					console.info( outputPosition.x + ', ' + outputPosition.y + ', ' + outputPosition.z );
@@ -1465,7 +1465,7 @@
 
 	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
 
-		if ( this.options.outputInfospotPosition && event.key === 'Control' ) {
+		if ( this.options.output && this.options.output !== 'none' && event.key === 'Control' ) {
 
 			this.OUTPUT_INFOSPOT = true;
 
