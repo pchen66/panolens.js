@@ -907,7 +907,7 @@ TWEEN.Interpolation = {
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
 //    Pan - right mouse, or arrow keys / touch: three finter swipe
 
-THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
+THREE.OrbitControls = function ( object, domElement ) {
 
 	this.object = object;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
@@ -917,8 +917,6 @@ THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 	// Set to false to disable this control
 	this.enabled = true;
-
-	this.passiveUpdate = passiveUpdate;
 
 	// "target" sets the location of focus, where the control orbits around
 	// and where it pans with respect to.
@@ -1275,19 +1273,6 @@ THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 		}
 
-		// Passive update with autonomous animation frame
-		if ( ignoreUpdate !== true && this.passiveUpdate ) {
-
-			window.cancelAnimationFrame( this.frameId );
-			this.frameId = window.requestAnimationFrame( this.update.bind( this ) );
-
-			if( state === STATE.NONE 
-				&& Math.abs(momentumLeft) < MEPS 
-				&& Math.abs(momentumUp) < MEPS ) {
-				window.cancelAnimationFrame( this.frameId );
-			}
-		}
-
 	};
 
 
@@ -1434,7 +1419,7 @@ THREE.OrbitControls = function ( object, domElement, passiveUpdate ) {
 
 		}
 
-		if ( state !== STATE.NONE && !this.passiveUpdate ) scope.update();
+		if ( state !== STATE.NONE ) scope.update();
 
 	}
 
@@ -2858,6 +2843,8 @@ PANOLENS.StereographicShader = {
 		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
 		this.addEventListener( 'click', this.onClick.bind( this ) );
 
+		this.setupTransitions();
+
 	}
 
 	PANOLENS.Panorama.prototype = Object.create( THREE.Mesh.prototype );
@@ -3229,40 +3216,82 @@ PANOLENS.StereographicShader = {
 
 	};
 
+	PANOLENS.Panorama.prototype.setupTransitions = function () {
+
+		this.fadeInAnimation = new TWEEN.Tween( this.material )
+			.easing( TWEEN.Easing.Quartic.Out )
+			.onStart( function () {
+
+				this.visible = true;
+				this.material.visible = true;
+
+				/**
+				 * Enter panorama fade in start event
+				 * @event PANOLENS.Panorama#enter-fade-start
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'enter-fade-start' } );
+
+			}.bind( this ) );
+
+		this.fadeOutAnimation = new TWEEN.Tween( this.material )
+			.easing( TWEEN.Easing.Quartic.Out )
+			.onComplete( function () {
+
+				this.visible = false;
+				this.material.visible = true;
+
+				/**
+				 * Leave panorama complete event
+				 * @event PANOLENS.Panorama#leave-complete
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'leave-complete' } );
+
+			}.bind( this ) );
+
+		this.enterTransition = new TWEEN.Tween( this )
+			.easing( TWEEN.Easing.Quartic.Out )
+			.onComplete( function () {
+
+				/**
+				 * Enter panorama and animation complete event
+				 * @event PANOLENS.Panorama#enter-animation-complete
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'enter-animation-complete' } );
+
+			}.bind ( this ) )
+			.start();
+
+		this.leaveTransition = new TWEEN.Tween( this )
+			.easing( TWEEN.Easing.Quartic.Out );
+
+	};
+
 	/**
 	 * Start fading in animation
-	 * @fires PANOLENS.Panorama#enter-complete
+	 * @fires PANOLENS.Panorama#enter-fade-complete
 	 */
-	PANOLENS.Panorama.prototype.fadeIn = function () {
+	PANOLENS.Panorama.prototype.fadeIn = function ( duration ) {
 
-		new TWEEN.Tween( this.material )
-		.to( { opacity: 1 }, this.animationDuration )
-		.easing( TWEEN.Easing.Quartic.Out )
-		.onStart( function () {
+		duration = duration >= 0 ? duration : this.animationDuration;
 
-			this.visible = true;
-			this.material.visible = true;
-
-			/**
-			 * Enter panorama fade in start event
-			 * @event PANOLENS.Panorama#enter-fade-start
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'enter-fade-start' } );
-
-		}.bind( this ) )
+		this.fadeOutAnimation.stop();
+		this.fadeInAnimation
+		.to( { opacity: 1 }, duration )
 		.onComplete( function () {
 
-			this.toggleInfospotVisibility( true, this.animationDuration / 2 );
+				this.toggleInfospotVisibility( true, duration / 2 );
 
-			/**
-			 * Enter panorama fade complete event
-			 * @event PANOLENS.Panorama#enter-fade-complete
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'enter-fade-complete' } );
+				/**
+				 * Enter panorama fade complete event
+				 * @event PANOLENS.Panorama#enter-fade-complete
+				 * @type {object} 
+				 */
+				this.dispatchEvent( { type: 'enter-fade-complete' } );			
 
-		}.bind( this ) )
+			}.bind( this ) )
 		.start();
 
 	};
@@ -3270,25 +3299,12 @@ PANOLENS.StereographicShader = {
 	/**
 	 * Start fading out animation
 	 */
-	PANOLENS.Panorama.prototype.fadeOut = function () {
+	PANOLENS.Panorama.prototype.fadeOut = function ( duration ) {
 
-		new TWEEN.Tween( this.material )
-		.to( { opacity: 0 }, this.animationDuration )
-		.easing( TWEEN.Easing.Quartic.Out )
-		.onComplete(function(){
+		duration = duration >= 0 ? duration : this.animationDuration;
 
-			this.visible = false;
-			this.material.visible = true;
-
-			/**
-			 * Leave panorama complete event
-			 * @event PANOLENS.Panorama#leave-complete
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'leave-complete' } );
-
-		}.bind( this ))
-		.start();
+		this.fadeInAnimation.stop();
+		this.fadeOutAnimation.to( { opacity: 0 }, duration ).start();
 
 	};
 
@@ -3296,46 +3312,14 @@ PANOLENS.StereographicShader = {
 	 * This will be called when entering a panorama 
 	 * @fires PANOLENS.Panorama#enter
 	 * @fires PANOLENS.Panorama#enter-animation-start
-	 * @param {boolean} [disabled=undefined] - Whether to disable default animation
 	 */
-	PANOLENS.Panorama.prototype.onEnter = function ( disabled ) {
+	PANOLENS.Panorama.prototype.onEnter = function () {
 
-		if ( disabled ) {
+		var duration = this.animationDuration;
 
-			/**
-			 * Enter panorama and animation starting event
-			 * @event PANOLENS.Panorama#enter-animation-start
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'enter-animation-start' } );
-
-			if ( this.loaded ) {
-
-				this.material.opacity = 1;
-				this.toggleInfospotVisibility( true, 0 );
-
-				/**
-				 * Enter panorama complete event
-				 * @event PANOLENS.Panorama#enter-complete
-				 * @type {object} 
-				 */
-				this.dispatchEvent( { type: 'enter-complete' } );
-
-
-			} else {
-
-				this.load();
-
-			}
-
-			this.visible = true;
-			this.material.visible = true;
-
-		} else {
-
-			new TWEEN.Tween( this )
-			.to( {}, this.animationDuration )
-			.easing( TWEEN.Easing.Quartic.Out )
+		this.leaveTransition.stop();
+		this.enterTransition
+			.to( {}, duration )
 			.onStart( function () {
 
 				/**
@@ -3347,7 +3331,7 @@ PANOLENS.StereographicShader = {
 				
 				if ( this.loaded ) {
 
-					this.fadeIn();
+					this.fadeIn( duration );
 
 				} else {
 
@@ -3355,20 +3339,8 @@ PANOLENS.StereographicShader = {
 
 				}
 				
-			} )
-			.onComplete( function () {
-
-				/**
-				 * Enter panorama and animation complete event
-				 * @event PANOLENS.Panorama#enter-animation-complete
-				 * @type {object} 
-				 */
-				this.dispatchEvent( { type: 'enter-animation-complete' } );
-
-			} )
+			}.bind( this ) )
 			.start();
-
-		}
 
 		/**
 		 * Enter panorama event
@@ -3382,36 +3354,14 @@ PANOLENS.StereographicShader = {
 	/**
 	 * This will be called when leaving a panorama
 	 * @fires PANOLENS.Panorama#leave
-	 * @param {boolean} [disabled=undefined] - Whether to disable default animation
 	 */
-	PANOLENS.Panorama.prototype.onLeave = function ( disabled ) {
+	PANOLENS.Panorama.prototype.onLeave = function () {
 
-		if ( disabled ) {
+		var duration = this.animationDuration;
 
-			/**
-			 * Leave panorama and animation starting event
-			 * @event PANOLENS.Panorama#leave-animation-start
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'leave-animation-start' } );
-
-			this.material.opacity = 0;
-			this.toggleInfospotVisibility( false, 0 );
-			this.visible = false;
-			this.material.visible = true;
-
-			/**
-			 * Leave panorama complete event
-			 * @event PANOLENS.Panorama#leave-complete
-			 * @type {object} 
-			 */
-			this.dispatchEvent( { type: 'leave-complete' } );
-
-		} else {
-
-			new TWEEN.Tween( this )
-			.to( {}, this.animationDuration )
-			.easing( TWEEN.Easing.Quartic.Out )
+		this.enterTransition.stop();
+		this.leaveTransition
+			.to( {}, duration )
 			.onStart( function () {
 
 				/**
@@ -3421,13 +3371,11 @@ PANOLENS.StereographicShader = {
 				 */
 				this.dispatchEvent( { type: 'leave-animation-start' } );
 
-				this.fadeOut();
+				this.fadeOut( duration );
 				this.toggleInfospotVisibility( false );
 
-			} )
+			}.bind( this ) )
 			.start();
-
-		}
 
 		/**
 		 * Leave panorama event
@@ -3872,9 +3820,8 @@ PANOLENS.StereographicShader = {
 				 * @type {object}
 				 * @property {string} method - 'updateVideoPlayButton'
 				 * @property {boolean} data - Pause video or not
-				 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 				 */
-				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
 			}
 
@@ -3888,9 +3835,8 @@ PANOLENS.StereographicShader = {
 					 * @type {object}
 					 * @property {string} method - 'updateVideoPlayButton'
 					 * @property {boolean} data - Pause video or not
-					 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 					 */
-					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
 				} else {
 
@@ -3899,9 +3845,8 @@ PANOLENS.StereographicShader = {
 					 * @type {object}
 					 * @property {string} method - 'updateVideoPlayButton'
 					 * @property {boolean} data - Pause video or not
-					 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 					 */
-					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
+					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
 				}
 				
@@ -3955,7 +3900,7 @@ PANOLENS.StereographicShader = {
 			if ( !scope.options.loop ) {
 
 				scope.resetVideo();
-				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
 			}
 
@@ -4108,9 +4053,8 @@ PANOLENS.StereographicShader = {
 			 * @type {object}
 			 * @property {string} method - 'updateVideoPlayButton'
 			 * @property {boolean} data - Pause video or not
-			 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 			 */
-			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
 		} else {
 
@@ -4121,9 +4065,8 @@ PANOLENS.StereographicShader = {
 			 * @type {object}
 			 * @property {string} method - 'updateVideoPlayButton'
 			 * @property {boolean} data - Pause video or not
-			 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 			 */
-			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
 		}
 
@@ -4261,7 +4204,6 @@ PANOLENS.StereographicShader = {
 		this.material = this.createMaterial( this.size );
 
 		this.dragging = false;
-		this.passiveRendering = false;
 		this.userMouse = new THREE.Vector2();
 
 		this.quatA = new THREE.Quaternion();
@@ -4272,7 +4214,6 @@ PANOLENS.StereographicShader = {
 		this.vectorX = new THREE.Vector3( 1, 0, 0 );
 		this.vectorY = new THREE.Vector3( 0, 1, 0 );
 
-		this.addEventListener( 'panolens-passive-rendering', this.onPassiveRendering );
 		this.addEventListener( 'window-resize', this.onWindowResize );
 
 	};
@@ -4462,12 +4403,6 @@ PANOLENS.StereographicShader = {
 		this.quatSlerp.slerp( this.quatCur, 0.1 );
 		this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
 		
-		if ( this.passiveRendering ) {
-
-			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'render' } );
-
-		}
-		
 		if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
 			
 			window.cancelAnimationFrame( this.frameId );
@@ -4505,12 +4440,6 @@ PANOLENS.StereographicShader = {
 
 		PANOLENS.Panorama.prototype.onLeave.call( this );
 		
-	};
-
-	PANOLENS.LittlePlanet.prototype.onPassiveRendering = function ( event ) {
-
-		this.passiveRendering = event && event.enabled;
-
 	};
 
 	PANOLENS.LittlePlanet.prototype.onWindowResize = function () {
@@ -7227,7 +7156,6 @@ PANOLENS.StereographicShader = {
 	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
-	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
 	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
 	 * @param {number}  [options.indicatorSize=30] - Size of View Indicator
 	 * @param {boolean} [options.outputInfospotPosition=false] - Whether and where to output infospot position. Could be 'console' or 'overlay'. Defaults to false
@@ -7257,7 +7185,6 @@ PANOLENS.StereographicShader = {
 		options.enableReticle = options.enableReticle || false;
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
-		options.passiveRendering = options.passiveRendering || false;
 		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
 		options.indicatorSize = options.indicatorSize || 30;
 		options.outputInfospotPosition = options.outputInfospotPosition !== undefined ? options.outputInfospotPosition : false;
@@ -7361,7 +7288,7 @@ PANOLENS.StereographicShader = {
 		this.container.appendChild( this.renderer.domElement );
 
 		// Camera Controls
-		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container, this.options.passiveRendering );
+		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container );
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
@@ -7373,8 +7300,7 @@ PANOLENS.StereographicShader = {
 		// Register change event if passiveRenering
 		if ( this.options.passiveRendering ) {
 
-			this.OrbitControls.addEventListener( 'change', this.onChange.bind( this ) );
-			this.DeviceOrientationControls.addEventListener( 'change', this.onChange.bind( this ) );
+			console.warn( 'passiveRendering is now deprecated' );
 
 		}
 
@@ -7472,14 +7398,6 @@ PANOLENS.StereographicShader = {
 		if ( object instanceof PANOLENS.Panorama && object.dispatchEvent ) {
 
 			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
-			object.dispatchEvent( { type: 'panolens-passive-rendering', enabled: this.options.passiveRendering } );
-
-		}
-
-		if ( object instanceof PANOLENS.VideoPanorama && this.options.passiveRendering ) {
-
-			console.warn( "Passive rendering does not support VideoPanorama yet");
-			return;
 
 		}
 
@@ -7543,21 +7461,19 @@ PANOLENS.StereographicShader = {
 	/**
 	 * Set a panorama to be the current one
 	 * @param {PANOLENS.Panorama} pano - Panorama to be set
-	 * @param {boolean} [leavingDisabled=undefined] - Whether to disable default leaving transition
-	 * @param {boolean} [enteringDisabled=undefined] - Whether to disable default entering transition
 	 */
-	PANOLENS.Viewer.prototype.setPanorama = function ( pano, leavingDisabled, enteringDisabled ) {
+	PANOLENS.Viewer.prototype.setPanorama = function ( pano ) {
 
 		var scope = this, leavingPanorama = this.panorama;
 
-		if ( pano.type === 'panorama' ) {
+		if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
 
 			// Clear exisiting infospot
 			this.hideInfospot();
 
 			var afterEnterComplete = function () {
 
-				leavingPanorama && leavingPanorama.onLeave( leavingDisabled );
+				leavingPanorama && leavingPanorama.onLeave();
 				pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
 
 			};
@@ -7565,7 +7481,7 @@ PANOLENS.StereographicShader = {
 			pano.addEventListener( 'enter-fade-start', afterEnterComplete );
 
 			// Assign and enter panorama
-			(this.panorama = pano).onEnter( enteringDisabled );
+			(this.panorama = pano).onEnter();
 			
 		}
 
@@ -7580,8 +7496,6 @@ PANOLENS.StereographicShader = {
 		if ( event.method && this[ event.method ] ) {
 
 			this[ event.method ]( event.data );
-
-			this.options.passiveRendering && !event.ignoreUpdate && this.onChange();
 
 		}
 
@@ -7813,25 +7727,6 @@ PANOLENS.StereographicShader = {
 			 */
 			this.panorama.dispatchEvent( { type: 'video-toggle', pause: pause } );
 
-			if ( this.options.passiveRendering ) {
-
-				if ( !pause ) {
-
-					var loop = function (){
-						this.requestAnimationId = window.requestAnimationFrame( loop.bind( this ) );
-						this.onChange();
-					}.bind(this);
-
-					loop();
-
-				} else {
-
-					window.cancelAnimationFrame( this.requestAnimationId );
-
-				}
-
-			}
-
 		}
 
 	};
@@ -7954,30 +7849,6 @@ PANOLENS.StereographicShader = {
 		// Set camera control on every panorama
 		pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
 
-		// Start panorama leaves
-		pano.addEventListener( 'leave', function () {
-			if ( scope.options.passiveRendering ) { 
-				window.cancelAnimationFrame( scope.requestAnimationId );
-				scope.animate(); 
-			}
-		} );
-
-		// Render view once enter completes
-		pano.addEventListener( 'enter-fade-complete', function(){
-			if ( scope.options.passiveRendering ) {
-				scope.control.update( true );
-				scope.render();
-			}
-		} );
-
-		// Stop animation when infospot finally shows up
-		pano.addEventListener( 'infospot-animation-complete', function( event ) {
-			if ( scope.options.passiveRendering && event.visible ) {
-				window.cancelAnimationFrame( scope.requestAnimationId );
-				scope.render();
-			}
-		} );
-
 		// Show and hide widget event only when it's PANOLENS.VideoPanorama
 		if ( pano instanceof PANOLENS.VideoPanorama ) {
 
@@ -8001,7 +7872,6 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.Viewer.prototype.setCameraControl = function () {
 
-		this.panorama.rotation.y = this.camera.rotation.y;
 		this.OrbitControls.target.copy( this.panorama.position );
 
 	};
@@ -8343,9 +8213,6 @@ PANOLENS.StereographicShader = {
 			this.updateReticleEvent();
 
 		}
-
-		// Passive render after window size changes
-		this.options.passiveRendering && this.render();
 
 		/**
 		 * Window resizing event
@@ -8759,7 +8626,7 @@ PANOLENS.StereographicShader = {
 
 		this.updateCallbacks.forEach( function( callback ){ callback(); } );
 
-		!this.options.passiveRendering && this.control.update();
+		this.control.update();
 
 		this.scene.traverse( function( child ){
 			if ( child instanceof PANOLENS.Infospot 
@@ -8801,9 +8668,7 @@ PANOLENS.StereographicShader = {
 
 		this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
-		this.update();
-
-		!this.options.passiveRendering && this.render();
+		this.onChange();
 
 	};
 
