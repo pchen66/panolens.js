@@ -1014,8 +1014,6 @@
 		vptc = this.panorama.getWorldPosition().sub( this.camera.getWorldPosition() );
 
 		hv = vector.clone();
-		// Scale effect
-		hv.x *= -1;
 		hv.add( vptc ).normalize();
 		vv = hv.clone();
 
@@ -1125,9 +1123,8 @@
 			point = intersects[0].point;
 			panoramaWorldPosition = this.panorama.getWorldPosition();
 
-			// Panorama is scaled -1 on X axis
 			outputPosition = new THREE.Vector3(
-				(point.x - panoramaWorldPosition.x).toFixed(2) * -1,
+				(point.x - panoramaWorldPosition.x).toFixed(2),
 				(point.y - panoramaWorldPosition.y).toFixed(2),
 				(point.z - panoramaWorldPosition.z).toFixed(2)
 			);
