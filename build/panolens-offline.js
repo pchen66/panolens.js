@@ -2832,10 +2832,7 @@ PANOLENS.StereographicShader = {
 
 		this.material = material;
 		this.material.side = THREE.DoubleSide;
-		this.material.depthTest = false;
 		this.material.visible = false;
-
-		this.scale.x *= -1;
 
 		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
 
@@ -2853,13 +2850,11 @@ PANOLENS.StereographicShader = {
 
 	/**
 	 * Adding an object
-	 * To counter the scale.x = -1, it will automatically add an 
-	 * empty object with inverted scale on x
 	 * @param {THREE.Object3D} object - The object to be added
 	 */
 	PANOLENS.Panorama.prototype.add = function ( object ) {
 
-		var scope, invertedObject;
+		var scope;
 
 		scope = this;
 
@@ -2877,8 +2872,6 @@ PANOLENS.StereographicShader = {
 
 		// In case of infospots
 		if ( object instanceof PANOLENS.Infospot ) {
-
-			invertedObject = object;
 
 			if ( object.dispatchEvent ) {
 
@@ -2899,16 +2892,9 @@ PANOLENS.StereographicShader = {
 				} } );
 			}
 
-		} else {
-
-			// Counter scale.x = -1 effect
-			invertedObject = new THREE.Object3D();
-			invertedObject.scale.x = -1;
-			invertedObject.add( object );
-
 		}
 
-		THREE.Object3D.prototype.add.call( this, invertedObject );
+		THREE.Object3D.prototype.add.call( this, object );
 
 	};
 
@@ -7158,7 +7144,7 @@ PANOLENS.StereographicShader = {
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
 	 * @param {number}  [options.indicatorSize=30] - Size of View Indicator
-	 * @param {boolean} [options.outputInfospotPosition=false] - Whether and where to output infospot position. Could be 'console' or 'overlay'. Defaults to false
+	 * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -7187,7 +7173,7 @@ PANOLENS.StereographicShader = {
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
 		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
 		options.indicatorSize = options.indicatorSize || 30;
-		options.outputInfospotPosition = options.outputInfospotPosition !== undefined ? options.outputInfospotPosition : false;
+		options.output = options.output ? options.output : 'none';
 
 		this.options = options;
 
@@ -7349,7 +7335,7 @@ PANOLENS.StereographicShader = {
 			this.registerMouseAndTouchEvents();
 		}
 
-		if ( this.options.outputInfospotPosition === 'overlay' ) {
+		if ( this.options.output === 'overlay' ) {
 			this.addOutputElement();
 		}
 
@@ -8149,8 +8135,6 @@ PANOLENS.StereographicShader = {
 		vptc = this.panorama.getWorldPosition().sub( this.camera.getWorldPosition() );
 
 		hv = vector.clone();
-		// Scale effect
-		hv.x *= -1;
 		hv.add( vptc ).normalize();
 		vv = hv.clone();
 
@@ -8255,19 +8239,18 @@ PANOLENS.StereographicShader = {
 
 		intersects = this.raycaster.intersectObject( this.panorama, true );
 
-		if ( intersects.length > 0 && intersects[0].object instanceof PANOLENS.Panorama ) {
+		if ( intersects.length > 0 ) {
 
 			point = intersects[0].point;
 			panoramaWorldPosition = this.panorama.getWorldPosition();
 
-			// Panorama is scaled -1 on X axis
 			outputPosition = new THREE.Vector3(
-				(point.x - panoramaWorldPosition.x).toFixed(2) * -1,
+				(point.x - panoramaWorldPosition.x).toFixed(2),
 				(point.y - panoramaWorldPosition.y).toFixed(2),
 				(point.z - panoramaWorldPosition.z).toFixed(2)
 			);
 
-			switch ( this.options.outputInfospotPosition ) {
+			switch ( this.options.output ) {
 
 				case 'console':
 					console.info( outputPosition.x + ', ' + outputPosition.y + ', ' + outputPosition.z );
@@ -8603,7 +8586,7 @@ PANOLENS.StereographicShader = {
 
 	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
 
-		if ( this.options.outputInfospotPosition && event.key === 'Control' ) {
+		if ( this.options.output && this.options.output !== 'none' && event.key === 'Control' ) {
 
 			this.OUTPUT_INFOSPOT = true;
 
