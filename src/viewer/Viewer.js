@@ -67,18 +67,11 @@
 
 			container = document.createElement( 'div' );
 			container.classList.add( 'panolens-container' );
-			container.style.width = window.innerWidth + 'px';
-			container.style.height = window.innerHeight + 'px';
+			container.style.width = '100%';
+			container.style.height = '100%';
+			container._width = window.innerWidth;
+			container._height = window.innerHeight;
 			document.body.appendChild( container );
-
-			// For matching body's width and height dynamically on the next tick to
-			// avoid 0 height in the beginning
-			setTimeout( function () {
-				container.style.width = '100%';
-				container.style.height = '100%';
-				container._width = window.innerWidth;
-				container._height = window.innerHeight;
-			}, 0 );
 
 		}
 
@@ -1055,15 +1048,28 @@
 	/**
 	 * This is called when window size is changed
 	 * @fires PANOLENS.Viewer#window-resize
+	 * @param {number} [windowWidth] - Specify if custom element has changed width
+	 * @param {number} [windowHeight] - Specify if custom element has changed height
 	 */
-	PANOLENS.Viewer.prototype.onWindowResize = function () {
+	PANOLENS.Viewer.prototype.onWindowResize = function ( windowWidth, windowHeight ) {
 
 		var width, height, expand;
 
 		expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
 
-		width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container._width;
-		height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container._height;
+		if ( windowWidth !== undefined && windowHeight !== undefined ) {
+
+			width = windowWidth;
+			height = windowHeight;
+			this.container._width = windowWidth;
+			this.container._height = windowHeight;
+
+		} else {
+
+			width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container._width;
+			height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container._height;
+
+		}
 
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
