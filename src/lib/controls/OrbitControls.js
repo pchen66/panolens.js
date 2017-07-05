@@ -66,6 +66,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	// Momentum
   	this.momentumDampingFactor = 0.90;
   	this.momentumScalingFactor = -0.005;
+  	this.momentumKeydownFactor = 20;
 
   	// Fov
   	this.minFov = 30;
@@ -122,6 +123,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 	var eventCurrent, eventPrevious;
 	var momentumOn = false;
 
+	var keyUp, keyBottom, keyLeft, keyRight;
+
 	var STATE = { NONE : -1, ROTATE : 0, DOLLY : 1, PAN : 2, TOUCH_ROTATE : 3, TOUCH_DOLLY : 4, TOUCH_PAN : 5 };
 
 	var state = STATE.NONE;
@@ -161,6 +164,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 		}
 
 		thetaDelta -= angle;
+
 
 	};
 
@@ -590,35 +594,62 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	}
 
-	function onKeyDown( event ) {
-
-		if ( scope.enabled === false || scope.noKeys === true || scope.noPan === true ) return;
+	function onKeyUp ( event ) {
 
 		switch ( event.keyCode ) {
 
 			case scope.keys.UP:
-				scope.pan( 0, scope.keyPanSpeed );
-				scope.update();
-				scope.dispatchEvent( changeEvent );
+				keyUp = false;
 				break;
 
 			case scope.keys.BOTTOM:
-				scope.pan( 0, - scope.keyPanSpeed );
-				scope.update();
-				scope.dispatchEvent( changeEvent );
+				keyBottom = false;
 				break;
 
 			case scope.keys.LEFT:
-				scope.pan( scope.keyPanSpeed, 0 );
-				scope.update();
-				scope.dispatchEvent( changeEvent );
+				keyLeft = false;
 				break;
 
 			case scope.keys.RIGHT:
-				scope.pan( - scope.keyPanSpeed, 0 );
-				scope.update();
-				scope.dispatchEvent( changeEvent );
+				keyRight = false;
 				break;
+
+		}
+
+	}
+
+	function onKeyDown( event ) {
+
+		if ( scope.enabled === false || scope.noKeys === true || scope.noRotate === true ) return;
+
+		switch ( event.keyCode ) {
+
+			case scope.keys.UP:
+				keyUp = true;
+				break;
+
+			case scope.keys.BOTTOM:
+				keyBottom = true;
+				break;
+
+			case scope.keys.LEFT:
+				keyLeft = true;
+				break;
+
+			case scope.keys.RIGHT:
+				keyRight = true;
+				break;
+
+		}
+
+		if (keyUp || keyBottom || keyLeft || keyRight) {
+
+			momentumOn = true;
+
+			if (keyUp) momentumUp = - scope.rotateSpeed * scope.momentumKeydownFactor;
+			if (keyBottom) momentumUp = scope.rotateSpeed * scope.momentumKeydownFactor;
+			if (keyLeft) momentumLeft = - scope.rotateSpeed * scope.momentumKeydownFactor;
+			if (keyRight) momentumLeft = scope.rotateSpeed * scope.momentumKeydownFactor;
 
 		}
 
@@ -652,7 +683,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 				var distance = Math.sqrt( dx * dx + dy * dy );
-				//dollyStart.set( 0, distance );
+
 				break;
 
 			case 3: // three-fingered touch: pan
@@ -722,21 +753,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 				var distance = Math.sqrt( dx * dx + dy * dy );
 
-				/*dollyEnd.set( 0, distance );
-				dollyDelta.subVectors( dollyEnd, dollyStart );
-
-				if ( dollyDelta.y > 0 ) {
-
-					scope.dollyOut();
-
-				} else if ( dollyDelta.y < 0 ) {
-
-					scope.dollyIn();
-
-				}
-
-				dollyStart.copy( dollyEnd );*/
-
 				if ( event.scale < 1 ) {
 
 					scope.object.fov = ( scope.object.fov < scope.maxFov ) 
@@ -752,8 +768,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 					scope.object.updateProjectionMatrix();
 
 				}
-
-				//console.log(distance, event);
 
 				scope.update();
 				scope.dispatchEvent( changeEvent );
@@ -804,6 +818,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.domElement.addEventListener( 'touchend', touchend, false );
 	this.domElement.addEventListener( 'touchmove', touchmove, false );
 
+	window.addEventListener( 'keyup', onKeyUp, false );
 	window.addEventListener( 'keydown', onKeyDown, false );
 
 	// force an update at start
