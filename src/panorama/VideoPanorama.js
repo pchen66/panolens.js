@@ -74,6 +74,7 @@
 
 		var onloadeddata = function(){
 
+			scope.onProgress( { loaded: 1, total: 1 } );
 			scope.setVideoTexture( scope.videoElement );
 
 			if ( scope.videoElement.autoplay ) {

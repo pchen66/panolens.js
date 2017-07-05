@@ -95,11 +95,20 @@
       var cube = new THREE.Mesh( new THREE.BoxGeometry(50, 50, 50), new THREE.MeshNormalMaterial() );
       cube.position.set(1000, 2000, 0);
       panorama_main_video.add( cube );
+      panorama_main_video.addEventListener( 'progress',function(e){
+        console.log(e.progress);
+      });
       
       panorama_main_video2 = new PANOLENS.VideoPanorama( 'asset/textures/video/1941-battle-low.mp4', { autoplay: false, muted: true });
       panorama_main_video2.setLinkingImage( 'asset/textures/1941-battle-thumb.jpg' );
+      panorama_main_video2.addEventListener( 'progress',function(e){
+        console.log(e.progress);
+      });
 
       panorama_main_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/road.jpg' );
+      panorama_main_image.addEventListener( 'progress',function(e){
+        console.log(e.progress);
+      });
 
       panorama_main_video.link( panorama_main_video2, new THREE.Vector3( 1148.79, -59.12, -4859.07 ) );
       panorama_main_video2.link( panorama_main_video, new THREE.Vector3( -2615.55, 1357.43, -4026.71 ) );
