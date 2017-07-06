@@ -7305,6 +7305,7 @@ PANOLENS.StereographicShader = {
 		// Append Renderer Element to container
 		this.renderer.domElement.classList.add( 'panolens-canvas' );
 		this.renderer.domElement.style.display = 'block';
+		this.container.style.backgroundColor = '#000';
 		this.container.appendChild( this.renderer.domElement );
 
 		// Camera Controls
