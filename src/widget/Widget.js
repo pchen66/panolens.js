@@ -356,7 +356,9 @@
 	 */
 	PANOLENS.Widget.prototype.createFullscreenButton = function () {
 
-		var scope = this, item, isFullscreen = false, tapSkipped = true;
+		var scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
+
+		stylesheetId = 'panolens-style-addon';
 
 		// Don't create button if no support
 		if ( !document.fullscreenEnabled       && 
@@ -366,7 +368,10 @@
 			return;
 		}
 
-		function onTap () {
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
 
 			tapSkipped = false;
 
@@ -405,9 +410,9 @@
 			/**
 			 * Viewer handler event
 			 * @type {object}
-			 * @property {string} method - 'toggleFullscreen' function call on PANOLENS.Viewer
+			 * @property {string} method - 'onWindowResize' function call on PANOLENS.Viewer
 			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize', data: false } );
 
 			tapSkipped = true;
 
@@ -430,6 +435,14 @@
 
 		} );
 
+		// Add fullscreen stlye if not exists
+		if ( !document.querySelector( stylesheetId ) ) {
+			var sheet = document.createElement( 'style' );
+			sheet.id = stylesheetId;
+			sheet.innerHTML = ':-webkit-full-screen { width: 100% !important; height: 100% !important }';
+			document.body.appendChild( sheet );
+		}
+		
 		return item;
 
 	};
@@ -493,7 +506,10 @@
 
 		var scope = this, item;
 
-		function onTap () {
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
 
 			/**
 			 * Viewer handler event
@@ -634,6 +650,9 @@
 		}
 
 		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
 
 			var percentage;
 

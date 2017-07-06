@@ -889,30 +889,6 @@
 	};
 
 	/**
-	 * Toggle fullscreen
-	 * @param  {Boolean} isFullscreen - If it's fullscreen
-	 */
-	PANOLENS.Viewer.prototype.toggleFullscreen = function ( isFullscreen ) {
-
-		if ( isFullscreen ) {
-			this.container.style.width = '100%';
-			this.container.style.height = '100%';
-			this.container.isFullscreen = true;
-		} else {
-			this.container._width && ( this.container.style.width = this.container._width + 'px' );
-			this.container._height && ( this.container.style.height = this.container._height + 'px' );
-			if ( this.container.classList.contains( 'panolens-container' ) ) {
-				this.container.style.width = '100%';
-				this.container.style.height = '100%';
-			}
-			this.container.isFullscreen = false;
-		}
-
-		this.onWindowResize();
-
-	};
-
-	/**
 	 * Screen Space Projection
 	 */
 	PANOLENS.Viewer.prototype.getScreenVector = function ( worldVector ) {
@@ -1066,8 +1042,10 @@
 
 		} else {
 
-			width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container._width;
-			height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container._height;
+			width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container.clientWidth;
+			height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container.clientHeight;
+			this.container._width = width;
+			this.container._height = height;
 
 		}
 
@@ -1099,7 +1077,7 @@
 
 			}
 
-		} );		
+		} );
 
 	};
 
