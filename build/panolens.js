@@ -5720,7 +5720,9 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.Widget.prototype.createFullscreenButton = function () {
 
-		var scope = this, item, isFullscreen = false, tapSkipped = true;
+		var scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
+
+		stylesheetId = 'panolens-style-addon';
 
 		// Don't create button if no support
 		if ( !document.fullscreenEnabled       && 
@@ -5730,7 +5732,10 @@ PANOLENS.StereographicShader = {
 			return;
 		}
 
-		function onTap () {
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
 
 			tapSkipped = false;
 
@@ -5769,9 +5774,9 @@ PANOLENS.StereographicShader = {
 			/**
 			 * Viewer handler event
 			 * @type {object}
-			 * @property {string} method - 'toggleFullscreen' function call on PANOLENS.Viewer
+			 * @property {string} method - 'onWindowResize' function call on PANOLENS.Viewer
 			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize', data: false } );
 
 			tapSkipped = true;
 
@@ -5794,6 +5799,14 @@ PANOLENS.StereographicShader = {
 
 		} );
 
+		// Add fullscreen stlye if not exists
+		if ( !document.querySelector( stylesheetId ) ) {
+			var sheet = document.createElement( 'style' );
+			sheet.id = stylesheetId;
+			sheet.innerHTML = ':-webkit-full-screen { width: 100% !important; height: 100% !important }';
+			document.body.appendChild( sheet );
+		}
+		
 		return item;
 
 	};
@@ -5857,7 +5870,10 @@ PANOLENS.StereographicShader = {
 
 		var scope = this, item;
 
-		function onTap () {
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
 
 			/**
 			 * Viewer handler event
@@ -5998,6 +6014,9 @@ PANOLENS.StereographicShader = {
 		}
 
 		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
 
 			var percentage;
 
@@ -8032,30 +8051,6 @@ PANOLENS.StereographicShader = {
 	};
 
 	/**
-	 * Toggle fullscreen
-	 * @param  {Boolean} isFullscreen - If it's fullscreen
-	 */
-	PANOLENS.Viewer.prototype.toggleFullscreen = function ( isFullscreen ) {
-
-		if ( isFullscreen ) {
-			this.container.style.width = '100%';
-			this.container.style.height = '100%';
-			this.container.isFullscreen = true;
-		} else {
-			this.container._width && ( this.container.style.width = this.container._width + 'px' );
-			this.container._height && ( this.container.style.height = this.container._height + 'px' );
-			if ( this.container.classList.contains( 'panolens-container' ) ) {
-				this.container.style.width = '100%';
-				this.container.style.height = '100%';
-			}
-			this.container.isFullscreen = false;
-		}
-
-		this.onWindowResize();
-
-	};
-
-	/**
 	 * Screen Space Projection
 	 */
 	PANOLENS.Viewer.prototype.getScreenVector = function ( worldVector ) {
@@ -8209,8 +8204,10 @@ PANOLENS.StereographicShader = {
 
 		} else {
 
-			width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container._width;
-			height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container._height;
+			width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container.clientWidth;
+			height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container.clientHeight;
+			this.container._width = width;
+			this.container._height = height;
 
 		}
 
@@ -8242,7 +8239,7 @@ PANOLENS.StereographicShader = {
 
 			}
 
-		} );		
+		} );
 
 	};
 
