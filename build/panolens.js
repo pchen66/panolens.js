@@ -2295,8 +2295,6 @@ GSVPANO.PanoLoader = function (parameters) {
 			}
 		}
 
-		//console.log( _canvas );
-
 	};
 
 	this.composeFromTile = function (x, y, texture) {
@@ -2340,7 +2338,6 @@ GSVPANO.PanoLoader = function (parameters) {
 	this.composePanorama = function () {
 	
 		this.setProgress(0, 1);
-		//console.log('Loading panorama for zoom ' + _zoom + '...');
 		
 		var w = levelsW[ _zoom ],
 			h = levelsH[ _zoom ],
@@ -2348,8 +2345,6 @@ GSVPANO.PanoLoader = function (parameters) {
 			url,
 			x,
 			y;
-
-			//console.log( w, h, w * 512, h * 512 );
 			
 		_count = 0;
 		_total = w * h;
@@ -2357,12 +2352,10 @@ GSVPANO.PanoLoader = function (parameters) {
 		var self = this;
 		for( var y = 0; y < h; y++ ) {
 			for( var x = 0; x < w; x++ ) {
-				var url = 'https://cbks0.googleapis.com/cbk?output=tile&cb_client=maps_photos.ugc&v=4&gl=US&zoom=' + _zoom + '&x=' + x + '&y=' + y + '&panoid=' + _panoId;
-
+				var url = 'https://geo0.ggpht.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=tile&zoom=' + _zoom + '&x=' + x + '&y=' + y + '&panoid=' + _panoId + '&nbt&fover=2';
 				( function( x, y ) { 
 					if( _parameters.useWebGL ) {
 						var texture = THREE.ImageUtils.loadTexture( url, null, function() {
-							//console.log( 'loaded ' + url );
 							self.composeFromTile( x, y, texture );
 						} );
 					} else {
@@ -2381,32 +2374,12 @@ GSVPANO.PanoLoader = function (parameters) {
 	
 	this.load = function ( panoid ) {
 	
-		//console.log('Load for', location);
-		var self = this;
-
-		//var url = 'https://maps.google.com/cbk?output=json&hl=x-local&ll=' + location.lat() + ',' + location.lng() + '&cb_client=maps_sv&v=3';
-		//url = 'https://cbks1.google.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=polygon&it=1%3A1&rank=closest&ll=' + location.lat() + ',' + location.lng() + '&radius=350';
-		//url = 'https://cbks1.google.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=json&ll=' + location.lat() + ',' + location.lng();
-		var url = 'https://cbks0.google.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=json&panoid=' + panoid;
-
-		/*var http_request = new XMLHttpRequest();
-		http_request.withCredentials = true;
-		http_request.open( "GET", url, true );
-		http_request.onreadystatechange = function () {
-			if ( http_request.readyState == 4 && http_request.status == 200 ) {
-				var data = JSON.parse( http_request.responseText );
-				self.loadPano( location, data.Location.panoId );
-				//self.loadPano( location, data.result[ 0 ].id );
-			}
-		};
-		http_request.send(null);*/
-		self.loadPano( panoid );
+		this.loadPano( panoid );
 
 	};
 
 	this.loadPano = function( id ) {
 
-		//console.log( 'Load ' + id );
 		var self = this;
 		_panoClient.getPanoramaById( id, function (result, status) {
 			if (status === google.maps.StreetViewStatus.OK) {
@@ -2429,7 +2402,6 @@ GSVPANO.PanoLoader = function (parameters) {
 	
 	this.setZoom = function( z ) {
 		_zoom = z;
-		//console.log( z );
 		this.adaptTextureToZoom();
 	};
 
@@ -3534,10 +3506,9 @@ PANOLENS.StereographicShader = {
 	 * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
 	 * @constructor
 	 * @param {string} panoId - Panorama id from Google Streetview 
-	 * @param {string} apiKey - Google Map api key (@Link https://developers.google.com/maps/documentation/javascript/get-api-key)
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
-	PANOLENS.GoogleStreetviewPanorama = function ( panoId, apiKey, radius ) {
+	PANOLENS.GoogleStreetviewPanorama = function ( panoId, radius ) {
 
 		PANOLENS.ImagePanorama.call( this, undefined, radius );
 
@@ -3545,7 +3516,9 @@ PANOLENS.StereographicShader = {
 
 		this.gsvLoader = undefined;
 
-		this.setupGoogleMapAPI( apiKey );
+		this.loadRequested = false;
+
+		this.setupGoogleMapAPI();
 
 	}
 
@@ -3558,6 +3531,8 @@ PANOLENS.StereographicShader = {
 	 * @param {string} panoId - Gogogle Street View panorama id
 	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.load = function ( panoId ) {
+
+		this.loadRequested = true;
 
 		panoId = ( panoId || this.panoId ) || {};
 
@@ -3576,16 +3551,10 @@ PANOLENS.StereographicShader = {
 	/**
 	 * Setup Google Map API
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function ( apiKey ) {
-
-		if ( !apiKey ) {
-
-			console.warn( 'Please specify Google Map API key. Otherwise access will be limited' );
-
-		}
+	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function () {
 
 		var script = document.createElement( 'script' );
-		script.src = 'https://maps.googleapis.com/maps/api/js' + ( apiKey ? '?key=' + apiKey : '' );
+		script.src = 'https://maps.googleapis.com/maps/api/js';
 		script.onreadystatechange = this.setGSVLoader.bind( this );
     	script.onload = this.setGSVLoader.bind( this );
 
@@ -3600,7 +3569,7 @@ PANOLENS.StereographicShader = {
 
 		this.gsvLoader = new GSVPANO.PanoLoader();
 
-		if ( this.gsvLoader === {} ) {
+		if ( this.gsvLoader === {} || this.loadRequested ) {
 
 			this.load();
 
@@ -3623,6 +3592,8 @@ PANOLENS.StereographicShader = {
 	 * @param  {string} panoId - Gogogle Street View panorama id
 	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.loadGSVLoader = function ( panoId ) {
+
+		this.loadRequested = false;
 
 		this.gsvLoader.onProgress = this.onProgress.bind( this );
 
