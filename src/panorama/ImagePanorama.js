@@ -49,7 +49,6 @@
 
 		}
 
-		
 	};
 
 	/**
@@ -64,8 +63,20 @@
 
 		this.updateTexture( texture );
 
-		PANOLENS.Panorama.prototype.onLoad.call( this );
+		// Call onLoad after second frame being painted
+		window.requestAnimationFrame(function(){
+
+			window.requestAnimationFrame(function(){
+
+				PANOLENS.Panorama.prototype.onLoad.call( this );
+				
+
+			}.bind(this));
+
+		}.bind(this));
+
 		
+
 	};
 
 	PANOLENS.ImagePanorama.prototype.reset = function () {

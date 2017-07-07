@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#event:'pause'">event:'pause'</a></li><li><a href="global.html#event:'play'">event:'play'</a></li><li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-dual-eye-effect">PANOLENS.Infospot#event:panolens-dual-eye-effect</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-complete">PANOLENS.Panorama#event:enter-complete</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
+					<li><a href="global.html#event:'pause'">event:'pause'</a></li><li><a href="global.html#event:'play'">event:'play'</a></li><li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-dual-eye-effect">PANOLENS.Infospot#event:panolens-dual-eye-effect</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-complete">PANOLENS.Panorama#event:enter-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-fade-complete">PANOLENS.Panorama#event:enter-fade-complete</a></li><li><a href="PANOLENS.Panorama.html#event:enter-fade-start">PANOLENS.Panorama#event:enter-fade-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:leave-animation-start">PANOLENS.Panorama#event:leave-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:leave-complete">PANOLENS.Panorama#event:leave-complete</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
 				</ul>
 			</li>
 			
@@ -147,6 +147,7 @@
 		bar.style.background = '-ms-' + gradientStyle;
 		bar.style.background = gradientStyle;
 		bar.style.transition = this.DEFAULT_TRANSITION;
+		bar.style.pointerEvents = 'none';
 		bar.isHidden = false;
 		bar.toggle = function () {
 			bar.isHidden = !bar.isHidden;
@@ -441,7 +442,9 @@
 	 */
 	PANOLENS.Widget.prototype.createFullscreenButton = function () {
 
-		var scope = this, item, isFullscreen = false, tapSkipped = true;
+		var scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
+
+		stylesheetId = 'panolens-style-addon';
 
 		// Don't create button if no support
 		if ( !document.fullscreenEnabled       &amp;&amp; 
@@ -451,7 +454,10 @@
 			return;
 		}
 
-		function onTap () {
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
 
 			tapSkipped = false;
 
@@ -490,9 +496,9 @@
 			/**
 			 * Viewer handler event
 			 * @type {object}
-			 * @property {string} method - 'toggleFullscreen' function call on PANOLENS.Viewer
+			 * @property {string} method - 'onWindowResize' function call on PANOLENS.Viewer
 			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize', data: false } );
 
 			tapSkipped = true;
 
@@ -515,6 +521,14 @@
 
 		} );
 
+		// Add fullscreen stlye if not exists
+		if ( !document.querySelector( stylesheetId ) ) {
+			var sheet = document.createElement( 'style' );
+			sheet.id = stylesheetId;
+			sheet.innerHTML = ':-webkit-full-screen { width: 100% !important; height: 100% !important }';
+			document.body.appendChild( sheet );
+		}
+		
 		return item;
 
 	};
@@ -540,7 +554,7 @@
 			item.style.display = 'none';
 			item.controlButton.paused = true;
 			item.controlButton.update();
-			item.seekBar.setProgress( 0 );
+
 		};
 
 		item.controlButton = this.createVideoControlButton();
@@ -578,7 +592,10 @@
 
 		var scope = this, item;
 
-		function onTap () {
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
 
 			/**
 			 * Viewer handler event
@@ -720,6 +737,9 @@
 
 		function onTap ( event ) {
 
+			event.preventDefault();
+			event.stopPropagation();
+
 			var percentage;
 
 			if ( event.target === progressElementControl ) { return; }
@@ -798,6 +818,7 @@
 		item.style.padding = '10px';
 		item.style.textDecoration = 'none';
 		item.style.cursor = 'pointer';
+		item.style.pointerEvents = 'auto';
 		item.style.transition = this.DEFAULT_TRANSITION;
 
 		item.slide = function ( right ) {
@@ -1060,6 +1081,7 @@
   		style.borderRadius = '2px';
 		style.overflow = 'hidden';
 		style.willChange = 'width, height, opacity';
+		style.pointerEvents = 'auto';
 		style.transition = this.DEFAULT_TRANSITION;
 
 		menu.visible = false;
@@ -1204,6 +1226,7 @@
 		item.style.MozUserSelect = 
 		item.style.userSelect = 'none';
 		item.style.position = 'relative';
+		item.style.pointerEvents = 'auto';
 
 		// White glow on icon
 		item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
@@ -1314,7 +1337,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on 2017-06-15T23:43:58-07:00
+		on 2017-07-06T17:34:30-07:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

@@ -23,7 +23,6 @@
 		this.material = this.createMaterial( this.size );
 
 		this.dragging = false;
-		this.passiveRendering = false;
 		this.userMouse = new THREE.Vector2();
 
 		this.quatA = new THREE.Quaternion();
@@ -34,7 +33,6 @@
 		this.vectorX = new THREE.Vector3( 1, 0, 0 );
 		this.vectorY = new THREE.Vector3( 0, 1, 0 );
 
-		this.addEventListener( 'panolens-passive-rendering', this.onPassiveRendering );
 		this.addEventListener( 'window-resize', this.onWindowResize );
 
 	};
@@ -224,12 +222,6 @@
 		this.quatSlerp.slerp( this.quatCur, 0.1 );
 		this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
 		
-		if ( this.passiveRendering ) {
-
-			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'render' } );
-
-		}
-		
 		if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
 			
 			window.cancelAnimationFrame( this.frameId );
@@ -267,12 +259,6 @@
 
 		PANOLENS.Panorama.prototype.onLeave.call( this );
 		
-	};
-
-	PANOLENS.LittlePlanet.prototype.onPassiveRendering = function ( event ) {
-
-		this.passiveRendering = event && event.enabled;
-
 	};
 
 	PANOLENS.LittlePlanet.prototype.onWindowResize = function () {

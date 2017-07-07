@@ -1,20 +1,25 @@
 # [Panolens.js](http://pchen66.github.io/Panolens)
 
+[![Release][release-badge]][release-badge-url]
+[![License][license-badge]][license-badge-url]
+![GzipSize][gzip-size-badge]
+
 ### Javascript Panorama Viewer
 
-Panolens.js is an event-driven and WebGL based panorama viewer. It's built on top of [Three.JS](https://github.com/mrdoob/three.js). 
+Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible. It's built on top of [Three.JS](https://github.com/mrdoob/three.js).
 
 ![Panorama Demo](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens.gif?raw=true)
 
 ### Usage
 
 Include `three.min.js` and `panolens.min.js`
+If you want to support offline experience, please include `panolens-offline.min.js` instead
 
 ```html
 <script src="js/three.min.js"></script>
 <script src="js/panolens.min.js"></script>
 ```
-This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use `panorama.link( other_panorama )` to connect the two. See [examples](http://pchen66.github.io/Panolens/) and [documentation](http://pchen66.github.io/Panolens/docs/index.html) for more details.
+This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use `panorama.link( other_panorama, new THREE.Vector3( X, Y, Z ) )` to connect the two. See [examples](http://pchen66.github.io/Panolens/) and [documentation](http://pchen66.github.io/Panolens/docs/index.html) for more details.
 
 ```html
 <script>
@@ -45,10 +50,9 @@ All attributes are optional
 		enableReticle: false,			// Enable reticle for mouseless interaction
 		dwellTime: 1500,			// Dwell time for reticle selection in millisecond
 		autoReticleSelect: true,		// Auto select a clickable target after dwellTime
-		passiveRendering: false,		// Render only when control triggered by user input 
 		viewIndicator: false,			// Adds an angle view indicator in upper left corner
 		indicatorSize: 30,			// Size of View Indicator
-		outputInfospotPosition: false		// Whether and where to output infospot position. Could be 'console' or 'overlay'
+		output: 'console'		// Whether and where to output infospot position. Could be 'console' or 'overlay'
 	});
 </script>
 ```
@@ -70,7 +74,7 @@ Check Panolens [example page](http://pchen66.github.io/Panolens/#Example)
 
 ### How to add an infospot (hotspot)
 
-Move cursor on a specific point in a panorama and press `Ctrl` with clicking or hovering, which will generate position (x, y, z) in the console or on the overlay element based on parameter `outputInfospotPosition='console' or 'overlay'`. See [Panorama Infospot](http://pchen66.github.io/Panolens/examples/panorama_infospot.html) example for creating and attaching infospots.
+Move cursor on a specific point in a panorama and press `Ctrl` with clicking or hovering, which will generate position (x, y, z) in the console or on the overlay element based on parameter `output='console' or 'overlay'`. See [Panorama Infospot](http://pchen66.github.io/Panolens/examples/panorama_infospot.html) example for creating and attaching infospots.
 
 ![Panorama Finding Infospot Position](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_add_infospot_480p.gif?raw=true)
 
@@ -85,3 +89,9 @@ Always make your contributions for the latest `dev` branch, not `master`, so it 
 ### Roadmap
 1.	npm packaging
 2.	infospot editor
+
+[release-badge]: https://img.shields.io/github/release/pchen66/panolens.js.svg
+[release-badge-url]:https://github.com/pchen66/panolens.js/releases
+[license-badge]: https://img.shields.io/github/license/pchen66/panolens.js.svg
+[license-badge-url]: ./LICENSE
+[gzip-size-badge]: http://img.badgesize.io/https://raw.githubusercontent.com/pchen66/panolens.js/master/build/panolens.min.js?compression=gzip&label=gzip%20size

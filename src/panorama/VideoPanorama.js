@@ -30,12 +30,13 @@
 
 		this.videoElement = undefined;
 		this.videoRenderObject = undefined;
+		this.videoProgress = 0;
 
 		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
 		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
 
 		this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
-		this.addEventListener( 'leave', this.resetVideo.bind( this ) );
+		this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
 		this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 		this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
@@ -46,7 +47,7 @@
 	PANOLENS.VideoPanorama.constructor = PANOLENS.VideoPanorama;
 
 	/**
-	 * [load description]
+	 * Load video panorama
 	 * @param  {string} src     - The video url
 	 * @param  {object} options - Option object containing videoElement
 	 * @fires  PANOLENS.Panorama#panolens-viewer-handler
@@ -59,7 +60,7 @@
 		options = ( options || this.options ) || {};
 
 		this.videoElement = options.videoElement || document.createElement( 'video' );
-		
+
 		this.videoElement.muted = options.muted || false;
 		this.videoElement.loop = ( options.loop !== undefined ) ? options.loop : true;
 		this.videoElement.autoplay = ( options.autoplay !== undefined ) ? options.autoplay : false;
@@ -73,9 +74,8 @@
 
 		var onloadeddata = function(){
 
+			scope.onProgress( { loaded: 1, total: 1 } );
 			scope.setVideoTexture( scope.videoElement );
-
-			scope.onLoad();
 
 			if ( scope.videoElement.autoplay ) {
 
@@ -84,14 +84,13 @@
 				 * @type {object}
 				 * @property {string} method - 'updateVideoPlayButton'
 				 * @property {boolean} data - Pause video or not
-				 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 				 */
-				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
 			}
 
 			// For mobile silent autoplay
-			if ( scope.isIOS ) {
+			if ( scope.isMobile ) {
 
 				if ( scope.videoElement.autoplay && scope.videoElement.muted ) {
 
@@ -100,9 +99,8 @@
 					 * @type {object}
 					 * @property {string} method - 'updateVideoPlayButton'
 					 * @property {boolean} data - Pause video or not
-					 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 					 */
-					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false, ignoreUpdate: true } );
+					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
 				} else {
 
@@ -111,14 +109,14 @@
 					 * @type {object}
 					 * @property {string} method - 'updateVideoPlayButton'
 					 * @property {boolean} data - Pause video or not
-					 * @property {boolean} [ignoreUpdate] - Ignore passiveRendering update
 					 */
-					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
-
+					scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
 				}
 				
 			}
+
+			scope.onLoad();
 		};
 
 		/**
@@ -149,13 +147,15 @@
 
 		this.videoElement.ontimeupdate = function ( event ) {
 
+			scope.videoProgress = this.duration >= 0 ? this.currentTime / this.duration : 0;
+
 			/**
 			 * Viewer handler event
 			 * @type {object}
 			 * @property {string} method - 'onVideoUpdate'
 			 * @property {number} data - The percentage of video progress. Range from 0.0 to 1.0
 			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: this.currentTime / this.duration } );
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: scope.videoProgress } );
 
 		};
 
@@ -164,7 +164,7 @@
 			if ( !scope.options.loop ) {
 
 				scope.resetVideo();
-				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true, ignoreUpdate: true } );
+				scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
 			}
 
@@ -253,9 +253,11 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.setVideoCurrentTime = function ( event ) {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && event.percentage !== 1 ) {
+		if ( this.videoRenderObject && this.videoRenderObject.video && !Number.isNaN(event.percentage) && event.percentage !== 1 ) {
 
 			this.videoRenderObject.video.currentTime = this.videoRenderObject.video.duration * event.percentage;
+
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: event.percentage } );
 
 		}
 
@@ -298,6 +300,41 @@
 		 * @event 'pause'
 		 * */
 		this.dispatchEvent( { type: 'pause' } );
+
+	};
+
+	/**
+	 * Resume video
+	 */
+	PANOLENS.VideoPanorama.prototype.resumeVideoProgress = function () {
+
+		if ( this.videoElement.autoplay && !this.isMobile ) {
+
+			this.playVideo();
+
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'updateVideoPlayButton'
+			 * @property {boolean} data - Pause video or not
+			 */
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
+
+		} else {
+
+			this.pauseVideo();
+
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @property {string} method - 'updateVideoPlayButton'
+			 * @property {boolean} data - Pause video or not
+			 */
+			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
+
+		}
+
+		this.setVideoCurrentTime( { percentage: this.videoProgress } );
 
 	};
 
@@ -356,8 +393,28 @@
 
 	/**
 	 * Returns the video element
-	 * */
+	 */
 	PANOLENS.VideoPanorama.prototype.getVideoElement = function () {
+
 		return this.videoRenderObject.video;
-	}
+
+	};
+
+	/**
+	 * Dispose video panorama
+	 */
+	PANOLENS.VideoPanorama.prototype.dispose = function () {
+
+		this.resetVideo();
+		this.pauseVideo();
+		
+		this.removeEventListener( 'leave', this.pauseVideo.bind( this ) );
+		this.removeEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
+		this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
+		this.removeEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
+
+		PANOLENS.Panorama.prototype.dispose.call( this );
+
+	};
+
 })();

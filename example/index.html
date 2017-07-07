@@ -10,6 +10,7 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+        background-color: #000;
       }
 
       #panolens-separate-container {
@@ -18,7 +19,6 @@
         height: 150px;
         right: 0;
         top: 100px;
-        background-color: #ff0;
       }
 
       #panolens-separate-container:-webkit-full-screen{
@@ -83,18 +83,38 @@
 
     <script>
 
-      var panorama_main_video, panorama_main_image, viewer_main;
+      var panorama_main_video, panorama_main_video2, panorama_main_image, viewer_main;
       var panorama_side_image, viewer_side;
       var infospot1, infospot2, infospot3;
 
       // Main panorama
-      viewer_main = new PANOLENS.Viewer({ outputInfospotPosition: 'overlay', viewIndicator: true });
+      viewer_main = new PANOLENS.Viewer({ output: 'console', viewIndicator: true });
 
       panorama_main_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: true });
-      panorama_main_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
-      panorama_main_image.position.set( 4964.41, 366.98, 404.06 );
 
-      panorama_main_video.link( panorama_main_image );
+      var cube = new THREE.Mesh( new THREE.BoxGeometry(50, 50, 50), new THREE.MeshNormalMaterial() );
+      cube.position.set(1000, 2000, 0);
+      panorama_main_video.add( cube );
+      panorama_main_video.addEventListener( 'progress',function(e){
+        console.log(e.progress);
+      });
+      
+      panorama_main_video2 = new PANOLENS.VideoPanorama( 'asset/textures/video/1941-battle-low.mp4', { autoplay: false, muted: true });
+      panorama_main_video2.setLinkingImage( 'asset/textures/1941-battle-thumb.jpg' );
+      panorama_main_video2.addEventListener( 'progress',function(e){
+        console.log(e.progress);
+      });
+
+      panorama_main_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/road.jpg' );
+      panorama_main_image.addEventListener( 'progress',function(e){
+        console.log(e.progress);
+      });
+
+      panorama_main_video.link( panorama_main_video2, new THREE.Vector3( 1148.79, -59.12, -4859.07 ) );
+      panorama_main_video2.link( panorama_main_video, new THREE.Vector3( -2615.55, 1357.43, -4026.71 ) );
+
+      panorama_main_video.link( panorama_main_image, new THREE.Vector3( 4964.41, 366.98, 404.06 ) );
+      panorama_main_image.link( panorama_main_video, new THREE.Vector3( -4588.72, 1419.24, -1359.43 ) );
 
       infospot2 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
       infospot2.position.set(  3841.27, 2625.37, 1819.79 );
@@ -102,11 +122,14 @@
       panorama_main_image.add( infospot2 );
 
       infospot1 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
-      infospot1.position.set( 4548.66, 960.40, -1813.03 );
+      infospot1.position.set( 3566.39, 1152.86, -3303.91 );
       infospot1.addHoverText( 'Mountain Tip' );
+      infospot1.addEventListener( 'click', function(){
+        viewer_main.tweenControlCenter( cube.position );
+      } );
       panorama_main_video.add( infospot1 );
       
-      viewer_main.add( panorama_main_video, panorama_main_image );
+      viewer_main.add( panorama_main_video, panorama_main_image, panorama_main_video2 );
 
       // Test repeated scenario
       viewer_main.enableControl( PANOLENS.Controls.DEVICEORIENTATION );
@@ -115,7 +138,7 @@
       viewer_main.enableEffect( PANOLENS.Modes.NORMAL );
 
       // Side panorama
-      viewer_side = new PANOLENS.Viewer({ outputInfospotPosition: 'overlay', container: document.querySelector( '#panolens-separate-container' ) });
+      viewer_side = new PANOLENS.Viewer({ output: 'overlay', container: document.querySelector( '#panolens-separate-container' ) });
 
       panorama_side_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/sunset.jpg' );
 
@@ -125,6 +148,25 @@
       panorama_side_image.add( infospot3 );
 
       viewer_side.add( panorama_side_image );
+
+      var item = viewer_main.appendControlItem( { 
+
+        style : { 
+
+          backgroundImage : 'url(asset/textures/equirectangular/sunset.jpg)',
+          float: 'left'
+
+        },
+
+        onTap: function(){
+
+          viewer_main.setPanorama( panorama_main_image );
+
+        },
+
+        group: 'video'
+
+      } );
 
     </script>
 

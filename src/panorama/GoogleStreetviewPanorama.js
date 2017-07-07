@@ -18,6 +18,8 @@
 
 		this.gsvLoader = undefined;
 
+		this.loadRequested = false;
+
 		this.setupGoogleMapAPI();
 
 	}
@@ -31,6 +33,8 @@
 	 * @param {string} panoId - Gogogle Street View panorama id
 	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.load = function ( panoId ) {
+
+		this.loadRequested = true;
 
 		panoId = ( panoId || this.panoId ) || {};
 
@@ -67,7 +71,7 @@
 
 		this.gsvLoader = new GSVPANO.PanoLoader();
 
-		if ( this.gsvLoader === {} ) {
+		if ( this.gsvLoader === {} || this.loadRequested ) {
 
 			this.load();
 
@@ -90,6 +94,8 @@
 	 * @param  {string} panoId - Gogogle Street View panorama id
 	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.loadGSVLoader = function ( panoId ) {
+
+		this.loadRequested = false;
 
 		this.gsvLoader.onProgress = this.onProgress.bind( this );
 

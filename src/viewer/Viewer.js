@@ -21,10 +21,9 @@
 	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
-	 * @param {boolean} [options.passiveRendering=false] - Render only when control triggered by user input
 	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
 	 * @param {number}  [options.indicatorSize=30] - Size of View Indicator
-	 * @param {boolean} [options.outputInfospotPosition=false] - Whether and where to output infospot position. Could be 'console' or 'overlay'. Defaults to false
+	 * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -51,10 +50,9 @@
 		options.enableReticle = options.enableReticle || false;
 		options.dwellTime = options.dwellTime || 1500;
 		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
-		options.passiveRendering = options.passiveRendering || false;
 		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
 		options.indicatorSize = options.indicatorSize || 30;
-		options.outputInfospotPosition = options.outputInfospotPosition !== undefined ? options.outputInfospotPosition : false;
+		options.output = options.output ? options.output : 'none';
 
 		this.options = options;
 
@@ -69,18 +67,11 @@
 
 			container = document.createElement( 'div' );
 			container.classList.add( 'panolens-container' );
-			container.style.width = window.innerWidth + 'px';
-			container.style.height = window.innerHeight + 'px';
+			container.style.width = '100%';
+			container.style.height = '100%';
+			container._width = window.innerWidth;
+			container._height = window.innerHeight;
 			document.body.appendChild( container );
-
-			// For matching body's width and height dynamically on the next tick to
-			// avoid 0 height in the beginning
-			setTimeout( function () {
-				container.style.width = '100%';
-				container.style.height = '100%';
-				container._width = window.innerWidth;
-				container._height = window.innerHeight;
-			}, 0 );
 
 		}
 
@@ -147,26 +138,28 @@
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.renderer.setClearColor( 0x000000, 1 );
+		this.renderer.sortObjects = false;
 
 		// Append Renderer Element to container
 		this.renderer.domElement.classList.add( 'panolens-canvas' );
 		this.renderer.domElement.style.display = 'block';
+		this.container.style.backgroundColor = '#000';
 		this.container.appendChild( this.renderer.domElement );
 
 		// Camera Controls
-		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container, this.options.passiveRendering );
+		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container );
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
 		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera, this.container );
 		this.DeviceOrientationControls.name = 'device-orientation';
 		this.DeviceOrientationControls.enabled = false;
+		this.camera.position.z = 1;
 
 		// Register change event if passiveRenering
 		if ( this.options.passiveRendering ) {
 
-			this.OrbitControls.addEventListener( 'change', this.onChange.bind( this ) );
-			this.DeviceOrientationControls.addEventListener( 'change', this.onChange.bind( this ) );
+			console.warn( 'passiveRendering is now deprecated' );
 
 		}
 
@@ -210,13 +203,12 @@
 
 		// Register event if reticle is enabled, otherwise defaults to mouse
 		if ( this.options.enableReticle ) {
-			this.reticle.show();
-			this.registerReticleEvent();
+			this.enableReticleControl();
 		} else {
 			this.registerMouseAndTouchEvents();
 		}
 
-		if ( this.options.outputInfospotPosition === 'overlay' ) {
+		if ( this.options.output === 'overlay' ) {
 			this.addOutputElement();
 		}
 
@@ -265,7 +257,6 @@
 		if ( object instanceof PANOLENS.Panorama && object.dispatchEvent ) {
 
 			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
-			object.dispatchEvent( { type: 'panolens-passive-rendering', enabled: this.options.passiveRendering } );
 
 		}
 
@@ -332,13 +323,21 @@
 	 */
 	PANOLENS.Viewer.prototype.setPanorama = function ( pano ) {
 
-		if ( pano.type === 'panorama' ) {
-			
+		var scope = this, leavingPanorama = this.panorama;
+
+		if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
+
 			// Clear exisiting infospot
 			this.hideInfospot();
 
-			// Reset Current Panorama
-			this.panorama && this.panorama.onLeave();
+			var afterEnterComplete = function () {
+
+				leavingPanorama && leavingPanorama.onLeave();
+				pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
+
+			};
+
+			pano.addEventListener( 'enter-fade-start', afterEnterComplete );
 
 			// Assign and enter panorama
 			(this.panorama = pano).onEnter();
@@ -356,8 +355,6 @@
 		if ( event.method && this[ event.method ] ) {
 
 			this[ event.method ]( event.data );
-
-			this.options.passiveRendering && !event.ignoreUpdate && this.onChange();
 
 		}
 
@@ -540,6 +537,7 @@
 	PANOLENS.Viewer.prototype.enableReticleControl = function () {
 
 		if ( this.reticle.visible ) { return; }
+		if ( !this.reticle.textureLoaded ) { this.reticle.loadTextures(); }
 
 		this.tempEnableReticle = true;
 
@@ -587,25 +585,6 @@
 			 * @event PANOLENS.Viewer#video-toggle
 			 */
 			this.panorama.dispatchEvent( { type: 'video-toggle', pause: pause } );
-
-			if ( this.options.passiveRendering ) {
-
-				if ( !pause ) {
-
-					var loop = function (){
-						this.requestAnimationId = window.requestAnimationFrame( loop.bind( this ) );
-						this.onChange();
-					}.bind(this);
-
-					loop();
-
-				} else {
-
-					window.cancelAnimationFrame( this.requestAnimationId );
-
-				}
-
-			}
 
 		}
 
@@ -727,37 +706,21 @@
 		var scope = this;
 
 		// Set camera control on every panorama
-		pano.addEventListener( 'enter-animation-start', this.setCameraControl.bind( this ) );
-
-		// Start panorama leaves
-		pano.addEventListener( 'leave', function () {
-			if ( scope.options.passiveRendering ) { 
-				window.cancelAnimationFrame( scope.requestAnimationId );
-				scope.animate(); 
-			}
-		} );
-
-		// Render view once enter completes
-		pano.addEventListener( 'enter-complete', function(){
-			if ( scope.options.passiveRendering ) {
-				scope.control.update( true );
-				scope.render();
-			}
-		} );
-
-		// Stop animation when infospot finally shows up
-		pano.addEventListener( 'infospot-animation-complete', function( event ) {
-			if ( scope.options.passiveRendering && event.visible ) {
-				window.cancelAnimationFrame( scope.requestAnimationId );
-				scope.render();
-			}
-		} );
+		pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
 
 		// Show and hide widget event only when it's PANOLENS.VideoPanorama
 		if ( pano instanceof PANOLENS.VideoPanorama ) {
 
-			pano.addEventListener( 'enter', this.showVideoWidget.bind( this ) );
-			pano.addEventListener( 'leave', this.hideVideoWidget.bind( this ) );
+			pano.addEventListener( 'enter-fade-start', this.showVideoWidget.bind( this ) );
+			pano.addEventListener( 'leave', function () {
+
+				if ( !(this.panorama instanceof PANOLENS.VideoPanorama) ) {
+
+					this.hideVideoWidget.call( this );
+
+				}
+				
+			}.bind( this ) );
 
 		}
 
@@ -768,8 +731,6 @@
 	 */
 	PANOLENS.Viewer.prototype.setCameraControl = function () {
 
-		this.camera.position.copy( this.panorama.position );
-		this.camera.position.z += 1;
 		this.OrbitControls.target.copy( this.panorama.position );
 
 	};
@@ -929,30 +890,6 @@
 	};
 
 	/**
-	 * Toggle fullscreen
-	 * @param  {Boolean} isFullscreen - If it's fullscreen
-	 */
-	PANOLENS.Viewer.prototype.toggleFullscreen = function ( isFullscreen ) {
-
-		if ( isFullscreen ) {
-			this.container.style.width = '100%';
-			this.container.style.height = '100%';
-			this.container.isFullscreen = true;
-		} else {
-			this.container._width && ( this.container.style.width = this.container._width + 'px' );
-			this.container._height && ( this.container.style.height = this.container._height + 'px' );
-			if ( this.container.classList.contains( 'panolens-container' ) ) {
-				this.container.style.width = '100%';
-				this.container.style.height = '100%';
-			}
-			this.container.isFullscreen = false;
-		}
-
-		this.onWindowResize();
-
-	};
-
-	/**
 	 * Screen Space Projection
 	 */
 	PANOLENS.Viewer.prototype.getScreenVector = function ( worldVector ) {
@@ -1047,8 +984,6 @@
 		vptc = this.panorama.getWorldPosition().sub( this.camera.getWorldPosition() );
 
 		hv = vector.clone();
-		// Scale effect
-		hv.x *= -1;
 		hv.add( vptc ).normalize();
 		vv = hv.clone();
 
@@ -1090,15 +1025,30 @@
 	/**
 	 * This is called when window size is changed
 	 * @fires PANOLENS.Viewer#window-resize
+	 * @param {number} [windowWidth] - Specify if custom element has changed width
+	 * @param {number} [windowHeight] - Specify if custom element has changed height
 	 */
-	PANOLENS.Viewer.prototype.onWindowResize = function () {
+	PANOLENS.Viewer.prototype.onWindowResize = function ( windowWidth, windowHeight ) {
 
 		var width, height, expand;
 
 		expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
 
-		width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container._width;
-		height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container._height;
+		if ( windowWidth !== undefined && windowHeight !== undefined ) {
+
+			width = windowWidth;
+			height = windowHeight;
+			this.container._width = windowWidth;
+			this.container._height = windowHeight;
+
+		} else {
+
+			width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container.clientWidth;
+			height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container.clientHeight;
+			this.container._width = width;
+			this.container._height = height;
+
+		}
 
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
@@ -1111,9 +1061,6 @@
 			this.updateReticleEvent();
 
 		}
-
-		// Passive render after window size changes
-		this.options.passiveRendering && this.render();
 
 		/**
 		 * Window resizing event
@@ -1131,7 +1078,7 @@
 
 			}
 
-		} );		
+		} );
 
 	};
 
@@ -1156,19 +1103,18 @@
 
 		intersects = this.raycaster.intersectObject( this.panorama, true );
 
-		if ( intersects.length > 0 && intersects[0].object instanceof PANOLENS.Panorama ) {
+		if ( intersects.length > 0 ) {
 
 			point = intersects[0].point;
 			panoramaWorldPosition = this.panorama.getWorldPosition();
 
-			// Panorama is scaled -1 on X axis
 			outputPosition = new THREE.Vector3(
-				(point.x - panoramaWorldPosition.x).toFixed(2) * -1,
+				(point.x - panoramaWorldPosition.x).toFixed(2),
 				(point.y - panoramaWorldPosition.y).toFixed(2),
 				(point.z - panoramaWorldPosition.z).toFixed(2)
 			);
 
-			switch ( this.options.outputInfospotPosition ) {
+			switch ( this.options.output ) {
 
 				case 'console':
 					console.info( outputPosition.x + ', ' + outputPosition.y + ', ' + outputPosition.z );
@@ -1504,7 +1450,7 @@
 
 	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
 
-		if ( this.options.outputInfospotPosition && event.key === 'Control' ) {
+		if ( this.options.output && this.options.output !== 'none' && event.key === 'Control' ) {
 
 			this.OUTPUT_INFOSPOT = true;
 
@@ -1527,7 +1473,7 @@
 
 		this.updateCallbacks.forEach( function( callback ){ callback(); } );
 
-		!this.options.passiveRendering && this.control.update();
+		this.control.update();
 
 		this.scene.traverse( function( child ){
 			if ( child instanceof PANOLENS.Infospot 
@@ -1569,9 +1515,7 @@
 
 		this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
-		this.update();
-
-		!this.options.passiveRendering && this.render();
+		this.onChange();
 
 	};
 
@@ -1728,67 +1672,126 @@
 	};
 
 	/**
+	 * On panorama dispose
+	 */
+	PANOLENS.Viewer.prototype.onPanoramaDispose = function ( panorama ) {
+
+		if ( panorama instanceof PANOLENS.VideoPanorama ) {
+
+			this.hideVideoWidget();
+
+		}
+
+		if ( panorama === this.panorama ) {
+
+			this.panorama = null;
+
+		}
+
+	};
+
+	/**
+	 * Load ajax call
+	 * @param {string} url - URL to be requested
+	 * @param {function} [callback] - Callback after request completes
+	 */
+	PANOLENS.Viewer.prototype.loadAsyncRequest = function ( url, callback ) {
+
+		var request = new XMLHttpRequest();
+		request.onloadend = function ( event ) {
+			callback && callback( event );
+		};
+		request.open( "GET", url, true );
+		request.send( null );
+
+	};
+
+	/**
 	 * View indicator in upper left
 	 * */
 	PANOLENS.Viewer.prototype.addViewIndicator = function () {
 
-		var indicatorSvg = PANOLENS.DataImage.ViewIndicator;
+		var scope = this;
 
-		var viewIndicatorDiv = document.createElement( "div" );
-		viewIndicatorDiv.innerHTML = indicatorSvg;
-		viewIndicatorDiv.style.width = this.viewIndicatorSize + "px";
-		viewIndicatorDiv.style.height = this.viewIndicatorSize + "px";
-		viewIndicatorDiv.style.position = "absolute";
-		viewIndicatorDiv.style.top = "6px";
-		viewIndicatorDiv.style.left = "6px";
-		viewIndicatorDiv.style.opacity = "0.7";
-		viewIndicatorDiv.style.cursor = "pointer";
-		viewIndicatorDiv.id = "view-indicator-container";
+		function loadViewIndicator ( asyncEvent ) {
 
-		this.container.appendChild( viewIndicatorDiv );
+			if ( asyncEvent.loaded === 0 ) return;
 
-		var viewIndicator = document.getElementById( "view-indicator" );
-		var indicator = document.getElementById( "indicator" );
+			var viewIndicatorDiv = asyncEvent.target.responseXML.documentElement;
+			viewIndicatorDiv.style.width = scope.viewIndicatorSize + "px";
+			viewIndicatorDiv.style.height = scope.viewIndicatorSize + "px";
+			viewIndicatorDiv.style.position = "absolute";
+			viewIndicatorDiv.style.top = "10px";
+			viewIndicatorDiv.style.left = "10px";
+			viewIndicatorDiv.style.opacity = "0.5";
+			viewIndicatorDiv.style.cursor = "pointer";
+			viewIndicatorDiv.id = "panolens-view-indicator-container";
 
-		var setIndicatorD = function () {
+			scope.container.appendChild( viewIndicatorDiv );
 
-			this.radius = this.viewIndicatorSize * 0.225;
-			this.currentPanoAngle = this.camera.rotation.y - THREE.Math.degToRad( 90 );
-			this.fovAngle = THREE.Math.degToRad( this.camera.fov ) ;
-			this.leftAngle = -this.currentPanoAngle - this.fovAngle / 2;
-			this.rightAngle = -this.currentPanoAngle + this.fovAngle / 2;
-			this.leftX = this.radius * Math.cos( this.leftAngle );
-			this.leftY = this.radius * Math.sin( this.leftAngle );
-			this.rightX = this.radius * Math.cos( this.rightAngle );
-			this.rightY = this.radius * Math.sin( this.rightAngle );
-			this.indicatorD = "M " + this.leftX + " " + this.leftY + " A " + this.radius + " " + this.radius + " 0 0 1 " + this.rightX + " " + this.rightY;
+			var indicator = viewIndicatorDiv.querySelector( "#indicator" );
+			var setIndicatorD = function () {
 
-			if ( this.leftX && this.leftY && this.rightX && this.rightY && this.radius ) {
+				scope.radius = scope.viewIndicatorSize * 0.225;
+				scope.currentPanoAngle = scope.camera.rotation.y - THREE.Math.degToRad( 90 );
+				scope.fovAngle = THREE.Math.degToRad( scope.camera.fov ) ;
+				scope.leftAngle = -scope.currentPanoAngle - scope.fovAngle / 2;
+				scope.rightAngle = -scope.currentPanoAngle + scope.fovAngle / 2;
+				scope.leftX = scope.radius * Math.cos( scope.leftAngle );
+				scope.leftY = scope.radius * Math.sin( scope.leftAngle );
+				scope.rightX = scope.radius * Math.cos( scope.rightAngle );
+				scope.rightY = scope.radius * Math.sin( scope.rightAngle );
+				scope.indicatorD = "M " + scope.leftX + " " + scope.leftY + " A " + scope.radius + " " + scope.radius + " 0 0 1 " + scope.rightX + " " + scope.rightY;
 
-				indicator.setAttribute( "d", this.indicatorD );
+				if ( scope.leftX && scope.leftY && scope.rightX && scope.rightY && scope.radius ) {
 
-			}
+					indicator.setAttribute( "d", scope.indicatorD );
 
-		}.bind(this);
+				}
 
-		this.addUpdateCallback( setIndicatorD );
+			};
 
-		var indicatorOnMouseEnter = function () {
+			scope.addUpdateCallback( setIndicatorD );
 
-			viewIndicatorDiv.style.opacity = "1";
-			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+			var indicatorOnMouseEnter = function () {
 
-		};
+				this.style.opacity = "1";
 
-		var indicatorOnMouseLeave = function () {
+			};
 
-			viewIndicatorDiv.style.opacity = "0.7";
-			viewIndicator.style.filter = "drop-shadow(rgb(255, 255, 255) 0px 0px 5px)";
+			var indicatorOnMouseLeave = function () {
 
-		};
+				this.style.opacity = "0.5";
 
-		viewIndicatorDiv.addEventListener( "mouseenter", indicatorOnMouseEnter );
-		viewIndicatorDiv.addEventListener( "mouseleave", indicatorOnMouseLeave );
+			};
+
+			viewIndicatorDiv.addEventListener( "mouseenter", indicatorOnMouseEnter );
+			viewIndicatorDiv.addEventListener( "mouseleave", indicatorOnMouseLeave );
+		}
+
+		this.loadAsyncRequest( PANOLENS.DataImage.ViewIndicator, loadViewIndicator );
+
+	};
+
+	/**
+	 * Append custom control item to existing control bar
+	 * @param {object} [option={}] - Style object to overwirte default element style. It takes 'style', 'onTap' and 'group' properties.
+	 */
+	PANOLENS.Viewer.prototype.appendControlItem = function ( option ) {
+
+		var item = this.widget.createCustomItem( option );		
+
+		if ( option.group === 'video' ) {
+
+			this.widget.videoElement.appendChild( item );
+
+		} else {
+
+			this.widget.barElement.appendChild( item );
+
+		}
+
+		return item;
 
 	};
 

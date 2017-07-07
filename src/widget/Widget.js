@@ -61,6 +61,7 @@
 		bar.style.background = '-ms-' + gradientStyle;
 		bar.style.background = gradientStyle;
 		bar.style.transition = this.DEFAULT_TRANSITION;
+		bar.style.pointerEvents = 'none';
 		bar.isHidden = false;
 		bar.toggle = function () {
 			bar.isHidden = !bar.isHidden;
@@ -355,7 +356,9 @@
 	 */
 	PANOLENS.Widget.prototype.createFullscreenButton = function () {
 
-		var scope = this, item, isFullscreen = false, tapSkipped = true;
+		var scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
+
+		stylesheetId = 'panolens-style-addon';
 
 		// Don't create button if no support
 		if ( !document.fullscreenEnabled       && 
@@ -365,7 +368,10 @@
 			return;
 		}
 
-		function onTap () {
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
 
 			tapSkipped = false;
 
@@ -404,9 +410,9 @@
 			/**
 			 * Viewer handler event
 			 * @type {object}
-			 * @property {string} method - 'toggleFullscreen' function call on PANOLENS.Viewer
+			 * @property {string} method - 'onWindowResize' function call on PANOLENS.Viewer
 			 */
-			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleFullscreen', data: isFullscreen } );
+			scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize', data: false } );
 
 			tapSkipped = true;
 
@@ -429,6 +435,14 @@
 
 		} );
 
+		// Add fullscreen stlye if not exists
+		if ( !document.querySelector( stylesheetId ) ) {
+			var sheet = document.createElement( 'style' );
+			sheet.id = stylesheetId;
+			sheet.innerHTML = ':-webkit-full-screen { width: 100% !important; height: 100% !important }';
+			document.body.appendChild( sheet );
+		}
+		
 		return item;
 
 	};
@@ -454,7 +468,7 @@
 			item.style.display = 'none';
 			item.controlButton.paused = true;
 			item.controlButton.update();
-			item.seekBar.setProgress( 0 );
+
 		};
 
 		item.controlButton = this.createVideoControlButton();
@@ -492,7 +506,10 @@
 
 		var scope = this, item;
 
-		function onTap () {
+		function onTap ( event ) {
+
+			event.preventDefault();
+			event.stopPropagation();
 
 			/**
 			 * Viewer handler event
@@ -634,6 +651,9 @@
 
 		function onTap ( event ) {
 
+			event.preventDefault();
+			event.stopPropagation();
+
 			var percentage;
 
 			if ( event.target === progressElementControl ) { return; }
@@ -712,6 +732,7 @@
 		item.style.padding = '10px';
 		item.style.textDecoration = 'none';
 		item.style.cursor = 'pointer';
+		item.style.pointerEvents = 'auto';
 		item.style.transition = this.DEFAULT_TRANSITION;
 
 		item.slide = function ( right ) {
@@ -974,6 +995,7 @@
   		style.borderRadius = '2px';
 		style.overflow = 'hidden';
 		style.willChange = 'width, height, opacity';
+		style.pointerEvents = 'auto';
 		style.transition = this.DEFAULT_TRANSITION;
 
 		menu.visible = false;
@@ -1118,6 +1140,7 @@
 		item.style.MozUserSelect = 
 		item.style.userSelect = 'none';
 		item.style.position = 'relative';
+		item.style.pointerEvents = 'auto';
 
 		// White glow on icon
 		item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
