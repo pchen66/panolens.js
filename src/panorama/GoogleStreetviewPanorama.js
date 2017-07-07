@@ -8,10 +8,9 @@
 	 * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
 	 * @constructor
 	 * @param {string} panoId - Panorama id from Google Streetview 
-	 * @param {string} apiKey - Google Map api key (@Link https://developers.google.com/maps/documentation/javascript/get-api-key)
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
-	PANOLENS.GoogleStreetviewPanorama = function ( panoId, apiKey, radius ) {
+	PANOLENS.GoogleStreetviewPanorama = function ( panoId, radius ) {
 
 		PANOLENS.ImagePanorama.call( this, undefined, radius );
 
@@ -19,7 +18,9 @@
 
 		this.gsvLoader = undefined;
 
-		this.setupGoogleMapAPI( apiKey );
+		this.loadRequested = false;
+
+		this.setupGoogleMapAPI();
 
 	}
 
@@ -32,6 +33,8 @@
 	 * @param {string} panoId - Gogogle Street View panorama id
 	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.load = function ( panoId ) {
+
+		this.loadRequested = true;
 
 		panoId = ( panoId || this.panoId ) || {};
 
@@ -50,16 +53,10 @@
 	/**
 	 * Setup Google Map API
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function ( apiKey ) {
-
-		if ( !apiKey ) {
-
-			console.warn( 'Please specify Google Map API key. Otherwise access will be limited' );
-
-		}
+	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function () {
 
 		var script = document.createElement( 'script' );
-		script.src = 'https://maps.googleapis.com/maps/api/js' + ( apiKey ? '?key=' + apiKey : '' );
+		script.src = 'https://maps.googleapis.com/maps/api/js';
 		script.onreadystatechange = this.setGSVLoader.bind( this );
     	script.onload = this.setGSVLoader.bind( this );
 
@@ -74,7 +71,7 @@
 
 		this.gsvLoader = new GSVPANO.PanoLoader();
 
-		if ( this.gsvLoader === {} ) {
+		if ( this.gsvLoader === {} || this.loadRequested ) {
 
 			this.load();
 
@@ -97,6 +94,8 @@
 	 * @param  {string} panoId - Gogogle Street View panorama id
 	 */
 	PANOLENS.GoogleStreetviewPanorama.prototype.loadGSVLoader = function ( panoId ) {
+
+		this.loadRequested = false;
 
 		this.gsvLoader.onProgress = this.onProgress.bind( this );
 

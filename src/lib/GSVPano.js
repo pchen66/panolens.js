@@ -88,8 +88,6 @@ GSVPANO.PanoLoader = function (parameters) {
 			}
 		}
 
-		//console.log( _canvas );
-
 	};
 
 	this.composeFromTile = function (x, y, texture) {
@@ -133,7 +131,6 @@ GSVPANO.PanoLoader = function (parameters) {
 	this.composePanorama = function () {
 	
 		this.setProgress(0, 1);
-		//console.log('Loading panorama for zoom ' + _zoom + '...');
 		
 		var w = levelsW[ _zoom ],
 			h = levelsH[ _zoom ],
@@ -141,8 +138,6 @@ GSVPANO.PanoLoader = function (parameters) {
 			url,
 			x,
 			y;
-
-			//console.log( w, h, w * 512, h * 512 );
 			
 		_count = 0;
 		_total = w * h;
@@ -150,12 +145,10 @@ GSVPANO.PanoLoader = function (parameters) {
 		var self = this;
 		for( var y = 0; y < h; y++ ) {
 			for( var x = 0; x < w; x++ ) {
-				var url = 'https://cbks0.googleapis.com/cbk?output=tile&cb_client=maps_photos.ugc&v=4&gl=US&zoom=' + _zoom + '&x=' + x + '&y=' + y + '&panoid=' + _panoId;
-
+				var url = 'https://geo0.ggpht.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=tile&zoom=' + _zoom + '&x=' + x + '&y=' + y + '&panoid=' + _panoId + '&nbt&fover=2';
 				( function( x, y ) { 
 					if( _parameters.useWebGL ) {
 						var texture = THREE.ImageUtils.loadTexture( url, null, function() {
-							//console.log( 'loaded ' + url );
 							self.composeFromTile( x, y, texture );
 						} );
 					} else {
@@ -174,32 +167,12 @@ GSVPANO.PanoLoader = function (parameters) {
 	
 	this.load = function ( panoid ) {
 	
-		//console.log('Load for', location);
-		var self = this;
-
-		//var url = 'https://maps.google.com/cbk?output=json&hl=x-local&ll=' + location.lat() + ',' + location.lng() + '&cb_client=maps_sv&v=3';
-		//url = 'https://cbks1.google.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=polygon&it=1%3A1&rank=closest&ll=' + location.lat() + ',' + location.lng() + '&radius=350';
-		//url = 'https://cbks1.google.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=json&ll=' + location.lat() + ',' + location.lng();
-		var url = 'https://cbks0.google.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=json&panoid=' + panoid;
-
-		/*var http_request = new XMLHttpRequest();
-		http_request.withCredentials = true;
-		http_request.open( "GET", url, true );
-		http_request.onreadystatechange = function () {
-			if ( http_request.readyState == 4 && http_request.status == 200 ) {
-				var data = JSON.parse( http_request.responseText );
-				self.loadPano( location, data.Location.panoId );
-				//self.loadPano( location, data.result[ 0 ].id );
-			}
-		};
-		http_request.send(null);*/
-		self.loadPano( panoid );
+		this.loadPano( panoid );
 
 	};
 
 	this.loadPano = function( id ) {
 
-		//console.log( 'Load ' + id );
 		var self = this;
 		_panoClient.getPanoramaById( id, function (result, status) {
 			if (status === google.maps.StreetViewStatus.OK) {
@@ -222,7 +195,6 @@ GSVPANO.PanoLoader = function (parameters) {
 	
 	this.setZoom = function( z ) {
 		_zoom = z;
-		//console.log( z );
 		this.adaptTextureToZoom();
 	};
 
