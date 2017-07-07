@@ -1,6 +1,6 @@
 {
   "name": "panolens.js",
-  "version": "0.8.0-dev",
+  "version": "0.8.0",
   "description": "Javascript panorama viewer",
   "main": "index.js",
   "scripts": {
@@ -31,6 +31,6 @@
     "gulp-uglify": "^2.1.2",
     "three": "^0.86.0",
     "tween.js": "^16.6.0",
-    "iphone-inline-video": "^2.0.2"
+    "iphone-inline-video": "^2.2.2"
   }
 }
