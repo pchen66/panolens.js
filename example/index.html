@@ -93,7 +93,7 @@
       panorama_main_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: true });
 
       var cube = new THREE.Mesh( new THREE.BoxGeometry(50, 50, 50), new THREE.MeshNormalMaterial() );
-      cube.position.set(1000, 2000, 0);
+      cube.position.set(1000, 0, 0);
       panorama_main_video.add( cube );
       panorama_main_video.addEventListener( 'progress',function(e){
         console.log(e.progress);
@@ -110,7 +110,7 @@
         console.log(e.progress);
       });
 
-      panorama_main_video.link( panorama_main_video2, new THREE.Vector3( 1148.79, -59.12, -4859.07 ) );
+      panorama_main_video.link( panorama_main_video2, new THREE.Vector3( -3501.84, -764.55, -3475.54 ) );
       panorama_main_video2.link( panorama_main_video, new THREE.Vector3( -2615.55, 1357.43, -4026.71 ) );
 
       panorama_main_video.link( panorama_main_image, new THREE.Vector3( 4964.41, 366.98, 404.06 ) );
@@ -122,10 +122,10 @@
       panorama_main_image.add( infospot2 );
 
       infospot1 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
-      infospot1.position.set( 3566.39, 1152.86, -3303.91 );
+      infospot1.position.set( 3535.63, 1148.16, -3336.00 );
       infospot1.addHoverText( 'Mountain Tip' );
       infospot1.addEventListener( 'click', function(){
-        viewer_main.tweenControlCenter( cube.position );
+        viewer_main.tweenControlCenterByObject( cube );
       } );
       panorama_main_video.add( infospot1 );
       

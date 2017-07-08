@@ -984,6 +984,8 @@
 		vptc = this.panorama.getWorldPosition().sub( this.camera.getWorldPosition() );
 
 		hv = vector.clone();
+		// Scale effect
+		hv.x *= -1;
 		hv.add( vptc ).normalize();
 		vv = hv.clone();
 
@@ -1019,6 +1021,39 @@
 				nv.up = this.up;
 			})
 			.start();
+
+	};
+
+	/**
+	 * Tween control looking center by object
+	 * @param {THREE.Object3D} object - Object to be looked at the center
+	 * @param {number} [duration=1000] - Duration to tween
+	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+	 */
+	PANOLENS.Viewer.prototype.tweenControlCenterByObject = function ( object, duration, easing ) {
+
+		var isUnderScalePlaceHolder = false;
+
+		object.traverseAncestors( function ( ancestor ) {
+
+			if ( ancestor.scalePlaceHolder ) {
+
+				isUnderScalePlaceHolder = true;
+
+			}
+		} );
+
+		if ( isUnderScalePlaceHolder ) {
+
+			var invertXVector = new THREE.Vector3( -1, 1, 1 );
+
+			this.tweenControlCenter( object.getWorldPosition().multiply( invertXVector ), duration, easing );
+
+		} else {
+
+			this.tweenControlCenter( object.getWorldPosition(), duration, easing );
+
+		}
 
 	};
 
@@ -1108,8 +1143,9 @@
 			point = intersects[0].point;
 			panoramaWorldPosition = this.panorama.getWorldPosition();
 
+			// Panorama is scaled -1 on X axis
 			outputPosition = new THREE.Vector3(
-				(point.x - panoramaWorldPosition.x).toFixed(2),
+				-(point.x - panoramaWorldPosition.x).toFixed(2),
 				(point.y - panoramaWorldPosition.y).toFixed(2),
 				(point.z - panoramaWorldPosition.z).toFixed(2)
 			);

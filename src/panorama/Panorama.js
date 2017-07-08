@@ -41,6 +41,8 @@
 		this.material.side = THREE.DoubleSide;
 		this.material.visible = false;
 
+		this.scale.x *= -1;
+
 		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
 
 		this.addEventListener( 'load', this.fadeIn.bind( this ) );
@@ -57,11 +59,13 @@
 
 	/**
 	 * Adding an object
+	 * To counter the scale.x = -1, it will automatically add an 
+	 * empty object with inverted scale on x
 	 * @param {THREE.Object3D} object - The object to be added
 	 */
 	PANOLENS.Panorama.prototype.add = function ( object ) {
 
-		var scope;
+		var scope, invertedObject;
 
 		scope = this;
 
@@ -79,6 +83,8 @@
 
 		// In case of infospots
 		if ( object instanceof PANOLENS.Infospot ) {
+
+			invertedObject = object;
 
 			if ( object.dispatchEvent ) {
 
@@ -99,9 +105,17 @@
 				} } );
 			}
 
+		} else {
+
+			// Counter scale.x = -1 effect
+			invertedObject = new THREE.Object3D();
+			invertedObject.scale.x = -1;
+			invertedObject.scalePlaceHolder = true;
+			invertedObject.add( object );
+
 		}
 
-		THREE.Object3D.prototype.add.call( this, object );
+		THREE.Object3D.prototype.add.call( this, invertedObject );
 
 	};
 
