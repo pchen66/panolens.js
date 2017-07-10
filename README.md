@@ -90,8 +90,13 @@ Always make your contributions for the latest `dev` branch, not `master`, so it 
 1.	npm packaging
 2.	infospot editor
 
+### Support
+[![Support][panolens-support]][panolens-support-url]
+
 [release-badge]: https://img.shields.io/github/release/pchen66/panolens.js.svg
 [release-badge-url]:https://github.com/pchen66/panolens.js/releases
 [license-badge]: https://img.shields.io/github/license/pchen66/panolens.js.svg
 [license-badge-url]: ./LICENSE
 [gzip-size-badge]: http://img.badgesize.io/https://raw.githubusercontent.com/pchen66/panolens.js/master/build/panolens.min.js?compression=gzip&label=gzip%20size
+[panolens-support]: https://pledgie.com/campaigns/34234.png?skin_name=chrome
+[panolens-support-url]: https://pledgie.com/campaigns/34234
