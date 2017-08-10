@@ -61,6 +61,24 @@ All attributes are optional
 
 Check Panolens [example page](http://pchen66.github.io/Panolens/#Example)
 
+Website Example | Codepen Live Exmaple
+------------ | -------------
+[Image Panorama](https://pchen66.github.io/Panolens/examples/panorama_image.html) | [Custom Widget](https://codepen.io/pchen66/pen/vZVyYr)
+[Cube Panorama](https://pchen66.github.io/Panolens/examples/panorama_cube.html) | [Custom Linking](https://codepen.io/pchen66/pen/yXeWMJ)
+[Basic Panorama](https://pchen66.github.io/Panolens/examples/panorama_basic.html) | [Custom Infospot](https://codepen.io/pchen66/pen/dRYNNG)
+[Google Street View Panorama](https://pchen66.github.io/Panolens/examples/panorama_googlestreetview.html) | [Custom Set Panorama](https://codepen.io/pchen66/pen/RgxeJM)
+[Infospot](https://pchen66.github.io/Panolens/examples/panorama_infospot.html) | [Custom Container](https://codepen.io/pchen66/pen/gMmggW)
+[Infospot Focus](https://pchen66.github.io/Panolens/examples/panorama_infospot_focus.html) | [Custom Hover Element](https://codepen.io/pchen66/pen/vKvWQV)
+[Panorama Linking](https://pchen66.github.io/Panolens/examples/panorama_linking.html) | [Initial Lookat](https://codepen.io/pchen66/pen/LLgxME)
+[Panorama Loading Progress](https://pchen66.github.io/Panolens/examples/panorama_loading_progress.html) | [Spaital Audio](https://codepen.io/pchen66/pen/EZjbXq)
+[Simple Gallery](https://pchen66.github.io/Panolens/examples/panorama_simple_gallery.html) | 
+[Little Planet Panorama](https://pchen66.github.io/Panolens/examples/littleplanet_image.html) | 
+[Reticle](https://pchen66.github.io/Panolens/examples/panorama_reticle.html) | 
+[3D UI](https://pchen66.github.io/Panolens/examples/panorama_ui.html) | 
+[Interactive](https://pchen66.github.io/Panolens/examples/panorama_interactive.html) | 
+[XDiamond](https://pchen66.github.io/Panolens/XDiamond) | 
+[PanoTheater](http://pchen66.github.io/PanoTheater) | 
+
 ### Features
 
 1.	Support equirectangular image
