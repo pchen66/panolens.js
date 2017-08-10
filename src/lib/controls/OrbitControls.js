@@ -684,6 +684,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 				var distance = Math.sqrt( dx * dx + dy * dy );
 
+				dollyStart.set( 0, distance );
+
 				break;
 
 			case 3: // three-fingered touch: pan
@@ -753,14 +755,17 @@ THREE.OrbitControls = function ( object, domElement ) {
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 				var distance = Math.sqrt( dx * dx + dy * dy );
 
-				if ( event.scale < 1 ) {
+				dollyEnd.set( 0, distance );
+				dollyDelta.subVectors( dollyEnd, dollyStart );
+
+				if ( dollyDelta.y < 0 ) {
 
 					scope.object.fov = ( scope.object.fov < scope.maxFov ) 
 						? scope.object.fov + 1
 						: scope.maxFov;
 					scope.object.updateProjectionMatrix();
 
-				} else if ( event.scale > 1 ) {
+				} else if ( dollyDelta.y > 0 ) {
 
 					scope.object.fov = ( scope.object.fov > scope.minFov ) 
 						? scope.object.fov - 1
@@ -768,6 +773,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 					scope.object.updateProjectionMatrix();
 
 				}
+
+				dollyStart.copy( dollyEnd );
 
 				scope.update();
 				scope.dispatchEvent( changeEvent );
