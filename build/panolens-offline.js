@@ -2496,6 +2496,14 @@ GSVPANO.PanoLoader = function (parameters) {
 
 	};
 
+	PANOLENS.Utils.isIOS = window ? /iPhone|iPad|iPod/i.test( window.navigator.userAgent ) : false;
+
+	PANOLENS.Utils.isAndroid = window ? /Android/i.test( window.navigator.userAgent ) : false;
+
+	PANOLENS.Utils.isMobile = window 
+		? PANOLENS.Utils.isIOS || PANOLENS.Utils.isAndroid || /BlackBerry|Opera Mini|IEMobile/i.test( window.navigator.userAgent ) 
+		: false;
+
 })();;(function(){
 	
 	'use strict';
@@ -3762,8 +3770,8 @@ PANOLENS.StereographicShader = {
 		this.videoRenderObject = undefined;
 		this.videoProgress = 0;
 
-		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
-		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
+		this.isIOS = PANOLENS.Utils.isIOS;
+		this.isMobile = PANOLENS.Utils.isMobile;
 
 		this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
 		this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
@@ -8226,8 +8234,19 @@ PANOLENS.StereographicShader = {
 
 		} else {
 
-			width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container.clientWidth;
-			height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container.clientHeight;
+			var adjustWidth, adjustHeight;
+
+			adjustWidth = PANOLENS.Utils.isAndroid 
+				? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 
+				: Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+
+			adjustHeight = PANOLENS.Utils.isAndroid 
+				? Math.min(document.documentElement.clientHeight, window.innerHeight || 0) 
+				: Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+			width = expand ? adjustWidth : this.container.clientWidth;
+			height = expand ? adjustHeight : this.container.clientHeight;
+
 			this.container._width = width;
 			this.container._height = height;
 
@@ -8297,6 +8316,8 @@ PANOLENS.StereographicShader = {
 				(point.y - panoramaWorldPosition.y).toFixed(2),
 				(point.z - panoramaWorldPosition.z).toFixed(2)
 			);
+
+			if ( outputPosition.length() === 0 ) { return; }
 
 			switch ( this.options.output ) {
 
