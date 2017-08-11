@@ -32,8 +32,8 @@
 		this.videoRenderObject = undefined;
 		this.videoProgress = 0;
 
-		this.isIOS = /iPhone|iPad|iPod/i.test( navigator.userAgent );
-		this.isMobile = this.isIOS || /Android|BlackBerry|Opera Mini|IEMobile/i.test( navigator.userAgent );
+		this.isIOS = PANOLENS.Utils.isIOS;
+		this.isMobile = PANOLENS.Utils.isMobile;
 
 		this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
 		this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
