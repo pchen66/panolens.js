@@ -61,6 +61,24 @@ All attributes are optional
 
 Check Panolens [example page](http://pchen66.github.io/Panolens/#Example)
 
+Website Example | Codepen Live Exmaple
+------------ | -------------
+[Image Panorama](https://pchen66.github.io/Panolens/examples/panorama_image.html) | [Custom Widget](https://codepen.io/pchen66/pen/vZVyYr)
+[Cube Panorama](https://pchen66.github.io/Panolens/examples/panorama_cube.html) | [Custom Linking](https://codepen.io/pchen66/pen/yXeWMJ)
+[Basic Panorama](https://pchen66.github.io/Panolens/examples/panorama_basic.html) | [Custom Infospot](https://codepen.io/pchen66/pen/dRYNNG)
+[Google Street View Panorama](https://pchen66.github.io/Panolens/examples/panorama_googlestreetview.html) | [Custom Set Panorama](https://codepen.io/pchen66/pen/RgxeJM)
+[Infospot](https://pchen66.github.io/Panolens/examples/panorama_infospot.html) | [Custom Container](https://codepen.io/pchen66/pen/gMmggW)
+[Infospot Focus](https://pchen66.github.io/Panolens/examples/panorama_infospot_focus.html) | [Custom Hover Element](https://codepen.io/pchen66/pen/vKvWQV)
+[Panorama Linking](https://pchen66.github.io/Panolens/examples/panorama_linking.html) | [Initial Lookat](https://codepen.io/pchen66/pen/LLgxME)
+[Panorama Loading Progress](https://pchen66.github.io/Panolens/examples/panorama_loading_progress.html) | [Spaital Audio](https://codepen.io/pchen66/pen/EZjbXq)
+[Simple Gallery](https://pchen66.github.io/Panolens/examples/panorama_simple_gallery.html) | [Update Image](https://codepen.io/pchen66/pen/YxeYGZ)
+[Little Planet Panorama](https://pchen66.github.io/Panolens/examples/littleplanet_image.html) | 
+[Reticle](https://pchen66.github.io/Panolens/examples/panorama_reticle.html) | 
+[3D UI](https://pchen66.github.io/Panolens/examples/panorama_ui.html) | 
+[Interactive](https://pchen66.github.io/Panolens/examples/panorama_interactive.html) | 
+[XDiamond](https://pchen66.github.io/Panolens/XDiamond) | 
+[PanoTheater](http://pchen66.github.io/PanoTheater) | 
+
 ### Features
 
 1.	Support equirectangular image
@@ -90,8 +108,13 @@ Always make your contributions for the latest `dev` branch, not `master`, so it 
 1.	npm packaging
 2.	infospot editor
 
+### Support
+[![Support][panolens-support]][panolens-support-url]
+
 [release-badge]: https://img.shields.io/github/release/pchen66/panolens.js.svg
 [release-badge-url]:https://github.com/pchen66/panolens.js/releases
 [license-badge]: https://img.shields.io/github/license/pchen66/panolens.js.svg
 [license-badge-url]: ./LICENSE
 [gzip-size-badge]: http://img.badgesize.io/https://raw.githubusercontent.com/pchen66/panolens.js/master/build/panolens.min.js?compression=gzip&label=gzip%20size
+[panolens-support]: https://pledgie.com/campaigns/34234.png?skin_name=chrome
+[panolens-support-url]: https://pledgie.com/campaigns/34234
