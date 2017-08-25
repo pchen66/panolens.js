@@ -71,7 +71,7 @@ Website Example | Codepen Live Exmaple
 [Infospot Focus](https://pchen66.github.io/Panolens/examples/panorama_infospot_focus.html) | [Custom Hover Element](https://codepen.io/pchen66/pen/vKvWQV)
 [Panorama Linking](https://pchen66.github.io/Panolens/examples/panorama_linking.html) | [Initial Lookat](https://codepen.io/pchen66/pen/LLgxME)
 [Panorama Loading Progress](https://pchen66.github.io/Panolens/examples/panorama_loading_progress.html) | [Spaital Audio](https://codepen.io/pchen66/pen/EZjbXq)
-[Simple Gallery](https://pchen66.github.io/Panolens/examples/panorama_simple_gallery.html) | 
+[Simple Gallery](https://pchen66.github.io/Panolens/examples/panorama_simple_gallery.html) | [Update Image](https://codepen.io/pchen66/pen/YxeYGZ)
 [Little Planet Panorama](https://pchen66.github.io/Panolens/examples/littleplanet_image.html) | 
 [Reticle](https://pchen66.github.io/Panolens/examples/panorama_reticle.html) | 
 [3D UI](https://pchen66.github.io/Panolens/examples/panorama_ui.html) | 
