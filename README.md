@@ -39,20 +39,58 @@ All attributes are optional
 ```html
 <script>
 	viewer = new PANOLENS.Viewer({
-		container: document.body,		// A DOM Element container
-		controlBar: true, 			// Vsibility of bottom control bar
-		controlButtons: [],			// Buttons array in the control bar. Default to ['fullscreen', 'setting', 'video']
-		autoHideControlBar: false,		// Auto hide control bar
-		autoHideInfospot: true,			// Auto hide infospots
-		horizontalView: false,			// Allow only horizontal camera control
-		cameraFov: 60,				// Camera field of view in degree
-		reverseDragging: false,			// Reverse orbit control direction
-		enableReticle: false,			// Enable reticle for mouseless interaction
-		dwellTime: 1500,			// Dwell time for reticle selection in millisecond
-		autoReticleSelect: true,		// Auto select a clickable target after dwellTime
-		viewIndicator: false,			// Adds an angle view indicator in upper left corner
-		indicatorSize: 30,			// Size of View Indicator
-		output: 'console'			// Whether and where to output infospot position. Could be 'console' or 'overlay'
+
+		// A DOM Element container
+		container: document.body,
+
+		// Vsibility of bottom control bar
+		controlBar: true,
+
+		// Buttons array in the control bar. Default to ['fullscreen', 'setting', 'video']
+		controlButtons: [],
+
+		// Auto hide control bar
+		autoHideControlBar: false,
+
+		// Auto hide infospots
+		autoHideInfospot: true,
+
+		// Allow only horizontal camera control
+		horizontalView: false,
+
+		// Camera field of view in degree
+		cameraFov: 60,
+
+		// Reverse orbit control direction
+		reverseDragging: false,
+
+		// Enable reticle for mouseless interaction
+		enableReticle: false,
+
+		// Dwell time for reticle selection in millisecond
+		dwellTime: 1500,
+
+		// Auto select a clickable target after dwellTime
+		autoReticleSelect: true,
+
+		// Adds an angle view indicator in upper left corner
+		viewIndicator: false,
+
+		// Size of View Indicator
+		indicatorSize: 30,
+
+		// Whether and where to output infospot position. Could be 'console' or 'overlay'
+		output: 'console',
+
+		// Auto rotate
+		autoRotate: false,
+
+		// Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
+		autoRotateSpeed: 2.0,
+
+		// Duration before auto rotatation when no user interactivity in ms
+		autoRotateActivationDuration: 5000
+
 	});
 </script>
 ```

@@ -88,7 +88,7 @@
       var infospot1, infospot2, infospot3;
 
       // Main panorama
-      viewer_main = new PANOLENS.Viewer({ output: 'console', viewIndicator: true });
+      viewer_main = new PANOLENS.Viewer({ output: 'console', viewIndicator: true, autoRotate: true, autoRotateSpeed: 2, autoRotateActivationDuration: 3000, output: 'overlay' });
 
       panorama_main_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: true });
 
