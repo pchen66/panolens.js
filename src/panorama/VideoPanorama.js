@@ -92,6 +92,8 @@
 			// For mobile silent autoplay
 			if ( scope.isMobile ) {
 
+				scope.videoElement.pause();
+
 				if ( scope.videoElement.autoplay && scope.videoElement.muted ) {
 
 					/**
