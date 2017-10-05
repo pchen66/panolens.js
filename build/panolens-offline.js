@@ -3830,6 +3830,8 @@ PANOLENS.StereographicShader = {
 			// For mobile silent autoplay
 			if ( scope.isMobile ) {
 
+				scope.videoElement.pause();
+
 				if ( scope.videoElement.autoplay && scope.videoElement.muted ) {
 
 					/**
@@ -7175,11 +7177,14 @@ PANOLENS.StereographicShader = {
 	 * @param {number}  [options.cameraFov=60] - Camera field of view value
 	 * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
 	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
-	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
+	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection in ms
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
 	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
 	 * @param {number}  [options.indicatorSize=30] - Size of View Indicator
 	 * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
+	 * @param {boolean} [options.autoRotate=false] - Auto rotate
+	 * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
+	 * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -7209,6 +7214,9 @@ PANOLENS.StereographicShader = {
 		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
 		options.indicatorSize = options.indicatorSize || 30;
 		options.output = options.output ? options.output : 'none';
+		options.autoRotate = options.autoRotate || false;
+		options.autoRotateSpeed = options.autoRotateSpeed || 2.0;
+		options.autoRotateActivationDuration = options.autoRotateActivationDuration || 5000;
 
 		this.options = options;
 
@@ -7237,7 +7245,7 @@ PANOLENS.StereographicShader = {
 		this.scene = options.scene || new THREE.Scene();
 		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
 
-		this.viewIndicatorSize = options.indicatorSize;
+		this.viewIndicatorSize = this.options.indicatorSize;
 
 		this.reticle = {};
 		this.tempEnableReticle = this.options.enableReticle;
@@ -7268,6 +7276,8 @@ PANOLENS.StereographicShader = {
 
 		this.cameraFrustum = new THREE.Frustum();
 		this.cameraViewProjectionMatrix = new THREE.Matrix4();
+
+		this.autoRotateRequestId;
 
 		this.outputDivElement;
 
@@ -7307,6 +7317,9 @@ PANOLENS.StereographicShader = {
 		this.OrbitControls.name = 'orbit';
 		this.OrbitControls.minDistance = 1;
 		this.OrbitControls.noPan = true;
+		this.OrbitControls.autoRotate = this.options.autoRotate;
+		this.OrbitControls.autoRotateSpeed = this.options.autoRotateSpeed;
+
 		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera, this.container );
 		this.DeviceOrientationControls.name = 'device-orientation';
 		this.DeviceOrientationControls.enabled = false;
@@ -7364,6 +7377,7 @@ PANOLENS.StereographicShader = {
 			this.registerMouseAndTouchEvents();
 		}
 
+		// Output infospot position to an overlay container if specified
 		if ( this.options.output === 'overlay' ) {
 			this.addOutputElement();
 		}
@@ -7724,6 +7738,27 @@ PANOLENS.StereographicShader = {
 			this.updateReticleEvent();
 
 		}
+
+	};
+
+	/**
+	 * Enable auto rotation
+	 */
+	PANOLENS.Viewer.prototype.enableAutoRate = function () {
+
+		this.options.autoRotate = true;
+		this.OrbitControls.autoRotate = true;
+
+	};
+
+	/**
+	 * Disable auto rotation
+	 */
+	PANOLENS.Viewer.prototype.disableAutoRate = function () {
+
+		clearTimeout( this.autoRotateRequestId );
+		this.options.autoRotate = false;
+		this.OrbitControls.autoRotate = false;
 
 	};
 
@@ -8597,6 +8632,21 @@ PANOLENS.StereographicShader = {
 			this.hideInfospot();
 
 		}
+
+		// Auto rotate
+		if ( this.options.autoRotate && this.userMouse.type !== 'mousemove' ) {
+
+			// Auto-rotate idle timer
+			clearTimeout( this.autoRotateRequestId );
+
+			if ( this.control === this.OrbitControls ) {
+
+				this.OrbitControls.autoRotate = false;
+				this.autoRotateRequestId = window.setTimeout( this.enableAutoRate.bind( this ), this.options.autoRotateActivationDuration );
+
+			}
+
+		}		
 
 	};
 
