@@ -1285,10 +1285,10 @@
 
 	PANOLENS.Viewer.prototype.onTap = function ( event, type ) {
 
-		var intersects, intersect_entity, intersect;
+		var bounding = this.container.getBoundingClientRect(), intersects, intersect_entity, intersect;
 
-		this.raycasterPoint.x = ( ( event.clientX - this.container.offsetLeft ) / this.container.clientWidth ) * 2 - 1;
-		this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
+		this.raycasterPoint.x = ( ( event.clientX - bounding.left ) / this.container.clientWidth ) * 2 - 1;
+		this.raycasterPoint.y = - ( ( event.clientY - bounding.top ) / this.container.clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
