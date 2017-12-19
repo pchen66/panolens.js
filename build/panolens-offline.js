@@ -2643,6 +2643,11 @@ GSVPANO.PanoLoader = function (parameters) {
 		PANOLENS.Utils.ImageLoader.load( url, function ( image ) {
 
 			texture.image = image;
+
+			// JPEGs can't have an alpha channel, so memory can be saved by storing them as RGB.
+			var isJPEG = url.search( /\.(jpg|jpeg)$/ ) > 0 || url.search( /^data\:image\/jpeg/ ) === 0;
+
+			texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
 			texture.needsUpdate = true;
 
 			onLoad && onLoad( texture );
@@ -3446,7 +3451,7 @@ PANOLENS.StereographicShader = {
 
 		radius = radius || 5000;
 
-		var geometry = new THREE.SphereGeometry( radius, 60, 40 ),
+		var geometry = new THREE.SphereBufferGeometry( radius, 60, 40 ),
 			material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
 		PANOLENS.Panorama.call( this, geometry, material );
@@ -3668,7 +3673,7 @@ PANOLENS.StereographicShader = {
 		edgeLength = edgeLength || 10000;
 		shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
 
-		geometry = new THREE.BoxGeometry( edgeLength, edgeLength, edgeLength );
+		geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
 		material = new THREE.ShaderMaterial( {
 
 			fragmentShader: shader.fragmentShader,
@@ -3757,7 +3762,7 @@ PANOLENS.StereographicShader = {
 
 		radius = radius || 5000;
 
-		var geometry = new THREE.SphereGeometry( radius, 60, 40 ),
+		var geometry = new THREE.SphereBufferGeometry( radius, 60, 40 ),
 			material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
 		PANOLENS.Panorama.call( this, geometry, material );
@@ -4170,7 +4175,7 @@ PANOLENS.StereographicShader = {
 
 		radius = radius || 5000;
 
-		var geometry = new THREE.Geometry(),
+		var geometry = new THREE.BufferGeometry(),
 			material = new THREE.MeshBasicMaterial( { 
 				color: 0x000000, opacity: 1, transparent: true 
 			} );
@@ -8443,10 +8448,10 @@ PANOLENS.StereographicShader = {
 
 	PANOLENS.Viewer.prototype.onTap = function ( event, type ) {
 
-		var intersects, intersect_entity, intersect;
+		var bounding = this.container.getBoundingClientRect(), intersects, intersect_entity, intersect;
 
-		this.raycasterPoint.x = ( ( event.clientX - this.container.offsetLeft ) / this.container.clientWidth ) * 2 - 1;
-		this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
+		this.raycasterPoint.x = ( ( event.clientX - bounding.left ) / this.container.clientWidth ) * 2 - 1;
+		this.raycasterPoint.y = - ( ( event.clientY - bounding.top ) / this.container.clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
