@@ -24,6 +24,11 @@
 		PANOLENS.Utils.ImageLoader.load( url, function ( image ) {
 
 			texture.image = image;
+
+			// JPEGs can't have an alpha channel, so memory can be saved by storing them as RGB.
+			var isJPEG = url.search( /\.(jpg|jpeg)$/ ) > 0 || url.search( /^data\:image\/jpeg/ ) === 0;
+
+			texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
 			texture.needsUpdate = true;
 
 			onLoad && onLoad( texture );
