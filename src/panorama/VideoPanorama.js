@@ -19,7 +19,7 @@
 
 		radius = radius || 5000;
 
-		var geometry = new THREE.SphereGeometry( radius, 60, 40 ),
+		var geometry = new THREE.SphereBufferGeometry( radius, 60, 40 ),
 			material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
 		PANOLENS.Panorama.call( this, geometry, material );

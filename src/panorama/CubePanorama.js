@@ -17,7 +17,7 @@
 		edgeLength = edgeLength || 10000;
 		shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
 
-		geometry = new THREE.BoxGeometry( edgeLength, edgeLength, edgeLength );
+		geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
 		material = new THREE.ShaderMaterial( {
 
 			fragmentShader: shader.fragmentShader,

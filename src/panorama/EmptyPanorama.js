@@ -11,7 +11,7 @@
 
 		radius = radius || 5000;
 
-		var geometry = new THREE.Geometry(),
+		var geometry = new THREE.BufferGeometry(),
 			material = new THREE.MeshBasicMaterial( { 
 				color: 0x000000, opacity: 1, transparent: true 
 			} );
