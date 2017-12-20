@@ -2356,13 +2356,15 @@ GSVPANO.PanoLoader = function (parameters) {
 		_count = 0;
 		_total = w * h;
 
+		var loader = new THREE.TextureLoader();
+
 		var self = this;
 		for( var y = 0; y < h; y++ ) {
 			for( var x = 0; x < w; x++ ) {
 				var url = 'https://geo0.ggpht.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=tile&zoom=' + _zoom + '&x=' + x + '&y=' + y + '&panoid=' + _panoId + '&nbt&fover=2';
 				( function( x, y ) { 
 					if( _parameters.useWebGL ) {
-						var texture = THREE.ImageUtils.loadTexture( url, null, function() {
+						var texture = loader.load( url, null, function() {
 							self.composeFromTile( x, y, texture );
 						} );
 					} else {
@@ -2844,7 +2846,7 @@ PANOLENS.StereographicShader = {
 		this.geometry = geometry;
 
 		this.material = material;
-		this.material.side = THREE.DoubleSide;
+		this.material.side = THREE.BackSide;
 		this.material.visible = false;
 
 		this.scale.x *= -1;
@@ -3778,7 +3780,6 @@ PANOLENS.StereographicShader = {
 		this.options.playsinline = this.options.playsinline !== false ? true : false;
 
 		this.videoElement = undefined;
-		this.videoRenderObject = undefined;
 		this.videoProgress = 0;
 
 		this.isIOS = PANOLENS.Utils.isIOS;
@@ -3816,14 +3817,13 @@ PANOLENS.StereographicShader = {
 		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
 		
 		// iphone inline player
-		if (options.playsinline) {
+		if ( options.playsinline ) {
 			this.videoElement.setAttribute( "playsinline", "" );
 			this.videoElement.setAttribute( "webkit-playsinline", "" );
 		} 
 
-		var onloadeddata = function(){
-
-			scope.onProgress( { loaded: 1, total: 1 } );
+		var onloadeddata = function() {
+			
 			scope.setVideoTexture( scope.videoElement );
 
 			if ( scope.videoElement.autoplay ) {
@@ -3867,7 +3867,16 @@ PANOLENS.StereographicShader = {
 				
 			}
 
-			scope.onLoad();
+			setTimeout( function () {
+
+				// Fix for threejs r89 delayed update
+				scope.material.map.needsUpdate = true;
+
+				scope.onProgress( { loaded: 1, total: 1 } );
+				scope.onLoad();
+
+			}, 0 );
+			
 		};
 
 		/**
@@ -3895,7 +3904,6 @@ PANOLENS.StereographicShader = {
 
 		this.videoElement.onloadeddata = onloadeddata;
 		
-
 		this.videoElement.ontimeupdate = function ( event ) {
 
 			scope.videoProgress = this.duration >= 0 ? this.currentTime / this.duration : 0;
@@ -3930,7 +3938,7 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.setVideoTexture = function ( video ) {
 
-		var videoTexture, videoRenderObject, scene;
+		var videoTexture, scene;
 
 		if ( !video ) return;
 
@@ -3939,22 +3947,8 @@ PANOLENS.StereographicShader = {
 		videoTexture.magFilter = THREE.LinearFilter;
 		videoTexture.format = THREE.RGBFormat;
 
-		videoRenderObject = {
-
-			video : video,
-			videoTexture: videoTexture
-
-		};
-
-		if ( this.isIOS ){
-
-			enableInlineVideo( video );
-
-		}
-
+		this.isIOS && enableInlineVideo( video );
 		this.updateTexture( videoTexture );
-
-		this.videoRenderObject = videoRenderObject;
 	
 	};
 
@@ -3972,7 +3966,7 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.isVideoPaused = function () {
 
-		return this.videoRenderObject.video.paused;
+		return this.videoElement.paused;
 
 	};
 
@@ -3981,16 +3975,16 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.toggleVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video ) {
+		if ( this.videoElement ) {
 
 			if ( this.isVideoPaused() ) {
 
-				this.videoRenderObject.video.play();
+				this.videoElement.play();
 
 
 			} else {
 
-				this.videoRenderObject.video.pause();
+				this.videoElement.pause();
 
 			}
 
@@ -4004,9 +3998,9 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.setVideoCurrentTime = function ( event ) {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && !Number.isNaN(event.percentage) && event.percentage !== 1 ) {
+		if ( this.videoElement && !Number.isNaN(event.percentage) && event.percentage !== 1 ) {
 
-			this.videoRenderObject.video.currentTime = this.videoRenderObject.video.duration * event.percentage;
+			this.videoElement.currentTime = this.videoElement.duration * event.percentage;
 
 			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: event.percentage } );
 
@@ -4019,9 +4013,9 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.playVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoPaused() ) {
+		if ( this.videoElement && this.isVideoPaused() ) {
 
-			this.videoRenderObject.video.play();
+			this.videoElement.play();
 
 		}
 
@@ -4039,9 +4033,9 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.pauseVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoPaused() ) {
+		if ( this.videoElement && !this.isVideoPaused() ) {
 
-			this.videoRenderObject.video.pause();
+			this.videoElement.pause();
 
 		}
 
@@ -4094,7 +4088,7 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.resetVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video ) {
+		if ( this.videoElement ) {
 
 			this.setVideoCurrentTime( { percentage: 0 } );
 
@@ -4108,7 +4102,7 @@ PANOLENS.StereographicShader = {
 	*/
 	PANOLENS.VideoPanorama.prototype.isVideoMuted = function () {
 
-		return this.videoRenderObject.video.muted;
+		return this.videoElement.muted;
 
 	};
 
@@ -4117,9 +4111,9 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.muteVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoMuted() ) {
+		if ( this.videoElement && !this.isVideoMuted() ) {
 
-			this.videoRenderObject.video.muted = true;
+			this.videoElement.muted = true;
 
 		}
 
@@ -4132,9 +4126,9 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.unmuteVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoMuted() ) {
+		if ( this.videoElement && this.isVideoMuted() ) {
 
-			this.videoRenderObject.video.muted = false;
+			this.videoElement.muted = false;
 
 		}
 
@@ -4147,7 +4141,7 @@ PANOLENS.StereographicShader = {
 	 */
 	PANOLENS.VideoPanorama.prototype.getVideoElement = function () {
 
-		return this.videoRenderObject.video;
+		return this.videoElement;
 
 	};
 
@@ -4239,20 +4233,22 @@ PANOLENS.StereographicShader = {
 
 	PANOLENS.LittlePlanet.prototype.createGeometry = function () {
 
-		return new THREE.PlaneGeometry( this.size, this.size * this.ratio );
+		return new THREE.PlaneBufferGeometry( this.size, this.size * this.ratio );
 
 	};
 
 	PANOLENS.LittlePlanet.prototype.createMaterial = function ( size ) {
 
-		var uniforms = PANOLENS.StereographicShader.uniforms;
+		var shader = PANOLENS.StereographicShader, uniforms = shader.uniforms;
+
 		uniforms.zoom.value = size;
 
 		return new THREE.ShaderMaterial( {
 
 			uniforms: uniforms,
-			vertexShader: PANOLENS.StereographicShader.vertexShader,
-			fragmentShader: PANOLENS.StereographicShader.fragmentShader
+			vertexShader: shader.vertexShader,
+			fragmentShader: shader.fragmentShader,
+			side: THREE.BackSide
 
 		} );
 		
@@ -4346,7 +4342,6 @@ PANOLENS.StereographicShader = {
 
 			case 2:
 
-				var uniforms = this.material.uniforms;
 				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 				var distance = Math.sqrt( dx * dx + dy * dy );
@@ -4414,7 +4409,7 @@ PANOLENS.StereographicShader = {
 	PANOLENS.LittlePlanet.prototype.onUpdateCallback = function () {
 
 		this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
-		
+
 		this.quatSlerp.slerp( this.quatCur, 0.1 );
 		this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
 		
@@ -4493,7 +4488,7 @@ PANOLENS.StereographicShader = {
 		this.updateTexture( texture );
 
 		PANOLENS.ImagePanorama.prototype.onLoad.call( this, texture );
-		PANOLENS.LittlePlanet.prototype.onLoad.call( this );
+		PANOLENS.LittlePlanet.prototype.onLoad.call( this );		
 
 	};
 
