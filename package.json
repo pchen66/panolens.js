@@ -30,7 +30,7 @@
     "gulp-strip-debug": "^1.1.0",
     "gulp-uglify": "^2.1.2",
     "iphone-inline-video": "^2.2.2",
-    "three": "^0.88.0",
+    "three": "^0.89.0",
     "tween.js": "^16.6.0"
   }
 }

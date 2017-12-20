@@ -43,20 +43,22 @@
 
 	PANOLENS.LittlePlanet.prototype.createGeometry = function () {
 
-		return new THREE.PlaneGeometry( this.size, this.size * this.ratio );
+		return new THREE.PlaneBufferGeometry( this.size, this.size * this.ratio );
 
 	};
 
 	PANOLENS.LittlePlanet.prototype.createMaterial = function ( size ) {
 
-		var uniforms = PANOLENS.StereographicShader.uniforms;
+		var shader = PANOLENS.StereographicShader, uniforms = shader.uniforms;
+
 		uniforms.zoom.value = size;
 
 		return new THREE.ShaderMaterial( {
 
 			uniforms: uniforms,
-			vertexShader: PANOLENS.StereographicShader.vertexShader,
-			fragmentShader: PANOLENS.StereographicShader.fragmentShader
+			vertexShader: shader.vertexShader,
+			fragmentShader: shader.fragmentShader,
+			side: THREE.BackSide
 
 		} );
 		
@@ -150,7 +152,6 @@
 
 			case 2:
 
-				var uniforms = this.material.uniforms;
 				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
 				var distance = Math.sqrt( dx * dx + dy * dy );
@@ -218,7 +219,7 @@
 	PANOLENS.LittlePlanet.prototype.onUpdateCallback = function () {
 
 		this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
-		
+
 		this.quatSlerp.slerp( this.quatCur, 0.1 );
 		this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
 		

@@ -142,13 +142,15 @@ GSVPANO.PanoLoader = function (parameters) {
 		_count = 0;
 		_total = w * h;
 
+		var loader = new THREE.TextureLoader();
+
 		var self = this;
 		for( var y = 0; y < h; y++ ) {
 			for( var x = 0; x < w; x++ ) {
 				var url = 'https://geo0.ggpht.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=tile&zoom=' + _zoom + '&x=' + x + '&y=' + y + '&panoid=' + _panoId + '&nbt&fover=2';
 				( function( x, y ) { 
 					if( _parameters.useWebGL ) {
-						var texture = THREE.ImageUtils.loadTexture( url, null, function() {
+						var texture = loader.load( url, null, function() {
 							self.composeFromTile( x, y, texture );
 						} );
 					} else {

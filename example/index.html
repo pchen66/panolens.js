@@ -100,7 +100,7 @@
       });
       
       panorama_main_video2 = new PANOLENS.VideoPanorama( 'asset/textures/video/1941-battle-low.mp4', { autoplay: false, muted: true });
-      panorama_main_video2.setLinkingImage( 'asset/textures/1941-battle-thumb.jpg' );
+      panorama_main_video2.setLinkingImage( 'asset/textures/1941-battle-thumb.png' );
       panorama_main_video2.addEventListener( 'progress',function(e){
         console.log(e.progress);
       });
@@ -142,6 +142,7 @@
 
       //panorama_side_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/sunset.jpg' );
       panorama_side_image = new PANOLENS.ImageLittlePlanet( 'asset/textures/equirectangular/field.jpg' );
+      //panorama_side_image = new PANOLENS.GoogleStreetviewPanorama( 'JmSoPsBPhqWvaBmOqfFzgA' );
 
       infospot3 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
       infospot3.position.set(  0, 0, -1819.79 );

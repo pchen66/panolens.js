@@ -29,7 +29,6 @@
 		this.options.playsinline = this.options.playsinline !== false ? true : false;
 
 		this.videoElement = undefined;
-		this.videoRenderObject = undefined;
 		this.videoProgress = 0;
 
 		this.isIOS = PANOLENS.Utils.isIOS;
@@ -67,14 +66,13 @@
 		this.videoElement.crossOrigin = ( options.crossOrigin !== undefined ) ? options.crossOrigin : "anonymous";
 		
 		// iphone inline player
-		if (options.playsinline) {
+		if ( options.playsinline ) {
 			this.videoElement.setAttribute( "playsinline", "" );
 			this.videoElement.setAttribute( "webkit-playsinline", "" );
 		} 
 
-		var onloadeddata = function(){
-
-			scope.onProgress( { loaded: 1, total: 1 } );
+		var onloadeddata = function() {
+			
 			scope.setVideoTexture( scope.videoElement );
 
 			if ( scope.videoElement.autoplay ) {
@@ -118,7 +116,16 @@
 				
 			}
 
-			scope.onLoad();
+			setTimeout( function () {
+
+				// Fix for threejs r89 delayed update
+				scope.material.map.needsUpdate = true;
+
+				scope.onProgress( { loaded: 1, total: 1 } );
+				scope.onLoad();
+
+			}, 0 );
+			
 		};
 
 		/**
@@ -146,7 +153,6 @@
 
 		this.videoElement.onloadeddata = onloadeddata;
 		
-
 		this.videoElement.ontimeupdate = function ( event ) {
 
 			scope.videoProgress = this.duration >= 0 ? this.currentTime / this.duration : 0;
@@ -181,7 +187,7 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.setVideoTexture = function ( video ) {
 
-		var videoTexture, videoRenderObject, scene;
+		var videoTexture, scene;
 
 		if ( !video ) return;
 
@@ -190,22 +196,8 @@
 		videoTexture.magFilter = THREE.LinearFilter;
 		videoTexture.format = THREE.RGBFormat;
 
-		videoRenderObject = {
-
-			video : video,
-			videoTexture: videoTexture
-
-		};
-
-		if ( this.isIOS ){
-
-			enableInlineVideo( video );
-
-		}
-
+		this.isIOS && enableInlineVideo( video );
 		this.updateTexture( videoTexture );
-
-		this.videoRenderObject = videoRenderObject;
 	
 	};
 
@@ -223,7 +215,7 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.isVideoPaused = function () {
 
-		return this.videoRenderObject.video.paused;
+		return this.videoElement.paused;
 
 	};
 
@@ -232,16 +224,16 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.toggleVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video ) {
+		if ( this.videoElement ) {
 
 			if ( this.isVideoPaused() ) {
 
-				this.videoRenderObject.video.play();
+				this.videoElement.play();
 
 
 			} else {
 
-				this.videoRenderObject.video.pause();
+				this.videoElement.pause();
 
 			}
 
@@ -255,9 +247,9 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.setVideoCurrentTime = function ( event ) {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && !Number.isNaN(event.percentage) && event.percentage !== 1 ) {
+		if ( this.videoElement && !Number.isNaN(event.percentage) && event.percentage !== 1 ) {
 
-			this.videoRenderObject.video.currentTime = this.videoRenderObject.video.duration * event.percentage;
+			this.videoElement.currentTime = this.videoElement.duration * event.percentage;
 
 			this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: event.percentage } );
 
@@ -270,9 +262,9 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.playVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoPaused() ) {
+		if ( this.videoElement && this.isVideoPaused() ) {
 
-			this.videoRenderObject.video.play();
+			this.videoElement.play();
 
 		}
 
@@ -290,9 +282,9 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.pauseVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoPaused() ) {
+		if ( this.videoElement && !this.isVideoPaused() ) {
 
-			this.videoRenderObject.video.pause();
+			this.videoElement.pause();
 
 		}
 
@@ -345,7 +337,7 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.resetVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video ) {
+		if ( this.videoElement ) {
 
 			this.setVideoCurrentTime( { percentage: 0 } );
 
@@ -359,7 +351,7 @@
 	*/
 	PANOLENS.VideoPanorama.prototype.isVideoMuted = function () {
 
-		return this.videoRenderObject.video.muted;
+		return this.videoElement.muted;
 
 	};
 
@@ -368,9 +360,9 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.muteVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && !this.isVideoMuted() ) {
+		if ( this.videoElement && !this.isVideoMuted() ) {
 
-			this.videoRenderObject.video.muted = true;
+			this.videoElement.muted = true;
 
 		}
 
@@ -383,9 +375,9 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.unmuteVideo = function () {
 
-		if ( this.videoRenderObject && this.videoRenderObject.video && this.isVideoMuted() ) {
+		if ( this.videoElement && this.isVideoMuted() ) {
 
-			this.videoRenderObject.video.muted = false;
+			this.videoElement.muted = false;
 
 		}
 
@@ -398,7 +390,7 @@
 	 */
 	PANOLENS.VideoPanorama.prototype.getVideoElement = function () {
 
-		return this.videoRenderObject.video;
+		return this.videoElement;
 
 	};
 

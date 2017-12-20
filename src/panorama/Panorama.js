@@ -38,7 +38,7 @@
 		this.geometry = geometry;
 
 		this.material = material;
-		this.material.side = THREE.DoubleSide;
+		this.material.side = THREE.BackSide;
 		this.material.visible = false;
 
 		this.scale.x *= -1;

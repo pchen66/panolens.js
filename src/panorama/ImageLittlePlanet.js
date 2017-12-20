@@ -22,7 +22,7 @@
 		this.updateTexture( texture );
 
 		PANOLENS.ImagePanorama.prototype.onLoad.call( this, texture );
-		PANOLENS.LittlePlanet.prototype.onLoad.call( this );
+		PANOLENS.LittlePlanet.prototype.onLoad.call( this );		
 
 	};
 
