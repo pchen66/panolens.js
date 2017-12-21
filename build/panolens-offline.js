@@ -6763,7 +6763,7 @@ PANOLENS.StereographicShader = {
 	 * Sets cursor style to 'pointer', display the element and scale up the infospot
 	 */
 	PANOLENS.Infospot.prototype.onHoverStart = function ( event ) {
-
+console.log('hover starting')
 		if ( !this.getContainer() ) { return; }
 
 		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.NORMAL ? 'pointer' : 'default' );
@@ -7089,6 +7089,10 @@ PANOLENS.StereographicShader = {
 			this.hideAnimation && this.hideAnimation.stop();
 			this.showAnimation && this.showAnimation.delay( delay ).start();
 
+		} else {
+
+			this.visible = true;
+
 		}
 
 	};
@@ -7105,6 +7109,10 @@ PANOLENS.StereographicShader = {
 
 			this.showAnimation && this.showAnimation.stop();
 			this.hideAnimation && this.hideAnimation.delay( delay ).start();
+
+		} else {
+
+			this.visible = false;
 
 		}
 		
