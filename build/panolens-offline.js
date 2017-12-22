@@ -3526,6 +3526,17 @@ PANOLENS.StereographicShader = {
 
 	};
 
+	PANOLENS.ImagePanorama.prototype.dispose = function () {
+
+		// Release cached image
+		THREE.Cache.remove( this.src );
+
+		this.material.map && this.material.map.dispose();
+
+		PANOLENS.Panorama.prototype.dispose.call( this );
+
+	};
+
 })();;(function(){
 
 	'use strict';
@@ -3719,6 +3730,20 @@ PANOLENS.StereographicShader = {
 		this.material.uniforms[ 'tCube' ].value = texture;
 
 		PANOLENS.Panorama.prototype.onLoad.call( this );
+
+	};
+
+	PANOLENS.CubePanorama.prototype.dispose = function () {	
+
+		this.images.forEach( function( image ) {
+
+			THREE.Cache.remove( image );
+
+		} );
+
+		this.material.uniforms[ 'tCube' ] && this.material.uniforms[ 'tCube' ].value.dispose();
+
+		PANOLENS.Panorama.prototype.dispose.call( this );
 
 	};
 
@@ -4152,6 +4177,8 @@ PANOLENS.StereographicShader = {
 		this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 		this.removeEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
+		this.material.map && this.material.map.dispose();
+
 		PANOLENS.Panorama.prototype.dispose.call( this );
 
 	};
@@ -4458,6 +4485,12 @@ PANOLENS.StereographicShader = {
 
 	};
 
+	PANOLENS.LittlePlanet.prototype.dispose = function () {	
+
+		PANOLENS.ImagePanorama.prototype.dispose.call( this );
+
+	};
+
 })();;( function () {
 
 	/**
@@ -4491,6 +4524,14 @@ PANOLENS.StereographicShader = {
 		texture.minFilter = texture.magFilter = THREE.LinearFilter;
 		
 		this.material.uniforms[ "tDiffuse" ].value = texture;
+
+	};
+
+	PANOLENS.ImageLittlePlanet.prototype.dispose = function () {	
+
+		this.material.uniforms[ 'tDiffuse' ] && this.material.uniforms[ 'tDiffuse' ].value.dispose();
+
+		PANOLENS.LittlePlanet.prototype.dispose.call( this );
 
 	};
 
@@ -6763,7 +6804,7 @@ PANOLENS.StereographicShader = {
 	 * Sets cursor style to 'pointer', display the element and scale up the infospot
 	 */
 	PANOLENS.Infospot.prototype.onHoverStart = function ( event ) {
-console.log('hover starting')
+
 		if ( !this.getContainer() ) { return; }
 
 		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.NORMAL ? 'pointer' : 'default' );
@@ -9055,6 +9096,15 @@ console.log('hover starting')
 		}
 
 		return item;
+
+	};
+
+	/**
+	 * Clear all cached files
+	 */
+	PANOLENS.Viewer.prototype.clearAllCache = function () {
+
+		THREE.Cache.clear();
 
 	};
 
