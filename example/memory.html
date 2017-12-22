@@ -12,31 +12,6 @@
         overflow: hidden;
         background-color: #000;
       }
-
-      #panolens-separate-container {
-        position: absolute;
-        width: 300px;
-        height: 150px;
-        right: 0;
-        top: 100px;
-      }
-
-      #panolens-separate-container:-webkit-full-screen{
-        left: 0;
-        top: 0;
-      }
-      #panolens-separate-container:-moz-full-screen{
-        left: 0;
-        top: 0;
-      }
-      #panolens-separate-container:-ms-fullscreen{
-        left: 0;
-        top: 0;
-      }
-      #panolens-separate-container:fullscreen {
-        left: 0;
-        top: 0;
-      }
     </style>
   </head>
 
@@ -81,7 +56,7 @@
 
     <script>
 
-      var panorama, viewer, images, index = 0;
+      var panorama, viewer, images, index = 0, renewDuration = 10000;
 
       images = [
 
@@ -98,14 +73,19 @@
       function renew () {
 
         panorama && panorama.dispose() && viewer.remove( panorama );
+        
         panorama = new PANOLENS.ImagePanorama( images[ index++ ] );
+        panorama.addEventListener( 'load', function () {
+
+          setTimeout( renew, renewDuration );
+
+        } ); 
+
         viewer.add( panorama );
 
         index = index >= images.length ? 0 : index;
 
       }
-
-      setInterval( renew, 5000 );
 
       renew();
 
