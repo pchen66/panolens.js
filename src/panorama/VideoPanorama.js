@@ -407,6 +407,8 @@
 		this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 		this.removeEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
+		this.material.map && this.material.map.dispose();
+
 		PANOLENS.Panorama.prototype.dispose.call( this );
 
 	};

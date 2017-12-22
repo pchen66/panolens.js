@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js Memory Testing</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      #panolens-separate-container {
+        position: absolute;
+        width: 300px;
+        height: 150px;
+        right: 0;
+        top: 100px;
+      }
+
+      #panolens-separate-container:-webkit-full-screen{
+        left: 0;
+        top: 0;
+      }
+      #panolens-separate-container:-moz-full-screen{
+        left: 0;
+        top: 0;
+      }
+      #panolens-separate-container:-ms-fullscreen{
+        left: 0;
+        top: 0;
+      }
+      #panolens-separate-container:fullscreen {
+        left: 0;
+        top: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+
+  <script src="../node_modules/three/build/three.min.js"></script>
+
+  <script src="../node_modules/iphone-inline-video/dist/iphone-inline-video.min.js"></script>
+  <script src="../node_modules/tween.js/src/Tween.js"></script>
+  <script src="../src/lib/controls/OrbitControls.js"></script>
+  <script src="../src/lib/controls/DeviceOrientationControls.js"></script>
+  <script src="../src/lib/modifier/BendModifier.js"></script>
+  <script src="../src/lib/effects/CardboardEffect.js"></script>
+  <script src="../node_modules/three/examples/js/effects/StereoEffect.js"></script>
+  <script src="../src/lib/GSVPano.js"></script>
+
+  <script src="../src/Panolens.js"></script>
+  <script src="../src/DataImage.js"></script>
+  <script src="../src/Constants.js"></script>
+  <script src="../src/util/Utils.js"></script>
+  <script src="../src/util/ImageLoader.js"></script>
+  <script src="../src/util/TextureLoader.js"></script>
+  <script src="../src/util/CubeTextureLoader.js"></script>
+  <script src="../src/shaders/StereographicShader.js"></script>
+  <script src="../src/panorama/Panorama.js"></script>
+  <script src="../src/panorama/ImagePanorama.js"></script>
+  <script src="../src/panorama/GoogleStreetviewPanorama.js"></script>
+  <script src="../src/panorama/CubePanorama.js"></script>
+  <script src="../src/panorama/BasicPanorama.js"></script>
+  <script src="../src/panorama/VideoPanorama.js"></script>
+  <script src="../src/panorama/EmptyPanorama.js"></script>
+  <script src="../src/panorama/LittlePlanet.js"></script>
+  <script src="../src/panorama/ImageLittlePlanet.js"></script>
+  <script src="../src/interface/Reticle.js"></script>
+  <script src="../src/interface/Tile.js"></script>
+  <script src="../src/interface/TileGroup.js"></script>
+  <script src="../src/interface/SpriteText.js"></script>
+  <script src="../src/widget/Widget.js"></script>
+  <script src="../src/infospot/Infospot.js"></script>
+  <script src="../src/viewer/Viewer.js"></script>
+  <script src="../src/util/font/Bmfont.js"></script>
+
+    <script>
+
+      var panorama, viewer, images, index = 0;
+
+      images = [
+
+        'asset/textures/equirectangular/mountainpeak15000x7500.jpg',
+        'asset/textures/equirectangular/dusty9000x4500.jpg',
+        'asset/textures/equirectangular/dawn4000x2000.jpg',
+        'asset/textures/equirectangular/lake5000x2500.jpg',
+        'asset/textures/equirectangular/pier4000x2000.jpg'
+
+      ];
+
+      viewer = new PANOLENS.Viewer( { output: 'console'} );      
+
+      function renew () {
+
+        panorama && panorama.dispose() && viewer.remove( panorama );
+        panorama = new PANOLENS.ImagePanorama( images[ index++ ] );
+        viewer.add( panorama );
+
+        index = index >= images.length ? 0 : index;
+
+      }
+
+      setInterval( renew, 5000 );
+
+      renew();
+
+    </script>
+
+  </body>
+</html>

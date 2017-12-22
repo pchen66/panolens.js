@@ -85,4 +85,15 @@
 
 	};
 
+	PANOLENS.ImagePanorama.prototype.dispose = function () {
+
+		// Release cached image
+		THREE.Cache.remove( this.src );
+
+		this.material.map && this.material.map.dispose();
+
+		PANOLENS.Panorama.prototype.dispose.call( this );
+
+	};
+
 })();

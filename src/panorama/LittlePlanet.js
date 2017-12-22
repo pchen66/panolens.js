@@ -274,4 +274,10 @@
 
 	};
 
+	PANOLENS.LittlePlanet.prototype.dispose = function () {	
+
+		PANOLENS.ImagePanorama.prototype.dispose.call( this );
+
+	};
+
 })();

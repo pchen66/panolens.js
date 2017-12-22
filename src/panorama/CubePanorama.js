@@ -64,4 +64,12 @@
 
 	};
 
+	PANOLENS.CubePanorama.prototype.dispose = function () {	
+
+		this.material.uniforms[ 'tCube' ] && this.material.uniforms[ 'tCube' ].dispose();
+
+		PANOLENS.Panorama.prototype.dispose.call( this );
+
+	};
+
 })();

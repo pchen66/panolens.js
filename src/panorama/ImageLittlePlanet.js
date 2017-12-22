@@ -34,4 +34,12 @@
 
 	};
 
+	PANOLENS.ImageLittlePlanet.prototype.dispose = function () {	
+
+		this.material.uniforms[ 'tDiffuse' ] && this.material.uniforms[ 'tDiffuse' ].dispose();
+
+		PANOLENS.LittlePlanet.prototype.dispose.call( this );
+
+	};
+
 } )();
