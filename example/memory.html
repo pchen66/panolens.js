@@ -12,6 +12,20 @@
         overflow: hidden;
         background-color: #000;
       }
+
+      #progress {
+        width: 0;
+        height: 5px;
+        position: fixed;
+        top: 0;
+        background: #fff;
+        -webkit-transition: opacity 0.5s ease;
+        transition: opacity 0.5s ease;
+      }
+
+      #progress.finish {
+        opacity: 0;
+      }
     </style>
   </head>
 
@@ -54,9 +68,13 @@
   <script src="../src/viewer/Viewer.js"></script>
   <script src="../src/util/font/Bmfont.js"></script>
 
+  <div id="progress"></div>
+
     <script>
 
       var panorama, viewer, images, index = 0, renewDuration = 10000;
+
+      var progressElement = document.getElementById( 'progress' );
 
       images = [
 
@@ -68,24 +86,42 @@
 
       ];
 
-      viewer = new PANOLENS.Viewer( { output: 'console'} );      
-
       function renew () {
 
         panorama && panorama.dispose() && viewer.remove( panorama );
         
         panorama = new PANOLENS.ImagePanorama( images[ index++ ] );
-        panorama.addEventListener( 'load', function () {
-
-          setTimeout( renew, renewDuration );
-
-        } ); 
+        panorama.addEventListener( 'progress', onProgress );
+        panorama.addEventListener( 'load', onLoad ); 
 
         viewer.add( panorama );
 
         index = index >= images.length ? 0 : index;
 
       }
+
+      function onLoad () {
+
+        progressElement.style.width = 0;
+        progressElement.classList.remove( 'finish' );
+
+        setTimeout( renew, renewDuration );
+
+      }
+
+      function onProgress ( event ) {
+
+        var progress;
+
+        progress = event.progress.loaded / event.progress.total * 100;
+        progressElement.style.width = progress + '%';
+        if ( progress === 100 ) {
+          progressElement.classList.add( 'finish' );
+        }
+
+      }
+
+      viewer = new PANOLENS.Viewer();
 
       renew();
 
