@@ -1892,4 +1892,13 @@
 
 	};
 
+	/**
+	 * Clear all cached files
+	 */
+	PANOLENS.Viewer.prototype.clearAllCache = function () {
+
+		THREE.Cache.clear();
+
+	};
+
 } )();

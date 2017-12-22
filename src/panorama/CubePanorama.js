@@ -66,6 +66,12 @@
 
 	PANOLENS.CubePanorama.prototype.dispose = function () {	
 
+		this.images.forEach( function( image ) {
+
+			THREE.Cache.remove( image );
+
+		} );
+
 		this.material.uniforms[ 'tCube' ] && this.material.uniforms[ 'tCube' ].value.dispose();
 
 		PANOLENS.Panorama.prototype.dispose.call( this );
