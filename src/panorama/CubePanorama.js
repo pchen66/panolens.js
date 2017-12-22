@@ -66,7 +66,7 @@
 
 	PANOLENS.CubePanorama.prototype.dispose = function () {	
 
-		this.material.uniforms[ 'tCube' ] && this.material.uniforms[ 'tCube' ].dispose();
+		this.material.uniforms[ 'tCube' ] && this.material.uniforms[ 'tCube' ].value.dispose();
 
 		PANOLENS.Panorama.prototype.dispose.call( this );
 
