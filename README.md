@@ -111,7 +111,7 @@ Website Example | Codepen Live Exmaple
 [Panorama Loading Progress](https://pchen66.github.io/Panolens/examples/panorama_loading_progress.html) | [Spaital Audio](https://codepen.io/pchen66/pen/EZjbXq)
 [Simple Gallery](https://pchen66.github.io/Panolens/examples/panorama_simple_gallery.html) | [Update Image](https://codepen.io/pchen66/pen/YxeYGZ)
 [Little Planet Panorama](https://pchen66.github.io/Panolens/examples/littleplanet_image.html) | [Auto Rotate](https://codepen.io/pchen66/pen/rGpoPv)
-[Reticle](https://pchen66.github.io/Panolens/examples/panorama_reticle.html) | (Orbit Control)[https://codepen.io/pchen66/pen/JrMxdV]
+[Reticle](https://pchen66.github.io/Panolens/examples/panorama_reticle.html) | [Orbit Control](https://codepen.io/pchen66/pen/JrMxdV)
 [3D UI](https://pchen66.github.io/Panolens/examples/panorama_ui.html) | 
 [Interactive](https://pchen66.github.io/Panolens/examples/panorama_interactive.html) | 
 [Storytelling](http://pchen66.github.io/Panolens/examples/panorama_storytelling.html) |
