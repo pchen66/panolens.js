@@ -114,6 +114,8 @@ Website Example | Codepen Live Exmaple
 [Reticle](https://pchen66.github.io/Panolens/examples/panorama_reticle.html) | (Orbit Control)[https://codepen.io/pchen66/pen/JrMxdV]
 [3D UI](https://pchen66.github.io/Panolens/examples/panorama_ui.html) | 
 [Interactive](https://pchen66.github.io/Panolens/examples/panorama_interactive.html) | 
+[Storytelling](http://pchen66.github.io/Panolens/examples/panorama_storytelling.html) |
+[Memory Leaking Test](http://pchen66.github.io/Panolens/examples/panorama_memoryleak_test.html) |
 [XDiamond](https://pchen66.github.io/Panolens/XDiamond) | 
 [PanoTheater](http://pchen66.github.io/PanoTheater) | 
 
