@@ -8381,11 +8381,55 @@ PANOLENS.StereographicShader = {
 	};
 
 	/**
+	 * Output position of camera center to raycast against current panorama
+	 */
+	PANOLENS.Viewer.prototype.outputCenterPosition = function () {
+
+		var camera = this.camera;
+		var panorama = this.panorama;
+        var center = new THREE.Vector2( 0, 0 );
+        var point = new THREE.Vector3();
+        var message;
+
+        var raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera( center, camera );
+
+        var intersects = raycaster.intersectObject( panorama, true );
+
+        if ( intersects.length > 0 ) {
+
+        	point.copy( intersects[ 0 ].point );
+        	point.x = -point.x.toFixed( 2 );
+        	point.y = point.y.toFixed( 2 );
+        	point.z = point.z.toFixed( 2 );
+
+        	message = point.x + ', ' + point.y + ', ' + point.z;
+
+        	switch ( this.options.output ) {
+
+				case 'console':
+					console.info( message );
+					break;
+
+				case 'overlay':
+					this.outputDivElement.textContent = message;
+					break;
+
+				default:
+					break;
+
+			}
+
+        }
+
+	};
+
+	/**
 	 * Output infospot attach position in developer console by holding down Ctrl button
 	 */
 	PANOLENS.Viewer.prototype.outputInfospotPosition = function () {
 
-		var intersects, point, panoramaWorldPosition, outputPosition;
+		var intersects, point, panoramaWorldPosition, position, message;
 
 		intersects = this.raycaster.intersectObject( this.panorama, true );
 
@@ -8395,22 +8439,24 @@ PANOLENS.StereographicShader = {
 			panoramaWorldPosition = this.panorama.getWorldPosition();
 
 			// Panorama is scaled -1 on X axis
-			outputPosition = new THREE.Vector3(
+			position = new THREE.Vector3(
 				-(point.x - panoramaWorldPosition.x).toFixed(2),
 				(point.y - panoramaWorldPosition.y).toFixed(2),
 				(point.z - panoramaWorldPosition.z).toFixed(2)
 			);
 
-			if ( outputPosition.length() === 0 ) { return; }
+			message = position.x + ', ' + position.y + ', ' + position.z;
+
+			if ( position.length() === 0 ) { return; }
 
 			switch ( this.options.output ) {
 
 				case 'console':
-					console.info( outputPosition.x + ', ' + outputPosition.y + ', ' + outputPosition.z );
+					console.info( message );
 					break;
 
 				case 'overlay':
-					this.outputDivElement.textContent = outputPosition.x + ', ' + outputPosition.y + ', ' + outputPosition.z;
+					this.outputDivElement.textContent = message;
 					break;
 
 				default:
