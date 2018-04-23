@@ -105,7 +105,19 @@
         console.log(e.progress);
       });
 
-      panorama_main_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/road.jpg' );
+//      panorama_main_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/road.jpg' );
+//      panorama_main_image.addEventListener( 'progress',function(e){
+//        console.log(e.progress);
+//      });
+
+      var  path = "asset/textures/cube/sand/";
+      var format = ".png";
+      var urls = [
+        path + "px" + format, path + "nx" + format,
+        path + "py" + format, path + "ny" + format,
+        path + "pz" + format, path + "nz" + format
+      ];
+      panorama_main_image = new PANOLENS.CubePanorama(urls);
       panorama_main_image.addEventListener( 'progress',function(e){
         console.log(e.progress);
       });

@@ -78,4 +78,96 @@
 
 	};
 
+	PANOLENS.CubePanorama.prototype.setupTransitions = function () {
+
+		this.fadeInAnimation = new TWEEN.Tween( this.material.uniforms.opacity )
+		.easing( TWEEN.Easing.Quartic.Out )
+		.onStart( function () {
+
+			this.visible = true;
+			this.material.visible = true;
+
+			/**
+			 * Enter panorama fade in start event
+			 * @event PANOLENS.Panorama#enter-fade-start
+			 * @type {object}
+			 */
+			this.dispatchEvent( { type: 'enter-fade-start' } );
+
+		}.bind( this ) );
+
+		this.fadeOutAnimation = new TWEEN.Tween( this.material.uniforms.opacity )
+		.easing( TWEEN.Easing.Quartic.Out )
+		.onComplete( function () {
+
+			this.visible = false;
+			this.material.visible = true;
+
+			/**
+			 * Leave panorama complete event
+			 * @event PANOLENS.Panorama#leave-complete
+			 * @type {object}
+			 */
+			this.dispatchEvent( { type: 'leave-complete' } );
+
+		}.bind( this ) );
+
+		this.enterTransition = new TWEEN.Tween( this )
+		.easing( TWEEN.Easing.Quartic.Out )
+		.onComplete( function () {
+
+			/**
+			 * Enter panorama and animation complete event
+			 * @event PANOLENS.Panorama#enter-animation-complete
+			 * @type {object}
+			 */
+			this.dispatchEvent( { type: 'enter-animation-complete' } );
+
+		}.bind ( this ) )
+		.start();
+
+		this.leaveTransition = new TWEEN.Tween( this )
+		.easing( TWEEN.Easing.Quartic.Out );
+
+	};
+
+	/**
+	 * Start fading in animation
+	 * @fires PANOLENS.Panorama#enter-fade-complete
+	 */
+	PANOLENS.CubePanorama.prototype.fadeIn = function ( duration ) {
+
+		duration = duration >= 0 ? duration : this.animationDuration;
+
+		this.fadeOutAnimation.stop();
+		this.fadeInAnimation
+		.to( { value: 1 }, duration )
+		.onComplete( function () {
+
+			this.toggleInfospotVisibility( true, duration / 2 );
+
+			/**
+			 * Enter panorama fade complete event
+			 * @event PANOLENS.Panorama#enter-fade-complete
+			 * @type {object}
+			 */
+			this.dispatchEvent( { type: 'enter-fade-complete' } );
+
+		}.bind( this ) )
+		.start();
+
+	};
+
+	/**
+	 * Start fading out animation
+	 */
+	PANOLENS.CubePanorama.prototype.fadeOut = function ( duration ) {
+
+		duration = duration >= 0 ? duration : this.animationDuration;
+
+		this.fadeInAnimation.stop();
+		this.fadeOutAnimation.to( { value: 0 }, duration ).start();
+
+	};
+
 })();
