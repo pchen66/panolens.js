@@ -518,7 +518,9 @@
 			this.showAnimation && this.showAnimation.delay( delay ).start();
 
 		}
-
+		else{
+			this.opacity = 1;
+		}
 	};
 
 	/**
@@ -535,7 +537,9 @@
 			this.hideAnimation && this.hideAnimation.delay( delay ).start();
 
 		}
-		
+		else{
+			this.opacity = 0;
+		}
 		
 	};
 
