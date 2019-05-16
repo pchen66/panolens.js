@@ -94,12 +94,15 @@ THREE.CardboardEffect = function ( renderer ) {
 
 		_renderTarget.scissor.set( 0, 0, width, height );
 		_renderTarget.viewport.set( 0, 0, width, height );
-		renderer.render( scene, _stereo.cameraL, _renderTarget );
+		renderer.setRenderTarget( _renderTarget );
+		renderer.render( scene, _stereo.cameraL );
 
 		_renderTarget.scissor.set( width, 0, width, height );
 		_renderTarget.viewport.set( width, 0, width, height );
-		renderer.render( scene, _stereo.cameraR, _renderTarget );
+		renderer.setRenderTarget( _renderTarget );
+		renderer.render( scene, _stereo.cameraR );
 
+		renderer.setRenderTarget( null );
 		renderer.render( _scene, _camera );
 
 	};
