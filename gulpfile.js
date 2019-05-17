@@ -73,28 +73,34 @@ var _offline_sources = _panolensfiles.slice( 0, 1 )
     .concat( _offlineResouces )
     .concat( _panolensfiles.slice( 1 ) );
 
-gulp.task( 'default', [ 'mini', 'docs' ] );
-gulp.task( 'mini', [ 'minify', 'minify-offline' ] );
-
-gulp.task( 'minify', function() {
+const minify = () => {
   return gulp.src( _sources )
     .pipe( concat( 'panolens.js', { newLine: ';' } ) )
     .pipe( gulp.dest( './build/' ) )
     .pipe( concat( 'panolens.min.js' ) )
     .pipe( uglify() )
-    .pipe( gulp.dest( './build/' ) );
-});
+    .pipe( gulp.dest( './build/' ) );  
+};
 
-gulp.task( 'minify-offline', function () {
+const minify_offline = () => {
   return gulp.src( _offline_sources )
     .pipe( concat( 'panolens-offline.js', { newLine: ';' } ) )
     .pipe( gulp.dest( './build/' ) )
     .pipe( concat( 'panolens-offline.min.js' ) )
     .pipe( uglify() )
     .pipe( gulp.dest( './build/' ) );
-});
+};
 
-gulp.task( 'docs', function() {
+const docs = () => {
   return gulp.src( _panolensfiles.concat( _readme ), {read: false} )
     .pipe( jsdoc( jsdocConfig ) );
-});
+};
+
+gulp.task( 'default', async () => {
+  minify();
+  minify_offline();
+} );
+
+gulp.task( 'minify', minify);
+gulp.task( 'minify-offline', minify_offline);
+gulp.task( 'docs', docs);
