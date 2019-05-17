@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/pchen66/panolens.js#readme",
   "devDependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-jsdoc3": "^1.0.1",
     "gulp-strip-debug": "^1.1.0",
