@@ -23,6 +23,10 @@
 		this.isHovering = false;
 		this.visible = false;
 
+		// TODO: Three.js bug hotfix for sprite raycasting r104
+		// https://github.com/mrdoob/three.js/issues/14624
+		this.frustumCulled = false;
+
 		this.element;
 		this.toPanorama;
 		this.cursorStyle;

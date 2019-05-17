@@ -42,6 +42,7 @@
 		this.material.visible = false;
 
 		this.scale.x *= -1;
+		this.renderOrder = -1;
 
 		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
 

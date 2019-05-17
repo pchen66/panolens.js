@@ -146,7 +146,6 @@
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.renderer.setClearColor( 0x000000, 1 );
-		this.renderer.sortObjects = false;
 
 		// Append Renderer Element to container
 		this.renderer.domElement.classList.add( 'panolens-canvas' );
@@ -504,7 +503,6 @@
 		/**
 		 * Dual eye effect event
 		 * @type {object}
-		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
 		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
 		 * @property {PANOLENS.Modes} mode - Current display mode
 		 */
@@ -515,6 +513,14 @@
 		this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.render();
 		this.camera.fov = fov;
+
+		/**
+		 * Dispatch mode change event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#mode-change
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
 
 	};
 
@@ -533,7 +539,6 @@
 		/**
 		 * Dual eye effect event
 		 * @type {object}
-		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
 		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
 		 * @property {PANOLENS.Modes} mode - Current display mode
 		 */
@@ -541,6 +546,14 @@
 
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.render();
+
+		/**
+		 * Dispatch mode change event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#mode-change
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
 	};
 
 	/**
@@ -1011,10 +1024,10 @@
 
 		scope = this;
 
-		chv = this.camera.getWorldDirection();
+		chv = this.camera.getWorldDirection( new THREE.Vector3() );
 		cvv = chv.clone();
 
-		vptc = this.panorama.getWorldPosition().sub( this.camera.getWorldPosition() );
+		vptc = this.panorama.getWorldPosition( new THREE.Vector3() ).sub( this.camera.getWorldPosition( new THREE.Vector3() ) );
 
 		hv = vector.clone();
 		// Scale effect
@@ -1080,11 +1093,11 @@
 
 			var invertXVector = new THREE.Vector3( -1, 1, 1 );
 
-			this.tweenControlCenter( object.getWorldPosition().multiply( invertXVector ), duration, easing );
+			this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ).multiply( invertXVector ), duration, easing );
 
 		} else {
 
-			this.tweenControlCenter( object.getWorldPosition(), duration, easing );
+			this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ), duration, easing );
 
 		}
 
@@ -1229,7 +1242,7 @@
 		if ( intersects.length > 0 ) {
 
 			point = intersects[0].point;
-			panoramaWorldPosition = this.panorama.getWorldPosition();
+			panoramaWorldPosition = this.panorama.getWorldPosition( new THREE.Vector3() );
 
 			// Panorama is scaled -1 on X axis
 			position = new THREE.Vector3(
@@ -1626,7 +1639,7 @@
 					|| (child.element.left && child.element.left.style.display !== 'none')
 					|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
 				if ( this.checkSpriteInViewport( child ) ) {
-					var vector = this.getScreenVector( child.getWorldPosition() );
+					var vector = this.getScreenVector( child.getWorldPosition( new THREE.Vector3() ) );
 					child.translateElement( vector.x, vector.y );
 				} else {
 					child.onDismiss();
