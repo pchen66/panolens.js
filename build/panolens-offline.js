@@ -2152,12 +2152,15 @@ THREE.CardboardEffect = function ( renderer ) {
 
 		_renderTarget.scissor.set( 0, 0, width, height );
 		_renderTarget.viewport.set( 0, 0, width, height );
-		renderer.render( scene, _stereo.cameraL, _renderTarget );
+		renderer.setRenderTarget( _renderTarget );
+		renderer.render( scene, _stereo.cameraL );
 
 		_renderTarget.scissor.set( width, 0, width, height );
 		_renderTarget.viewport.set( width, 0, width, height );
-		renderer.render( scene, _stereo.cameraR, _renderTarget );
+		renderer.setRenderTarget( _renderTarget );
+		renderer.render( scene, _stereo.cameraR );
 
+		renderer.setRenderTarget( null );
 		renderer.render( _scene, _camera );
 
 	};
@@ -2173,6 +2176,7 @@ THREE.StereoEffect = function ( renderer ) {
 
 	var _stereo = new THREE.StereoCamera();
 	_stereo.aspect = 0.5;
+	var size = new THREE.Vector2();
 
 	this.setEyeSeparation = function ( eyeSep ) {
 
@@ -2194,7 +2198,7 @@ THREE.StereoEffect = function ( renderer ) {
 
 		_stereo.update( camera );
 
-		var size = renderer.getSize();
+		renderer.getSize( size );
 
 		if ( renderer.autoClear ) renderer.clear();
 		renderer.setScissorTest( true );
@@ -2844,6 +2848,7 @@ PANOLENS.StereographicShader = {
 		this.material.visible = false;
 
 		this.scale.x *= -1;
+		this.renderOrder = -1;
 
 		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
 
@@ -3547,11 +3552,11 @@ PANOLENS.StereographicShader = {
 	 * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
 	 * @constructor
 	 * @param {string} panoId - Panorama id from Google Streetview 
-	 * @param {number} [radius=5000] - The minimum radius for this panoram
+	 * @param {string} [apiKey] - Google Street View API Key
 	 */
-	PANOLENS.GoogleStreetviewPanorama = function ( panoId, radius ) {
+	PANOLENS.GoogleStreetviewPanorama = function ( panoId, apiKey ) {
 
-		PANOLENS.ImagePanorama.call( this, undefined, radius );
+		PANOLENS.ImagePanorama.call( this );
 
 		this.panoId = panoId;
 
@@ -3559,7 +3564,7 @@ PANOLENS.StereographicShader = {
 
 		this.loadRequested = false;
 
-		this.setupGoogleMapAPI();
+		this.setupGoogleMapAPI( apiKey );
 
 	}
 
@@ -3592,10 +3597,11 @@ PANOLENS.StereographicShader = {
 	/**
 	 * Setup Google Map API
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function () {
+	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function ( apiKey ) {
 
 		var script = document.createElement( 'script' );
-		script.src = 'https://maps.googleapis.com/maps/api/js';
+		script.src = 'https://maps.googleapis.com/maps/api/js?';
+		script.src += apiKey ? 'key=' + apiKey : '';
 		script.onreadystatechange = this.setGSVLoader.bind( this );
     	script.onload = this.setGSVLoader.bind( this );
 
@@ -6636,6 +6642,10 @@ PANOLENS.StereographicShader = {
 		this.isHovering = false;
 		this.visible = false;
 
+		// TODO: Three.js bug hotfix for sprite raycasting r104
+		// https://github.com/mrdoob/three.js/issues/14624
+		this.frustumCulled = false;
+
 		this.element;
 		this.toPanorama;
 		this.cursorStyle;
@@ -7353,7 +7363,6 @@ PANOLENS.StereographicShader = {
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.renderer.setClearColor( 0x000000, 1 );
-		this.renderer.sortObjects = false;
 
 		// Append Renderer Element to container
 		this.renderer.domElement.classList.add( 'panolens-canvas' );
@@ -7711,7 +7720,6 @@ PANOLENS.StereographicShader = {
 		/**
 		 * Dual eye effect event
 		 * @type {object}
-		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
 		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
 		 * @property {PANOLENS.Modes} mode - Current display mode
 		 */
@@ -7722,6 +7730,14 @@ PANOLENS.StereographicShader = {
 		this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.render();
 		this.camera.fov = fov;
+
+		/**
+		 * Dispatch mode change event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#mode-change
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
 
 	};
 
@@ -7740,7 +7756,6 @@ PANOLENS.StereographicShader = {
 		/**
 		 * Dual eye effect event
 		 * @type {object}
-		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
 		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
 		 * @property {PANOLENS.Modes} mode - Current display mode
 		 */
@@ -7748,6 +7763,14 @@ PANOLENS.StereographicShader = {
 
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 		this.render();
+
+		/**
+		 * Dispatch mode change event
+		 * @type {object}
+		 * @event PANOLENS.Viewer#mode-change
+		 * @property {PANOLENS.Modes} mode - Current display mode
+		 */
+		this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
 	};
 
 	/**
@@ -8218,10 +8241,10 @@ PANOLENS.StereographicShader = {
 
 		scope = this;
 
-		chv = this.camera.getWorldDirection();
+		chv = this.camera.getWorldDirection( new THREE.Vector3() );
 		cvv = chv.clone();
 
-		vptc = this.panorama.getWorldPosition().sub( this.camera.getWorldPosition() );
+		vptc = this.panorama.getWorldPosition( new THREE.Vector3() ).sub( this.camera.getWorldPosition( new THREE.Vector3() ) );
 
 		hv = vector.clone();
 		// Scale effect
@@ -8287,11 +8310,11 @@ PANOLENS.StereographicShader = {
 
 			var invertXVector = new THREE.Vector3( -1, 1, 1 );
 
-			this.tweenControlCenter( object.getWorldPosition().multiply( invertXVector ), duration, easing );
+			this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ).multiply( invertXVector ), duration, easing );
 
 		} else {
 
-			this.tweenControlCenter( object.getWorldPosition(), duration, easing );
+			this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ), duration, easing );
 
 		}
 
@@ -8436,7 +8459,7 @@ PANOLENS.StereographicShader = {
 		if ( intersects.length > 0 ) {
 
 			point = intersects[0].point;
-			panoramaWorldPosition = this.panorama.getWorldPosition();
+			panoramaWorldPosition = this.panorama.getWorldPosition( new THREE.Vector3() );
 
 			// Panorama is scaled -1 on X axis
 			position = new THREE.Vector3(
@@ -8833,7 +8856,7 @@ PANOLENS.StereographicShader = {
 					|| (child.element.left && child.element.left.style.display !== 'none')
 					|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
 				if ( this.checkSpriteInViewport( child ) ) {
-					var vector = this.getScreenVector( child.getWorldPosition() );
+					var vector = this.getScreenVector( child.getWorldPosition( new THREE.Vector3() ) );
 					child.translateElement( vector.x, vector.y );
 				} else {
 					child.onDismiss();
