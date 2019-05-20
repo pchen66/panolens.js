@@ -196,7 +196,6 @@
 		videoTexture.magFilter = THREE.LinearFilter;
 		videoTexture.format = THREE.RGBFormat;
 
-		this.isIOS && enableInlineVideo( video );
 		this.updateTexture( videoTexture );
 	
 	};

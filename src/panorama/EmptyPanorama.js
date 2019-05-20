@@ -16,6 +16,8 @@
 				color: 0x000000, opacity: 1, transparent: true 
 			} );
 
+		geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
+
 		PANOLENS.Panorama.call( this, geometry, material );
 
 	}

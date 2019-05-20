@@ -27,6 +27,7 @@
 	 * @param {boolean} [options.autoRotate=false] - Auto rotate
 	 * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
 	 * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
+	 * @param {boolean} [options.enableLiveCamera=false] - Enable live camera view as background
 	 */
 	PANOLENS.Viewer = function ( options ) {
 
@@ -145,7 +146,7 @@
 		// Renderer
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
-		this.renderer.setClearColor( 0x000000, 1 );
+		this.renderer.setClearColor( 0x000000, 0 );
 
 		// Append Renderer Element to container
 		this.renderer.domElement.classList.add( 'panolens-canvas' );
@@ -221,6 +222,11 @@
 		// Output infospot position to an overlay container if specified
 		if ( this.options.output === 'overlay' ) {
 			this.addOutputElement();
+		}
+
+		if ( this.options.enableLiveCamera ) {
+			this.media = new PANOLENS.Media( { container: this.container, scene: this.scene } );
+			this.media.start();
 		}
 
 		// Register dom event listeners
