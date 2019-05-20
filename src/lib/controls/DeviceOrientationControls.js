@@ -120,12 +120,12 @@ THREE.DeviceOrientationControls = function( camera, domElement ) {
 
 		onScreenOrientationChangeEvent(); // run once on load
 
-		window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
-		window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
-		window.addEventListener( 'deviceorientation', this.update.bind( this ), false );
+		window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, { passive: true } );
+		window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, { passive: true } );
+		window.addEventListener( 'deviceorientation', this.update.bind( this ), { passive: true } );
 
-		scope.domElement.addEventListener( "touchstart", onTouchStartEvent, false );
-		scope.domElement.addEventListener( "touchmove", onTouchMoveEvent, false );
+		scope.domElement.addEventListener( "touchstart", onTouchStartEvent, { passive: false } );
+		scope.domElement.addEventListener( "touchmove", onTouchMoveEvent, { passive: false } );
 
 		scope.enabled = true;
 

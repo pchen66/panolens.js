@@ -576,8 +576,8 @@
 		progressElementControl.style.borderRadius = '50%';
 		progressElementControl.style.backgroundColor = '#ddd';
 
-		progressElementControl.addEventListener( 'mousedown', onMouseDown, false );
-		progressElementControl.addEventListener( 'touchstart', onMouseDown, false );
+		progressElementControl.addEventListener( 'mousedown', onMouseDown, { passive: true } );
+		progressElementControl.addEventListener( 'touchstart', onMouseDown,  { passive: true } );
 
 		function onMouseDown ( event ) {
 
@@ -632,10 +632,10 @@
 
 		function addControlListeners () {
 
-			scope.container.addEventListener( 'mousemove', onVideoControlDrag, false );
-			scope.container.addEventListener( 'mouseup', onVideoControlStop, false );
-			scope.container.addEventListener( 'touchmove', onVideoControlDrag, false );
-			scope.container.addEventListener( 'touchend', onVideoControlStop, false );
+			scope.container.addEventListener( 'mousemove', onVideoControlDrag, { passive: true } );
+			scope.container.addEventListener( 'mouseup', onVideoControlStop, { passive: true } );
+			scope.container.addEventListener( 'touchmove', onVideoControlDrag, { passive: true } );
+			scope.container.addEventListener( 'touchend', onVideoControlStop, { passive: true } );
 
 
 		}
@@ -1146,11 +1146,11 @@
 		item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
 			item.style.filter = 
 			item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
-		});
+		}, { passive: true });
 		item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'mouseleave', function() {
 			item.style.filter = 
 			item.style.webkitFilter = '';
-		});
+		}, { passive: true });
 
 		item = this.mergeStyleOptions( item, options.style );
 

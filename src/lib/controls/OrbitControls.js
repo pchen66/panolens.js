@@ -817,16 +817,16 @@ THREE.OrbitControls = function ( object, domElement ) {
 	}
 
 	//this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
-	this.domElement.addEventListener( 'mousedown', onMouseDown, false );
-	this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
-	this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
+	this.domElement.addEventListener( 'mousedown', onMouseDown, { passive: false } );
+	this.domElement.addEventListener( 'mousewheel', onMouseWheel, { passive: false } );
+	this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, { passive: false } ); // firefox
 
-	this.domElement.addEventListener( 'touchstart', touchstart, false );
-	this.domElement.addEventListener( 'touchend', touchend, false );
-	this.domElement.addEventListener( 'touchmove', touchmove, false );
+	this.domElement.addEventListener( 'touchstart', touchstart, { passive: false } );
+	this.domElement.addEventListener( 'touchend', touchend, { passive: false } );
+	this.domElement.addEventListener( 'touchmove', touchmove, { passive: false } );
 
-	window.addEventListener( 'keyup', onKeyUp, false );
-	window.addEventListener( 'keydown', onKeyDown, false );
+	window.addEventListener( 'keyup', onKeyUp, { passive: false } );
+	window.addEventListener( 'keydown', onKeyDown, { passive: false } );
 
 	// force an update at start
 	this.update();

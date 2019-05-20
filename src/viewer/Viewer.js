@@ -1693,11 +1693,11 @@
 	 */
 	PANOLENS.Viewer.prototype.registerMouseAndTouchEvents = function () {
 
-		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, false );
-		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, false );
-		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , false );
-		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, false );
-		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , false );
+		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, { passive: false } );
+		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, { passive: false } );
+		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , { passive: false } );
+		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, { passive: false } );
+		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , { passive: false } );
 
 	};
 

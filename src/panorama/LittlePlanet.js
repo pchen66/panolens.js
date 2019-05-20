@@ -66,15 +66,15 @@
 
 	PANOLENS.LittlePlanet.prototype.registerMouseEvents = function () {
 
-		this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), false );
-		this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), false );
-		this.container.addEventListener( 'mouseup', this.onMouseUp.bind( this ), false );
-		this.container.addEventListener( 'touchstart', this.onMouseDown.bind( this ), false );
-		this.container.addEventListener( 'touchmove', this.onMouseMove.bind( this ), false );
-		this.container.addEventListener( 'touchend', this.onMouseUp.bind( this ), false );
-		this.container.addEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
-		this.container.addEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
-		this.container.addEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
+		this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), { passive: true } );
+		this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), { passive: true } );
+		this.container.addEventListener( 'mouseup', this.onMouseUp.bind( this ), { passive: true } );
+		this.container.addEventListener( 'touchstart', this.onMouseDown.bind( this ), { passive: true } );
+		this.container.addEventListener( 'touchmove', this.onMouseMove.bind( this ), { passive: true } );
+		this.container.addEventListener( 'touchend', this.onMouseUp.bind( this ), { passive: true } );
+		this.container.addEventListener( 'mousewheel', this.onMouseWheel.bind( this ), { passive: false } );
+		this.container.addEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), { passive: false } );
+		this.container.addEventListener( 'contextmenu', this.onContextMenu.bind( this ), { passive: true } );
 		
 	};
 
