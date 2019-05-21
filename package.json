@@ -4,7 +4,14 @@
   "description": "Javascript panorama viewer",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-closure": "npm run lint && rollup -c && java -jar node_modules/google-closure-compiler-java/compiler.jar --warning_level=VERBOSE --jscomp_off=globalThis --jscomp_off=checkTypes --jscomp_off=nonStandardJsDocs --language_in=ECMASCRIPT6_TYPED --js build/panolens.js --js_output_file build/panolens.min.js",
+    "build": "npm run lint && rollup -c",
+    "dev": "concurrently --names \"ROLLUP,HTTP\" \"rollup -c -w -m inline\" \"http-server -c-1 -p 8080 -o\"",
+    "lint": "eslint src",
+    "lint-fix": "eslint src --fix",
+    "test": "nyc --reporter=html --reporter=text ava ./test/src",
+    "start": "npm run dev",
+    "docs": "node_modules/.bin/jsdoc -c jsdoc.json -d ./docs"
   },
   "repository": {
     "type": "git",
@@ -23,13 +30,61 @@
     "url": "https://github.com/pchen66/panolens.js/issues"
   },
   "homepage": "https://github.com/pchen66/panolens.js#readme",
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
+    "rules": {
+      "semi": 2,
+      "indent": [
+        "error",
+        4
+      ],
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "key-spacing": [
+        "error",
+        {
+          "beforeColon": false,
+          "afterColon": true
+        }
+      ],
+      "quotes": [
+        "error",
+        "single",
+        {
+          "allowTemplateLiterals": true
+        }
+      ]
+    }
+  },
+  "ava": {
+    "files": [
+      "./test/**/*.js"
+    ],
+    "sources": [
+      "./src/**/*.js"
+    ],
+    "require": [
+      "esm"
+    ]
+  },
   "devDependencies": {
-    "gulp": "^4.0.2",
-    "gulp-concat": "^2.6.1",
-    "gulp-jsdoc3": "^1.0.1",
-    "gulp-strip-debug": "^1.1.0",
-    "gulp-uglify": "^2.1.2",
+    "ava": "^1.4.1",
+    "better-docs": "^1.1.6",
+    "concurrently": "^4.1.0",
+    "eslint": "^5.16.0",
+    "google-closure-compiler": "^20190513.0.0",
+    "http-server": "^0.11.1",
+    "jsdoc": "^3.6.2",
+    "nyc": "^14.1.1",
+    "rollup": "^1.12.3",
+    "rollup-plugin-json": "^4.0.0",
     "three": "^0.104.0",
     "tween.js": "^16.6.0"
-  }
+  },
+  "dependencies": {}
 }
