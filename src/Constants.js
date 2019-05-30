@@ -1,40 +1,5 @@
-(function(){
+import { version } from '../package.json';
 
-	'use strict';
-	
-	/**
-	 * Control Index Enum
-	 * @memberOf PANOLENS
-	 * @enum {number}
-	 */
-	
-	PANOLENS.Controls = {
-
-		ORBIT: 0,
-
-		DEVICEORIENTATION: 1
-
-	};
-
-	/**
-	 * Effect Mode Enum
-	 * @memberOf PANOLENS
-	 * @enum {number}
-	 */
-	PANOLENS.Modes = {
-
-		/** Unknown */
-		UNKNOWN: 0,
-
-		/** Normal */
-		NORMAL: 1,
-
-		/** Google Cardboard*/
-		CARDBOARD: 2,
-
-		/** Stereoscopic **/
-		STEREO: 3
-
-	};
-
-})();
+export const REVISION = version;
+export const CONTROLS = { ORBIT: 0, DEVICEORIENTATION: 1 };
+export const MODES = { UNKNOWN: 0, NORMAL: 1, CARDBOARD: 2, STEREO: 3 };
