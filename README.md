@@ -13,22 +13,18 @@ Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and 
 ### Usage
 
 Include `three.min.js` and `panolens.min.js`
-If you want to support offline experience, please include `panolens-offline.min.js` instead
 
 ```html
 <script src="js/three.min.js"></script>
 <script src="js/panolens.min.js"></script>
 ```
-This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use `panorama.link( other_panorama, new THREE.Vector3( X, Y, Z ) )` to connect the two. See [examples](http://pchen66.github.io/Panolens/) and [documentation](http://pchen66.github.io/Panolens/docs/index.html) for more details.
+This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use `panorama.link( other_panorama, new PANOLENS.Vector3( X, Y, Z ) )` to connect the two. See [examples](http://pchen66.github.io/Panolens/) and [documentation](http://pchen66.github.io/Panolens/docs/index.html) for more details.
 
 ```html
 <script>
 
-	var panorama, viewer;
-
-	panorama = new PANOLENS.ImagePanorama( 'asset/equirectangular.jpg' );
-
-	viewer = new PANOLENS.Viewer();
+	const panorama = new PANOLENS.ImagePanorama( 'asset/equirectangular.jpg' );
+	const viewer = new PANOLENS.Viewer();
 	viewer.add( panorama );
 
 </script>
@@ -112,23 +108,10 @@ Website Example | Codepen Live Exmaple
 [Simple Gallery](https://pchen66.github.io/Panolens/examples/panorama_simple_gallery.html) | [Update Image](https://codepen.io/pchen66/pen/YxeYGZ)
 [Little Planet Panorama](https://pchen66.github.io/Panolens/examples/littleplanet_image.html) | [Auto Rotate](https://codepen.io/pchen66/pen/rGpoPv)
 [Reticle](https://pchen66.github.io/Panolens/examples/panorama_reticle.html) | [Orbit Control](https://codepen.io/pchen66/pen/JrMxdV)
-[3D UI](https://pchen66.github.io/Panolens/examples/panorama_ui.html) | 
 [Interactive](https://pchen66.github.io/Panolens/examples/panorama_interactive.html) | 
 [Storytelling](http://pchen66.github.io/Panolens/examples/panorama_storytelling.html) |
 [Memory Leaking Test](http://pchen66.github.io/Panolens/examples/panorama_memoryleak_test.html) |
-[XDiamond](https://pchen66.github.io/Panolens/XDiamond) | 
 [PanoTheater](http://pchen66.github.io/PanoTheater) | 
-
-### Features
-
-1.	Support equirectangular image
-2.	Support cubemap images
-3.	Support google streetview with panoId ([How to get Panorama ID](http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id))
-4.	Support 360 equirectangular video (like youtube/facebook 360 video) even on iOS!
-5.	Support text/image/domElement annotations (Infospot)
-6.	Built-in Orbit / DeviceOrientation camera controls
-7.	Built-in fullscreen and video control widgets
-8.	Convert equirectangular image into little planet (Stereographic projection)
 
 ### How to add an infospot (hotspot)
 
@@ -138,15 +121,34 @@ Move cursor on a specific point in a panorama and press `Ctrl` with clicking or 
 
 ### Dependency
 
-Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) and [iphone-inline-video](https://github.com/bfred-it/iphone-inline-video) by default
+Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) by default, meaning `TWEEN` will be available with `windows` object
 
 ### How to contribute
 
 Always make your contributions for the latest `dev` branch, not `master`, so it can be tracked for the next release. 
 
-### Roadmap
-1.	npm packaging
-2.	infospot editor
+### FAQ
+
+#### PANOLENS.SpriteText (Tile/TileGroup) is not a constructor
+`SpriteText`, `Tile`, and `TileGroup` are deprecated after r10. Fundamentally they are compatible with existing `THREE` methods. If you need text rendering, please checkout [Creating text](https://threejs.org/docs/#manual/en/introduction/Creating-text) from three.js
+
+#### Uncaught TypeError: Cannot read property 'TextureLoader' of undefined
+`PANOLENS.Utils` is deprecated after r10. `PANOLENS.Utils.TextureLoader` is now `PANOLENS.TextureLoader`.
+
+#### Device orientation not working on my phone
+Apple introduced a new Motion & Orientation Access toggle (off by default) after iOS 12.2 under `Settings > Safari > Privacy & Security`. This requires users to turn on maunally to enable DeviceMotionEvent and DeviceOrientationEvent.
+
+[How (and why) to use Motion & Orientation Settings in iOS](https://www.applemust.com/how-and-why-to-use-motion-orientation-settings-in-ios/)
+
+#### Infospot is not visible
+Check again if `position` or `scale` property is being set correctly. It's default to and the border of the panorama with scale value as `300`.
+
+#### No sound for `VideoPanorama`
+By default the `muted` attribute for video is set to `false` to prevent `DOMException`. [Autoplay Policy Changes](https://developers.google.com/web/updates/2017/09/autoplay-policy-changes) Video `play()` without a user gesture will reject the promise with a DOMException. And the autoplay attribute will also be ignored. Change the default behavior by passing additional options to `VideoPanorama`
+
+```
+new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: true });
+```
 
 ### Support
 [![Support][panolens-support]][panolens-support-url]  
