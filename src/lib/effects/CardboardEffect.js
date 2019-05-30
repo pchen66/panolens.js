@@ -1,8 +1,7 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
-THREE.CardboardEffect = function ( renderer ) {
+import 'three';
+
+function CardboardEffect ( renderer ) {
 
 	var _camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 
@@ -64,7 +63,6 @@ THREE.CardboardEffect = function ( renderer ) {
 
 	//
 
-	// var material = new THREE.MeshBasicMaterial( { wireframe: true } );
 	var material = new THREE.MeshBasicMaterial( { map: _renderTarget.texture } );
 	var mesh = new THREE.Mesh( geometry, material );
 	_scene.add( mesh );
@@ -92,19 +90,26 @@ THREE.CardboardEffect = function ( renderer ) {
 		var width = _renderTarget.width / 2;
 		var height = _renderTarget.height;
 
+		if ( renderer.autoClear ) renderer.clear();
+
 		_renderTarget.scissor.set( 0, 0, width, height );
 		_renderTarget.viewport.set( 0, 0, width, height );
 		renderer.setRenderTarget( _renderTarget );
 		renderer.render( scene, _stereo.cameraL );
+
+		renderer.clearDepth();
 
 		_renderTarget.scissor.set( width, 0, width, height );
 		_renderTarget.viewport.set( width, 0, width, height );
 		renderer.setRenderTarget( _renderTarget );
 		renderer.render( scene, _stereo.cameraR );
 
+		renderer.clearDepth();
+
 		renderer.setRenderTarget( null );
 		renderer.render( _scene, _camera );
-
 	};
 
 };
+
+export { CardboardEffect };

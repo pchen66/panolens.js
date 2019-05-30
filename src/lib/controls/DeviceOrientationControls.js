@@ -1,11 +1,6 @@
-/**
- * @author richt / http://richt.me
- * @author WestLangley / http://github.com/WestLangley
- *
- * W3C Device Orientation control (http://w3c.github.io/deviceorientation/spec-source-orientation.html)
- */
+import 'three';
 
-THREE.DeviceOrientationControls = function( camera, domElement ) {
+function DeviceOrientationControls ( camera, domElement ) {
 
 	var scope = this;
 	var changeEvent = { type: 'change' };
@@ -148,15 +143,15 @@ THREE.DeviceOrientationControls = function( camera, domElement ) {
 
 		if ( scope.enabled === false ) return;
 
-		var alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + this.alphaOffsetAngle : 0; // Z
+		var alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
 		var beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
 		var gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
 		var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
 
 		setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
-		this.alpha = alpha;
+		scope.alpha = alpha;
 
-		ignoreUpdate !== true && this.dispatchEvent( changeEvent );
+		ignoreUpdate !== true && scope.dispatchEvent( changeEvent );
 
 	};
 
@@ -177,5 +172,10 @@ THREE.DeviceOrientationControls = function( camera, domElement ) {
 
 };
 
-THREE.DeviceOrientationControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-THREE.DeviceOrientationControls.prototype.constructor = THREE.DeviceOrientationControls;
+DeviceOrientationControls.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype), {
+
+	constructor: DeviceOrientationControls
+
+} );
+
+export { DeviceOrientationControls };
