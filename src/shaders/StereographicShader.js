@@ -4,14 +4,17 @@
  * @author pchen66
  */
 
-PANOLENS.StereographicShader = {
+import 'three';
+
+const StereographicShader = {
 
 	uniforms: {
 
 		"tDiffuse":   { value: new THREE.Texture() },
 		"resolution": { value: 1.0 },
 		"transform":  { value: new THREE.Matrix4() },
-		"zoom": 	  { value: 1.0 }
+		"zoom": 	  { value: 1.0 },
+		"opacity":    { value: 1.0 }
 
 	},
 
@@ -34,6 +37,7 @@ PANOLENS.StereographicShader = {
 		"uniform float resolution;",
 		"uniform mat4 transform;",
 		"uniform float zoom;",
+		"uniform float opacity;",
 
 		"varying vec2 vUv;",
 
@@ -57,8 +61,12 @@ PANOLENS.StereographicShader = {
 
 			"gl_FragColor = texture2D( tDiffuse, sampleUV );",
 
+			"gl_FragColor.a *= opacity;",
+
 		"}"
 
 	].join( "\n" )
 
 };
+
+export { StereographicShader };

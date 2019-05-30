@@ -1,70 +1,99 @@
-( function () {
+import { ImagePanorama } from './ImagePanorama';
+import { Infospot } from '../infospot/Infospot';
+import { CONTROLS } from '../Constants';
+import { StereographicShader } from '../shaders/StereographicShader';
+import 'three';
 
-	/**
-	 * Little Planet
-	 * @constructor
-	 * @param {string} type 		- Type of little planet basic class
-	 * @param {string} source 		- URL for the image source
-	 * @param {number} [size=10000] - Size of plane geometry
-	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
-	 */
-	PANOLENS.LittlePlanet = function ( type, source, size, ratio ) {
+/**
+ * Little Planet
+ * @constructor
+ * @param {string} type 		- Type of little planet basic class
+ * @param {string} source 		- URL for the image source
+ * @param {number} [size=10000] - Size of plane geometry
+ * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
+ */
+function LittlePlanet ( type = 'image', source, size = 10000, ratio = 0.5 ) {
 
-		type = type || 'image';
+	if ( type === 'image' ) {
 
-		type === 'image' && PANOLENS.ImagePanorama.call( this, source, size );
+		ImagePanorama.call( this, source, this.createGeometry( size, ratio ), this.createMaterial( size ) );
 
-		this.size = size || 10000;
-		this.ratio = ratio || 0.5;
-		this.EPS = 0.000001;
-		this.frameId;
+	}
 
-		this.geometry = this.createGeometry();
-		this.material = this.createMaterial( this.size );
+	this.size = size;
+	this.ratio = ratio;
+	this.EPS = 0.000001;
+	this.frameId;
 
-		this.dragging = false;
-		this.userMouse = new THREE.Vector2();
+	this.dragging = false;
+	this.userMouse = new THREE.Vector2();
 
-		this.quatA = new THREE.Quaternion();
-		this.quatB = new THREE.Quaternion();
-		this.quatCur = new THREE.Quaternion();
-		this.quatSlerp = new THREE.Quaternion();
+	this.quatA = new THREE.Quaternion();
+	this.quatB = new THREE.Quaternion();
+	this.quatCur = new THREE.Quaternion();
+	this.quatSlerp = new THREE.Quaternion();
 
-		this.vectorX = new THREE.Vector3( 1, 0, 0 );
-		this.vectorY = new THREE.Vector3( 0, 1, 0 );
+	this.vectorX = new THREE.Vector3( 1, 0, 0 );
+	this.vectorY = new THREE.Vector3( 0, 1, 0 );
 
-		this.addEventListener( 'window-resize', this.onWindowResize );
+	this.addEventListener( 'window-resize', this.onWindowResize );
 
-	};
+}
 
-	PANOLENS.LittlePlanet.prototype = Object.create( PANOLENS.ImagePanorama.prototype );
+LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype ), {
 
-	PANOLENS.LittlePlanet.prototype.constructor = PANOLENS.LittlePlanet;
+	constructor: LittlePlanet,
 
-	PANOLENS.LittlePlanet.prototype.createGeometry = function () {
+	add: function ( object ) {
 
-		return new THREE.PlaneBufferGeometry( this.size, this.size * this.ratio );
+		if ( arguments.length > 1 ) {
+			
+			for ( let i = 0; i < arguments.length; i ++ ) {
 
-	};
+				this.add( argument );
 
-	PANOLENS.LittlePlanet.prototype.createMaterial = function ( size ) {
+			}
 
-		var shader = PANOLENS.StereographicShader, uniforms = shader.uniforms;
+			return this;
+
+		}
+
+		if ( object instanceof Infospot ) {
+
+			object.material.depthTest = false;
+			
+		}
+
+		ImagePanorama.prototype.add.call( this, object );
+
+	},
+
+	createGeometry: function ( size, ratio ) {
+
+		return new THREE.PlaneBufferGeometry( size, size * ratio );
+
+	},
+
+	createMaterial: function ( size ) {
+
+		const shader = StereographicShader, uniforms = shader.uniforms;
 
 		uniforms.zoom.value = size;
+		uniforms.opacity.value = 0.0;
 
 		return new THREE.ShaderMaterial( {
 
 			uniforms: uniforms,
 			vertexShader: shader.vertexShader,
 			fragmentShader: shader.fragmentShader,
-			side: THREE.BackSide
+			side: THREE.BackSide,
+			transparent: true
 
 		} );
 		
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.registerMouseEvents = function () {
+	registerMouseEvents: function () {
 
 		this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), { passive: true } );
 		this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), { passive: true } );
@@ -76,9 +105,9 @@
 		this.container.addEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), { passive: false } );
 		this.container.addEventListener( 'contextmenu', this.onContextMenu.bind( this ), { passive: true } );
 		
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.unregisterMouseEvents = function () {
+	unregisterMouseEvents: function () {
 
 		this.container.removeEventListener( 'mousedown', this.onMouseDown.bind( this ), false );
 		this.container.removeEventListener( 'mousemove', this.onMouseMove.bind( this ), false );
@@ -90,18 +119,18 @@
 		this.container.removeEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
 		this.container.removeEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
 		
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.onMouseDown = function ( event ) {
+	onMouseDown: function ( event ) {
 
-		var x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
-		var y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
-
-		var inputCount = ( event.touches && event.touches.length ) || 1 ;
+		const inputCount = ( event.touches && event.touches.length ) || 1 ;
 
 		switch ( inputCount ) {
 
 			case 1:
+
+				const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
+				const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
 				this.dragging = true;
 				this.userMouse.set( x, y );
@@ -110,9 +139,9 @@
 
 			case 2:
 
-				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-				var distance = Math.sqrt( dx * dx + dy * dy );
+				const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+				const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+				const distance = Math.sqrt( dx * dx + dy * dy );
 				this.userMouse.pinchDistance = distance;
 
 				break;
@@ -125,21 +154,21 @@
 
 		this.onUpdateCallback();
 
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.onMouseMove = function ( event ) {
+	onMouseMove: function ( event ) {
 
-		var x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
-		var y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
-
-		var inputCount = ( event.touches && event.touches.length ) || 1 ;
+		const inputCount = ( event.touches && event.touches.length ) || 1 ;
 
 		switch ( inputCount ) {
 
 			case 1:
 
-				var angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
-				var angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
+				const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
+				const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+
+				const angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
+				const angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
 
 				if ( this.dragging ) {
 					this.quatA.setFromAxisAngle( this.vectorY, angleX );
@@ -152,9 +181,9 @@
 
 			case 2:
 
-				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-				var distance = Math.sqrt( dx * dx + dy * dy );
+				const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+				const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+				const distance = Math.sqrt( dx * dx + dy * dy );
 
 				this.addZoomDelta( this.userMouse.pinchDistance - distance );
 
@@ -166,20 +195,20 @@
 
 		}
 
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.onMouseUp = function ( event ) {
+	onMouseUp: function ( event ) {
 
 		this.dragging = false;
 
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.onMouseWheel = function ( event ) {
+	onMouseWheel: function ( event ) {
 
 		event.preventDefault();
 		event.stopPropagation();
 
-		var delta = 0;
+		let delta = 0;
 
 		if ( event.wheelDelta !== undefined ) { // WebKit / Opera / Explorer 9
 
@@ -194,13 +223,13 @@
 		this.addZoomDelta( delta );
 		this.onUpdateCallback();
 
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.addZoomDelta = function ( delta ) {
+	addZoomDelta: function ( delta ) {
 
-		var uniforms = this.material.uniforms;
-		var lowerBound = this.size * 0.1;
-		var upperBound = this.size * 10;
+		const uniforms = this.material.uniforms;
+		const lowerBound = this.size * 0.1;
+		const upperBound = this.size * 10;
 
 		uniforms.zoom.value += delta;
 
@@ -214,32 +243,32 @@
 
 		}
 
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.onUpdateCallback = function () {
+	onUpdateCallback: function () {
 
-		this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
+		this.frameId = requestAnimationFrame( this.onUpdateCallback.bind( this ) );
 
 		this.quatSlerp.slerp( this.quatCur, 0.1 );
 		this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
 		
 		if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
 			
-			window.cancelAnimationFrame( this.frameId );
+			cancelAnimationFrame( this.frameId );
 
 		}
 
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.reset = function () {
+	reset: function () {
 
 		this.quatCur.set( 0, 0, 0, 1 );
 		this.quatSlerp.set( 0, 0, 0, 1 );
 		this.onUpdateCallback();
 
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.onLoad = function () {
+	onLoad: function () {
 
 		this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 
@@ -248,36 +277,38 @@
 		
 		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' } );
 		
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.onLeave = function () {
+	onLeave: function () {
 
 		this.unregisterMouseEvents();
 
-		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: PANOLENS.Controls.ORBIT } );
+		this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: CONTROLS.ORBIT } );
 
-		window.cancelAnimationFrame( this.frameId );
+		cancelAnimationFrame( this.frameId );
 
-		PANOLENS.Panorama.prototype.onLeave.call( this );
+		ImagePanorama.prototype.onLeave.call( this );
 		
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.onWindowResize = function () {
+	onWindowResize: function () {
 
 		this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.onContextMenu = function () {
+	onContextMenu: function () {
 
 		this.dragging = false;
 
-	};
+	},
 
-	PANOLENS.LittlePlanet.prototype.dispose = function () {	
+	dispose: function () {	
 
-		PANOLENS.ImagePanorama.prototype.dispose.call( this );
+		ImagePanorama.prototype.dispose.call( this );
 
-	};
+	}
 
-})();
+});
+
+export { LittlePlanet };

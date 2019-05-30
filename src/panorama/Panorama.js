@@ -1,62 +1,62 @@
-( function () {
+import { Infospot } from '../infospot/Infospot';
+import { DataImage } from '../DataImage';
+import 'three';
+import TWEEN from '@tweenjs/tween.js';
 
-	'use strict';
+/**
+ * Skeleton panorama derived from THREE.Mesh
+ * @constructor
+ * @param {THREE.Geometry} geometry - The geometry for this panorama
+ * @param {THREE.Material} material - The material for this panorama
+ */
+function Panorama ( geometry, material ) {
 
-	/**
-	 * Skeleton panorama derived from THREE.Mesh
-	 * @constructor
-	 * @param {THREE.Geometry} geometry - The geometry for this panorama
-	 * @param {THREE.Material} material - The material for this panorama
-	 */
-	PANOLENS.Panorama = function ( geometry, material ) {
+	THREE.Mesh.call( this, geometry, material );
 
-		THREE.Mesh.call( this );
+	this.type = 'panorama';
 
-		this.type = 'panorama';
+	this.ImageQualityLow = 1;
+	this.ImageQualityFair = 2;
+	this.ImageQualityMedium = 3;
+	this.ImageQualityHigh = 4;
+	this.ImageQualitySuperHigh = 5;
 
-		this.ImageQualityLow = 1;
-		this.ImageQualityFair = 2;
-		this.ImageQualityMedium = 3;
-		this.ImageQualityHigh = 4;
-		this.ImageQualitySuperHigh = 5;
+	this.animationDuration = 1000;
 
-		this.animationDuration = 1000;
+	this.defaultInfospotSize = 350;
 
-		this.defaultInfospotSize = 350;
+	this.container = undefined;
 
-		this.container = undefined;
+	this.loaded = false;
 
-		this.loaded = false;
+	this.linkedSpots = [];
 
-		this.linkedSpots = [];
+	this.isInfospotVisible = false;
+	
+	this.linkingImageURL = undefined;
+	this.linkingImageScale = undefined;
 
-		this.isInfospotVisible = false;
-		
-		this.linkingImageURL = undefined;
-		this.linkingImageScale = undefined;
+	this.material.side = THREE.BackSide;
+	this.material.opacity = 0;
 
-		this.geometry = geometry;
+	this.scale.x *= -1;
+	this.renderOrder = -1;
 
-		this.material = material;
-		this.material.side = THREE.BackSide;
-		this.material.visible = false;
+	this.active = false;
 
-		this.scale.x *= -1;
-		this.renderOrder = -1;
+	this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
 
-		this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
+	this.addEventListener( 'load', this.fadeIn.bind( this ) );
+	this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+	this.addEventListener( 'click', this.onClick.bind( this ) );
 
-		this.addEventListener( 'load', this.fadeIn.bind( this ) );
-		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
-		this.addEventListener( 'click', this.onClick.bind( this ) );
+	this.setupTransitions();
 
-		this.setupTransitions();
+}
 
-	}
+Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
-	PANOLENS.Panorama.prototype = Object.create( THREE.Mesh.prototype );
-
-	PANOLENS.Panorama.prototype.constructor = PANOLENS.Panorama;
+	constructor: Panorama,
 
 	/**
 	 * Adding an object
@@ -64,11 +64,9 @@
 	 * empty object with inverted scale on x
 	 * @param {THREE.Object3D} object - The object to be added
 	 */
-	PANOLENS.Panorama.prototype.add = function ( object ) {
+	add: function ( object ) {
 
-		var scope, invertedObject;
-
-		scope = this;
+		let invertedObject;
 
 		if ( arguments.length > 1 ) {
 
@@ -83,7 +81,7 @@
 		}
 
 		// In case of infospots
-		if ( object instanceof PANOLENS.Infospot ) {
+		if ( object instanceof Infospot ) {
 
 			invertedObject = object;
 
@@ -94,16 +92,16 @@
 				object.dispatchEvent( { type: 'panolens-infospot-focus', method: function ( vector, duration, easing ) {
 
 					/**
-		        	 * Infospot focus handler event
-		        	 * @type {object}
-		        	 * @event PANOLENS.Panorama#panolens-viewer-handler
-		        	 * @property {string} method - Viewer function name
-		        	 * @property {*} data - The argument to be passed into the method
-		        	 */
-		        	scope.dispatchEvent( { type : 'panolens-viewer-handler', method: 'tweenControlCenter', data: [ vector, duration, easing ] } );
+					 * Infospot focus handler event
+					 * @type {object}
+					 * @event PANOLENS.Panorama#panolens-viewer-handler
+					 * @property {string} method - Viewer function name
+					 * @property {*} data - The argument to be passed into the method
+					 */
+					this.dispatchEvent( { type : 'panolens-viewer-handler', method: 'tweenControlCenter', data: [ vector, duration, easing ] } );
 
 
-				} } );
+				}.bind( this ) } );
 			}
 
 		} else {
@@ -118,20 +116,20 @@
 
 		THREE.Object3D.prototype.add.call( this, invertedObject );
 
-	};
+	},
 
-	PANOLENS.Panorama.prototype.load = function () {
+	load: function () {
 
 		this.onLoad();
 		
-	};
+	},
 
 	/**
 	 * Click event handler
 	 * @param  {object} event - Click event
 	 * @fires PANOLENS.Infospot#dismiss
 	 */
-	PANOLENS.Panorama.prototype.onClick = function ( event ) {
+	onClick: function ( event ) {
 
 		if ( event.intersects && event.intersects.length === 0 ) {
 
@@ -148,16 +146,16 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Set container of this panorama 
 	 * @param {HTMLElement|object} data - Data with container information
 	 * @fires PANOLENS.Infospot#panolens-container
 	 */
-	PANOLENS.Panorama.prototype.setContainer = function ( data ) {
+	setContainer: function ( data ) {
 
-		var container;
+		let container;
 
 		if ( data instanceof HTMLElement ) {
 
@@ -173,7 +171,7 @@
 
 			this.children.forEach( function ( child ) {
 
-				if ( child instanceof PANOLENS.Infospot && child.dispatchEvent ) {
+				if ( child instanceof Infospot && child.dispatchEvent ) {
 
 					/**
 					 * Set container event
@@ -190,15 +188,14 @@
 			this.container = container;
 
 		}
-		
 
-	};
+	},
 
 	/**
 	 * This will be called when panorama is loaded
 	 * @fires PANOLENS.Panorama#load
 	 */
-	PANOLENS.Panorama.prototype.onLoad = function () {
+	onLoad: function () {
 
 		this.loaded = true;
 
@@ -209,29 +206,29 @@
 		 */
 		this.dispatchEvent( { type: 'load' } );
 
-	};
+	},
 
 	/**
 	 * This will be called when panorama is in progress
 	 * @fires PANOLENS.Panorama#progress
 	 */
-	PANOLENS.Panorama.prototype.onProgress = function ( progress ) {
+	onProgress: function ( progress ) {
 
 		/**
 		 * Loading panorama progress event
 		 * @type {object}
 		 * @event PANOLENS.Panorama#progress
-	 	 * @property {object} progress - The progress object containing loaded and total amount
+		 * @property {object} progress - The progress object containing loaded and total amount
 		 */
 		this.dispatchEvent( { type: 'progress', progress: progress } );
 
-	};
+	},
 
 	/**
 	 * This will be called when panorama loading has error
 	 * @fires PANOLENS.Panorama#error
 	 */
-	PANOLENS.Panorama.prototype.onError = function () {
+	onError: function () {
 
 		/**
 		 * Loading panorama error event
@@ -240,15 +237,15 @@
 		 */
 		this.dispatchEvent( { type: 'error' } );
 
-	};
+	},
 
 	/**
 	 * Get zoom level based on window width
 	 * @return {number} zoom level indicating image quality
 	 */
-	PANOLENS.Panorama.prototype.getZoomLevel = function () {
+	getZoomLevel: function () {
 
-		var zoomLevel;
+		let zoomLevel;
 
 		if ( window.innerWidth <= 800 ) {
 
@@ -274,19 +271,18 @@
 
 		return zoomLevel;
 
-	};
+	},
 
 	/**
 	 * Update texture of a panorama
 	 * @param {THREE.Texture} texture - Texture to be updated
 	 */
-	PANOLENS.Panorama.prototype.updateTexture = function ( texture ) {
+	updateTexture: function ( texture ) {
 
 		this.material.map = texture;
-
 		this.material.needsUpdate = true;
 
-	};
+	},
 
 	/**
 	 * Toggle visibility of infospots in this panorama
@@ -294,18 +290,15 @@
 	 * @param  {number} delay - Delay in milliseconds to change visibility
 	 * @fires PANOLENS.Panorama#infospot-animation-complete
 	 */
-	PANOLENS.Panorama.prototype.toggleInfospotVisibility = function ( isVisible, delay ) {
+	toggleInfospotVisibility: function ( isVisible, delay ) {
 
 		delay = ( delay !== undefined ) ? delay : 0;
 
-		var scope, visible;
-
-		scope = this;
-		visible = ( isVisible !== undefined ) ? isVisible : ( this.isInfospotVisible ? false : true );
+		const visible = ( isVisible !== undefined ) ? isVisible : ( this.isInfospotVisible ? false : true );
 
 		this.traverse( function ( object ) {
 
-			if ( object instanceof PANOLENS.Infospot ) {
+			if ( object instanceof Infospot ) {
 
 				visible ? object.show( delay ) : object.hide( delay );
 
@@ -323,23 +316,23 @@
 			 * @event PANOLENS.Panorama#infospot-animation-complete
 			 * @type {object} 
 			 */
-			scope.dispatchEvent( { type : 'infospot-animation-complete', visible: visible } );
+			this.dispatchEvent( { type : 'infospot-animation-complete', visible: visible } );
 
-		} ).delay( delay ).start();
+		}.bind( this ) ).delay( delay ).start();
 
-	};
+	},
 
 	/**
 	 * Set image of this panorama's linking infospot
 	 * @param {string} url   - Url to the image asset
 	 * @param {number} scale - Scale factor of the infospot
 	 */
-	PANOLENS.Panorama.prototype.setLinkingImage = function ( url, scale ) {
+	setLinkingImage: function ( url, scale ) {
 
 		this.linkingImageURL = url;
 		this.linkingImageScale = scale;
 
-	};
+	},
 
 	/**
 	 * Link one-way panorama
@@ -348,9 +341,9 @@
 	 * @param  {number} [imageScale=300] - Image scale of linked infospot
 	 * @param  {string} [imageSrc=PANOLENS.DataImage.Arrow] - The image source of linked infospot
 	 */
-	PANOLENS.Panorama.prototype.link = function ( pano, position, imageScale, imageSrc ) {
+	link: function ( pano, position, imageScale, imageSrc ) {
 
-		var scope = this, spot, scale, img;
+		let scale, img;
 
 		this.visible = true;
 
@@ -389,49 +382,49 @@
 
 		} else {
 
-			img = PANOLENS.DataImage.Arrow;
+			img = DataImage.Arrow;
 
 		}
 
 		// Creates a new infospot
-		spot = new PANOLENS.Infospot( scale, img );
-        spot.position.copy( position );
-        spot.toPanorama = pano;
-        spot.addEventListener( 'click', function () {
+		const spot = new Infospot( scale, img );
+		spot.position.copy( position );
+		spot.toPanorama = pano;
+		spot.addEventListener( 'click', function () {
 
-        	/**
-        	 * Viewer handler event
-        	 * @type {object}
-        	 * @event PANOLENS.Panorama#panolens-viewer-handler
-        	 * @property {string} method - Viewer function name
-        	 * @property {*} data - The argument to be passed into the method
-        	 */
-        	scope.dispatchEvent( { type : 'panolens-viewer-handler', method: 'setPanorama', data: pano } );
+			/**
+			 * Viewer handler event
+			 * @type {object}
+			 * @event PANOLENS.Panorama#panolens-viewer-handler
+			 * @property {string} method - Viewer function name
+			 * @property {*} data - The argument to be passed into the method
+			 */
+			this.dispatchEvent( { type : 'panolens-viewer-handler', method: 'setPanorama', data: pano } );
 
-        } );
+		}.bind( this ) );
 
-        this.linkedSpots.push( spot );
+		this.linkedSpots.push( spot );
 
-        this.add( spot );
+		this.add( spot );
 
-        this.visible = false;
+		this.visible = false;
 
-	};
+	},
 
-	PANOLENS.Panorama.prototype.reset = function () {
+	reset: function () {
 
 		this.children.length = 0;	
 
-	};
+	},
 
-	PANOLENS.Panorama.prototype.setupTransitions = function () {
+	setupTransitions: function () {
 
 		this.fadeInAnimation = new TWEEN.Tween( this.material )
 			.easing( TWEEN.Easing.Quartic.Out )
 			.onStart( function () {
 
 				this.visible = true;
-				this.material.visible = true;
+				//this.material.visible = true;
 
 				/**
 				 * Enter panorama fade in start event
@@ -447,7 +440,7 @@
 			.onComplete( function () {
 
 				this.visible = false;
-				this.material.visible = true;
+				//this.material.visible = true;
 
 				/**
 				 * Leave panorama complete event
@@ -475,19 +468,31 @@
 		this.leaveTransition = new TWEEN.Tween( this )
 			.easing( TWEEN.Easing.Quartic.Out );
 
-	};
+	},
+
+	onFadeAnimationUpdate: function () {
+
+		const alpha = this.material.opacity;
+		const { uniforms } = this.material;
+
+		if ( uniforms && uniforms.opacity ) {
+			uniforms.opacity.value = alpha;
+		}
+
+	},
 
 	/**
 	 * Start fading in animation
 	 * @fires PANOLENS.Panorama#enter-fade-complete
 	 */
-	PANOLENS.Panorama.prototype.fadeIn = function ( duration ) {
+	fadeIn: function ( duration ) {
 
 		duration = duration >= 0 ? duration : this.animationDuration;
 
 		this.fadeOutAnimation.stop();
 		this.fadeInAnimation
 		.to( { opacity: 1 }, duration )
+		.onUpdate( this.onFadeAnimationUpdate.bind( this ) )
 		.onComplete( function () {
 
 				this.toggleInfospotVisibility( true, duration / 2 );
@@ -502,28 +507,31 @@
 			}.bind( this ) )
 		.start();
 
-	};
+	},
 
 	/**
 	 * Start fading out animation
 	 */
-	PANOLENS.Panorama.prototype.fadeOut = function ( duration ) {
+	fadeOut: function ( duration ) {
 
 		duration = duration >= 0 ? duration : this.animationDuration;
 
 		this.fadeInAnimation.stop();
-		this.fadeOutAnimation.to( { opacity: 0 }, duration ).start();
+		this.fadeOutAnimation
+		.to( { opacity: 0 }, duration )
+		.onUpdate( this.onFadeAnimationUpdate.bind( this ) )
+		.start();
 
-	};
+	},
 
 	/**
 	 * This will be called when entering a panorama 
 	 * @fires PANOLENS.Panorama#enter
 	 * @fires PANOLENS.Panorama#enter-animation-start
 	 */
-	PANOLENS.Panorama.prototype.onEnter = function () {
+	onEnter: function () {
 
-		var duration = this.animationDuration;
+		const duration = this.animationDuration;
 
 		this.leaveTransition.stop();
 		this.enterTransition
@@ -557,15 +565,23 @@
 		 */
 		this.dispatchEvent( { type: 'enter' } );
 
-	};
+		this.children.forEach( child => {
+
+			child.dispatchEvent( { type: 'panorama-enter' } );
+
+		} );
+
+		this.active = true;
+
+	},
 
 	/**
 	 * This will be called when leaving a panorama
 	 * @fires PANOLENS.Panorama#leave
 	 */
-	PANOLENS.Panorama.prototype.onLeave = function () {
+	onLeave: function () {
 
-		var duration = this.animationDuration;
+		const duration = this.animationDuration;
 
 		this.enterTransition.stop();
 		this.leaveTransition
@@ -592,21 +608,29 @@
 		 */
 		this.dispatchEvent( { type: 'leave' } );
 
-	};
+		this.children.forEach( child => {
+
+			child.dispatchEvent( { type: 'panorama-leave' } );
+
+		} );
+
+		this.active = false;
+
+	},
 
 	/**
 	 * Dispose panorama
 	 */
-	PANOLENS.Panorama.prototype.dispose = function () {
+	dispose: function () {
 
 		/**
-    	 * On panorama dispose handler
-    	 * @type {object}
-    	 * @event PANOLENS.Panorama#panolens-viewer-handler
-    	 * @property {string} method - Viewer function name
-    	 * @property {*} data - The argument to be passed into the method
-    	 */
-    	this.dispatchEvent( { type : 'panolens-viewer-handler', method: 'onPanoramaDispose', data: this } );
+		 * On panorama dispose handler
+		 * @type {object}
+		 * @event PANOLENS.Panorama#panolens-viewer-handler
+		 * @property {string} method - Viewer function name
+		 * @property {*} data - The argument to be passed into the method
+		 */
+		this.dispatchEvent( { type : 'panolens-viewer-handler', method: 'onPanoramaDispose', data: this } );
 
 		// recursive disposal on 3d objects
 		function recursiveDispose ( object ) {
@@ -618,7 +642,7 @@
 
 			}
 
-			if ( object instanceof PANOLENS.Infospot ) {
+			if ( object instanceof Infospot ) {
 
 				object.dispose();
 
@@ -636,6 +660,8 @@
 
 		}
 
-	};
+	}
 
-} )();
+} );
+
+export { Panorama };

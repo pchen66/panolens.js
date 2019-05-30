@@ -1,29 +1,25 @@
-(function(){
+import { Panorama } from './Panorama';
+import 'three';
 
-	'use strict';
+/**
+ * Empty panorama
+ * @constructor
+ */
+function EmptyPanorama () {
 
-	/**
-	 * Empty panorama
-	 * @constructor
-	 * @param {number} [radius=5000] - Radius of panorama
-	 */
-	PANOLENS.EmptyPanorama = function ( radius ) {
+	const geometry = new THREE.BufferGeometry();
+	const material = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
 
-		radius = radius || 5000;
+	geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
 
-		var geometry = new THREE.BufferGeometry(),
-			material = new THREE.MeshBasicMaterial( { 
-				color: 0x000000, opacity: 1, transparent: true 
-			} );
+	Panorama.call( this, geometry, material );
 
-		geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
+}
 
-		PANOLENS.Panorama.call( this, geometry, material );
+EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
-	}
+	constructor: EmptyPanorama
 
-	PANOLENS.EmptyPanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
+} );
 
-	PANOLENS.EmptyPanorama.prototype.constructor = PANOLENS.EmptyPanorama;
-
-})();
+export { EmptyPanorama };

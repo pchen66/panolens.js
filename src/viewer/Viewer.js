@@ -1,245 +1,250 @@
-( function () {
+import { MODES, CONTROLS } from '../Constants';
+import { OrbitControls } from '../lib/controls/OrbitControls';
+import { DeviceOrientationControls } from '../lib/controls/DeviceOrientationControls';
+import { CardboardEffect } from '../lib/effects/CardboardEffect';
+import { StereoEffect } from '../lib/effects/StereoEffect';
+import { Widget } from '../widget/Widget';
+import { Reticle } from '../interface/Reticle';
+import { Infospot } from '../infospot/Infospot';
+import { DataImage } from '../DataImage';
+import { Panorama } from '../panorama/Panorama';
+import { VideoPanorama } from '../panorama/VideoPanorama';
+import { CameraPanorama } from '../panorama/CameraPanorama';
+import 'three';
 
-	'use strict';
+/**
+ * Viewer contains pre-defined scene, camera and renderer
+ * @constructor
+ * @param {object} [options] - Use custom or default config options
+ * @param {HTMLElement} [options.container] - A HTMLElement to host the canvas
+ * @param {THREE.Scene} [options.scene=THREE.Scene] - A THREE.Scene which contains panorama and 3D objects
+ * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
+ * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
+ * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
+ * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'setting', 'video']
+ * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
+ * @param {boolean} [options.autoHideInfospot=true] - Auto hide infospots when click on non-active area
+ * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
+ * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
+ * @param {number}  [options.cameraFov=60] - Camera field of view value
+ * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
+ * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
+ * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection in ms
+ * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
+ * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
+ * @param {number}  [options.indicatorSize=30] - Size of View Indicator
+ * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
+ * @param {boolean} [options.autoRotate=false] - Auto rotate
+ * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
+ * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
+ */
+function Viewer ( options ) {
 
-	/**
-	 * Viewer contains pre-defined scene, camera and renderer
-	 * @constructor
-	 * @param {object} [options] - Use custom or default config options
-	 * @param {HTMLElement} [options.container] - A HTMLElement to host the canvas
-	 * @param {THREE.Scene} [options.scene=THREE.Scene] - A THREE.Scene which contains panorama and 3D objects
-	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
-	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
-	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
-	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'setting', 'video']
-	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
-	 * @param {boolean} [options.autoHideInfospot=true] - Auto hide infospots when click on non-active area
-	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
-	 * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
-	 * @param {number}  [options.cameraFov=60] - Camera field of view value
-	 * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
-	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
-	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection in ms
-	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
-	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
-	 * @param {number}  [options.indicatorSize=30] - Size of View Indicator
-	 * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
-	 * @param {boolean} [options.autoRotate=false] - Auto rotate
-	 * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
-	 * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
-	 * @param {boolean} [options.enableLiveCamera=false] - Enable live camera view as background
-	 */
-	PANOLENS.Viewer = function ( options ) {
+	THREE.EventDispatcher.call( this );
 
-		THREE.EventDispatcher.call( this );
+	let container;
 
-		if ( !THREE ) {
+	options = options || {};
+	options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
+	options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
+	options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
+	options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
+	options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
+	options.clickTolerance = options.clickTolerance || 10;
+	options.cameraFov = options.cameraFov || 60;
+	options.reverseDragging = options.reverseDragging || false;
+	options.enableReticle = options.enableReticle || false;
+	options.dwellTime = options.dwellTime || 1500;
+	options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
+	options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
+	options.indicatorSize = options.indicatorSize || 30;
+	options.output = options.output ? options.output : 'none';
+	options.autoRotate = options.autoRotate || false;
+	options.autoRotateSpeed = options.autoRotateSpeed || 2.0;
+	options.autoRotateActivationDuration = options.autoRotateActivationDuration || 5000;
 
-			console.error('Three.JS not found');
+	this.options = options;
 
-			return;
-		}
+	// CSS Icon
+	//const styleLoader = new PANOLENS.StyleLoader();
+	//styleLoader.inject( 'icono' );
 
-		var container;
+	// Container
+	if ( options.container ) {
 
-		options = options || {};
-		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
-		options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
-		options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
-		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
-		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
-		options.clickTolerance = options.clickTolerance || 10;
-		options.cameraFov = options.cameraFov || 60;
-		options.reverseDragging = options.reverseDragging || false;
-		options.enableReticle = options.enableReticle || false;
-		options.dwellTime = options.dwellTime || 1500;
-		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
-		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
-		options.indicatorSize = options.indicatorSize || 30;
-		options.output = options.output ? options.output : 'none';
-		options.autoRotate = options.autoRotate || false;
-		options.autoRotateSpeed = options.autoRotateSpeed || 2.0;
-		options.autoRotateActivationDuration = options.autoRotateActivationDuration || 5000;
+		container = options.container;
+		container._width = container.clientWidth;
+		container._height = container.clientHeight;
 
-		this.options = options;
+	} else {
 
-		// Container
-		if ( options.container ) {
+		container = document.createElement( 'div' );
+		container.classList.add( 'panolens-container' );
+		container.style.width = '100%';
+		container.style.height = '100%';
+		container._width = window.innerWidth;
+		container._height = window.innerHeight;
+		document.body.appendChild( container );
 
-			container = options.container;
-			container._width = container.clientWidth;
-			container._height = container.clientHeight;
+	}
 
-		} else {
+	this.container = container;
 
-			container = document.createElement( 'div' );
-			container.classList.add( 'panolens-container' );
-			container.style.width = '100%';
-			container.style.height = '100%';
-			container._width = window.innerWidth;
-			container._height = window.innerHeight;
-			document.body.appendChild( container );
+	this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
+	this.scene = options.scene || new THREE.Scene();
+	this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
+	this.sceneReticle = new THREE.Scene();
 
-		}
+	this.viewIndicatorSize = this.options.indicatorSize;
 
-		this.container = container;
+	this.reticle = {};
+	this.tempEnableReticle = this.options.enableReticle;
 
-		this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
-		this.scene = options.scene || new THREE.Scene();
-		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
+	this.mode = MODES.NORMAL;
 
-		this.viewIndicatorSize = this.options.indicatorSize;
+	this.OrbitControls;
+	this.DeviceOrientationControls;
 
-		this.reticle = {};
-		this.tempEnableReticle = this.options.enableReticle;
+	this.CardboardEffect;
+	this.StereoEffect;
 
-		this.mode = PANOLENS.Modes.NORMAL;
+	this.controls;
+	this.effect;
+	this.panorama;
+	this.widget;
 
-		this.OrbitControls;
-		this.DeviceOrientationControls;
+	this.hoverObject;
+	this.infospot;
+	this.pressEntityObject;
+	this.pressObject;
 
-		this.CardboardEffect;
-		this.StereoEffect;
+	this.raycaster = new THREE.Raycaster();
+	this.raycasterPoint = new THREE.Vector2();
+	this.userMouse = new THREE.Vector2();
+	this.updateCallbacks = [];
+	this.requestAnimationId;
 
-		this.controls;
-		this.effect;
-		this.panorama;
-		this.widget;
+	this.cameraFrustum = new THREE.Frustum();
+	this.cameraViewProjectionMatrix = new THREE.Matrix4();
 
-		this.hoverObject;
-		this.infospot;
-		this.pressEntityObject;
-		this.pressObject;
+	this.autoRotateRequestId;
 
-		this.raycaster = new THREE.Raycaster();
-		this.raycasterPoint = new THREE.Vector2();
-		this.userMouse = new THREE.Vector2();
-		this.updateCallbacks = [];
-		this.requestAnimationId;
+	this.outputDivElement;
 
-		this.cameraFrustum = new THREE.Frustum();
-		this.cameraViewProjectionMatrix = new THREE.Matrix4();
+	this.touchSupported = 'ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch;
 
-		this.autoRotateRequestId;
+	// Handler references
+	this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
+	this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
+	this.HANDLER_MOUSE_MOVE = this.onMouseMove.bind( this );
+	this.HANDLER_WINDOW_RESIZE = this.onWindowResize.bind( this );
+	this.HANDLER_KEY_DOWN = this.onKeyDown.bind( this );
+	this.HANDLER_KEY_UP = this.onKeyUp.bind( this );
+	this.HANDLER_TAP = this.onTap.bind( this, {
+		clientX: this.container.clientWidth / 2,
+		clientY: this.container.clientHeight / 2
+	} );
 
-		this.outputDivElement;
+	// Flag for infospot output
+	this.OUTPUT_INFOSPOT = false;
 
-		// Handler references
-		this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
-		this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
-		this.HANDLER_MOUSE_MOVE = this.onMouseMove.bind( this );
-		this.HANDLER_WINDOW_RESIZE = this.onWindowResize.bind( this );
-		this.HANDLER_KEY_DOWN = this.onKeyDown.bind( this );
-		this.HANDLER_KEY_UP = this.onKeyUp.bind( this );
-		this.HANDLER_TAP = this.onTap.bind( this, {
-			clientX: this.container.clientWidth / 2,
-			clientY: this.container.clientHeight / 2
-		} );
+	// Animations
+	this.tweenLeftAnimation = new TWEEN.Tween();
+	this.tweenUpAnimation = new TWEEN.Tween();
 
-		// Flag for infospot output
-		this.OUTPUT_INFOSPOT = false;
+	// Renderer
+	this.renderer.setPixelRatio( window.devicePixelRatio );
+	this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+	this.renderer.setClearColor( 0x000000, 0 );
+	this.renderer.autoClear = false;
 
-		// Animations
-		this.tweenLeftAnimation = new TWEEN.Tween();
-		this.tweenUpAnimation = new TWEEN.Tween();
+	// Append Renderer Element to container
+	this.renderer.domElement.classList.add( 'panolens-canvas' );
+	this.renderer.domElement.style.display = 'block';
+	this.container.style.backgroundColor = '#000';
+	this.container.appendChild( this.renderer.domElement );
 
-		// Renderer
-		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
-		this.renderer.setClearColor( 0x000000, 0 );
+	// Camera Controls
+	this.OrbitControls = new OrbitControls( this.camera, this.container );
+	this.OrbitControls.id = 'orbit';
+	this.OrbitControls.minDistance = 1;
+	this.OrbitControls.noPan = true;
+	this.OrbitControls.autoRotate = this.options.autoRotate;
+	this.OrbitControls.autoRotateSpeed = this.options.autoRotateSpeed;
 
-		// Append Renderer Element to container
-		this.renderer.domElement.classList.add( 'panolens-canvas' );
-		this.renderer.domElement.style.display = 'block';
-		this.container.style.backgroundColor = '#000';
-		this.container.appendChild( this.renderer.domElement );
+	this.DeviceOrientationControls = new DeviceOrientationControls( this.camera, this.container );
+	this.DeviceOrientationControls.id = 'device-orientation';
+	this.DeviceOrientationControls.enabled = false;
+	this.camera.position.z = 1;
 
-		// Camera Controls
-		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container );
-		this.OrbitControls.name = 'orbit';
-		this.OrbitControls.minDistance = 1;
-		this.OrbitControls.noPan = true;
-		this.OrbitControls.autoRotate = this.options.autoRotate;
-		this.OrbitControls.autoRotateSpeed = this.options.autoRotateSpeed;
+	// Register change event if passiveRenering
+	if ( this.options.passiveRendering ) {
 
-		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera, this.container );
-		this.DeviceOrientationControls.name = 'device-orientation';
-		this.DeviceOrientationControls.enabled = false;
-		this.camera.position.z = 1;
+		console.warn( 'passiveRendering is now deprecated' );
 
-		// Register change event if passiveRenering
-		if ( this.options.passiveRendering ) {
+	}
 
-			console.warn( 'passiveRendering is now deprecated' );
+	// Controls
+	this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
+	this.control = this.OrbitControls;
 
-		}
+	// Cardboard effect
+	this.CardboardEffect = new CardboardEffect( this.renderer );
+	this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
 
-		// Controls
-		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
-		this.control = this.OrbitControls;
+	// Stereo effect
+	this.StereoEffect = new StereoEffect( this.renderer );
+	this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
 
-		// Cardboard effect
-		this.CardboardEffect = new THREE.CardboardEffect( this.renderer );
-		this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+	this.effect = this.CardboardEffect;
 
-		// Stereo effect
-		this.StereoEffect = new THREE.StereoEffect( this.renderer );
-		this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+	// Add default hidden reticle
+	this.addReticle();
 
-		this.effect = this.CardboardEffect;
+	// Lock horizontal view
+	if ( this.options.horizontalView ) {
+		this.OrbitControls.minPolarAngle = Math.PI / 2;
+		this.OrbitControls.maxPolarAngle = Math.PI / 2;
+	}
 
-		// Add default hidden reticle
-		this.addReticle();
+	// Add Control UI
+	if ( this.options.controlBar !== false ) {
+		this.addDefaultControlBar( this.options.controlButtons );
+	}
 
-		// Lock horizontal view
-		if ( this.options.horizontalView ) {
-			this.OrbitControls.minPolarAngle = Math.PI / 2;
-			this.OrbitControls.maxPolarAngle = Math.PI / 2;
-		}
+	// Add View Indicator
+	if ( this.options.viewIndicator ) {
+		this.addViewIndicator();
+	}
 
-		// Add Control UI
-		if ( this.options.controlBar !== false ) {
-			this.addDefaultControlBar( this.options.controlButtons );
-		}
+	// Reverse dragging direction
+	if ( this.options.reverseDragging ) {
+		this.reverseDraggingDirection();
+	}
 
-		// Add View Indicator
-		if ( this.options.viewIndicator ) {
-			this.addViewIndicator();
-		}
+	// Register event if reticle is enabled, otherwise defaults to mouse
+	if ( this.options.enableReticle ) {
+		this.enableReticleControl();
+	} else {
+		this.registerMouseAndTouchEvents();
+	}
 
-		// Reverse dragging direction
-		if ( this.options.reverseDragging ) {
-			this.reverseDraggingDirection();
-		}
+	// Output infospot position to an overlay container if specified
+	if ( this.options.output === 'overlay' ) {
+		this.addOutputElement();
+	}
 
-		// Register event if reticle is enabled, otherwise defaults to mouse
-		if ( this.options.enableReticle ) {
-			this.enableReticleControl();
-		} else {
-			this.registerMouseAndTouchEvents();
-		}
+	// Register dom event listeners
+	this.registerEventListeners();
 
-		// Output infospot position to an overlay container if specified
-		if ( this.options.output === 'overlay' ) {
-			this.addOutputElement();
-		}
+	// Animate
+	this.animate.call( this );
 
-		if ( this.options.enableLiveCamera ) {
-			this.media = new PANOLENS.Media( { container: this.container, scene: this.scene } );
-			this.media.start();
-		}
+};
 
-		// Register dom event listeners
-		this.registerEventListeners();
+Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
 
-		// Animate
-		this.animate.call( this );
-
-	};
-
-	PANOLENS.Viewer.prototype = Object.create( THREE.EventDispatcher.prototype );
-
-	PANOLENS.Viewer.prototype.constructor = PANOLENS.Viewer;
+	constructor: Viewer,
 
 	/**
 	 * Add an object to the scene
@@ -247,7 +252,7 @@
 	 * to communicate with viewer method
 	 * @param {THREE.Object3D} object - The object to be added
 	 */
-	PANOLENS.Viewer.prototype.add = function ( object ) {
+	add: function ( object ) {
 
 		if ( arguments.length > 1 ) {
 
@@ -271,9 +276,15 @@
 		}
 
 		// All object added to scene being passed with container
-		if ( object instanceof PANOLENS.Panorama && object.dispatchEvent ) {
+		if ( object instanceof Panorama && object.dispatchEvent ) {
 
 			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+
+		}
+
+		if ( object instanceof CameraPanorama ) {
+
+			object.dispatchEvent( { type: 'panolens-scene', scene: this.scene } );
 
 		}
 
@@ -290,13 +301,13 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Remove an object from the scene
 	 * @param  {THREE.Object3D} object - Object to be removed
 	 */
-	PANOLENS.Viewer.prototype.remove = function ( object ) {
+	remove: function ( object ) {
 
 		if ( object.removeEventListener ) {
 
@@ -306,15 +317,13 @@
 
 		this.scene.remove( object );
 
-	};
+	},
 
 	/**
 	 * Add default control bar
 	 * @param {array} array - The control buttons array
 	 */
-	PANOLENS.Viewer.prototype.addDefaultControlBar = function ( array ) {
-
-		var scope = this;
+	addDefaultControlBar: function ( array ) {
 
 		if ( this.widget ) {
 
@@ -323,31 +332,33 @@
 
 		}
 
-		this.widget = new PANOLENS.Widget( this.container );
-		this.widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
-		this.widget.addControlBar();
-		array.forEach( function( buttonName ){
+		const widget = new Widget( this.container );
+		widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+		widget.addControlBar();
+		array.forEach( buttonName => {
 
-			scope.widget.addControlButton( buttonName );
+			widget.addControlButton( buttonName );
 
 		} );
 
-	};
+		this.widget = widget;
+
+	},
 
 	/**
 	 * Set a panorama to be the current one
 	 * @param {PANOLENS.Panorama} pano - Panorama to be set
 	 */
-	PANOLENS.Viewer.prototype.setPanorama = function ( pano ) {
+	setPanorama: function ( pano ) {
 
-		var scope = this, leavingPanorama = this.panorama;
+		const leavingPanorama = this.panorama;
 
 		if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
 
 			// Clear exisiting infospot
 			this.hideInfospot();
 
-			var afterEnterComplete = function () {
+			const afterEnterComplete = function () {
 
 				leavingPanorama && leavingPanorama.onLeave();
 				pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
@@ -361,13 +372,13 @@
 			
 		}
 
-	};
+	},
 
 	/**
 	 * Event handler to execute commands from child objects
 	 * @param {object} event - The dispatched event with method as function name and data as an argument
 	 */
-	PANOLENS.Viewer.prototype.eventHandler = function ( event ) {
+	eventHandler: function ( event ) {
 
 		if ( event.method && this[ event.method ] ) {
 
@@ -375,13 +386,13 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Dispatch event to all descendants
 	 * @param  {object} event - Event to be passed along
 	 */
-	PANOLENS.Viewer.prototype.dispatchEventToChildren = function ( event ) {
+	dispatchEventToChildren: function ( event ) {
 
 		this.scene.traverse( function ( object ) {
 
@@ -393,20 +404,20 @@
 
 		});
 
-	};
+	},
 
 	/**
 	 * Set widget content
 	 * @param  {integer} controlIndex - Control index
 	 * @param  {PANOLENS.Modes} mode - Modes for effects
 	 */
-	PANOLENS.Viewer.prototype.activateWidgetItem = function ( controlIndex, mode ) {
+	activateWidgetItem: function ( controlIndex, mode ) {
 
-		var mainMenu = this.widget.mainMenu;
-		var ControlMenuItem = mainMenu.children[ 0 ];
-		var ModeMenuItem = mainMenu.children[ 1 ];
+		const mainMenu = this.widget.mainMenu;
+		const ControlMenuItem = mainMenu.children[ 0 ];
+		const ModeMenuItem = mainMenu.children[ 1 ];
 
-		var item;
+		let item;
 
 		if ( controlIndex !== undefined ) {
 
@@ -441,13 +452,13 @@
 
 			switch( mode ) {
 
-				case PANOLENS.Modes.CARDBOARD:
+				case MODES.CARDBOARD:
 
 					item = ModeMenuItem.subMenu.children[ 2 ];
 
 					break;
 
-				case PANOLENS.Modes.STEREO:
+				case MODES.STEREO:
 
 					item = ModeMenuItem.subMenu.children[ 3 ];
 					
@@ -465,30 +476,30 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Enable rendering effect
 	 * @param  {PANOLENS.Modes} mode - Modes for effects
 	 */
-	PANOLENS.Viewer.prototype.enableEffect = function ( mode ) {
+	enableEffect: function ( mode ) {
 
 		if ( this.mode === mode ) { return; }
-		if ( mode === PANOLENS.Modes.NORMAL ) { this.disableEffect(); return; }
+		if ( mode === MODES.NORMAL ) { this.disableEffect(); return; }
 		else { this.mode = mode; }
 
-		var fov = this.camera.fov;
+		const fov = this.camera.fov;
 
 		switch( mode ) {
 
-			case PANOLENS.Modes.CARDBOARD:
+			case MODES.CARDBOARD:
 
 				this.effect = this.CardboardEffect;
 				this.enableReticleControl();
 
 				break;
 
-			case PANOLENS.Modes.STEREO:
+			case MODES.STEREO:
 
 				this.effect = this.StereoEffect;
 				this.enableReticleControl();
@@ -528,16 +539,16 @@
 		 */
 		this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
 
-	};
+	},
 
 	/**
 	 * Disable additional rendering effect
 	 */
-	PANOLENS.Viewer.prototype.disableEffect = function () {
+	disableEffect: function () {
 
-		if ( this.mode === PANOLENS.Modes.NORMAL ) { return; }
+		if ( this.mode === MODES.NORMAL ) { return; }
 
-		this.mode = PANOLENS.Modes.NORMAL;
+		this.mode = MODES.NORMAL;
 		this.disableReticleControl();
 
 		this.activateWidgetItem( undefined, this.mode );
@@ -560,15 +571,14 @@
 		 * @property {PANOLENS.Modes} mode - Current display mode
 		 */
 		this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
-	};
+	},
 
 	/**
 	 * Enable reticle control
 	 */
-	PANOLENS.Viewer.prototype.enableReticleControl = function () {
+	enableReticleControl: function () {
 
 		if ( this.reticle.visible ) { return; }
-		if ( !this.reticle.textureLoaded ) { this.reticle.loadTextures(); }
 
 		this.tempEnableReticle = true;
 
@@ -578,12 +588,12 @@
 		this.registerReticleEvent();
 		this.updateReticleEvent();
 
-	};
+	},
 
 	/**
 	 * Disable reticle control
 	 */
-	PANOLENS.Viewer.prototype.disableReticleControl = function () {
+	disableReticleControl: function () {
 
 		this.tempEnableReticle = false;
 
@@ -600,36 +610,36 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Enable auto rotation
 	 */
-	PANOLENS.Viewer.prototype.enableAutoRate = function () {
+	enableAutoRate: function () {
 
 		this.options.autoRotate = true;
 		this.OrbitControls.autoRotate = true;
 
-	};
+	},
 
 	/**
 	 * Disable auto rotation
 	 */
-	PANOLENS.Viewer.prototype.disableAutoRate = function () {
+	disableAutoRate: function () {
 
 		clearTimeout( this.autoRotateRequestId );
 		this.options.autoRotate = false;
 		this.OrbitControls.autoRotate = false;
 
-	};
+	},
 
 	/**
 	 * Toggle video play or stop
 	 * @fires PANOLENS.Viewer#video-toggle
 	 */
-	PANOLENS.Viewer.prototype.toggleVideoPlay = function ( pause ) {
+	toggleVideoPlay: function ( pause ) {
 
-		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
+		if ( this.panorama instanceof VideoPanorama ) {
 
 			/**
 			 * Toggle video event
@@ -640,16 +650,16 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Set currentTime in a video
 	 * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
 	 * @fires PANOLENS.Viewer#video-time
 	 */
-	PANOLENS.Viewer.prototype.setVideoCurrentTime = function ( percentage ) {
+	setVideoCurrentTime: function ( percentage ) {
 
-		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
+		if ( this.panorama instanceof VideoPanorama ) {
 
 			/**
 			 * Setting video time event
@@ -661,14 +671,14 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * This will be called when video updates if an widget is present
 	 * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
 	 * @fires PANOLENS.Viewer#video-update
 	 */
-	PANOLENS.Viewer.prototype.onVideoUpdate = function ( percentage ) {
+	onVideoUpdate: function ( percentage ) {
 
 		/**
 		 * Video update event
@@ -678,12 +688,12 @@
 		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-update', percentage: percentage } );
 
-	};
+	},
 
 	/**
 	 * Add update callback to be called every animation frame
 	 */
-	PANOLENS.Viewer.prototype.addUpdateCallback = function ( fn ) {
+	addUpdateCallback: function ( fn ) {
 
 		if ( fn ) {
 
@@ -691,15 +701,15 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Remove update callback
 	 * @param  {Function} fn - The function to be removed
 	 */
-	PANOLENS.Viewer.prototype.removeUpdateCallback = function ( fn ) {
+	removeUpdateCallback: function ( fn ) {
 
-		var index = this.updateCallbacks.indexOf( fn );
+		const index = this.updateCallbacks.indexOf( fn );
 
 		if ( fn && index >= 0 ) {
 
@@ -707,12 +717,12 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Show video widget
 	 */
-	PANOLENS.Viewer.prototype.showVideoWidget = function () {
+	showVideoWidget: function () {
 
 		/**
 		 * Show video widget event
@@ -721,12 +731,12 @@
 		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-control-show' } );
 
-	};
+	},
 
 	/**
 	 * Hide video widget
 	 */
-	PANOLENS.Viewer.prototype.hideVideoWidget = function () {
+	hideVideoWidget: function () {
 
 		/**
 		 * Hide video widget
@@ -735,38 +745,36 @@
 		 */
 		this.widget && this.widget.dispatchEvent( { type: 'video-control-hide' } );
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.updateVideoPlayButton = function ( paused ) {
+	updateVideoPlayButton: function ( paused ) {
 
 		if ( this.widget && 
-			 this.widget.videoElement && 
-			 this.widget.videoElement.controlButton ) {
+				this.widget.videoElement && 
+				this.widget.videoElement.controlButton ) {
 
 			this.widget.videoElement.controlButton.update( paused );
 
 		}
 
-	};
+	},
 
 	/**
 	 * Add default panorama event listeners
 	 * @param {PANOLENS.Panorama} pano - The panorama to be added with event listener
 	 */
-	PANOLENS.Viewer.prototype.addPanoramaEventListener = function ( pano ) {
-
-		var scope = this;
+	addPanoramaEventListener: function ( pano ) {
 
 		// Set camera control on every panorama
 		pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
 
 		// Show and hide widget event only when it's PANOLENS.VideoPanorama
-		if ( pano instanceof PANOLENS.VideoPanorama ) {
+		if ( pano instanceof VideoPanorama ) {
 
 			pano.addEventListener( 'enter-fade-start', this.showVideoWidget.bind( this ) );
 			pano.addEventListener( 'leave', function () {
 
-				if ( !(this.panorama instanceof PANOLENS.VideoPanorama) ) {
+				if ( !(this.panorama instanceof VideoPanorama) ) {
 
 					this.hideVideoWidget.call( this );
 
@@ -776,22 +784,22 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Set camera control
 	 */
-	PANOLENS.Viewer.prototype.setCameraControl = function () {
+	setCameraControl: function () {
 
 		this.OrbitControls.target.copy( this.panorama.position );
 
-	};
+	},
 
 	/**
 	 * Get current camera control
 	 * @return {object} - Current navigation control. THREE.OrbitControls or THREE.DeviceOrientationControls
 	 */
-	PANOLENS.Viewer.prototype.getControl = function () {
+	getControl: function () {
 
 		return this.control;
 
@@ -801,17 +809,17 @@
 	 * Get scene
 	 * @return {THREE.Scene} - Current scene which the viewer is built on
 	 */
-	PANOLENS.Viewer.prototype.getScene = function () {
+	getScene: function () {
 
 		return this.scene;
 
-	};
+	},
 
 	/**
 	 * Get camera
 	 * @return {THREE.Camera} - The scene camera
 	 */
-	PANOLENS.Viewer.prototype.getCamera = function () {
+	getCamera: function () {
 
 		return this.camera;
 
@@ -821,73 +829,71 @@
 	 * Get renderer
 	 * @return {THREE.WebGLRenderer} - The renderer using webgl
 	 */
-	PANOLENS.Viewer.prototype.getRenderer = function () {
+	getRenderer: function () {
 
 		return this.renderer;
 
-	};
+	},
 
 	/**
 	 * Get container
 	 * @return {HTMLDOMElement} - The container holds rendererd canvas
 	 */
-	PANOLENS.Viewer.prototype.getContainer = function () {
+	getContainer: function () {
 
 		return this.container;
 
-	};
+	},
 
 	/**
 	 * Get control name
 	 * @return {string} - Control name. 'orbit' or 'device-orientation'
 	 */
-	PANOLENS.Viewer.prototype.getControlName = function () {
+	getControlId: function () {
 
-		return this.control.name;
+		return this.control.id;
 
-	};
+	},
 
 	/**
 	 * Get next navigation control name
 	 * @return {string} - Next control name
 	 */
-	PANOLENS.Viewer.prototype.getNextControlName = function () {
+	getNextControlName: function () {
 
-		return this.controls[ this.getNextControlIndex() ].name;
+		return this.controls[ this.getNextControlIndex() ].id;
 
-	};
+	},
 
 	/**
 	 * Get next navigation control index
 	 * @return {number} - Next control index
 	 */
-	PANOLENS.Viewer.prototype.getNextControlIndex = function () {
+	getNextControlIndex: function () {
 
-		var controls, control, nextIndex;
-
-		controls = this.controls;
-		control = this.control;
-		nextIndex = controls.indexOf( control ) + 1;
+		const controls = this.controls;
+		const control = this.control;
+		const nextIndex = controls.indexOf( control ) + 1;
 
 		return ( nextIndex >= controls.length ) ? 0 : nextIndex;
 
-	};
+	},
 
 	/**
 	 * Set field of view of camera
 	 */
-	PANOLENS.Viewer.prototype.setCameraFov = function ( fov ) {
+	setCameraFov: function ( fov ) {
 
 		this.camera.fov = fov;
 		this.camera.updateProjectionMatrix();
 
-	};
+	},
 
 	/**
 	 * Enable control by index
 	 * @param  {PANOLENS.Controls} index - Index of camera control
 	 */
-	PANOLENS.Viewer.prototype.enableControl = function ( index ) {
+	enableControl: function ( index ) {
 
 		index = ( index >= 0 && index < this.controls.length ) ? index : 0;
 
@@ -899,14 +905,14 @@
 
 		switch ( index ) {
 
-			case PANOLENS.Controls.ORBIT:
+			case CONTROLS.ORBIT:
 
 				this.camera.position.copy( this.panorama.position );
 				this.camera.position.z += 1;
 
 				break;
 
-			case PANOLENS.Controls.DEVICEORIENTATION:
+			case CONTROLS.DEVICEORIENTATION:
 
 				this.camera.position.copy( this.panorama.position );
 
@@ -921,34 +927,34 @@
 
 		this.activateWidgetItem( index, undefined );
 
-	};
+	},
 
 	/**
 	 * Disable current control
 	 */
-	PANOLENS.Viewer.prototype.disableControl = function () {
+	disableControl: function () {
 
 		this.control.enabled = false;
 
-	};
+	},
 
 	/**
 	 * Toggle next control
 	 */
-	PANOLENS.Viewer.prototype.toggleNextControl = function () {
+	toggleNextControl: function () {
 
 		this.enableControl( this.getNextControlIndex() );
 
-	};
+	},
 
 	/**
 	 * Screen Space Projection
 	 */
-	PANOLENS.Viewer.prototype.getScreenVector = function ( worldVector ) {
+	getScreenVector: function ( worldVector ) {
 
-		var vector = worldVector.clone();
-		var widthHalf = ( this.container.clientWidth ) / 2;
-		var heightHalf = this.container.clientHeight / 2;
+		const vector = worldVector.clone();
+		const widthHalf = ( this.container.clientWidth ) / 2;
+		const heightHalf = this.container.clientHeight / 2;
 
 		vector.project( this.camera );
 
@@ -958,12 +964,12 @@
 
 		return vector;
 
-	};
+	},
 
 	/**
 	 * Check Sprite in Viewport
 	 */
-	PANOLENS.Viewer.prototype.checkSpriteInViewport = function ( sprite ) {
+	checkSpriteInViewport: function ( sprite ) {
 
 		this.camera.matrixWorldInverse.getInverse( this.camera.matrixWorld );
 		this.cameraViewProjectionMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse );
@@ -971,34 +977,29 @@
 
 		return sprite.visible && this.cameraFrustum.intersectsSprite( sprite );
 
-	};
+	},
 
 	/**
 	 * Reverse dragging direction
 	 */
-	PANOLENS.Viewer.prototype.reverseDraggingDirection = function () {
+	reverseDraggingDirection: function () {
 
 		this.OrbitControls.rotateSpeed *= -1;
 		this.OrbitControls.momentumScalingFactor *= -1;
 
-	};
+	},
 
 	/**
 	 * Add reticle 
 	 */
-	PANOLENS.Viewer.prototype.addReticle = function () {
+	addReticle: function () {
 
-		this.reticle = new PANOLENS.Reticle( 0xffffff, 
-			this.options.autoReticleSelect,
-			PANOLENS.DataImage.ReticleIdle, 
-			PANOLENS.DataImage.ReticleDwell, 
-			this.options.dwellTime,
-			45 );
-		this.reticle.position.z = -10;
+		this.reticle = new Reticle( 0xffffff, true, this.options.dwellTime );
+		this.reticle.hide();
 		this.camera.add( this.reticle );
-		this.scene.add( this.camera );
+		this.sceneReticle.add( this.camera );
 
-	};
+	},
 
 	/**
 	 * Tween control looking center
@@ -1006,7 +1007,7 @@
 	 * @param {number} [duration=1000] - Duration to tween
 	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
 	 */
-	PANOLENS.Viewer.prototype.tweenControlCenter = function ( vector, duration, easing ) {
+	tweenControlCenter: function ( vector, duration, easing ) {
 
 		if ( this.control !== this.OrbitControls ) {
 
@@ -1059,22 +1060,22 @@
 		this.tweenLeftAnimation = new TWEEN.Tween( ov )
 			.to( { left: ha }, duration )
 			.easing( easing )
-			.onUpdate(function(){
-				scope.control.rotateLeft( this.left - nv.left );
-				nv.left = this.left;
+			.onUpdate(function(ov){
+				scope.control.rotateLeft( ov.left - nv.left );
+				nv.left = ov.left;
 			})
 			.start();
 
 		this.tweenUpAnimation = new TWEEN.Tween( ov )
 			.to( { up: va }, duration )
 			.easing( easing )
-			.onUpdate(function(){
-				scope.control.rotateUp( this.up - nv.up );
-				nv.up = this.up;
+			.onUpdate(function(ov){
+				scope.control.rotateUp( ov.up - nv.up );
+				nv.up = ov.up;
 			})
 			.start();
 
-	};
+	},
 
 	/**
 	 * Tween control looking center by object
@@ -1082,9 +1083,9 @@
 	 * @param {number} [duration=1000] - Duration to tween
 	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
 	 */
-	PANOLENS.Viewer.prototype.tweenControlCenterByObject = function ( object, duration, easing ) {
+	tweenControlCenterByObject: function ( object, duration, easing ) {
 
-		var isUnderScalePlaceHolder = false;
+		let isUnderScalePlaceHolder = false;
 
 		object.traverseAncestors( function ( ancestor ) {
 
@@ -1107,7 +1108,7 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * This is called when window size is changed
@@ -1115,11 +1116,11 @@
 	 * @param {number} [windowWidth] - Specify if custom element has changed width
 	 * @param {number} [windowHeight] - Specify if custom element has changed height
 	 */
-	PANOLENS.Viewer.prototype.onWindowResize = function ( windowWidth, windowHeight ) {
+	onWindowResize: function ( windowWidth, windowHeight ) {
 
-		var width, height, expand;
+		let width, height;
 
-		expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
+		const expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
 
 		if ( windowWidth !== undefined && windowHeight !== undefined ) {
 
@@ -1130,13 +1131,13 @@
 
 		} else {
 
-			var adjustWidth, adjustHeight;
+			const isAndroid = /(android)/i.test(navigator.userAgent);
 
-			adjustWidth = PANOLENS.Utils.isAndroid 
+			const adjustWidth = isAndroid 
 				? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 
 				: Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 
-			adjustHeight = PANOLENS.Utils.isAndroid 
+			const adjustHeight = isAndroid 
 				? Math.min(document.documentElement.clientHeight, window.innerHeight || 0) 
 				: Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 
@@ -1178,11 +1179,11 @@
 
 		} );
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.addOutputElement = function () {
+	addOutputElement: function () {
 
-		var element = document.createElement( 'div' );
+		const element = document.createElement( 'div' );
 		element.style.position = 'absolute';
 		element.style.right = '10px';
 		element.style.top = '10px';
@@ -1190,76 +1191,25 @@
 		this.container.appendChild( element );
 		this.outputDivElement = element;
 
-	};
-
-	/**
-	 * Output position of camera center to raycast against current panorama
-	 */
-	PANOLENS.Viewer.prototype.outputCenterPosition = function () {
-
-		var camera = this.camera;
-		var panorama = this.panorama;
-        var center = new THREE.Vector2( 0, 0 );
-        var point = new THREE.Vector3();
-        var message;
-
-        var raycaster = new THREE.Raycaster();
-        raycaster.setFromCamera( center, camera );
-
-        var intersects = raycaster.intersectObject( panorama, true );
-
-        if ( intersects.length > 0 ) {
-
-        	point.copy( intersects[ 0 ].point );
-        	point.x = -point.x.toFixed( 2 );
-        	point.y = point.y.toFixed( 2 );
-        	point.z = point.z.toFixed( 2 );
-
-        	message = point.x + ', ' + point.y + ', ' + point.z;
-
-        	switch ( this.options.output ) {
-
-				case 'console':
-					console.info( message );
-					break;
-
-				case 'overlay':
-					this.outputDivElement.textContent = message;
-					break;
-
-				default:
-					break;
-
-			}
-
-        }
-
-	};
+	},
 
 	/**
 	 * Output infospot attach position in developer console by holding down Ctrl button
 	 */
-	PANOLENS.Viewer.prototype.outputInfospotPosition = function () {
+	outputInfospotPosition: function () {
 
-		var intersects, point, panoramaWorldPosition, position, message;
-
-		intersects = this.raycaster.intersectObject( this.panorama, true );
+		const intersects = this.raycaster.intersectObject( this.panorama, true );
 
 		if ( intersects.length > 0 ) {
 
-			point = intersects[0].point;
-			panoramaWorldPosition = this.panorama.getWorldPosition( new THREE.Vector3() );
+			const point = intersects[ 0 ].point.clone();
+			const converter = new THREE.Vector3( -1, 1, 1 );
+			const world = this.panorama.getWorldPosition( new THREE.Vector3() );
+			point.sub( world ).multiply( converter );
 
-			// Panorama is scaled -1 on X axis
-			position = new THREE.Vector3(
-				-(point.x - panoramaWorldPosition.x).toFixed(2),
-				(point.y - panoramaWorldPosition.y).toFixed(2),
-				(point.z - panoramaWorldPosition.z).toFixed(2)
-			);
+			const message = `${point.x.toFixed(2)}, ${point.y.toFixed(2)}, ${point.z.toFixed(2)}`;
 
-			message = position.x + ', ' + position.y + ', ' + position.z;
-
-			if ( position.length() === 0 ) { return; }
+			if ( point.length() === 0 ) { return; }
 
 			switch ( this.options.output ) {
 
@@ -1278,9 +1228,9 @@
 
 		}
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.onMouseDown = function ( event ) {
+	onMouseDown: function ( event ) {
 
 		event.preventDefault();
 
@@ -1289,23 +1239,23 @@
 		this.userMouse.type = 'mousedown';
 		this.onTap( event );
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.onMouseMove = function ( event ) {
+	onMouseMove: function ( event ) {
 
 		event.preventDefault();
 		this.userMouse.type = 'mousemove';
 		this.onTap( event );
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.onMouseUp = function ( event ) {
+	onMouseUp: function ( event ) {
 
-		var onTarget = false, type;
+		let onTarget = false;
 
 		this.userMouse.type = 'mouseup';
 
-		type = ( this.userMouse.x >= event.clientX - this.options.clickTolerance 
+		const type = ( this.userMouse.x >= event.clientX - this.options.clickTolerance 
 				&& this.userMouse.x <= event.clientX + this.options.clickTolerance
 				&& this.userMouse.y >= event.clientY - this.options.clickTolerance
 				&& this.userMouse.y <= event.clientY + this.options.clickTolerance ) 
@@ -1346,14 +1296,15 @@
 
 		}
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.onTap = function ( event, type ) {
+	onTap: function ( event, type ) {
 
-		var bounding = this.container.getBoundingClientRect(), intersects, intersect_entity, intersect;
+		const { left, top } = this.container.getBoundingClientRect();
+		const { clientWidth, clientHeight } = this.container;
 
-		this.raycasterPoint.x = ( ( event.clientX - bounding.left ) / this.container.clientWidth ) * 2 - 1;
-		this.raycasterPoint.y = - ( ( event.clientY - bounding.top ) / this.container.clientHeight ) * 2 + 1;
+		this.raycasterPoint.x = ( ( event.clientX - left ) / clientWidth ) * 2 - 1;
+		this.raycasterPoint.y = - ( ( event.clientY - top ) / clientHeight ) * 2 + 1;
 
 		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
@@ -1365,17 +1316,15 @@
 		}
 
 		// output infospot information
-		if ( event.type !== 'mousedown' && PANOLENS.Utils.checkTouchSupported() || this.OUTPUT_INFOSPOT ) { 
+		if ( event.type !== 'mousedown' && this.touchSupported || this.OUTPUT_INFOSPOT ) { 
 
 			this.outputInfospotPosition(); 
 
 		}
 
-		intersects = this.raycaster.intersectObjects( this.panorama.children, true );
-
-		intersect_entity = this.getConvertedIntersect( intersects );
-
-		intersect = ( intersects.length > 0 ) ? intersects[0].object : intersect;
+		const intersects = this.raycaster.intersectObjects( this.panorama.children, true );
+		const intersect_entity = this.getConvertedIntersect( intersects );
+		const intersect = ( intersects.length > 0 ) ? intersects[0].object : undefined;
 
 		if ( this.userMouse.type === 'mouseup'  ) {
 
@@ -1428,8 +1377,7 @@
 
 					this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
 
-					// Cancel dwelling
-					this.reticle.cancelDwelling();
+					this.reticle.stop();
 
 				}
 
@@ -1449,7 +1397,7 @@
 
 						// Start reticle timer
 						if ( this.options.autoReticleSelect && this.options.enableReticle || this.tempEnableReticle ) {
-							this.reticle.startDwelling( this.onTap.bind( this, event, 'click' ) );
+							this.reticle.start( this.onTap.bind( this, event, 'click' ) );
 						}
 
 					}
@@ -1523,7 +1471,7 @@
 		}
 
 		// Infospot handler
-		if ( intersect && intersect instanceof PANOLENS.Infospot ) {
+		if ( intersect && intersect instanceof Infospot ) {
 
 			this.infospot = intersect;
 			
@@ -1555,11 +1503,11 @@
 
 		}		
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.getConvertedIntersect = function ( intersects ) {
+	getConvertedIntersect: function ( intersects ) {
 
-		var intersect;
+		let intersect;
 
 		for ( var i = 0; i < intersects.length; i++ ) {
 
@@ -1581,9 +1529,9 @@
 
 		return intersect;
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.hideInfospot = function ( intersects ) {
+	hideInfospot: function () {
 
 		if ( this.infospot ) {
 
@@ -1593,13 +1541,13 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Toggle control bar
 	 * @fires [PANOLENS.Viewer#control-bar-toggle]
 	 */
-	PANOLENS.Viewer.prototype.toggleControlBar = function () {
+	toggleControlBar: function () {
 
 		/**
 		 * Toggle control bar event
@@ -1608,9 +1556,9 @@
 		 */
 		this.widget && this.widget.dispatchEvent( { type: 'control-bar-toggle' } );
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
+	onKeyDown: function ( event ) {
 
 		if ( this.options.output && this.options.output !== 'none' && event.key === 'Control' ) {
 
@@ -1618,18 +1566,18 @@
 
 		}
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.onKeyUp = function ( event ) {
+	onKeyUp: function () {
 
 		this.OUTPUT_INFOSPOT = false;
 
-	};
+	},
 
 	/**
 	 * Update control and callbacks
 	 */
-	PANOLENS.Viewer.prototype.update = function () {
+	update: function () {
 
 		TWEEN.update();
 
@@ -1638,119 +1586,127 @@
 		this.control.update();
 
 		this.scene.traverse( function( child ){
-			if ( child instanceof PANOLENS.Infospot 
+			if ( child instanceof Infospot 
 				&& child.element 
 				&& ( this.hoverObject === child 
 					|| child.element.style.display !== 'none' 
 					|| (child.element.left && child.element.left.style.display !== 'none')
 					|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
 				if ( this.checkSpriteInViewport( child ) ) {
-					var vector = this.getScreenVector( child.getWorldPosition( new THREE.Vector3() ) );
-					child.translateElement( vector.x, vector.y );
+					const { x, y } = this.getScreenVector( child.getWorldPosition( new THREE.Vector3() ) );
+					child.translateElement( x, y );
 				} else {
 					child.onDismiss();
 				}
 				
 			}
-		}.bind(this) );
+		}.bind( this ) );
 
-	};
+	},
 
 	/**
 	 * Rendering function to be called on every animation frame
+	 * Render reticle last
 	 */
-	PANOLENS.Viewer.prototype.render = function () {
+	render: function () {
 
-		if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
+		if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
+			this.renderer.clear();
 			this.effect.render( this.scene, this.camera );
+			this.effect.render( this.sceneReticle, this.camera );
+			
 
 		} else {
 
+			this.renderer.clear();
 			this.renderer.render( this.scene, this.camera );
+			this.renderer.clearDepth();
+			this.renderer.render( this.sceneReticle, this.camera );
 
 		}
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.animate = function () {
+	animate: function () {
 
-		this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
+		this.requestAnimationId = requestAnimationFrame( this.animate.bind( this ) );
 
 		this.onChange();
 
-	};
+	},
 
-	PANOLENS.Viewer.prototype.onChange = function () {
+	onChange: function () {
 
 		this.update();
 		this.render();
 
-	};
+	},
 
 	/**
 	 * Register mouse and touch event on container
 	 */
-	PANOLENS.Viewer.prototype.registerMouseAndTouchEvents = function () {
+	registerMouseAndTouchEvents: function () {
 
-		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, { passive: false } );
-		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, { passive: false } );
-		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , { passive: false } );
-		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, { passive: false } );
-		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , { passive: false } );
+		const options = { passive: false };
 
-	};
+		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, options );
+		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, options );
+		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , options );
+		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, options );
+		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , options );
+
+	},
 
 	/**
 	 * Unregister mouse and touch event on container
 	 */
-	PANOLENS.Viewer.prototype.unregisterMouseAndTouchEvents = function () {
+	unregisterMouseAndTouchEvents: function () {
 
 		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, false );
 		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, false );
 		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , false );
 		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, false );
 		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , false );
-	};
+
+	},
 
 	/**
 	 * Register reticle event
 	 */
-	PANOLENS.Viewer.prototype.registerReticleEvent = function () {
+	registerReticleEvent: function () {
 
 		this.addUpdateCallback( this.HANDLER_TAP );
 
-	};
+	},
 
 	/**
 	 * Unregister reticle event
 	 */
-	PANOLENS.Viewer.prototype.unregisterReticleEvent = function () {
+	unregisterReticleEvent: function () {
 
 		this.removeUpdateCallback( this.HANDLER_TAP );
 
-	};
+	},
 
 	/**
 	 * Update reticle event
 	 */
-	PANOLENS.Viewer.prototype.updateReticleEvent = function () {
+	updateReticleEvent: function () {
 
-		var centerX, centerY;
-
-		centerX = this.container.clientWidth / 2 + this.container.offsetLeft;
-		centerY = this.container.clientHeight / 2;
+		const clientX = this.container.clientWidth / 2 + this.container.offsetLeft;
+		const clientY = this.container.clientHeight / 2;
 
 		this.removeUpdateCallback( this.HANDLER_TAP );
-		this.HANDLER_TAP = this.onTap.bind( this, { clientX: centerX, clientY: centerY } );
+		this.HANDLER_TAP = this.onTap.bind( this, { clientX, clientY } );
 		this.addUpdateCallback( this.HANDLER_TAP );
 
-	};
+	},
 
 	/**
 	 * Register container and window listeners
 	 */
-	PANOLENS.Viewer.prototype.registerEventListeners = function () {
+	registerEventListeners: function () {
 
 		// Resize Event
 		window.addEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
@@ -1759,12 +1715,12 @@
 		window.addEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
 		window.addEventListener( 'keyup'  , this.HANDLER_KEY_UP	 , true );
 
-	};
+	},
 
 	/**
 	 * Unregister container and window listeners
 	 */
-	PANOLENS.Viewer.prototype.unregisterEventListeners = function () {
+	unregisterEventListeners: function () {
 
 		// Resize Event
 		window.removeEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
@@ -1773,12 +1729,12 @@
 		window.removeEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
 		window.removeEventListener( 'keyup'  , this.HANDLER_KEY_UP  , true );
 
-	};
+	},
 
 	/**
 	 * Dispose all scene objects and clear cache
 	 */
-	PANOLENS.Viewer.prototype.dispose = function () {
+	dispose: function () {
 
 		// Unregister dom event listeners
 		this.unregisterEventListeners();
@@ -1793,7 +1749,7 @@
 
 			}
 
-			if ( object instanceof PANOLENS.Infospot ) {
+			if ( object instanceof Infospot ) {
 
 				object.dispose();
 
@@ -1814,31 +1770,31 @@
 		}
 
 		// clear cache
-		if ( THREE.Cache && THREE.Cache.enabled ) {
+		if ( Cache && Cache.enabled ) {
 
-			THREE.Cache.clear();
+			Cache.clear();
 
 		}
 
-	};
+	},
 
 	/**
 	 * Destory viewer by disposing and stopping requestAnimationFrame
 	 */
-	PANOLENS.Viewer.prototype.destory = function () {
+	destory: function () {
 
 		this.dispose();
 		this.render();
-		window.cancelAnimationFrame( this.requestAnimationId );		
+		cancelAnimationFrame( this.requestAnimationId );		
 
-	};
+	},
 
 	/**
 	 * On panorama dispose
 	 */
-	PANOLENS.Viewer.prototype.onPanoramaDispose = function ( panorama ) {
+	onPanoramaDispose: function ( panorama ) {
 
-		if ( panorama instanceof PANOLENS.VideoPanorama ) {
+		if ( panorama instanceof VideoPanorama ) {
 
 			this.hideVideoWidget();
 
@@ -1850,36 +1806,36 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Load ajax call
 	 * @param {string} url - URL to be requested
 	 * @param {function} [callback] - Callback after request completes
 	 */
-	PANOLENS.Viewer.prototype.loadAsyncRequest = function ( url, callback ) {
+	loadAsyncRequest: function ( url, callback ) {
 
-		var request = new XMLHttpRequest();
+		const request = new XMLHttpRequest();
 		request.onloadend = function ( event ) {
 			callback && callback( event );
 		};
 		request.open( "GET", url, true );
 		request.send( null );
 
-	};
+	},
 
 	/**
 	 * View indicator in upper left
-	 * */
-	PANOLENS.Viewer.prototype.addViewIndicator = function () {
+	 */
+	addViewIndicator: function () {
 
-		var scope = this;
+		const scope = this;
 
 		function loadViewIndicator ( asyncEvent ) {
 
 			if ( asyncEvent.loaded === 0 ) return;
 
-			var viewIndicatorDiv = asyncEvent.target.responseXML.documentElement;
+			const viewIndicatorDiv = asyncEvent.target.responseXML.documentElement;
 			viewIndicatorDiv.style.width = scope.viewIndicatorSize + "px";
 			viewIndicatorDiv.style.height = scope.viewIndicatorSize + "px";
 			viewIndicatorDiv.style.position = "absolute";
@@ -1891,8 +1847,8 @@
 
 			scope.container.appendChild( viewIndicatorDiv );
 
-			var indicator = viewIndicatorDiv.querySelector( "#indicator" );
-			var setIndicatorD = function () {
+			const indicator = viewIndicatorDiv.querySelector( "#indicator" );
+			const setIndicatorD = function () {
 
 				scope.radius = scope.viewIndicatorSize * 0.225;
 				scope.currentPanoAngle = scope.camera.rotation.y - THREE.Math.degToRad( 90 );
@@ -1915,13 +1871,13 @@
 
 			scope.addUpdateCallback( setIndicatorD );
 
-			var indicatorOnMouseEnter = function () {
+			const indicatorOnMouseEnter = function () {
 
 				this.style.opacity = "1";
 
 			};
 
-			var indicatorOnMouseLeave = function () {
+			const indicatorOnMouseLeave = function () {
 
 				this.style.opacity = "0.5";
 
@@ -1931,17 +1887,17 @@
 			viewIndicatorDiv.addEventListener( "mouseleave", indicatorOnMouseLeave );
 		}
 
-		this.loadAsyncRequest( PANOLENS.DataImage.ViewIndicator, loadViewIndicator );
+		this.loadAsyncRequest( DataImage.ViewIndicator, loadViewIndicator );
 
-	};
+	},
 
 	/**
 	 * Append custom control item to existing control bar
 	 * @param {object} [option={}] - Style object to overwirte default element style. It takes 'style', 'onTap' and 'group' properties.
 	 */
-	PANOLENS.Viewer.prototype.appendControlItem = function ( option ) {
+	appendControlItem: function ( option ) {
 
-		var item = this.widget.createCustomItem( option );		
+		const item = this.widget.createCustomItem( option );		
 
 		if ( option.group === 'video' ) {
 
@@ -1955,15 +1911,17 @@
 
 		return item;
 
-	};
+	},
 
 	/**
 	 * Clear all cached files
 	 */
-	PANOLENS.Viewer.prototype.clearAllCache = function () {
+	clearAllCache: function () {
 
-		THREE.Cache.clear();
+		Cache.clear();
 
-	};
+	}
 
-} )();
+} );
+
+export { Viewer };

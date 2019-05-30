@@ -1,44 +1,52 @@
-(function () {
-	
-	/**
-	 * Widget for controls
-	 * @constructor
-	 * @param {HTMLElement} container - A domElement where default control widget will be attached to
-	 */
-	PANOLENS.Widget = function ( container ) {
+import { CONTROLS, MODES } from '../Constants';
+import { DataImage } from '../DataImage';
+import 'three';
 
-		THREE.EventDispatcher.call( this );
+/**
+ * Widget for controls
+ * @constructor
+ * @param {HTMLElement} container - A domElement where default control widget will be attached to
+ */
+function Widget ( container ) {
 
-		this.DEFAULT_TRANSITION  = 'all 0.27s ease';
-		this.TOUCH_ENABLED = PANOLENS.Utils.checkTouchSupported();
-		this.PREVENT_EVENT_HANDLER = function ( event ) {
-			event.preventDefault();
-			event.stopPropagation();
-		};
+	if ( !container ) {
 
-		this.container = container;
-
-		this.barElement;
-		this.fullscreenElement;
-		this.videoElement;
-		this.settingElement;
-
-		this.mainMenu;
-
-		this.activeMainItem;
-		this.activeSubMenu;
-		this.mask;
+		console.warn( 'PANOLENS.Widget: No container specified' );
 
 	}
 
-	PANOLENS.Widget.prototype = Object.create( THREE.EventDispatcher.prototype );
+	THREE.EventDispatcher.call( this );
 
-	PANOLENS.Widget.prototype.constructor = PANOLENS.Widget;
+	this.DEFAULT_TRANSITION  = 'all 0.27s ease';
+	this.TOUCH_ENABLED = !!(( 'ontouchstart' in window ) || window.DocumentTouch && document instanceof DocumentTouch);
+	this.PREVENT_EVENT_HANDLER = function ( event ) {
+		event.preventDefault();
+		event.stopPropagation();
+	};
+
+	this.container = container;
+
+	this.barElement;
+	this.fullscreenElement;
+	this.videoElement;
+	this.settingElement;
+
+	this.mainMenu;
+
+	this.activeMainItem;
+	this.activeSubMenu;
+	this.mask;
+
+}
+
+Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
+
+	constructor: Widget,
 
 	/**
 	 * Add control bar
 	 */
-	PANOLENS.Widget.prototype.addControlBar = function () {
+	addControlBar: function () {
 
 		if ( !this.container ) {
 
@@ -131,12 +139,12 @@
 
 		this.barElement = bar;
 
-	};
+	},
 
 	/**
 	 * Create default menu
 	 */
-	PANOLENS.Widget.prototype.createDefaultMenu = function () {
+	createDefaultMenu: function () {
 
 		var scope = this, handler;
 
@@ -163,11 +171,11 @@
 				subMenu: [ 
 					{ 
 						title: this.TOUCH_ENABLED ? 'Touch' : 'Mouse', 
-						handler: handler( 'enableControl', PANOLENS.Controls.ORBIT )
+						handler: handler( 'enableControl', CONTROLS.ORBIT )
 					},
 					{ 
 						title: 'Sensor', 
-						handler: handler( 'enableControl', PANOLENS.Controls.DEVICEORIENTATION ) 
+						handler: handler( 'enableControl', CONTROLS.DEVICEORIENTATION ) 
 					} 
 				]
 			},
@@ -181,26 +189,26 @@
 					}, 
 					{ 
 						title: 'Cardboard',
-						handler: handler( 'enableEffect', PANOLENS.Modes.CARDBOARD )
+						handler: handler( 'enableEffect', MODES.CARDBOARD )
 					},
 					{ 
 						title: 'Stereoscopic',
-						handler: handler( 'enableEffect', PANOLENS.Modes.STEREO )
+						handler: handler( 'enableEffect', MODES.STEREO )
 					}
 				]
 			}
 
 		];
 
-	};
+	},
 
 	/**
 	 * Add buttons on top of control bar
 	 * @param {string} name - The control button name to be created
 	 */
-	PANOLENS.Widget.prototype.addControlButton = function ( name ) {
+	addControlButton: function ( name ) {
 
-		var element;
+		let element;
 
 		switch( name ) {
 
@@ -239,11 +247,11 @@
 
 		this.barElement.appendChild( element );
 
-	};
+	},
 
-	PANOLENS.Widget.prototype.createMask = function () {
+	createMask: function () {
 
-		var element = document.createElement( 'div' );
+		const element = document.createElement( 'div' );
 		element.style.position = 'absolute';
 		element.style.top = 0;
 		element.style.left = 0;
@@ -266,14 +274,14 @@
 
 		return element;
 
-	};
+	},
 
 	/**
 	 * Create Setting button to toggle menu
 	 */
-	PANOLENS.Widget.prototype.createSettingButton = function () {
+	createSettingButton: function () {
 
-		var scope = this, item;
+		let scope = this, item;
 
 		function onTap ( event ) {
 
@@ -298,7 +306,7 @@
 
 			style : { 
 
-				backgroundImage : 'url("' + PANOLENS.DataImage.Setting + '")',
+				backgroundImage : 'url("' + DataImage.Setting + '")',
 				webkitTransition : this.DEFAULT_TRANSITION,
 				transition : this.DEFAULT_TRANSITION
 
@@ -347,24 +355,24 @@
 
 		return item;
 
-	};
+	},
 
 	/**
 	 * Create Fullscreen button
 	 * @return {HTMLSpanElement} - The dom element icon for fullscreen
 	 * @fires PANOLENS.Widget#panolens-viewer-handler
 	 */
-	PANOLENS.Widget.prototype.createFullscreenButton = function () {
+	createFullscreenButton: function () {
 
-		var scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
+		let scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
 
 		stylesheetId = 'panolens-style-addon';
 
 		// Don't create button if no support
 		if ( !document.fullscreenEnabled       && 
-			 !document.webkitFullscreenEnabled &&
-			 !document.mozFullScreenEnabled    &&
-			 !document.msFullscreenEnabled ) {
+			!document.webkitFullscreenEnabled &&
+			!document.mozFullScreenEnabled    &&
+			!document.msFullscreenEnabled ) {
 			return;
 		}
 
@@ -376,22 +384,22 @@
 			tapSkipped = false;
 
 			if ( !isFullscreen ) {
-			    scope.container.requestFullscreen && scope.container.requestFullscreen();
-			    scope.container.msRequestFullscreen && scope.container.msRequestFullscreen();
-			    scope.container.mozRequestFullScreen && scope.container.mozRequestFullScreen();
-			    scope.container.webkitRequestFullscreen && scope.container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+				scope.container.requestFullscreen && scope.container.requestFullscreen();
+				scope.container.msRequestFullscreen && scope.container.msRequestFullscreen();
+				scope.container.mozRequestFullScreen && scope.container.mozRequestFullScreen();
+				scope.container.webkitRequestFullscreen && scope.container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
 				isFullscreen = true;
 			} else {
-			    document.exitFullscreen && document.exitFullscreen();
-			    document.msExitFullscreen && document.msExitFullscreen();
-			    document.mozCancelFullScreen && document.mozCancelFullScreen();
-			    document.webkitExitFullscreen && document.webkitExitFullscreen();
+				document.exitFullscreen && document.exitFullscreen();
+				document.msExitFullscreen && document.msExitFullscreen();
+				document.mozCancelFullScreen && document.mozCancelFullScreen();
+				document.webkitExitFullscreen && document.webkitExitFullscreen();
 				isFullscreen = false;
 			}
 
 			this.style.backgroundImage = ( isFullscreen ) 
-				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
-				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
+				? 'url("' + DataImage.FullscreenLeave + '")' 
+				: 'url("' + DataImage.FullscreenEnter + '")';
 
 		}
 
@@ -402,8 +410,8 @@
 				isFullscreen = !isFullscreen; 
 
 				item.style.backgroundImage = ( isFullscreen ) 
-				? 'url("' + PANOLENS.DataImage.FullscreenLeave + '")' 
-				: 'url("' + PANOLENS.DataImage.FullscreenEnter + '")';
+				? 'url("' + DataImage.FullscreenLeave + '")' 
+				: 'url("' + DataImage.FullscreenEnter + '")';
 
 			}
 
@@ -427,7 +435,7 @@
 
 			style : { 
 
-				backgroundImage : 'url("' + PANOLENS.DataImage.FullscreenEnter + '")' 
+				backgroundImage : 'url("' + DataImage.FullscreenEnter + '")' 
 
 			},
 
@@ -437,7 +445,7 @@
 
 		// Add fullscreen stlye if not exists
 		if ( !document.querySelector( stylesheetId ) ) {
-			var sheet = document.createElement( 'style' );
+			const sheet = document.createElement( 'style' );
 			sheet.id = stylesheetId;
 			sheet.innerHTML = ':-webkit-full-screen { width: 100% !important; height: 100% !important }';
 			document.body.appendChild( sheet );
@@ -445,17 +453,15 @@
 		
 		return item;
 
-	};
+	},
 
 	/**
 	 * Create video control container
 	 * @return {HTMLSpanElement} - The dom element icon for video control
 	 */
-	PANOLENS.Widget.prototype.createVideoControl = function () {
+	createVideoControl: function () {
 
-		var item;
-
-		item = document.createElement( 'span' );
+		const item = document.createElement( 'span' );
 		item.style.display = 'none';
 		item.show = function () { 
 
@@ -495,16 +501,16 @@
 
 		return item;
 
-	};
+	},
 
 	/**
 	 * Create video control button
 	 * @return {HTMLSpanElement} - The dom element icon for video control
 	 * @fires PANOLENS.Widget#panolens-viewer-handler
 	 */
-	PANOLENS.Widget.prototype.createVideoControlButton = function () {
+	createVideoControlButton: function () {
 
-		var scope = this, item;
+		const scope = this;
 
 		function onTap ( event ) {
 
@@ -524,12 +530,12 @@
 
 		};
 
-		item = this.createCustomItem( { 
+		const item = this.createCustomItem( { 
 
 			style : { 
 
 				float : 'left',
-				backgroundImage : 'url("' + PANOLENS.DataImage.VideoPlay + '")'
+				backgroundImage : 'url("' + DataImage.VideoPlay + '")'
 
 			},
 
@@ -544,23 +550,23 @@
 			this.paused = paused !== undefined ? paused : this.paused;
 
 			this.style.backgroundImage = 'url("' + ( this.paused 
-				? PANOLENS.DataImage.VideoPlay 
-				: PANOLENS.DataImage.VideoPause ) + '")';
+				? DataImage.VideoPlay 
+				: DataImage.VideoPause ) + '")';
 
 		};
 
 		return item;
 
-	};
+	},
 
 	/**
 	 * Create video seekbar
 	 * @return {HTMLSpanElement} - The dom element icon for video seekbar
 	 * @fires PANOLENS.Widget#panolens-viewer-handler
 	 */
-	PANOLENS.Widget.prototype.createVideoControlSeekbar = function () {
+	createVideoControlSeekbar: function () {
 
-		var scope = this, item, progressElement, progressElementControl,
+		let scope = this, item, progressElement, progressElementControl,
 			isDragging = false, mouseX, percentageNow, percentageNext;
 
 		progressElement = document.createElement( 'div' );
@@ -594,11 +600,9 @@
 
 		function onVideoControlDrag ( event ) {
 
-			var clientX;
-
 			if( isDragging ){
 
-				clientX = event.clientX || ( event.changedTouches && event.changedTouches[0].clientX );
+				const clientX = event.clientX || ( event.changedTouches && event.changedTouches[0].clientX );
 				
 				percentageNext = ( clientX - mouseX ) / item.clientWidth;
 
@@ -654,11 +658,9 @@
 			event.preventDefault();
 			event.stopPropagation();
 
-			var percentage;
-
 			if ( event.target === progressElementControl ) { return; }
 
-			percentage = ( event.changedTouches && event.changedTouches.length > 0 )
+			const percentage = ( event.changedTouches && event.changedTouches.length > 0 )
 				? ( event.changedTouches[0].pageX - event.target.getBoundingClientRect().left ) / this.clientWidth
 				: event.offsetX / this.clientWidth;
 
@@ -717,16 +719,17 @@
 
 		return item;
 
-	};
+	},
 
 	/**
 	 * Create menu item
 	 * @param  {string} title - Title to display
 	 * @return {HTMLDomElement} - An anchor tag element
 	 */
-	PANOLENS.Widget.prototype.createMenuItem = function ( title ) {
+	createMenuItem: function ( title ) {
 
-		var scope = this, item = document.createElement( 'a' );
+		const scope = this; 
+		const item = document.createElement( 'a' );
 		item.textContent = title;
 		item.style.display = 'block';
 		item.style.padding = '10px';
@@ -769,7 +772,7 @@
 
 		item.addSelection = function ( name ) {
 			
-			var selection = document.createElement( 'span' );
+			const selection = document.createElement( 'span' );
 			selection.style.fontSize = '13px';
 			selection.style.fontWeight = '300';
 			selection.style.float = 'right';
@@ -782,13 +785,9 @@
 
 		};
 
-		item.addIcon = function ( url, left, flip ) {
-
-			url = url || PANOLENS.DataImage.ChevronRight;
-			left = left || false;
-			flip = flip || false;
+		item.addIcon = function ( url = DataImage.ChevronRight, left = false, flip = false ) {
 			
-			var element = document.createElement( 'span' );
+			const element = document.createElement( 'span' );
 			element.style.float = left ? 'left' : 'right';
 			element.style.width = '17px';
 			element.style.height = '17px';
@@ -831,32 +830,32 @@
 
 		return item;
 
-	};
+	},
 
 	/**
 	 * Create menu item header
 	 * @param  {string} title - Title to display
 	 * @return {HTMLDomElement} - An anchor tag element
 	 */
-	PANOLENS.Widget.prototype.createMenuItemHeader = function ( title ) {
+	createMenuItemHeader: function ( title ) {
 
-		var header = this.createMenuItem( title );
+		const header = this.createMenuItem( title );
 
 		header.style.borderBottom = '1px solid #333';
 		header.style.paddingBottom = '15px';
 
 		return header;
 
-	};
+	},
 
 	/**
 	 * Create main menu
 	 * @param  {array} menus - Menu array list
 	 * @return {HTMLDomElement} - A span element
 	 */
-	PANOLENS.Widget.prototype.createMainMenu = function ( menus ) {
+	createMainMenu: function ( menus ) {
 		
-		var scope = this, menu = this.createMenu(), subMenu;
+		let scope = this, menu = this.createMenu();
 
 		menu._width = 200;
 		menu.changeSize( menu._width );
@@ -866,7 +865,7 @@
 			event.preventDefault();
 			event.stopPropagation();
 
-			var mainMenu = scope.mainMenu, subMenu = this.subMenu;
+			let mainMenu = scope.mainMenu, subMenu = this.subMenu;
 
 			function onNextTick () {
 
@@ -909,7 +908,7 @@
 
 		return menu;
 
-	};
+	},
 
 	/**
 	 * Create sub menu
@@ -917,9 +916,9 @@
 	 * @param {array} items - Item array list
 	 * @return {HTMLDomElement} - A span element
 	 */
-	PANOLENS.Widget.prototype.createSubMenu = function ( title, items ) {
+	createSubMenu: function ( title, items ) {
 
-		var scope = this, menu, subMenu = this.createMenu();
+		let scope = this, menu, subMenu = this.createMenu();
 
 		subMenu.items = items;
 		subMenu.activeItem;
@@ -949,9 +948,9 @@
 
 		subMenu.addHeader( title ).addIcon( undefined, true, true ).addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', onTap, false );
 
-		for ( var i = 0; i < items.length; i++ ) {
+		for ( let i = 0; i < items.length; i++ ) {
 
-			var item = subMenu.addItem( items[ i ].title );
+			const item = subMenu.addItem( items[ i ].title );
 
 			item.style.fontWeight = 300;
 			item.handler = items[ i ].handler;
@@ -970,17 +969,17 @@
 
 		return subMenu;
 		
-	};
+	},
 
 	/**
 	 * Create general menu
 	 * @return {HTMLDomElement} - A span element
 	 */
-	PANOLENS.Widget.prototype.createMenu = function () {
+	createMenu: function () {
 
-		var scope = this, menu = document.createElement( 'span' ), style;
-
-		style = menu.style;
+		const scope = this;
+		const menu = document.createElement( 'span' );
+		const style = menu.style;
 
 		style.padding = '5px 0';
 		style.position = 'fixed';
@@ -992,7 +991,7 @@
 		style.visibility = 'hidden';
 		style.opacity = 0;
 		style.boxShadow = '0 0 12pt rgba(0,0,0,0.25)';
-  		style.borderRadius = '2px';
+		style.borderRadius = '2px';
 		style.overflow = 'hidden';
 		style.willChange = 'width, height, opacity';
 		style.pointerEvents = 'auto';
@@ -1048,7 +1047,7 @@
 
 		menu.slideAll = function ( right ) {
 
-			for ( var i = 0; i < menu.children.length; i++ ){
+			for ( let i = 0; i < menu.children.length; i++ ){
 
 				if ( menu.children[ i ].slide ) {
 
@@ -1062,7 +1061,7 @@
 
 		menu.unslideAll = function () {
 
-			for ( var i = 0; i < menu.children.length; i++ ){
+			for ( let i = 0; i < menu.children.length; i++ ){
 
 				if ( menu.children[ i ].unslide ) {
 
@@ -1076,7 +1075,7 @@
 
 		menu.addHeader = function ( title ) {
 
-			var header = scope.createMenuItemHeader( title );
+			const header = scope.createMenuItemHeader( title );
 			header.type = 'header';
 
 			this.appendChild( header );
@@ -1087,7 +1086,7 @@
 
 		menu.addItem = function ( title ) {
 
-			var item = scope.createMenuItem( title );
+			const item = scope.createMenuItem( title );
 			item.type = 'item';
 
 			this.appendChild( item );
@@ -1104,7 +1103,7 @@
 
 			}
 
-			item.setIcon( PANOLENS.DataImage.Check );
+			item.setIcon( DataImage.Check );
 
 			this.activeItem = item;
 
@@ -1116,18 +1115,16 @@
 
 		return menu;
 
-	};
+	},
 
 	/**
 	 * Create custom item element
 	 * @return {HTMLSpanElement} - The dom element icon
 	 */
-	PANOLENS.Widget.prototype.createCustomItem = function ( options ) {
+	createCustomItem: function ( options = {} ) {
 
-		options = options || {};
-
-		var scope = this,
-			item = options.element || document.createElement( 'span' );
+		const scope = this;
+		const item = options.element || document.createElement( 'span' );
 
 		item.style.cursor = 'pointer';
 		item.style.float = 'right';
@@ -1152,7 +1149,7 @@
 			item.style.webkitFilter = '';
 		}, { passive: true });
 
-		item = this.mergeStyleOptions( item, options.style );
+		this.mergeStyleOptions( item, options.style );
 
 		if ( options.onTap ) {
 
@@ -1170,7 +1167,7 @@
 		
 		return item;
 
-	};
+	},
 
 	/**
 	 * Merge item css style
@@ -1178,11 +1175,9 @@
 	 * @param  {object} options - The style options
 	 * @return {HTMLDOMElement} - The same element with merged styles
 	 */
-	PANOLENS.Widget.prototype.mergeStyleOptions = function ( element, options ) {
+	mergeStyleOptions: function ( element, options = {} ) {
 
-		options = options || {};
-
-		for ( var property in options ){
+		for ( let property in options ){
 
 			if ( options.hasOwnProperty( property ) ) {
 
@@ -1194,12 +1189,12 @@
 
 		return element;
 
-	};
+	},
 
 	/**
 	 * Dispose widgets by detaching dom elements from container
 	 */
-	PANOLENS.Widget.prototype.dispose = function () {
+	dispose: function () {
 
 		if ( this.barElement ) {
 			this.container.removeChild( this.barElement );
@@ -1208,6 +1203,8 @@
 
 		}
 
-	};
+	}
+	
+} );
 
-})();
+export { Widget };

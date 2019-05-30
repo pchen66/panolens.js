@@ -1,45 +1,55 @@
-( function () {
+import { LittlePlanet } from './LittlePlanet';
+import { ImagePanorama } from './ImagePanorama';
+import 'three';
 
-	/**
-	 * Image Little Planet
-	 * @constructor
-	 * @param {string} source 		- URL for the image source
-	 * @param {number} [size=10000] - Size of plane geometry
-	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
-	 */
-	PANOLENS.ImageLittlePlanet = function ( source, size, ratio ) {
+/**
+ * Image Little Planet
+ * @constructor
+ * @param {string} source 		- URL for the image source
+ * @param {number} [size=10000] - Size of plane geometry
+ * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
+ */
+function ImageLittlePlanet ( source, size, ratio ) {
 
-		PANOLENS.LittlePlanet.call( this, 'image', source, size, ratio );
+	LittlePlanet.call( this, 'image', source, size, ratio );
 
-	};
+}
 
-	PANOLENS.ImageLittlePlanet.prototype = Object.create( PANOLENS.LittlePlanet.prototype );
-	
-	PANOLENS.ImageLittlePlanet.prototype.constructor = PANOLENS.ImageLittlePlanet;
+ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
 
-	PANOLENS.ImageLittlePlanet.prototype.onLoad = function ( texture ) {
+	constructor: ImageLittlePlanet,
+
+	onLoad: function ( texture ) {
 
 		this.updateTexture( texture );
 
-		PANOLENS.ImagePanorama.prototype.onLoad.call( this, texture );
-		PANOLENS.LittlePlanet.prototype.onLoad.call( this );		
+		LittlePlanet.prototype.onLoad.call( this );
+		ImagePanorama.prototype.onLoad.call( this, texture );
 
-	};
-
-	PANOLENS.ImageLittlePlanet.prototype.updateTexture = function ( texture ) {
+	},
+	
+	updateTexture: function ( texture ) {
 
 		texture.minFilter = texture.magFilter = THREE.LinearFilter;
 		
-		this.material.uniforms[ "tDiffuse" ].value = texture;
+		this.material.uniforms[ 'tDiffuse' ].value = texture;
 
-	};
+	},
 
-	PANOLENS.ImageLittlePlanet.prototype.dispose = function () {	
+	dispose: function () {
 
-		this.material.uniforms[ 'tDiffuse' ] && this.material.uniforms[ 'tDiffuse' ].value.dispose();
+		const tDiffuse = this.material.uniforms[ 'tDiffuse' ];
 
-		PANOLENS.LittlePlanet.prototype.dispose.call( this );
+		if ( tDiffuse && tDiffuse.value ) {
 
-	};
+			tDiffuse.value.dispose();
 
-} )();
+		}
+
+		LittlePlanet.prototype.dispose.call( this );
+
+	}
+
+} );
+
+export { ImageLittlePlanet };

@@ -1,38 +1,38 @@
-(function(){
+import { ImagePanorama } from './ImagePanorama';
+import { GoogleStreetLoader } from '../loaders/GoogleStreetLoader';
+import 'three';
 
-	'use strict';
-	
-	/**
-	 * Google streetview panorama
-	 * 
-	 * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
-	 * @constructor
-	 * @param {string} panoId - Panorama id from Google Streetview 
-	 * @param {string} [apiKey] - Google Street View API Key
-	 */
-	PANOLENS.GoogleStreetviewPanorama = function ( panoId, apiKey ) {
+/**
+ * Google streetview panorama
+ * 
+ * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
+ * @constructor
+ * @param {string} panoId - Panorama id from Google Streetview 
+ * @param {string} [apiKey] - Google Street View API Key
+ */
+function GoogleStreetviewPanorama ( panoId, apiKey ) {
 
-		PANOLENS.ImagePanorama.call( this );
+	ImagePanorama.call( this );
 
-		this.panoId = panoId;
+	this.panoId = panoId;
 
-		this.gsvLoader = undefined;
+	this.gsvLoader = undefined;
 
-		this.loadRequested = false;
+	this.loadRequested = false;
 
-		this.setupGoogleMapAPI( apiKey );
+	this.setupGoogleMapAPI( apiKey );
 
-	}
+}
 
-	PANOLENS.GoogleStreetviewPanorama.prototype = Object.create( PANOLENS.ImagePanorama.prototype );
+GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama.prototype ), {
 
-	PANOLENS.GoogleStreetviewPanorama.constructor = PANOLENS.GoogleStreetviewPanorama;
+	constructor: GoogleStreetviewPanorama,
 
 	/**
 	 * Load Google Street View by panorama id
 	 * @param {string} panoId - Gogogle Street View panorama id
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.load = function ( panoId ) {
+	load: function ( panoId ) {
 
 		this.loadRequested = true;
 
@@ -48,29 +48,29 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Setup Google Map API
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function ( apiKey ) {
+	setupGoogleMapAPI: function ( apiKey ) {
 
-		var script = document.createElement( 'script' );
+		const script = document.createElement( 'script' );
 		script.src = 'https://maps.googleapis.com/maps/api/js?';
 		script.src += apiKey ? 'key=' + apiKey : '';
 		script.onreadystatechange = this.setGSVLoader.bind( this );
-    	script.onload = this.setGSVLoader.bind( this );
+		script.onload = this.setGSVLoader.bind( this );
 
-		document.getElementsByTagName('head')[0].appendChild( script );
+		document.querySelector( 'head' ).appendChild( script );
 
-	};
+	},
 
 	/**
 	 * Set GSV Loader
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.setGSVLoader = function () {
+	setGSVLoader: function () {
 
-		this.gsvLoader = new GSVPANO.PanoLoader();
+		this.gsvLoader = new GoogleStreetLoader();
 
 		if ( this.gsvLoader === {} || this.loadRequested ) {
 
@@ -78,23 +78,23 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Get GSV Loader
 	 * @return {object} GSV Loader instance
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.getGSVLoader = function () {
+	getGSVLoader: function () {
 
 		return this.gsvLoader;
 
-	};
+	},
 
 	/**
 	 * Load GSV Loader
 	 * @param  {string} panoId - Gogogle Street View panorama id
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.loadGSVLoader = function ( panoId ) {
+	loadGSVLoader: function ( panoId ) {
 
 		this.loadRequested = false;
 
@@ -107,26 +107,28 @@
 		this.gsvLoader.load( panoId );
 
 		this.gsvLoader.loaded = true;
-	};
+	},
 
 	/**
 	 * This will be called when panorama is loaded
 	 * @param  {HTMLCanvasElement} canvas - Canvas where the tiles have been drawn
 	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.onLoad = function ( canvas ) {
+	onLoad: function ( canvas ) {
 
 		if ( !this.gsvLoader ) { return; }
 
-		PANOLENS.ImagePanorama.prototype.onLoad.call( this, new THREE.Texture( canvas ) );
+		ImagePanorama.prototype.onLoad.call( this, new THREE.Texture( canvas ) );
 
-	};
+	},
 
-	PANOLENS.GoogleStreetviewPanorama.prototype.reset = function () {
+	reset: function () {
 
 		this.gsvLoader = undefined;
 
-		PANOLENS.ImagePanorama.prototype.reset.call( this );
+		ImagePanorama.prototype.reset.call( this );
 
-	};
+	}
 
-})();
+} );
+
+export { GoogleStreetviewPanorama };
