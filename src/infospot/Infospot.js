@@ -1,159 +1,168 @@
-( function () {
 
-	/**
-	 * Information spot attached to panorama
-	 * @constructor
-	 * @param {number} [scale=300] - Infospot scale
-	 * @param {imageSrc} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
-	 * @param {boolean} [animated=true] - Enable default hover animation
-	 */
-	PANOLENS.Infospot = function ( scale, imageSrc, animated ) {
+import 'three';
+import { DataImage } from '../DataImage';
+import { MODES } from '../Constants';
+import { TextureLoader } from '../loaders/TextureLoader';
+import TWEEN from '@tweenjs/tween.js';
+
+/**
+ * Information spot attached to panorama
+ * @constructor
+ * @param {number} [scale=300] - Default scale
+ * @param {string} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
+ * @param {boolean} [animated=true] - Enable default hover animation
+ */
+function Infospot ( scale = 300, imageSrc, animated ) {
+	
+	const duration = 500, scaleFactor = 1.3;
+
+	imageSrc = imageSrc || DataImage.Info;
+
+	THREE.Sprite.call( this );
+
+	this.type = 'infospot';
+
+	this.animated = animated !== undefined ? animated : true;
+	this.isHovering = false;
+
+	// TODO: Three.js bug hotfix for sprite raycasting r104
+	// https://github.com/mrdoob/three.js/issues/14624
+	this.frustumCulled = false;
+
+	this.element;
+	this.toPanorama;
+	this.cursorStyle;
+
+	this.mode = MODES.UNKNOWN;
+
+	this.scale.set( scale, scale, 1 );
+	this.rotation.y = Math.PI;
+
+	this.container;
+
+	this.originalRaycast = this.raycast;
+
+	// Event Handler
+	this.HANDLER_FOCUS;	
+
+	this.material.side = THREE.DoubleSide;
+	this.material.depthTest = false;
+	this.material.transparent = true;
+	this.material.opacity = 0;
+
+	const postLoad = function ( texture ) {
+
+		const ratio = texture.image.width / texture.image.height;
+		const textureScale = new THREE.Vector3();
+
+		texture.image.width = texture.image.naturalWidth || 64;
+		texture.image.height = texture.image.naturalHeight || 64;
+
+		this.scale.set( ratio * scale, scale, 1 );
+
+		textureScale.copy( this.scale );
+
+		this.scaleUpAnimation = new TWEEN.Tween( this.scale )
+			.to( { x: textureScale.x * scaleFactor, y: textureScale.y * scaleFactor }, duration )
+			.easing( TWEEN.Easing.Elastic.Out );
+
+		this.scaleDownAnimation = new TWEEN.Tween( this.scale )
+			.to( { x: textureScale.x, y: textureScale.y }, duration )
+			.easing( TWEEN.Easing.Elastic.Out );
+
+		this.material.map = texture;
+		this.material.needsUpdate = true;
+
+	}.bind( this );
+
+	// Add show and hide animations
+	this.showAnimation = new TWEEN.Tween( this.material )
+		.to( { opacity: 1 }, duration )
+		.onStart( this.enableRaycast.bind( this, true ) )
+		.easing( TWEEN.Easing.Quartic.Out );
+
+	this.hideAnimation = new TWEEN.Tween( this.material )
+		.to( { opacity: 0 }, duration )
+		.onStart( this.enableRaycast.bind( this, false ) )
+		.easing( TWEEN.Easing.Quartic.Out );
+
+	// Attach event listeners
+	this.addEventListener( 'click', this.onClick );
+	this.addEventListener( 'hover', this.onHover );
+	this.addEventListener( 'hoverenter', this.onHoverStart );
+	this.addEventListener( 'hoverleave', this.onHoverEnd );
+	this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
+	this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+	this.addEventListener( 'dismiss', this.onDismiss );
+	this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
+	this.addEventListener( 'panorama-enter', this.onPanoramaEnter );
+	this.addEventListener( 'panorama-leave', this.onPanoramaLeave );
+
+	TextureLoader.load( imageSrc, postLoad );	
+
+};
+
+Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
+
+	constructor: Infospot,
+
+	onPanoramaEnter: function () {
+
 		
-		var scope = this, ratio, startScale, endScale, duration;
 
-		scale = scale || 300;
-		imageSrc = imageSrc || PANOLENS.DataImage.Info;
-		duration = 500;
+	},
 
-		THREE.Sprite.call( this );
+	onPanoramaLeave: function () {
 
-		this.type = 'infospot';
 
-		this.animated = animated !== undefined ? animated : true;
-		this.isHovering = false;
-		this.visible = false;
 
-		// TODO: Three.js bug hotfix for sprite raycasting r104
-		// https://github.com/mrdoob/three.js/issues/14624
-		this.frustumCulled = false;
-
-		this.element;
-		this.toPanorama;
-		this.cursorStyle;
-
-		this.mode = PANOLENS.Modes.UNKNOWN;
-
-		this.scale.set( scale, scale, 1 );
-		this.rotation.y = Math.PI;
-		this.scaleFactor = 1.3;
-
-		this.container;
-
-		// Event Handler
-		this.HANDLER_FOCUS;
-
-		PANOLENS.Utils.TextureLoader.load( imageSrc, postLoad );		
-
-		function postLoad ( texture ) {
-
-			texture.wrapS = THREE.RepeatWrapping;
-			texture.repeat.x = - 1;
-
-			texture.image.width = texture.image.naturalWidth || 64;
-			texture.image.height = texture.image.naturalHeight || 64;
-
-			ratio = texture.image.width / texture.image.height;
-			scope.scale.set( ratio * scale, scale, 1 );
-
-			startScale = scope.scale.clone();
-
-			scope.scaleUpAnimation = new TWEEN.Tween( scope.scale )
-				.to( { x: startScale.x * scope.scaleFactor, y: startScale.y * scope.scaleFactor }, duration )
-				.easing( TWEEN.Easing.Elastic.Out );
-
-			scope.scaleDownAnimation = new TWEEN.Tween( scope.scale )
-				.to( { x: startScale.x, y: startScale.y }, duration )
-				.easing( TWEEN.Easing.Elastic.Out );
-
-			scope.material.side = THREE.DoubleSide;
-			scope.material.map = texture;
-			scope.material.depthTest = false;
-			scope.material.needsUpdate = true;
-
-		}
-
-		function show () {
-
-			this.visible = true;
-
-		}
-
-		function hide () {
-
-			this.visible = false;
-
-		}
-
-		// Add show and hide animations
-		this.showAnimation = new TWEEN.Tween( this.material )
-			.to( { opacity: 1 }, duration )
-			.onStart( show.bind( this ) )
-			.easing( TWEEN.Easing.Quartic.Out );
-
-		this.hideAnimation = new TWEEN.Tween( this.material )
-			.to( { opacity: 0 }, duration )
-			.onComplete( hide.bind( this ) )
-			.easing( TWEEN.Easing.Quartic.Out );
-
-		// Attach event listeners
-		this.addEventListener( 'click', this.onClick );
-		this.addEventListener( 'hover', this.onHover );
-		this.addEventListener( 'hoverenter', this.onHoverStart );
-		this.addEventListener( 'hoverleave', this.onHoverEnd );
-		this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
-		this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
-		this.addEventListener( 'dismiss', this.onDismiss );
-		this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
-
-	};
-
-	PANOLENS.Infospot.prototype = Object.create( THREE.Sprite.prototype );
+	},
 
 	/**
 	 * Set infospot container
 	 * @param {HTMLElement|object} data - Data with container information
 	 */
-	PANOLENS.Infospot.prototype.setContainer = function ( data ) {
+	setContainer: function ( data ) {
 
-		var container;
-
+		let container;
+	
 		if ( data instanceof HTMLElement ) {
-
+	
 			container = data;
-
+	
 		} else if ( data && data.container ) {
-
+	
 			container = data.container;
-
+	
 		}
-
+	
 		// Append element if exists
 		if ( container && this.element ) {
-
+	
 			container.appendChild( this.element );
-
+	
 		}
-
+	
 		this.container = container;
-
-	};
+	
+	},
 
 	/**
 	 * Get container
 	 * @return {HTMLElement} - The container of this infospot
 	 */
-	PANOLENS.Infospot.prototype.getContainer = function () {
+	getContainer: function () {
 
 		return this.container;
 
-	};
+	},
 
 	/**
 	 * This will be called by a click event
 	 * Translate and lock the hovering element if any
 	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
 	 */
-	PANOLENS.Infospot.prototype.onClick = function ( event ) {
+	onClick: function ( event ) {
 
 		if ( this.element && this.getContainer() ) {
 
@@ -164,13 +173,13 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Dismiss current element if any
 	 * @param  {object} event - Dismiss event
 	 */
-	PANOLENS.Infospot.prototype.onDismiss = function ( event ) {
+	onDismiss: function ( event ) {
 
 		if ( this.element ) {
 
@@ -179,26 +188,24 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * This will be called by a mouse hover event
 	 * Translate the hovering element if any
 	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
 	 */
-	PANOLENS.Infospot.prototype.onHover = function ( event ) {
-
-	};
+	onHover: function ( event ) {},
 
 	/**
 	 * This will be called on a mouse hover start
 	 * Sets cursor style to 'pointer', display the element and scale up the infospot
 	 */
-	PANOLENS.Infospot.prototype.onHoverStart = function ( event ) {
+	onHoverStart: function ( event ) {
 
 		if ( !this.getContainer() ) { return; }
 
-		var cursorStyle = this.cursorStyle || ( this.mode === PANOLENS.Modes.NORMAL ? 'pointer' : 'default' );
+		const cursorStyle = this.cursorStyle || ( this.mode === MODES.NORMAL ? 'pointer' : 'default' );
 
 		this.isHovering = true;
 		this.container.style.cursor = cursorStyle;
@@ -212,7 +219,7 @@
 		
 		if ( this.element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
 
-			if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
+			if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
 				this.element.style.display = 'none';
 				this.element.left && ( this.element.left.style.display = 'block' );
@@ -236,13 +243,13 @@
 			
 		}
 
-	};
+	},
 
 	/**
 	 * This will be called on a mouse hover end
 	 * Sets cursor style to 'default', hide the element and scale down the infospot
 	 */
-	PANOLENS.Infospot.prototype.onHoverEnd = function () {
+	onHoverEnd: function () {
 
 		if ( !this.getContainer() ) { return; }
 
@@ -266,18 +273,18 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * On dual eye effect handler
 	 * Creates duplicate left and right element
 	 * @param  {object} event - panolens-dual-eye-effect event
 	 */
-	PANOLENS.Infospot.prototype.onDualEyeEffect = function ( event ) {
+	onDualEyeEffect: function ( event ) {
 		
 		if ( !this.getContainer() ) { return; }
 
-		var element, halfWidth, halfHeight;
+		let element, halfWidth, halfHeight;
 
 		this.mode = event.mode;
 
@@ -299,7 +306,7 @@
 
 		}
 
-		if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
+		if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
 			element.left.style.display = element.style.display;
 			element.right.style.display = element.style.display;
@@ -319,14 +326,14 @@
 		this.container.appendChild( element.left );
 		this.container.appendChild( element.right );
 
-	};
+	},
 
 	/**
 	 * Translate the hovering element by css transform
 	 * @param  {number} x - X position on the window screen
 	 * @param  {number} y - Y position on the window screen
 	 */
-	PANOLENS.Infospot.prototype.translateElement = function ( x, y ) {
+	translateElement: function ( x, y ) {
 
 		if ( !this.element._width || !this.element._height || !this.getContainer() ) {
 
@@ -334,7 +341,7 @@
 
 		}
 
-		var left, top, element, width, height, delta, container;
+		let left, top, element, width, height, delta, container;
 
 		container = this.container;
 		element = this.element;
@@ -345,7 +352,7 @@
 		left = x - width;
 		top = y - height - delta;
 
-		if ( ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) 
+		if ( ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) 
 				&& element.left && element.right
 				&& !( x === container.clientWidth / 2 && y === container.clientHeight / 2 ) ) {
 
@@ -364,7 +371,7 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Set vendor specific css
@@ -372,9 +379,9 @@
 	 * @param {HTMLElement} element - The element to be modified
 	 * @param {string} value - Style value
 	 */
-	PANOLENS.Infospot.prototype.setElementStyle = function ( type, element, value ) {
+	setElementStyle: function ( type, element, value ) {
 
-		var style = element.style;
+		const style = element.style;
 
 		if ( type === 'transform' ) {
 
@@ -382,13 +389,13 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Set hovering text content
 	 * @param {string} text - Text to be displayed
 	 */
-	PANOLENS.Infospot.prototype.setText = function ( text ) {
+	setText: function ( text ) {
 
 		if ( this.element ) {
 
@@ -396,23 +403,23 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Set cursor css style on hover
 	 */
-	PANOLENS.Infospot.prototype.setCursorHoverStyle = function ( style ) {
+	setCursorHoverStyle: function ( style ) {
 
 		this.cursorStyle = style;
 
-	};
+	},
 
 	/**
 	 * Add hovering text element
 	 * @param {string} text - Text to be displayed
 	 * @param {number} [delta=40] - Vertical delta to the infospot
 	 */
-	PANOLENS.Infospot.prototype.addHoverText = function ( text, delta ) {
+	addHoverText: function ( text, delta ) {
 
 		if ( !this.element ) {
 
@@ -432,14 +439,14 @@
 
 		this.setText( text );
 
-	};
+	},
 
 	/**
 	 * Add hovering element by cloning an element
 	 * @param {HTMLDOMElement} el - Element to be cloned and displayed
 	 * @param {number} [delta=40] - Vertical delta to the infospot
 	 */
-	PANOLENS.Infospot.prototype.addHoverElement = function ( el, delta ) {
+	addHoverElement: function ( el, delta ) {
 
 		if ( !this.element ) { 
 
@@ -452,12 +459,12 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Remove hovering element
 	 */
-	PANOLENS.Infospot.prototype.removeHoverElement = function () {
+	removeHoverElement: function () {
 
 		if ( this.element ) { 
 
@@ -480,12 +487,12 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Lock hovering element
 	 */
-	PANOLENS.Infospot.prototype.lockHoverElement = function () {
+	lockHoverElement: function () {
 
 		if ( this.element ) { 
 
@@ -493,12 +500,12 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Unlock hovering element
 	 */
-	PANOLENS.Infospot.prototype.unlockHoverElement = function () {
+	unlockHoverElement: function () {
 
 		if ( this.element ) { 
 
@@ -506,15 +513,27 @@
 
 		}
 
-	};
+	},
+
+	enableRaycast: function ( enabled = true ) {
+
+		if ( enabled ) {
+
+			this.raycast = this.originalRaycast;
+
+		} else {
+
+			this.raycast = () => {};
+
+		}
+
+	},
 
 	/**
 	 * Show infospot
 	 * @param  {number} [delay=0] - Delay time to show
 	 */
-	PANOLENS.Infospot.prototype.show = function ( delay ) {
-
-		delay = delay || 0;
+	show: function ( delay = 0 ) {
 
 		if ( this.animated ) {
 
@@ -523,19 +542,17 @@
 
 		} else {
 
-			this.visible = true;
+			this.material.opacity = 1;
 
 		}
 
-	};
+	},
 
 	/**
 	 * Hide infospot
 	 * @param  {number} [delay=0] - Delay time to hide
 	 */
-	PANOLENS.Infospot.prototype.hide = function ( delay ) {
-
-		delay = delay || 0;
+	hide: function ( delay = 0 ) {
 
 		if ( this.animated ) {
 
@@ -544,17 +561,16 @@
 
 		} else {
 
-			this.visible = false;
+			this.material.opacity = 0;
 
 		}
 		
-		
-	};
+	},
 
 	/**
 	 * Set focus event handler
 	 */
-	PANOLENS.Infospot.prototype.setFocusMethod = function ( event ) {
+	setFocusMethod: function ( event ) {
 
 		if ( event ) {
 
@@ -562,14 +578,14 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Focus camera center to this infospot
 	 * @param {number} [duration=1000] - Duration to tween
 	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
 	 */
-	PANOLENS.Infospot.prototype.focus = function ( duration, easing ) {
+	focus: function ( duration, easing ) {
 
 		if ( this.HANDLER_FOCUS ) {
 
@@ -578,12 +594,12 @@
 
 		}
 
-	};
+	},
 
 	/**
 	 * Dispose infospot
 	 */
-	PANOLENS.Infospot.prototype.dispose = function () {
+	dispose: function () {
 
 		this.removeHoverElement();
 		this.material.dispose();
@@ -594,6 +610,8 @@
 
 		}
 
-	};
+	}
 
-} )();
+} );
+
+export { Infospot };
