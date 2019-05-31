@@ -4,9 +4,11 @@ import 'three';
 
 /**
  * Camera panorama
+ * See https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamConstraints for constraints
+ * @param {object} - camera constraints
  * @constructor
  */
-function CameraPanorama () {
+function CameraPanorama ( constraints ) {
 
 	const radius = 5000;
 	const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
@@ -14,7 +16,7 @@ function CameraPanorama () {
 
 	Panorama.call( this, geometry, material );
 
-	this.media = new Media();
+	this.media = new Media( constraints );
 	this.radius = radius;
 
 	this.addEventListener( 'enter', this.start.bind( this ) );
@@ -42,18 +44,7 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
 	start: function () {
 
-		const media = this.media;
-
-		media.start()
-		.then( function ( stream ) {
-
-			if ( this.active ) {
-
-				media.attachVideoSourceObject( stream );
-
-			}
-
-		}.bind( this ) );
+		return this.media.start();
 
 	},
 

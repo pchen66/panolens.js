@@ -2,50 +2,134 @@ import 'three';
 
 /**
  * User Media
- * @param {object} [constraints={ video: {}, audio: false, facingMode: 'environment' }]
+ * @param {object} [constraints={ video: {}, audio: false }]
  */
-function Media ( constraints = { video: {}, audio: false, facingMode: 'environment' } ) {
+function Media ( constraints ) {
 
-    this.constraints = constraints;
+    const defaultConstraints = { video: { width: { ideal: 1920 }, height: { ideal: 1080 }, facingMode: { exact: 'environment' } }, audio: false };
+
+    this.constraints = Object.assign( defaultConstraints, constraints );
 
     this.container
     this.scene;
     this.element;
-    this.streams = {};
-    this.streamId;
+    this.devices = [];
+    this.stream;
+    this.ratioScalar = 1;
+    this.videoDeviceIndex = 0;
 
 };
 
 Object.assign( Media.prototype, {
 
-    start: function() {
+    enumerateDevices: function () {
 
-        const optional = [
-            { minWidth: 320  },
-            { minWidth: 640  },
-            { minWidth: 1024 },
-            { minWidth: 1280 },
-            { minWidth: 1920 }
-        ];
+        const devices = this.devices;
+        const resolvedPromise = new Promise( resolve => { resolve( devices ); } );
 
-        const { video } = this.constraints;
+        return devices.length > 0 ? resolvedPromise : navigator.mediaDevices.enumerateDevices();
 
-        if ( !video.optional ) {
+    },
 
-            video.optional = optional;
+    switchNextVideoDevice: function () {
+
+        const stop = this.stop.bind( this );
+        const start = this.start.bind( this );
+        const setVideDeviceIndex = this.setVideDeviceIndex.bind( this );
+
+        let index = this.videoDeviceIndex;
+
+        this.getDevices( 'video' )
+        .then( devices => {
+            stop();
+            index++;
+            if ( index >= devices.length ) {
+                setVideDeviceIndex( 0 );
+                index--;
+            } else {
+                setVideDeviceIndex( index );
+            }
+
+            start( devices[ index ] );
+            
+
+        } );
+
+    },
+
+    getDevices: function ( type = 'video' ) {
+
+        const devices = this.devices;
+        const validate = _devices => {
+
+            return _devices.map( device => { 
+                
+                !devices.includes( device ) && devices.push( device ); 
+                return device; 
+            
+            } );
+            
+        };
+        const filter = _devices => {
+
+            const reg = new RegExp( type, 'i' );
+            return _devices.filter( device => reg.test( device.kind ) );
+
+        };
+
+        return this.enumerateDevices()
+        .then( validate )
+        .then( filter );
+
+    },
+
+    getUserMedia: function ( constraints ) {
+
+        const setMediaStream = this.setMediaStream.bind( this );
+        const playVideo = this.playVideo.bind( this );
+        const onCatchError = error => { console.warn( `PANOLENS.Media: ${error}` ) };
+
+        return navigator.mediaDevices.getUserMedia( constraints )
+        .then( setMediaStream )
+        .then( playVideo )
+        .catch( onCatchError );
+
+    },
+
+    setVideDeviceIndex: function ( index ) {
+
+        this.videoDeviceIndex = index;
+
+    },
+
+    start: function( targetDevice ) {
+
+        const constraints = this.constraints;
+        const getUserMedia = this.getUserMedia.bind( this );
+        const onVideoDevices = devices => {
+
+            if ( !devices || devices.length === 0 ) {
+
+                throw Error( 'no video device found' );
+
+            }
+
+            const device = targetDevice || devices[ 0 ];
+            constraints.video.deviceId = device.deviceId;
+
+            return getUserMedia( constraints );
 
         }
 
         this.element = this.createVideoElement();
 
-        return navigator.mediaDevices.getUserMedia( this.constraints )
-        .catch( error => { console.warn( `PANOLENS.Media: ${error}` ) } );
+        return this.getDevices().then( onVideoDevices );
 
     },
 
     stop: function () {
 
-        const stream = this.streams[ this.streamId ];
+        const stream = this.stream;
 
         if ( stream && stream.active ) {
 
@@ -56,20 +140,15 @@ Object.assign( Media.prototype, {
             window.removeEventListener( 'resize', this.onWindowResize.bind( this ) );
 
             this.element = null;
-            this.streamId = null;
-            this.streams = {};
+            this.stream = null;
 
         }
 
     },
 
-    attachVideoSourceObject: function ( stream ) {
+    setMediaStream: function ( stream ) {
 
-        this.streams[ stream.id ] = stream;
-        
-        if ( this.streamId ) { return; }
-        
-        this.streamId = stream.id;
+        this.stream = stream;
         this.element.srcObject = stream;
 
         if ( this.scene ) {
@@ -79,6 +158,30 @@ Object.assign( Media.prototype, {
         }
         
         window.addEventListener( 'resize', this.onWindowResize.bind( this ) );
+
+    },
+
+    playVideo: function () {
+
+        const { element } = this;
+
+        if ( element ) {
+
+            element.play();
+
+        }
+
+    },
+
+    pauseVideo: function () {
+
+        const { element } = this;
+
+        if ( element ) {
+
+            element.pause();
+
+        }
 
     },
 
@@ -124,12 +227,18 @@ Object.assign( Media.prototype, {
 
         if ( this.element && this.element.videoWidth && this.element.videoHeight && this.scene ) {
 
-            const container = this.container;
+            const { clientWidth: width, clientHeight: height } = this.container;
             const texture = this.scene.background;
             const { videoWidth, videoHeight } = this.element;
             const cameraRatio = videoHeight / videoWidth;
-            const viewportRatio = container ? container.clientWidth / container.clientHeight : 1.0;
-            texture.repeat.set( -cameraRatio * viewportRatio, 1 );
+            const viewportRatio = this.container ? width / height : 1.0;
+            const ratio = cameraRatio * viewportRatio * this.ratioScalar;
+
+            if ( width > height ) {
+                texture.repeat.set( ratio, 1 );
+            } else {
+                texture.repeat.set( 1, 1 / ratio );
+            }
 
         }
 
