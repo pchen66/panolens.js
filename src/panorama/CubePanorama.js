@@ -9,69 +9,69 @@ import 'three';
  */
 function CubePanorama ( images = [] ){
 
-	const edgeLength = 10000;
-	const shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
-	const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
-	const material = new THREE.ShaderMaterial( {
+    const edgeLength = 10000;
+    const shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
+    const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+    const material = new THREE.ShaderMaterial( {
 
-		fragmentShader: shader.fragmentShader,
-		vertexShader: shader.vertexShader,
-		uniforms: shader.uniforms,
-		side: THREE.BackSide,
-		transparent: true
+        fragmentShader: shader.fragmentShader,
+        vertexShader: shader.vertexShader,
+        uniforms: shader.uniforms,
+        side: THREE.BackSide,
+        transparent: true
 
-	} );
+    } );
 
-	Panorama.call( this, geometry, material );
+    Panorama.call( this, geometry, material );
 
-	this.images = images;
-	this.edgeLength = edgeLength;
-	this.material.uniforms.opacity.value = 0;
+    this.images = images;
+    this.edgeLength = edgeLength;
+    this.material.uniforms.opacity.value = 0;
 
 }
 
 CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
-	constructor: CubePanorama,
+    constructor: CubePanorama,
 
-	/**
+    /**
 	 * Load 6 images and bind listeners
 	 */
-	load: function () {
+    load: function () {
 
-		CubeTextureLoader.load( 	
+        CubeTextureLoader.load( 	
 
-			this.images, 
+            this.images, 
 
-			this.onLoad.bind( this ), 
-			this.onProgress.bind( this ), 
-			this.onError.bind( this ) 
+            this.onLoad.bind( this ), 
+            this.onProgress.bind( this ), 
+            this.onError.bind( this ) 
 
-		);
+        );
 
-	},
+    },
 
-	/**
+    /**
 	 * This will be called when 6 textures are ready
 	 * @param  {THREE.CubeTexture} texture - Cube texture
 	 */
-	onLoad: function ( texture ) {
+    onLoad: function ( texture ) {
 		
-		this.material.uniforms[ 'tCube' ].value = texture;
+        this.material.uniforms[ 'tCube' ].value = texture;
 
-		Panorama.prototype.onLoad.call( this );
+        Panorama.prototype.onLoad.call( this );
 
-	},
+    },
 
-	dispose: function () {	
+    dispose: function () {	
 
-		this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
+        this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
 
-		this.material.uniforms[ 'tCube' ] && this.material.uniforms[ 'tCube' ].value.dispose();
+        this.material.uniforms[ 'tCube' ] && this.material.uniforms[ 'tCube' ].value.dispose();
 
-		Panorama.prototype.dispose.call( this );
+        Panorama.prototype.dispose.call( this );
 
-	}
+    }
 
 } );
 

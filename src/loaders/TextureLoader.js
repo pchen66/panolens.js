@@ -8,7 +8,7 @@ import 'three';
  */
 const TextureLoader = {
 
-	/**
+    /**
 	 * Load image texture
 	 * @param  {string}   url        - An image url
 	 * @param  {function} onLoad     - On load callback
@@ -16,27 +16,27 @@ const TextureLoader = {
 	 * @param  {function} onError    - On error callback
 	 * @return {THREE.Texture}   	 - Image texture
 	 */
-	load: function ( url, onLoad, onProgress, onError ) {
+    load: function ( url, onLoad, onProgress, onError ) {
 
-		var texture = new THREE.Texture(); 
+        var texture = new THREE.Texture(); 
 
-		ImageLoader.load( url, function ( image ) {
+        ImageLoader.load( url, function ( image ) {
 
-			texture.image = image;
+            texture.image = image;
 
-			// JPEGs can't have an alpha channel, so memory can be saved by storing them as RGB.
-			const isJPEG = url.search( /\.(jpg|jpeg)$/ ) > 0 || url.search( /^data\:image\/jpeg/ ) === 0;
+            // JPEGs can't have an alpha channel, so memory can be saved by storing them as RGB.
+            const isJPEG = url.search( /\.(jpg|jpeg)$/ ) > 0 || url.search( /^data\:image\/jpeg/ ) === 0;
 
-			texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
-			texture.needsUpdate = true;
+            texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
+            texture.needsUpdate = true;
 
-			onLoad && onLoad( texture );
+            onLoad && onLoad( texture );
 
-		}, onProgress, onError );
+        }, onProgress, onError );
 
-		return texture;
+        return texture;
 
-	}
+    }
 
 };
 

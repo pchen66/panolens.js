@@ -8,7 +8,7 @@ import 'three';
  */
 const CubeTextureLoader = {
 
-	/**
+    /**
 	* Load 6 images as a cube texture
 	* @param  {array}   urls        - Array with 6 image urls
 	* @param  {function} onLoad     - On load callback
@@ -16,7 +16,7 @@ const CubeTextureLoader = {
 	* @param  {function} onError    - On error callback
 	* @return {THREE.CubeTexture}   - Cube texture
 	*/
-   load: function ( urls, onLoad, onProgress, onError ) {
+    load: function ( urls, onLoad, onProgress, onError ) {
 
 	   var texture, loaded, progress, all, loadings;
 
@@ -72,7 +72,7 @@ const CubeTextureLoader = {
 
 	   return texture;
 
-   }
+    }
 
 };
 

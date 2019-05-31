@@ -7,21 +7,21 @@ import { DataImage } from '../DataImage';
  */
 function BasicPanorama () {
 
-	const images = [];
+    const images = [];
 
-	for ( let i = 0; i < 6; i++ ) {
+    for ( let i = 0; i < 6; i++ ) {
 
-		images.push( DataImage.WhiteTile );
+        images.push( DataImage.WhiteTile );
 
-	}
+    }
 
-	CubePanorama.call( this, images );
+    CubePanorama.call( this, images );
 
 }
 
 BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype ), {
 
-	constructor: BasicPanorama
+    constructor: BasicPanorama
 
 } );
 

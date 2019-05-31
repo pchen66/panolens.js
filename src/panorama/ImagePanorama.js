@@ -9,78 +9,78 @@ import 'three';
  */
 function ImagePanorama ( image, _geometry, _material ) {
 
-	const radius = 5000;
-	const geometry = _geometry || new THREE.SphereBufferGeometry( radius, 60, 40 );
-	const material = _material || new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
+    const radius = 5000;
+    const geometry = _geometry || new THREE.SphereBufferGeometry( radius, 60, 40 );
+    const material = _material || new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
-	Panorama.call( this, geometry, material );
+    Panorama.call( this, geometry, material );
 
-	this.src = image;
-	this.radius = radius;
+    this.src = image;
+    this.radius = radius;
 
 }
 
 ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
-	constructor: ImagePanorama,
+    constructor: ImagePanorama,
 
-	/**
+    /**
 	 * Load image asset
 	 * @param  {*} src - Url or image element
 	 */
-	load: function ( src ) {
+    load: function ( src ) {
 
-		src = src || this.src;
+        src = src || this.src;
 
-		if ( !src ) { 
+        if ( !src ) { 
 
-			console.warn( 'Image source undefined' );
+            console.warn( 'Image source undefined' );
 
-			return; 
+            return; 
 
-		} else if ( typeof src === 'string' ) {
+        } else if ( typeof src === 'string' ) {
 
-			TextureLoader.load( src, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
+            TextureLoader.load( src, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
 
-		} else if ( src instanceof HTMLImageElement ) {
+        } else if ( src instanceof HTMLImageElement ) {
 
-			this.onLoad( new THREE.Texture( src ) );
+            this.onLoad( new THREE.Texture( src ) );
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * This will be called when image is loaded
 	 * @param  {THREE.Texture} texture - Texture to be updated
 	 */
-	onLoad: function ( texture ) {
+    onLoad: function ( texture ) {
 
-		texture.minFilter = texture.magFilter = THREE.LinearFilter;
-		texture.needsUpdate = true;
+        texture.minFilter = texture.magFilter = THREE.LinearFilter;
+        texture.needsUpdate = true;
 		
-		this.updateTexture( texture );
+        this.updateTexture( texture );
 
-		requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
+        requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
 
-	},
+    },
 
-	reset: function () {
+    reset: function () {
 
-		Panorama.prototype.reset.call( this );
+        Panorama.prototype.reset.call( this );
 
-	},
+    },
 
-	dispose: function () {
+    dispose: function () {
 
-		// Release cached image
-		THREE.Cache.remove( this.src );
+        // Release cached image
+        THREE.Cache.remove( this.src );
 
-		this.material.map && this.material.map.dispose();
+        this.material.map && this.material.map.dispose();
 
-		Panorama.prototype.dispose.call( this );
+        Panorama.prototype.dispose.call( this );
 
-	}
+    }
 
 } );
 

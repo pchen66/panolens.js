@@ -12,122 +12,122 @@ import 'three';
  */
 function GoogleStreetviewPanorama ( panoId, apiKey ) {
 
-	ImagePanorama.call( this );
+    ImagePanorama.call( this );
 
-	this.panoId = panoId;
+    this.panoId = panoId;
 
-	this.gsvLoader = undefined;
+    this.gsvLoader = undefined;
 
-	this.loadRequested = false;
+    this.loadRequested = false;
 
-	this.setupGoogleMapAPI( apiKey );
+    this.setupGoogleMapAPI( apiKey );
 
 }
 
 GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama.prototype ), {
 
-	constructor: GoogleStreetviewPanorama,
+    constructor: GoogleStreetviewPanorama,
 
-	/**
+    /**
 	 * Load Google Street View by panorama id
 	 * @param {string} panoId - Gogogle Street View panorama id
 	 */
-	load: function ( panoId ) {
+    load: function ( panoId ) {
 
-		this.loadRequested = true;
+        this.loadRequested = true;
 
-		panoId = ( panoId || this.panoId ) || {};
+        panoId = ( panoId || this.panoId ) || {};
 
-		if ( panoId && this.gsvLoader ) {
+        if ( panoId && this.gsvLoader ) {
 
-			this.loadGSVLoader( panoId );
+            this.loadGSVLoader( panoId );
 
-		} else {
+        } else {
 
-			this.gsvLoader = {};
+            this.gsvLoader = {};
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Setup Google Map API
 	 */
-	setupGoogleMapAPI: function ( apiKey ) {
+    setupGoogleMapAPI: function ( apiKey ) {
 
-		const script = document.createElement( 'script' );
-		script.src = 'https://maps.googleapis.com/maps/api/js?';
-		script.src += apiKey ? 'key=' + apiKey : '';
-		script.onreadystatechange = this.setGSVLoader.bind( this );
-		script.onload = this.setGSVLoader.bind( this );
+        const script = document.createElement( 'script' );
+        script.src = 'https://maps.googleapis.com/maps/api/js?';
+        script.src += apiKey ? 'key=' + apiKey : '';
+        script.onreadystatechange = this.setGSVLoader.bind( this );
+        script.onload = this.setGSVLoader.bind( this );
 
-		document.querySelector( 'head' ).appendChild( script );
+        document.querySelector( 'head' ).appendChild( script );
 
-	},
+    },
 
-	/**
+    /**
 	 * Set GSV Loader
 	 */
-	setGSVLoader: function () {
+    setGSVLoader: function () {
 
-		this.gsvLoader = new GoogleStreetLoader();
+        this.gsvLoader = new GoogleStreetLoader();
 
-		if ( this.gsvLoader === {} || this.loadRequested ) {
+        if ( this.gsvLoader === {} || this.loadRequested ) {
 
-			this.load();
+            this.load();
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Get GSV Loader
 	 * @return {object} GSV Loader instance
 	 */
-	getGSVLoader: function () {
+    getGSVLoader: function () {
 
-		return this.gsvLoader;
+        return this.gsvLoader;
 
-	},
+    },
 
-	/**
+    /**
 	 * Load GSV Loader
 	 * @param  {string} panoId - Gogogle Street View panorama id
 	 */
-	loadGSVLoader: function ( panoId ) {
+    loadGSVLoader: function ( panoId ) {
 
-		this.loadRequested = false;
+        this.loadRequested = false;
 
-		this.gsvLoader.onProgress = this.onProgress.bind( this );
+        this.gsvLoader.onProgress = this.onProgress.bind( this );
 
-		this.gsvLoader.onPanoramaLoad = this.onLoad.bind( this );
+        this.gsvLoader.onPanoramaLoad = this.onLoad.bind( this );
 
-		this.gsvLoader.setZoom( this.getZoomLevel() );
+        this.gsvLoader.setZoom( this.getZoomLevel() );
 
-		this.gsvLoader.load( panoId );
+        this.gsvLoader.load( panoId );
 
-		this.gsvLoader.loaded = true;
-	},
+        this.gsvLoader.loaded = true;
+    },
 
-	/**
+    /**
 	 * This will be called when panorama is loaded
 	 * @param  {HTMLCanvasElement} canvas - Canvas where the tiles have been drawn
 	 */
-	onLoad: function ( canvas ) {
+    onLoad: function ( canvas ) {
 
-		if ( !this.gsvLoader ) { return; }
+        if ( !this.gsvLoader ) { return; }
 
-		ImagePanorama.prototype.onLoad.call( this, new THREE.Texture( canvas ) );
+        ImagePanorama.prototype.onLoad.call( this, new THREE.Texture( canvas ) );
 
-	},
+    },
 
-	reset: function () {
+    reset: function () {
 
-		this.gsvLoader = undefined;
+        this.gsvLoader = undefined;
 
-		ImagePanorama.prototype.reset.call( this );
+        ImagePanorama.prototype.reset.call( this );
 
-	}
+    }
 
 } );
 

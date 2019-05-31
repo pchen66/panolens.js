@@ -11,44 +11,44 @@ import 'three';
  */
 function ImageLittlePlanet ( source, size, ratio ) {
 
-	LittlePlanet.call( this, 'image', source, size, ratio );
+    LittlePlanet.call( this, 'image', source, size, ratio );
 
 }
 
 ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
 
-	constructor: ImageLittlePlanet,
+    constructor: ImageLittlePlanet,
 
-	onLoad: function ( texture ) {
+    onLoad: function ( texture ) {
 
-		this.updateTexture( texture );
+        this.updateTexture( texture );
 
-		LittlePlanet.prototype.onLoad.call( this );
-		ImagePanorama.prototype.onLoad.call( this, texture );
+        LittlePlanet.prototype.onLoad.call( this );
+        ImagePanorama.prototype.onLoad.call( this, texture );
 
-	},
+    },
 	
-	updateTexture: function ( texture ) {
+    updateTexture: function ( texture ) {
 
-		texture.minFilter = texture.magFilter = THREE.LinearFilter;
+        texture.minFilter = texture.magFilter = THREE.LinearFilter;
 		
-		this.material.uniforms[ 'tDiffuse' ].value = texture;
+        this.material.uniforms[ 'tDiffuse' ].value = texture;
 
-	},
+    },
 
-	dispose: function () {
+    dispose: function () {
 
-		const tDiffuse = this.material.uniforms[ 'tDiffuse' ];
+        const tDiffuse = this.material.uniforms[ 'tDiffuse' ];
 
-		if ( tDiffuse && tDiffuse.value ) {
+        if ( tDiffuse && tDiffuse.value ) {
 
-			tDiffuse.value.dispose();
+            tDiffuse.value.dispose();
 
-		}
+        }
 
-		LittlePlanet.prototype.dispose.call( this );
+        LittlePlanet.prototype.dispose.call( this );
 
-	}
+    }
 
 } );
 

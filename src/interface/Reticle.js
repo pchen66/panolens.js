@@ -73,7 +73,7 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
         context.scale( dpr, dpr );
 
         context.shadowBlur = 5;
-        context.shadowColor = "rgba(200,200,200,0.9)";
+        context.shadowColor = 'rgba(200,200,200,0.9)';
 
         return { canvas, context };
 

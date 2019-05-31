@@ -10,7 +10,7 @@ function Media ( constraints ) {
 
     this.constraints = Object.assign( defaultConstraints, constraints );
 
-    this.container
+    this.container;
     this.scene;
     this.element;
     this.devices = [];
@@ -40,20 +40,20 @@ Object.assign( Media.prototype, {
         let index = this.videoDeviceIndex;
 
         this.getDevices( 'video' )
-        .then( devices => {
-            stop();
-            index++;
-            if ( index >= devices.length ) {
-                setVideDeviceIndex( 0 );
-                index--;
-            } else {
-                setVideDeviceIndex( index );
-            }
+            .then( devices => {
+                stop();
+                index++;
+                if ( index >= devices.length ) {
+                    setVideDeviceIndex( 0 );
+                    index--;
+                } else {
+                    setVideDeviceIndex( index );
+                }
 
-            start( devices[ index ] );
+                start( devices[ index ] );
             
 
-        } );
+            } );
 
     },
 
@@ -78,8 +78,8 @@ Object.assign( Media.prototype, {
         };
 
         return this.enumerateDevices()
-        .then( validate )
-        .then( filter );
+            .then( validate )
+            .then( filter );
 
     },
 
@@ -87,12 +87,12 @@ Object.assign( Media.prototype, {
 
         const setMediaStream = this.setMediaStream.bind( this );
         const playVideo = this.playVideo.bind( this );
-        const onCatchError = error => { console.warn( `PANOLENS.Media: ${error}` ) };
+        const onCatchError = error => { console.warn( `PANOLENS.Media: ${error}` ); };
 
         return navigator.mediaDevices.getUserMedia( constraints )
-        .then( setMediaStream )
-        .then( playVideo )
-        .catch( onCatchError );
+            .then( setMediaStream )
+            .then( playVideo )
+            .catch( onCatchError );
 
     },
 
@@ -119,7 +119,7 @@ Object.assign( Media.prototype, {
 
             return getUserMedia( constraints );
 
-        }
+        };
 
         this.element = this.createVideoElement();
 

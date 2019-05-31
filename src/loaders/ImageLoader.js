@@ -8,97 +8,97 @@ import 'three';
  */
 const ImageLoader = {
 
-	load: function ( url, onLoad, onProgress, onError ) {
+    load: function ( url, onLoad, onProgress, onError ) {
 
-		// Enable cache
-		THREE.Cache.enabled = true;
+        // Enable cache
+        THREE.Cache.enabled = true;
 
-		let cached, request, arrayBufferView, blob, urlCreator, image, reference;
+        let cached, request, arrayBufferView, blob, urlCreator, image, reference;
 	
-		// Reference key
-		for ( let iconName in DataImage ) {
+        // Reference key
+        for ( let iconName in DataImage ) {
 	
-			if ( DataImage.hasOwnProperty( iconName ) && url === DataImage[ iconName ] ) {
+            if ( DataImage.hasOwnProperty( iconName ) && url === DataImage[ iconName ] ) {
 	
-				reference = iconName;
+                reference = iconName;
 	
-			}
+            }
 	
-		}
+        }
 	
-		// Cached
-		cached = THREE.Cache.get( reference ? reference : url );
+        // Cached
+        cached = THREE.Cache.get( reference ? reference : url );
 	
-		if ( cached !== undefined ) {
+        if ( cached !== undefined ) {
 	
-			if ( onLoad ) {
+            if ( onLoad ) {
 	
-				setTimeout( function () {
+                setTimeout( function () {
 	
-					if ( onProgress ) {
+                    if ( onProgress ) {
 	
-						onProgress( { loaded: 1, total: 1 } );
+                        onProgress( { loaded: 1, total: 1 } );
 	
-					} 
+                    } 
 					
-					onLoad( cached );
+                    onLoad( cached );
 	
-				}, 0 );
+                }, 0 );
 	
-			}
+            }
 	
-			return cached;
+            return cached;
 	
-		}
+        }
 		
-		// Construct a new XMLHttpRequest
-		urlCreator = window.URL || window.webkitURL;
-		image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
+        // Construct a new XMLHttpRequest
+        urlCreator = window.URL || window.webkitURL;
+        image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
 	
-		// Add to cache
-		THREE.Cache.add( reference ? reference : url, image );
+        // Add to cache
+        THREE.Cache.add( reference ? reference : url, image );
 	
-		const onImageLoaded = () => {
+        const onImageLoaded = () => {
 	
-			urlCreator.revokeObjectURL( image.src );
-			onLoad && onLoad( image );
+            urlCreator.revokeObjectURL( image.src );
+            onLoad && onLoad( image );
 	
-		}
+        };
 	
-		if ( url.indexOf( 'data:' ) === 0 ) {
+        if ( url.indexOf( 'data:' ) === 0 ) {
 	
-			image.addEventListener( 'load', onImageLoaded, false );
-			image.src = url;
-			return image;
-		}
+            image.addEventListener( 'load', onImageLoaded, false );
+            image.src = url;
+            return image;
+        }
 	
-		image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
+        image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
 	
-		request = new XMLHttpRequest();
-		request.open( 'GET', url, true );
-		request.responseType = 'arraybuffer';
-		request.onprogress = function ( event ) {
+        request = new XMLHttpRequest();
+        request.open( 'GET', url, true );
+        request.responseType = 'arraybuffer';
+        request.onprogress = function ( event ) {
 	
-				if ( event.lengthComputable ) {
+            if ( event.lengthComputable ) {
 	
-					onProgress && onProgress( { loaded: event.loaded, total: event.total } );
+                onProgress && onProgress( { loaded: event.loaded, total: event.total } );
 	
-				}
+            }
 	
-		};
-		request.onloadend = function( event ) {
+        };
+        request.onloadend = function( event ) {
 	
-				arrayBufferView = new Uint8Array( this.response );
-				blob = new Blob( [ arrayBufferView ] );
+            arrayBufferView = new Uint8Array( this.response );
+            blob = new Blob( [ arrayBufferView ] );
 				
-				image.addEventListener( 'load', onImageLoaded, false );
-			image.src = urlCreator.createObjectURL( blob );
+            image.addEventListener( 'load', onImageLoaded, false );
+            image.src = urlCreator.createObjectURL( blob );
 	
-		};
+        };
 	
-		request.send(null);
+        request.send(null);
 	
-	}
+    }
 
 };
 

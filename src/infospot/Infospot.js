@@ -14,603 +14,603 @@ import TWEEN from '@tweenjs/tween.js';
  */
 function Infospot ( scale = 300, imageSrc, animated ) {
 	
-	const duration = 500, scaleFactor = 1.3;
+    const duration = 500, scaleFactor = 1.3;
 
-	imageSrc = imageSrc || DataImage.Info;
+    imageSrc = imageSrc || DataImage.Info;
 
-	THREE.Sprite.call( this );
+    THREE.Sprite.call( this );
 
-	this.type = 'infospot';
+    this.type = 'infospot';
 
-	this.animated = animated !== undefined ? animated : true;
-	this.isHovering = false;
+    this.animated = animated !== undefined ? animated : true;
+    this.isHovering = false;
 
-	// TODO: Three.js bug hotfix for sprite raycasting r104
-	// https://github.com/mrdoob/three.js/issues/14624
-	this.frustumCulled = false;
+    // TODO: Three.js bug hotfix for sprite raycasting r104
+    // https://github.com/mrdoob/three.js/issues/14624
+    this.frustumCulled = false;
 
-	this.element;
-	this.toPanorama;
-	this.cursorStyle;
+    this.element;
+    this.toPanorama;
+    this.cursorStyle;
 
-	this.mode = MODES.UNKNOWN;
+    this.mode = MODES.UNKNOWN;
 
-	this.scale.set( scale, scale, 1 );
-	this.rotation.y = Math.PI;
+    this.scale.set( scale, scale, 1 );
+    this.rotation.y = Math.PI;
 
-	this.container;
+    this.container;
 
-	this.originalRaycast = this.raycast;
+    this.originalRaycast = this.raycast;
 
-	// Event Handler
-	this.HANDLER_FOCUS;	
+    // Event Handler
+    this.HANDLER_FOCUS;	
 
-	this.material.side = THREE.DoubleSide;
-	this.material.depthTest = false;
-	this.material.transparent = true;
-	this.material.opacity = 0;
+    this.material.side = THREE.DoubleSide;
+    this.material.depthTest = false;
+    this.material.transparent = true;
+    this.material.opacity = 0;
 
-	const postLoad = function ( texture ) {
+    const postLoad = function ( texture ) {
 
-		const ratio = texture.image.width / texture.image.height;
-		const textureScale = new THREE.Vector3();
+        const ratio = texture.image.width / texture.image.height;
+        const textureScale = new THREE.Vector3();
 
-		texture.image.width = texture.image.naturalWidth || 64;
-		texture.image.height = texture.image.naturalHeight || 64;
+        texture.image.width = texture.image.naturalWidth || 64;
+        texture.image.height = texture.image.naturalHeight || 64;
 
-		this.scale.set( ratio * scale, scale, 1 );
+        this.scale.set( ratio * scale, scale, 1 );
 
-		textureScale.copy( this.scale );
+        textureScale.copy( this.scale );
 
-		this.scaleUpAnimation = new TWEEN.Tween( this.scale )
-			.to( { x: textureScale.x * scaleFactor, y: textureScale.y * scaleFactor }, duration )
-			.easing( TWEEN.Easing.Elastic.Out );
+        this.scaleUpAnimation = new TWEEN.Tween( this.scale )
+            .to( { x: textureScale.x * scaleFactor, y: textureScale.y * scaleFactor }, duration )
+            .easing( TWEEN.Easing.Elastic.Out );
 
-		this.scaleDownAnimation = new TWEEN.Tween( this.scale )
-			.to( { x: textureScale.x, y: textureScale.y }, duration )
-			.easing( TWEEN.Easing.Elastic.Out );
+        this.scaleDownAnimation = new TWEEN.Tween( this.scale )
+            .to( { x: textureScale.x, y: textureScale.y }, duration )
+            .easing( TWEEN.Easing.Elastic.Out );
 
-		this.material.map = texture;
-		this.material.needsUpdate = true;
+        this.material.map = texture;
+        this.material.needsUpdate = true;
 
-	}.bind( this );
+    }.bind( this );
 
-	// Add show and hide animations
-	this.showAnimation = new TWEEN.Tween( this.material )
-		.to( { opacity: 1 }, duration )
-		.onStart( this.enableRaycast.bind( this, true ) )
-		.easing( TWEEN.Easing.Quartic.Out );
+    // Add show and hide animations
+    this.showAnimation = new TWEEN.Tween( this.material )
+        .to( { opacity: 1 }, duration )
+        .onStart( this.enableRaycast.bind( this, true ) )
+        .easing( TWEEN.Easing.Quartic.Out );
 
-	this.hideAnimation = new TWEEN.Tween( this.material )
-		.to( { opacity: 0 }, duration )
-		.onStart( this.enableRaycast.bind( this, false ) )
-		.easing( TWEEN.Easing.Quartic.Out );
+    this.hideAnimation = new TWEEN.Tween( this.material )
+        .to( { opacity: 0 }, duration )
+        .onStart( this.enableRaycast.bind( this, false ) )
+        .easing( TWEEN.Easing.Quartic.Out );
 
-	// Attach event listeners
-	this.addEventListener( 'click', this.onClick );
-	this.addEventListener( 'hover', this.onHover );
-	this.addEventListener( 'hoverenter', this.onHoverStart );
-	this.addEventListener( 'hoverleave', this.onHoverEnd );
-	this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
-	this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
-	this.addEventListener( 'dismiss', this.onDismiss );
-	this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
-	this.addEventListener( 'panorama-enter', this.onPanoramaEnter );
-	this.addEventListener( 'panorama-leave', this.onPanoramaLeave );
+    // Attach event listeners
+    this.addEventListener( 'click', this.onClick );
+    this.addEventListener( 'hover', this.onHover );
+    this.addEventListener( 'hoverenter', this.onHoverStart );
+    this.addEventListener( 'hoverleave', this.onHoverEnd );
+    this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
+    this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+    this.addEventListener( 'dismiss', this.onDismiss );
+    this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
+    this.addEventListener( 'panorama-enter', this.onPanoramaEnter );
+    this.addEventListener( 'panorama-leave', this.onPanoramaLeave );
 
-	TextureLoader.load( imageSrc, postLoad );	
+    TextureLoader.load( imageSrc, postLoad );	
 
 };
 
 Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
-	constructor: Infospot,
+    constructor: Infospot,
 
-	onPanoramaEnter: function () {
+    onPanoramaEnter: function () {
 
 		
 
-	},
+    },
 
-	onPanoramaLeave: function () {
+    onPanoramaLeave: function () {
 
 
 
-	},
+    },
 
-	/**
+    /**
 	 * Set infospot container
 	 * @param {HTMLElement|object} data - Data with container information
 	 */
-	setContainer: function ( data ) {
+    setContainer: function ( data ) {
 
-		let container;
+        let container;
 	
-		if ( data instanceof HTMLElement ) {
+        if ( data instanceof HTMLElement ) {
 	
-			container = data;
+            container = data;
 	
-		} else if ( data && data.container ) {
+        } else if ( data && data.container ) {
 	
-			container = data.container;
+            container = data.container;
 	
-		}
+        }
 	
-		// Append element if exists
-		if ( container && this.element ) {
+        // Append element if exists
+        if ( container && this.element ) {
 	
-			container.appendChild( this.element );
+            container.appendChild( this.element );
 	
-		}
+        }
 	
-		this.container = container;
+        this.container = container;
 	
-	},
+    },
 
-	/**
+    /**
 	 * Get container
 	 * @return {HTMLElement} - The container of this infospot
 	 */
-	getContainer: function () {
+    getContainer: function () {
 
-		return this.container;
+        return this.container;
 
-	},
+    },
 
-	/**
+    /**
 	 * This will be called by a click event
 	 * Translate and lock the hovering element if any
 	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
 	 */
-	onClick: function ( event ) {
+    onClick: function ( event ) {
 
-		if ( this.element && this.getContainer() ) {
+        if ( this.element && this.getContainer() ) {
 
-			this.onHoverStart( event );
+            this.onHoverStart( event );
 
-			// Lock element
-			this.lockHoverElement();
+            // Lock element
+            this.lockHoverElement();
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Dismiss current element if any
 	 * @param  {object} event - Dismiss event
 	 */
-	onDismiss: function ( event ) {
+    onDismiss: function ( event ) {
 
-		if ( this.element ) {
+        if ( this.element ) {
 
-			this.unlockHoverElement();
-			this.onHoverEnd();
+            this.unlockHoverElement();
+            this.onHoverEnd();
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * This will be called by a mouse hover event
 	 * Translate the hovering element if any
 	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
 	 */
-	onHover: function ( event ) {},
+    onHover: function ( event ) {},
 
-	/**
+    /**
 	 * This will be called on a mouse hover start
 	 * Sets cursor style to 'pointer', display the element and scale up the infospot
 	 */
-	onHoverStart: function ( event ) {
+    onHoverStart: function ( event ) {
 
-		if ( !this.getContainer() ) { return; }
+        if ( !this.getContainer() ) { return; }
 
-		const cursorStyle = this.cursorStyle || ( this.mode === MODES.NORMAL ? 'pointer' : 'default' );
+        const cursorStyle = this.cursorStyle || ( this.mode === MODES.NORMAL ? 'pointer' : 'default' );
 
-		this.isHovering = true;
-		this.container.style.cursor = cursorStyle;
+        this.isHovering = true;
+        this.container.style.cursor = cursorStyle;
 		
-		if ( this.animated ) {
+        if ( this.animated ) {
 
-			this.scaleDownAnimation && this.scaleDownAnimation.stop();
-			this.scaleUpAnimation && this.scaleUpAnimation.start();
+            this.scaleDownAnimation && this.scaleDownAnimation.stop();
+            this.scaleUpAnimation && this.scaleUpAnimation.start();
 
-		}
+        }
 		
-		if ( this.element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
+        if ( this.element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
 
-			if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
+            if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
-				this.element.style.display = 'none';
-				this.element.left && ( this.element.left.style.display = 'block' );
-				this.element.right && ( this.element.right.style.display = 'block' );
+                this.element.style.display = 'none';
+                this.element.left && ( this.element.left.style.display = 'block' );
+                this.element.right && ( this.element.right.style.display = 'block' );
 
-				// Store element width for reference
-				this.element._width = this.element.left.clientWidth;
-				this.element._height = this.element.left.clientHeight;
+                // Store element width for reference
+                this.element._width = this.element.left.clientWidth;
+                this.element._height = this.element.left.clientHeight;
 
-			} else {
+            } else {
 
-				this.element.style.display = 'block';
-				this.element.left && ( this.element.left.style.display = 'none' );
-				this.element.right && ( this.element.right.style.display = 'none' );
+                this.element.style.display = 'block';
+                this.element.left && ( this.element.left.style.display = 'none' );
+                this.element.right && ( this.element.right.style.display = 'none' );
 
-				// Store element width for reference
-				this.element._width = this.element.clientWidth;
-				this.element._height = this.element.clientHeight;
+                // Store element width for reference
+                this.element._width = this.element.clientWidth;
+                this.element._height = this.element.clientHeight;
 
-			}
+            }
 			
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * This will be called on a mouse hover end
 	 * Sets cursor style to 'default', hide the element and scale down the infospot
 	 */
-	onHoverEnd: function () {
+    onHoverEnd: function () {
 
-		if ( !this.getContainer() ) { return; }
+        if ( !this.getContainer() ) { return; }
 
-		this.isHovering = false;
-		this.container.style.cursor = 'default';
+        this.isHovering = false;
+        this.container.style.cursor = 'default';
 
-		if ( this.animated ) {
+        if ( this.animated ) {
 
-			this.scaleUpAnimation && this.scaleUpAnimation.stop();
-			this.scaleDownAnimation && this.scaleDownAnimation.start();
+            this.scaleUpAnimation && this.scaleUpAnimation.stop();
+            this.scaleDownAnimation && this.scaleDownAnimation.start();
 
-		}
+        }
 
-		if ( this.element && !this.element.locked ) {
+        if ( this.element && !this.element.locked ) {
 
-			this.element.style.display = 'none';
-			this.element.left && ( this.element.left.style.display = 'none' );
-			this.element.right && ( this.element.right.style.display = 'none' );
+            this.element.style.display = 'none';
+            this.element.left && ( this.element.left.style.display = 'none' );
+            this.element.right && ( this.element.right.style.display = 'none' );
 
-			this.unlockHoverElement();
+            this.unlockHoverElement();
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * On dual eye effect handler
 	 * Creates duplicate left and right element
 	 * @param  {object} event - panolens-dual-eye-effect event
 	 */
-	onDualEyeEffect: function ( event ) {
+    onDualEyeEffect: function ( event ) {
 		
-		if ( !this.getContainer() ) { return; }
+        if ( !this.getContainer() ) { return; }
 
-		let element, halfWidth, halfHeight;
+        let element, halfWidth, halfHeight;
 
-		this.mode = event.mode;
+        this.mode = event.mode;
 
-		element = this.element;
+        element = this.element;
 
-		halfWidth = this.container.clientWidth / 2;
-		halfHeight = this.container.clientHeight / 2;
+        halfWidth = this.container.clientWidth / 2;
+        halfHeight = this.container.clientHeight / 2;
 
-		if ( !element ) {
+        if ( !element ) {
 
-			return;
+            return;
 
-		}
+        }
 
-		if ( !element.left || !element.right ) {
+        if ( !element.left || !element.right ) {
 
-			element.left = element.cloneNode( true );
-			element.right = element.cloneNode( true );
+            element.left = element.cloneNode( true );
+            element.right = element.cloneNode( true );
 
-		}
+        }
 
-		if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
+        if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
-			element.left.style.display = element.style.display;
-			element.right.style.display = element.style.display;
-			element.style.display = 'none';
+            element.left.style.display = element.style.display;
+            element.right.style.display = element.style.display;
+            element.style.display = 'none';
 
-		} else {
+        } else {
 
-			element.style.display = element.left.style.display;
-			element.left.style.display = 'none';
-			element.right.style.display = 'none';
+            element.style.display = element.left.style.display;
+            element.left.style.display = 'none';
+            element.right.style.display = 'none';
 
-		}
+        }
 
-		// Update elements translation
-		this.translateElement( halfWidth, halfHeight );
+        // Update elements translation
+        this.translateElement( halfWidth, halfHeight );
 
-		this.container.appendChild( element.left );
-		this.container.appendChild( element.right );
+        this.container.appendChild( element.left );
+        this.container.appendChild( element.right );
 
-	},
+    },
 
-	/**
+    /**
 	 * Translate the hovering element by css transform
 	 * @param  {number} x - X position on the window screen
 	 * @param  {number} y - Y position on the window screen
 	 */
-	translateElement: function ( x, y ) {
+    translateElement: function ( x, y ) {
 
-		if ( !this.element._width || !this.element._height || !this.getContainer() ) {
+        if ( !this.element._width || !this.element._height || !this.getContainer() ) {
 
-			return;
+            return;
 
-		}
+        }
 
-		let left, top, element, width, height, delta, container;
+        let left, top, element, width, height, delta, container;
 
-		container = this.container;
-		element = this.element;
-		width = element._width / 2;
-		height = element._height / 2;
-		delta = element.verticalDelta !== undefined ? element.verticalDelta : 40;
+        container = this.container;
+        element = this.element;
+        width = element._width / 2;
+        height = element._height / 2;
+        delta = element.verticalDelta !== undefined ? element.verticalDelta : 40;
 
-		left = x - width;
-		top = y - height - delta;
+        left = x - width;
+        top = y - height - delta;
 
-		if ( ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) 
+        if ( ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) 
 				&& element.left && element.right
 				&& !( x === container.clientWidth / 2 && y === container.clientHeight / 2 ) ) {
 
-			left = container.clientWidth / 4 - width + ( x - container.clientWidth / 2 );
-			top = container.clientHeight / 2 - height - delta + ( y - container.clientHeight / 2 );
+            left = container.clientWidth / 4 - width + ( x - container.clientWidth / 2 );
+            top = container.clientHeight / 2 - height - delta + ( y - container.clientHeight / 2 );
 
-			this.setElementStyle( 'transform', element.left, 'translate(' + left + 'px, ' + top + 'px)' );
+            this.setElementStyle( 'transform', element.left, 'translate(' + left + 'px, ' + top + 'px)' );
 
-			left += container.clientWidth / 2;
+            left += container.clientWidth / 2;
 
-			this.setElementStyle( 'transform', element.right, 'translate(' + left + 'px, ' + top + 'px)' );
+            this.setElementStyle( 'transform', element.right, 'translate(' + left + 'px, ' + top + 'px)' );
 
-		} else {
+        } else {
 
-			this.setElementStyle( 'transform', element, 'translate(' + left + 'px, ' + top + 'px)' );
+            this.setElementStyle( 'transform', element, 'translate(' + left + 'px, ' + top + 'px)' );
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Set vendor specific css
 	 * @param {string} type - CSS style name
 	 * @param {HTMLElement} element - The element to be modified
 	 * @param {string} value - Style value
 	 */
-	setElementStyle: function ( type, element, value ) {
+    setElementStyle: function ( type, element, value ) {
 
-		const style = element.style;
+        const style = element.style;
 
-		if ( type === 'transform' ) {
+        if ( type === 'transform' ) {
 
-			style.webkitTransform = style.msTransform = style.transform = value;
+            style.webkitTransform = style.msTransform = style.transform = value;
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Set hovering text content
 	 * @param {string} text - Text to be displayed
 	 */
-	setText: function ( text ) {
+    setText: function ( text ) {
 
-		if ( this.element ) {
+        if ( this.element ) {
 
-			this.element.textContent = text;
+            this.element.textContent = text;
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Set cursor css style on hover
 	 */
-	setCursorHoverStyle: function ( style ) {
+    setCursorHoverStyle: function ( style ) {
 
-		this.cursorStyle = style;
+        this.cursorStyle = style;
 
-	},
+    },
 
-	/**
+    /**
 	 * Add hovering text element
 	 * @param {string} text - Text to be displayed
 	 * @param {number} [delta=40] - Vertical delta to the infospot
 	 */
-	addHoverText: function ( text, delta ) {
+    addHoverText: function ( text, delta ) {
 
-		if ( !this.element ) {
+        if ( !this.element ) {
 
-			this.element = document.createElement( 'div' );
-			this.element.style.display = 'none';
-			this.element.style.color = '#fff';
-			this.element.style.top = 0;
-			this.element.style.maxWidth = '50%';
-			this.element.style.maxHeight = '50%';
-			this.element.style.textShadow = '0 0 3px #000000';
-			this.element.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
-			this.element.style.position = 'absolute';
-			this.element.classList.add( 'panolens-infospot' );
-			this.element.verticalDelta = delta !== undefined ? delta : 40;
+            this.element = document.createElement( 'div' );
+            this.element.style.display = 'none';
+            this.element.style.color = '#fff';
+            this.element.style.top = 0;
+            this.element.style.maxWidth = '50%';
+            this.element.style.maxHeight = '50%';
+            this.element.style.textShadow = '0 0 3px #000000';
+            this.element.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
+            this.element.style.position = 'absolute';
+            this.element.classList.add( 'panolens-infospot' );
+            this.element.verticalDelta = delta !== undefined ? delta : 40;
 
-		}
+        }
 
-		this.setText( text );
+        this.setText( text );
 
-	},
+    },
 
-	/**
+    /**
 	 * Add hovering element by cloning an element
 	 * @param {HTMLDOMElement} el - Element to be cloned and displayed
 	 * @param {number} [delta=40] - Vertical delta to the infospot
 	 */
-	addHoverElement: function ( el, delta ) {
+    addHoverElement: function ( el, delta ) {
 
-		if ( !this.element ) { 
+        if ( !this.element ) { 
 
-			this.element = el.cloneNode( true );
-			this.element.style.display = 'none';
-			this.element.style.top = 0;
-			this.element.style.position = 'absolute';
-			this.element.classList.add( 'panolens-infospot' );
-			this.element.verticalDelta = delta !== undefined ? delta : 40;
+            this.element = el.cloneNode( true );
+            this.element.style.display = 'none';
+            this.element.style.top = 0;
+            this.element.style.position = 'absolute';
+            this.element.classList.add( 'panolens-infospot' );
+            this.element.verticalDelta = delta !== undefined ? delta : 40;
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Remove hovering element
 	 */
-	removeHoverElement: function () {
+    removeHoverElement: function () {
 
-		if ( this.element ) { 
+        if ( this.element ) { 
 
-			if ( this.element.left ) {
+            if ( this.element.left ) {
 
-				this.container.removeChild( this.element.left );
-				this.element.left = null;
+                this.container.removeChild( this.element.left );
+                this.element.left = null;
 
-			}
+            }
 
-			if ( this.element.right ) {
+            if ( this.element.right ) {
 
-				this.container.removeChild( this.element.right );
-				this.element.right = null;
+                this.container.removeChild( this.element.right );
+                this.element.right = null;
 
-			}
+            }
 
-			this.container.removeChild( this.element );
-			this.element = null;
+            this.container.removeChild( this.element );
+            this.element = null;
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Lock hovering element
 	 */
-	lockHoverElement: function () {
+    lockHoverElement: function () {
 
-		if ( this.element ) { 
+        if ( this.element ) { 
 
-			this.element.locked = true;
+            this.element.locked = true;
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Unlock hovering element
 	 */
-	unlockHoverElement: function () {
+    unlockHoverElement: function () {
 
-		if ( this.element ) { 
+        if ( this.element ) { 
 
-			this.element.locked = false;
+            this.element.locked = false;
 
-		}
+        }
 
-	},
+    },
 
-	enableRaycast: function ( enabled = true ) {
+    enableRaycast: function ( enabled = true ) {
 
-		if ( enabled ) {
+        if ( enabled ) {
 
-			this.raycast = this.originalRaycast;
+            this.raycast = this.originalRaycast;
 
-		} else {
+        } else {
 
-			this.raycast = () => {};
+            this.raycast = () => {};
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Show infospot
 	 * @param  {number} [delay=0] - Delay time to show
 	 */
-	show: function ( delay = 0 ) {
+    show: function ( delay = 0 ) {
 
-		if ( this.animated ) {
+        if ( this.animated ) {
 
-			this.hideAnimation && this.hideAnimation.stop();
-			this.showAnimation && this.showAnimation.delay( delay ).start();
+            this.hideAnimation && this.hideAnimation.stop();
+            this.showAnimation && this.showAnimation.delay( delay ).start();
 
-		} else {
+        } else {
 
-			this.material.opacity = 1;
+            this.material.opacity = 1;
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Hide infospot
 	 * @param  {number} [delay=0] - Delay time to hide
 	 */
-	hide: function ( delay = 0 ) {
+    hide: function ( delay = 0 ) {
 
-		if ( this.animated ) {
+        if ( this.animated ) {
 
-			this.showAnimation && this.showAnimation.stop();
-			this.hideAnimation && this.hideAnimation.delay( delay ).start();
+            this.showAnimation && this.showAnimation.stop();
+            this.hideAnimation && this.hideAnimation.delay( delay ).start();
 
-		} else {
+        } else {
 
-			this.material.opacity = 0;
+            this.material.opacity = 0;
 
-		}
+        }
 		
-	},
+    },
 
-	/**
+    /**
 	 * Set focus event handler
 	 */
-	setFocusMethod: function ( event ) {
+    setFocusMethod: function ( event ) {
 
-		if ( event ) {
+        if ( event ) {
 
-			this.HANDLER_FOCUS = event.method;
+            this.HANDLER_FOCUS = event.method;
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Focus camera center to this infospot
 	 * @param {number} [duration=1000] - Duration to tween
 	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
 	 */
-	focus: function ( duration, easing ) {
+    focus: function ( duration, easing ) {
 
-		if ( this.HANDLER_FOCUS ) {
+        if ( this.HANDLER_FOCUS ) {
 
-			this.HANDLER_FOCUS( this.position, duration, easing );
-			this.onDismiss();
+            this.HANDLER_FOCUS( this.position, duration, easing );
+            this.onDismiss();
 
-		}
+        }
 
-	},
+    },
 
-	/**
+    /**
 	 * Dispose infospot
 	 */
-	dispose: function () {
+    dispose: function () {
 
-		this.removeHoverElement();
-		this.material.dispose();
+        this.removeHoverElement();
+        this.material.dispose();
 
-		if ( this.parent ) {
+        if ( this.parent ) {
 
-			this.parent.remove( this );
+            this.parent.remove( this );
 
-		}
+        }
 
-	}
+    }
 
 } );
 
