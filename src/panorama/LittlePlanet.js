@@ -56,8 +56,7 @@
 
 			uniforms: uniforms,
 			vertexShader: PANOLENS.StereographicShader.vertexShader,
-			fragmentShader: PANOLENS.StereographicShader.fragmentShader,
-			side: THREE.DoubleSide
+			fragmentShader: PANOLENS.StereographicShader.fragmentShader
 
 		} );
 		
