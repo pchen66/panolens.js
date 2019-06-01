@@ -42,6 +42,14 @@
         "error",
         4
       ],
+      "spaced-comment": [
+        "error",
+        "always"
+      ],
+      "multiline-comment-style": [
+        "error",
+        "starred-block"
+      ],
       "linebreak-style": [
         "error",
         "unix"
@@ -76,8 +84,8 @@
   "devDependencies": {
     "@tweenjs/tween.js": "^17.4.0",
     "ava": "^1.4.1",
-    "better-docs": "^1.1.6",
     "concurrently": "^4.1.0",
+    "docdash": "^1.1.1",
     "eslint": "^5.16.0",
     "google-closure-compiler": "^20190513.0.0",
     "http-server": "^0.11.1",
