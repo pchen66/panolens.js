@@ -3,7 +3,7 @@ import { DataImage } from '../DataImage';
 import 'three';
 
 /**
- * Widget for controls
+ * @classdesc Widget for controls
  * @constructor
  * @param {HTMLElement} container - A domElement where default control widget will be attached to
  */
@@ -44,8 +44,10 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     constructor: Widget,
 
     /**
-	 * Add control bar
-	 */
+     * Add control bar
+     * @memberOf Widget
+     * @instance
+     */
     addControlBar: function () {
 
         if ( !this.container ) {
@@ -142,8 +144,10 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create default menu
-	 */
+     * Create default menu
+     * @memberOf Widget
+     * @instance
+     */
     createDefaultMenu: function () {
 
         var scope = this, handler;
@@ -203,9 +207,11 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Add buttons on top of control bar
-	 * @param {string} name - The control button name to be created
-	 */
+     * Add buttons on top of control bar
+     * @param {string} name - The control button name to be created
+     * @memberOf Widget
+     * @instance
+     */
     addControlButton: function ( name ) {
 
         let element;
@@ -249,6 +255,11 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * Create modal mask
+     * @memberOf Widget
+     * @instance
+     */
     createMask: function () {
 
         const element = document.createElement( 'div' );
@@ -277,8 +288,10 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create Setting button to toggle menu
-	 */
+     * Create Setting button to toggle menu
+     * @memberOf Widget
+     * @instance
+     */
     createSettingButton: function () {
 
         let scope = this, item;
@@ -358,10 +371,12 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create Fullscreen button
-	 * @return {HTMLSpanElement} - The dom element icon for fullscreen
-	 * @fires PANOLENS.Widget#panolens-viewer-handler
-	 */
+     * Create Fullscreen button
+     * @return {HTMLSpanElement} - The dom element icon for fullscreen
+     * @memberOf Widget
+     * @instance
+     * @fires Widget#panolens-viewer-handler
+     */
     createFullscreenButton: function () {
 
         let scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
@@ -416,10 +431,11 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             }
 
             /**
-			 * Viewer handler event
-			 * @type {object}
-			 * @property {string} method - 'onWindowResize' function call on PANOLENS.Viewer
-			 */
+             * Viewer handler event
+             * @type {object}
+             * @event Widget#panolens-dual-eye-effect
+             * @property {string} method - 'onWindowResize' function call on Viewer
+             */
             scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize', data: false } );
 
             tapSkipped = true;
@@ -456,9 +472,11 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create video control container
-	 * @return {HTMLSpanElement} - The dom element icon for video control
-	 */
+     * Create video control container
+     * @memberOf Widget
+     * @instance
+     * @return {HTMLSpanElement} - The dom element icon for video control
+     */
     createVideoControl: function () {
 
         const item = document.createElement( 'span' );
@@ -504,10 +522,12 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create video control button
-	 * @return {HTMLSpanElement} - The dom element icon for video control
-	 * @fires PANOLENS.Widget#panolens-viewer-handler
-	 */
+     * Create video control button
+     * @memberOf Widget
+     * @instance
+     * @return {HTMLSpanElement} - The dom element icon for video control
+     * @fires Widget#panolens-viewer-handler
+     */
     createVideoControlButton: function () {
 
         const scope = this;
@@ -518,10 +538,11 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             event.stopPropagation();
 
             /**
-			 * Viewer handler event
-			 * @type {object}
-			 * @property {string} method - 'toggleVideoPlay' function call on PANOLENS.Viewer
-			 */
+             * Viewer handler event
+             * @type {object}
+             * @event Widget#panolens-viewer-handler
+             * @property {string} method - 'toggleVideoPlay' function call on Viewer
+             */
             scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVideoPlay', data: !this.paused } );
 
             this.paused = !this.paused;
@@ -560,10 +581,12 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create video seekbar
-	 * @return {HTMLSpanElement} - The dom element icon for video seekbar
-	 * @fires PANOLENS.Widget#panolens-viewer-handler
-	 */
+     * Create video seekbar
+     * @memberOf Widget
+     * @instance
+     * @return {HTMLSpanElement} - The dom element icon for video seekbar
+     * @fires Widget#panolens-viewer-handler
+     */
     createVideoControlSeekbar: function () {
 
         let scope = this, item, progressElement, progressElementControl,
@@ -613,11 +636,12 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
                 item.setProgress ( percentageNext );
 
                 /**
-				 * Viewer handler event
-				 * @type {object}
-				 * @property {string} method - 'setVideoCurrentTime' function call on PANOLENS.Viewer
-				 * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
-				 */
+                 * Viewer handler event
+                 * @type {object}
+                 * @event Widget#panolens-viewer-handler
+                 * @property {string} method - 'setVideoCurrentTime' function call on Viewer
+                 * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
+                 */
                 scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setVideoCurrentTime', data: percentageNext } );
 
             }
@@ -665,11 +689,11 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
                 : event.offsetX / this.clientWidth;
 
             /**
-			 * Viewer handler event
-			 * @type {object}
-			 * @property {string} method - 'setVideoCurrentTime' function call on PANOLENS.Viewer
-			 * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
-			 */
+             * Viewer handler event
+             * @type {object}
+             * @property {string} method - 'setVideoCurrentTime' function call on Viewer
+             * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
+             */
             scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setVideoCurrentTime', data: percentage } );
 
             item.setProgress( event.offsetX / this.clientWidth );
@@ -722,10 +746,12 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create menu item
-	 * @param  {string} title - Title to display
-	 * @return {HTMLDomElement} - An anchor tag element
-	 */
+     * Create menu item
+     * @param  {string} title - Title to display
+     * @memberOf Widget
+     * @instance
+     * @return {HTMLElement} - An anchor tag element
+     */
     createMenuItem: function ( title ) {
 
         const scope = this; 
@@ -833,10 +859,12 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create menu item header
-	 * @param  {string} title - Title to display
-	 * @return {HTMLDomElement} - An anchor tag element
-	 */
+     * Create menu item header
+     * @param  {string} title - Title to display
+     * @memberOf Widget
+     * @instance
+     * @return {HTMLElement} - An anchor tag element
+     */
     createMenuItemHeader: function ( title ) {
 
         const header = this.createMenuItem( title );
@@ -849,10 +877,12 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create main menu
-	 * @param  {array} menus - Menu array list
-	 * @return {HTMLDomElement} - A span element
-	 */
+     * Create main menu
+     * @param  {array} menus - Menu array list
+     * @memberOf Widget
+     * @instance
+     * @return {HTMLElement} - A span element
+     */
     createMainMenu: function ( menus ) {
 		
         let scope = this, menu = this.createMenu();
@@ -911,11 +941,13 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create sub menu
-	 * @param {string} title - Sub menu title
-	 * @param {array} items - Item array list
-	 * @return {HTMLDomElement} - A span element
-	 */
+     * Create sub menu
+     * @param {string} title - Sub menu title
+     * @param {array} items - Item array list
+     * @memberOf Widget
+     * @instance
+     * @return {HTMLElement} - A span element
+     */
     createSubMenu: function ( title, items ) {
 
         let scope = this, menu, subMenu = this.createMenu();
@@ -972,9 +1004,11 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create general menu
-	 * @return {HTMLDomElement} - A span element
-	 */
+     * Create general menu
+     * @memberOf Widget
+     * @instance
+     * @return {HTMLElement} - A span element
+     */
     createMenu: function () {
 
         const scope = this;
@@ -1118,9 +1152,11 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Create custom item element
-	 * @return {HTMLSpanElement} - The dom element icon
-	 */
+     * Create custom item element
+     * @memberOf Widget
+     * @instance
+     * @return {HTMLSpanElement} - The dom element icon
+     */
     createCustomItem: function ( options = {} ) {
 
         const scope = this;
@@ -1170,11 +1206,13 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Merge item css style
-	 * @param  {HTMLDOMElement} element - The element to be merged with style
-	 * @param  {object} options - The style options
-	 * @return {HTMLDOMElement} - The same element with merged styles
-	 */
+     * Merge item css style
+     * @param  {HTMLElement} element - The element to be merged with style
+     * @param  {object} options - The style options
+     * @memberOf Widget
+     * @instance
+     * @return {HTMLElement} - The same element with merged styles
+     */
     mergeStyleOptions: function ( element, options = {} ) {
 
         for ( let property in options ){
@@ -1192,8 +1230,10 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Dispose widgets by detaching dom elements from container
-	 */
+     * Dispose widgets by detaching dom elements from container
+     * @memberOf Widget
+     * @instance
+     */
     dispose: function () {
 
         if ( this.barElement ) {

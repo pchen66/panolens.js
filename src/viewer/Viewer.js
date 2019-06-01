@@ -13,7 +13,7 @@ import { CameraPanorama } from '../panorama/CameraPanorama';
 import 'three';
 
 /**
- * Viewer contains pre-defined scene, camera and renderer
+ * @classdesc Viewer contains pre-defined scene, camera and renderer
  * @constructor
  * @param {object} [options] - Use custom or default config options
  * @param {HTMLElement} [options.container] - A HTMLElement to host the canvas
@@ -65,9 +65,11 @@ function Viewer ( options ) {
 
     this.options = options;
 
-    // CSS Icon
-    //const styleLoader = new PANOLENS.StyleLoader();
-    //styleLoader.inject( 'icono' );
+    /*
+     * CSS Icon
+     * const styleLoader = new StyleLoader();
+     * styleLoader.inject( 'icono' );
+     */
 
     // Container
     if ( options.container ) {
@@ -247,11 +249,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     constructor: Viewer,
 
     /**
-	 * Add an object to the scene
-	 * Automatically hookup with panolens-viewer-handler listener
-	 * to communicate with viewer method
-	 * @param {THREE.Object3D} object - The object to be added
-	 */
+     * Add an object to the scene
+     * Automatically hookup with panolens-viewer-handler listener
+     * to communicate with viewer method
+     * @param {THREE.Object3D} object - The object to be added
+     * @memberOf Viewer
+     * @instance
+     */
     add: function ( object ) {
 
         if ( arguments.length > 1 ) {
@@ -304,9 +308,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Remove an object from the scene
-	 * @param  {THREE.Object3D} object - Object to be removed
-	 */
+     * Remove an object from the scene
+     * @param  {THREE.Object3D} object - Object to be removed
+     * @memberOf Viewer
+     * @instance
+     */
     remove: function ( object ) {
 
         if ( object.removeEventListener ) {
@@ -320,9 +326,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Add default control bar
-	 * @param {array} array - The control buttons array
-	 */
+     * Add default control bar
+     * @param {array} array - The control buttons array
+     * @memberOf Viewer
+     * @instance
+     */
     addDefaultControlBar: function ( array ) {
 
         if ( this.widget ) {
@@ -346,9 +354,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Set a panorama to be the current one
-	 * @param {PANOLENS.Panorama} pano - Panorama to be set
-	 */
+     * Set a panorama to be the current one
+     * @param {Panorama} pano - Panorama to be set
+     * @memberOf Viewer
+     * @instance
+     */
     setPanorama: function ( pano ) {
 
         const leavingPanorama = this.panorama;
@@ -375,9 +385,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Event handler to execute commands from child objects
-	 * @param {object} event - The dispatched event with method as function name and data as an argument
-	 */
+     * Event handler to execute commands from child objects
+     * @param {object} event - The dispatched event with method as function name and data as an argument
+     * @memberOf Viewer
+     * @instance
+     */
     eventHandler: function ( event ) {
 
         if ( event.method && this[ event.method ] ) {
@@ -389,9 +401,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Dispatch event to all descendants
-	 * @param  {object} event - Event to be passed along
-	 */
+     * Dispatch event to all descendants
+     * @param  {object} event - Event to be passed along
+     * @memberOf Viewer
+     * @instance
+     */
     dispatchEventToChildren: function ( event ) {
 
         this.scene.traverse( function ( object ) {
@@ -407,10 +421,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Set widget content
-	 * @param  {integer} controlIndex - Control index
-	 * @param  {PANOLENS.Modes} mode - Modes for effects
-	 */
+     * Set widget content
+     * @method activateWidgetItem
+     * @param  {integer} controlIndex - Control index
+     * @param  {MODES} mode - Modes for effects
+     * @memberOf Viewer
+     * @instance
+     */
     activateWidgetItem: function ( controlIndex, mode ) {
 
         const mainMenu = this.widget.mainMenu;
@@ -479,9 +496,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Enable rendering effect
-	 * @param  {PANOLENS.Modes} mode - Modes for effects
-	 */
+     * Enable rendering effect
+     * @param  {MODES} mode - Modes for effects
+     * @memberOf Viewer
+     * @instance
+     */
     enableEffect: function ( mode ) {
 
         if ( this.mode === mode ) { return; }
@@ -518,11 +537,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         this.activateWidgetItem( undefined, this.mode );
 
         /**
-		 * Dual eye effect event
-		 * @type {object}
-		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
+         * Dual eye effect event
+         * @type {object}
+         * @event Infospot#panolens-dual-eye-effect
+         * @property {MODES} mode - Current display mode
+         */
         this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
 
         // Force effect stereo camera to update by refreshing fov
@@ -532,18 +551,20 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         this.camera.fov = fov;
 
         /**
-		 * Dispatch mode change event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#mode-change
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
+         * Dispatch mode change event
+         * @type {object}
+         * @event Viewer#mode-change
+         * @property {MODES} mode - Current display mode
+         */
         this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
 
     },
 
     /**
-	 * Disable additional rendering effect
-	 */
+     * Disable additional rendering effect
+     * @memberOf Viewer
+     * @instance
+     */
     disableEffect: function () {
 
         if ( this.mode === MODES.NORMAL ) { return; }
@@ -554,28 +575,30 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         this.activateWidgetItem( undefined, this.mode );
 
         /**
-		 * Dual eye effect event
-		 * @type {object}
-		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
+         * Dual eye effect event
+         * @type {object}
+         * @event Infospot#panolens-dual-eye-effect
+         * @property {MODES} mode - Current display mode
+         */
         this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
 
         this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
         this.render();
 
         /**
-		 * Dispatch mode change event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#mode-change
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
+         * Dispatch mode change event
+         * @type {object}
+         * @event Viewer#mode-change
+         * @property {MODES} mode - Current display mode
+         */
         this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
     },
 
     /**
-	 * Enable reticle control
-	 */
+     * Enable reticle control
+     * @memberOf Viewer
+     * @instance
+     */
     enableReticleControl: function () {
 
         if ( this.reticle.visible ) { return; }
@@ -591,8 +614,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Disable reticle control
-	 */
+     * Disable reticle control
+     * @memberOf Viewer
+     * @instance
+     */
     disableReticleControl: function () {
 
         this.tempEnableReticle = false;
@@ -613,8 +638,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Enable auto rotation
-	 */
+     * Enable auto rotation
+     * @memberOf Viewer
+     * @instance
+     */
     enableAutoRate: function () {
 
         this.options.autoRotate = true;
@@ -623,8 +650,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Disable auto rotation
-	 */
+     * Disable auto rotation
+     * @memberOf Viewer
+     * @instance
+     */
     disableAutoRate: function () {
 
         clearTimeout( this.autoRotateRequestId );
@@ -634,18 +663,21 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Toggle video play or stop
-	 * @fires PANOLENS.Viewer#video-toggle
-	 */
+     * Toggle video play or stop
+     * @param {boolean} pause
+     * @memberOf Viewer
+     * @instance
+     * @fires Viewer#video-toggle
+     */
     toggleVideoPlay: function ( pause ) {
 
         if ( this.panorama instanceof VideoPanorama ) {
 
             /**
-			 * Toggle video event
-			 * @type {object}
-			 * @event PANOLENS.Viewer#video-toggle
-			 */
+             * Toggle video event
+             * @type {object}
+             * @event Viewer#video-toggle
+             */
             this.panorama.dispatchEvent( { type: 'video-toggle', pause: pause } );
 
         }
@@ -653,20 +685,22 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Set currentTime in a video
-	 * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
-	 * @fires PANOLENS.Viewer#video-time
-	 */
+     * Set currentTime in a video
+     * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+     * @memberOf Viewer
+     * @instance
+     * @fires Viewer#video-time
+     */
     setVideoCurrentTime: function ( percentage ) {
 
         if ( this.panorama instanceof VideoPanorama ) {
 
             /**
-			 * Setting video time event
-			 * @type {object}
-			 * @event PANOLENS.Viewer#video-time
-			 * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
-			 */
+             * Setting video time event
+             * @type {object}
+             * @event Viewer#video-time
+             * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+             */
             this.panorama.dispatchEvent( { type: 'video-time', percentage: percentage } );
 
         }
@@ -674,25 +708,30 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * This will be called when video updates if an widget is present
-	 * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
-	 * @fires PANOLENS.Viewer#video-update
-	 */
+     * This will be called when video updates if an widget is present
+     * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+     * @memberOf Viewer
+     * @instance
+     * @fires Viewer#video-update
+     */
     onVideoUpdate: function ( percentage ) {
 
         /**
-		 * Video update event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#video-update
-		 * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
-		 */
+         * Video update event
+         * @type {object}
+         * @event Viewer#video-update
+         * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+         */
         this.widget && this.widget.dispatchEvent( { type: 'video-update', percentage: percentage } );
 
     },
 
     /**
-	 * Add update callback to be called every animation frame
-	 */
+     * Add update callback to be called every animation frame
+     * @param {function} callback
+     * @memberOf Viewer
+     * @instance
+     */
     addUpdateCallback: function ( fn ) {
 
         if ( fn ) {
@@ -704,9 +743,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Remove update callback
-	 * @param  {Function} fn - The function to be removed
-	 */
+     * Remove update callback
+     * @param  {function} fn - The function to be removed
+     * @memberOf Viewer
+     * @instance
+     */
     removeUpdateCallback: function ( fn ) {
 
         const index = this.updateCallbacks.indexOf( fn );
@@ -720,33 +761,43 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Show video widget
-	 */
+     * Show video widget
+     * @memberOf Viewer
+     * @instance
+     */
     showVideoWidget: function () {
 
         /**
-		 * Show video widget event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#video-control-show
-		 */
+         * Show video widget event
+         * @type {object}
+         * @event Viewer#video-control-show
+         */
         this.widget && this.widget.dispatchEvent( { type: 'video-control-show' } );
 
     },
 
     /**
-	 * Hide video widget
-	 */
+     * Hide video widget
+     * @memberOf Viewer
+     * @instance
+     */
     hideVideoWidget: function () {
 
         /**
-		 * Hide video widget
-		 * @type {object}
-		 * @event PANOLENS.Viewer#video-control-hide
-		 */
+         * Hide video widget
+         * @type {object}
+         * @event Viewer#video-control-hide
+         */
         this.widget && this.widget.dispatchEvent( { type: 'video-control-hide' } );
 
     },
 
+    /**
+     * Update video play button
+     * @param {boolean} paused 
+     * @memberOf Viewer
+     * @instance
+     */
     updateVideoPlayButton: function ( paused ) {
 
         if ( this.widget && 
@@ -760,15 +811,17 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Add default panorama event listeners
-	 * @param {PANOLENS.Panorama} pano - The panorama to be added with event listener
-	 */
+     * Add default panorama event listeners
+     * @param {Panorama} pano - The panorama to be added with event listener
+     * @memberOf Viewer
+     * @instance
+     */
     addPanoramaEventListener: function ( pano ) {
 
         // Set camera control on every panorama
         pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
 
-        // Show and hide widget event only when it's PANOLENS.VideoPanorama
+        // Show and hide widget event only when it's VideoPanorama
         if ( pano instanceof VideoPanorama ) {
 
             pano.addEventListener( 'enter-fade-start', this.showVideoWidget.bind( this ) );
@@ -787,8 +840,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Set camera control
-	 */
+     * Set camera control
+     * @memberOf Viewer
+     * @instance
+     */
     setCameraControl: function () {
 
         this.OrbitControls.target.copy( this.panorama.position );
@@ -796,9 +851,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Get current camera control
-	 * @return {object} - Current navigation control. THREE.OrbitControls or THREE.DeviceOrientationControls
-	 */
+     * Get current camera control
+     * @return {object} - Current navigation control
+     * @memberOf Viewer
+     * @instance
+     * @returns {THREE.OrbitControls|THREE.DeviceOrientationControls}
+     */
     getControl: function () {
 
         return this.control;
@@ -806,9 +864,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Get scene
-	 * @return {THREE.Scene} - Current scene which the viewer is built on
-	 */
+     * Get scene
+     * @memberOf Viewer
+     * @instance
+     * @return {THREE.Scene} - Current scene which the viewer is built on
+     */
     getScene: function () {
 
         return this.scene;
@@ -816,9 +876,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Get camera
-	 * @return {THREE.Camera} - The scene camera
-	 */
+     * Get camera
+     * @memberOf Viewer
+     * @instance
+     * @return {THREE.Camera} - The scene camera
+     */
     getCamera: function () {
 
         return this.camera;
@@ -826,9 +888,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Get renderer
-	 * @return {THREE.WebGLRenderer} - The renderer using webgl
-	 */
+     * Get renderer
+     * @memberOf Viewer
+     * @instance
+     * @return {THREE.WebGLRenderer} - The renderer using webgl
+     */
     getRenderer: function () {
 
         return this.renderer;
@@ -836,9 +900,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Get container
-	 * @return {HTMLDOMElement} - The container holds rendererd canvas
-	 */
+     * Get container
+     * @memberOf Viewer
+     * @instance
+     * @return {HTMLElement} - The container holds rendererd canvas
+     */
     getContainer: function () {
 
         return this.container;
@@ -846,9 +912,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Get control name
-	 * @return {string} - Control name. 'orbit' or 'device-orientation'
-	 */
+     * Get control id
+     * @memberOf Viewer
+     * @instance
+     * @return {string} - Control id. 'orbit' or 'device-orientation'
+     */
     getControlId: function () {
 
         return this.control.id;
@@ -856,9 +924,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Get next navigation control name
-	 * @return {string} - Next control name
-	 */
+     * Get next navigation control id
+     * @memberOf Viewer
+     * @instance
+     * @return {string} - Next control id
+     */
     getNextControlName: function () {
 
         return this.controls[ this.getNextControlIndex() ].id;
@@ -866,9 +936,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Get next navigation control index
-	 * @return {number} - Next control index
-	 */
+     * Get next navigation control index
+     * @memberOf Viewer
+     * @instance
+     * @return {number} - Next control index
+     */
     getNextControlIndex: function () {
 
         const controls = this.controls;
@@ -880,8 +952,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Set field of view of camera
-	 */
+     * Set field of view of camera
+     * @param {number} fov
+     * @memberOf Viewer
+     * @instance
+     */
     setCameraFov: function ( fov ) {
 
         this.camera.fov = fov;
@@ -890,9 +965,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Enable control by index
-	 * @param  {PANOLENS.Controls} index - Index of camera control
-	 */
+     * Enable control by index
+     * @param  {CONTROLS} index - Index of camera control
+     * @memberOf Viewer
+     * @instance
+     */
     enableControl: function ( index ) {
 
         index = ( index >= 0 && index < this.controls.length ) ? index : 0;
@@ -930,8 +1007,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Disable current control
-	 */
+     * Disable current control
+     * @memberOf Viewer
+     * @instance
+     */
     disableControl: function () {
 
         this.control.enabled = false;
@@ -939,8 +1018,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Toggle next control
-	 */
+     * Toggle next control
+     * @memberOf Viewer
+     * @instance
+     */
     toggleNextControl: function () {
 
         this.enableControl( this.getNextControlIndex() );
@@ -948,8 +1029,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Screen Space Projection
-	 */
+     * Screen Space Projection
+     * @memberOf Viewer
+     * @instance
+     */
     getScreenVector: function ( worldVector ) {
 
         const vector = worldVector.clone();
@@ -967,8 +1050,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Check Sprite in Viewport
-	 */
+     * Check Sprite in Viewport
+     * @memberOf Viewer
+     * @instance
+     */
     checkSpriteInViewport: function ( sprite ) {
 
         this.camera.matrixWorldInverse.getInverse( this.camera.matrixWorld );
@@ -980,8 +1065,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Reverse dragging direction
-	 */
+     * Reverse dragging direction
+     * @memberOf Viewer
+     * @instance
+     */
     reverseDraggingDirection: function () {
 
         this.OrbitControls.rotateSpeed *= -1;
@@ -990,8 +1077,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Add reticle 
-	 */
+     * Add reticle 
+     * @memberOf Viewer
+     * @instance
+     */
     addReticle: function () {
 
         this.reticle = new Reticle( 0xffffff, true, this.options.dwellTime );
@@ -1002,11 +1091,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Tween control looking center
-	 * @param {THREE.Vector3} vector - Vector to be looked at the center
-	 * @param {number} [duration=1000] - Duration to tween
-	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
-	 */
+     * Tween control looking center
+     * @param {THREE.Vector3} vector - Vector to be looked at the center
+     * @param {number} [duration=1000] - Duration to tween
+     * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+     * @memberOf Viewer
+     * @instance
+     */
     tweenControlCenter: function ( vector, duration, easing ) {
 
         if ( this.control !== this.OrbitControls ) {
@@ -1078,11 +1169,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Tween control looking center by object
-	 * @param {THREE.Object3D} object - Object to be looked at the center
-	 * @param {number} [duration=1000] - Duration to tween
-	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
-	 */
+     * Tween control looking center by object
+     * @param {THREE.Object3D} object - Object to be looked at the center
+     * @param {number} [duration=1000] - Duration to tween
+     * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+     * @memberOf Viewer
+     * @instance
+     */
     tweenControlCenterByObject: function ( object, duration, easing ) {
 
         let isUnderScalePlaceHolder = false;
@@ -1111,11 +1204,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * This is called when window size is changed
-	 * @fires PANOLENS.Viewer#window-resize
-	 * @param {number} [windowWidth] - Specify if custom element has changed width
-	 * @param {number} [windowHeight] - Specify if custom element has changed height
-	 */
+     * This is called when window size is changed
+     * @fires Viewer#window-resize
+     * @param {number} [windowWidth] - Specify if custom element has changed width
+     * @param {number} [windowHeight] - Specify if custom element has changed height
+     * @memberOf Viewer
+     * @instance
+     */
     onWindowResize: function ( windowWidth, windowHeight ) {
 
         let width, height;
@@ -1162,12 +1257,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         }
 
         /**
-		 * Window resizing event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#window-resize
-		 * @property {number} width  - Width of the window
-		 * @property {number} height - Height of the window
-		 */
+         * Window resizing event
+         * @type {object}
+         * @event Viewer#window-resize
+         * @property {number} width  - Width of the window
+         * @property {number} height - Height of the window
+         */
         this.dispatchEvent( { type: 'window-resize', width: width, height: height });
         this.scene.traverse( function ( object ) {
 
@@ -1181,6 +1276,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * Add output element
+     * @memberOf Viewer
+     * @instance
+     */
     addOutputElement: function () {
 
         const element = document.createElement( 'div' );
@@ -1194,8 +1294,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Output infospot attach position in developer console by holding down Ctrl button
-	 */
+     * Output infospot attach position in developer console by holding down Ctrl button
+     * @memberOf Viewer
+     * @instance
+     */
     outputInfospotPosition: function () {
 
         const intersects = this.raycaster.intersectObject( this.panorama, true );
@@ -1230,6 +1332,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * On mouse down
+     * @param {MouseEvent} event 
+     * @memberOf Viewer
+     * @instance
+     */
     onMouseDown: function ( event ) {
 
         event.preventDefault();
@@ -1241,6 +1349,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * On mouse move
+     * @param {MouseEvent} event 
+     * @memberOf Viewer
+     * @instance
+     */
     onMouseMove: function ( event ) {
 
         event.preventDefault();
@@ -1249,6 +1363,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * On mouse up
+     * @param {MouseEvent} event 
+     * @memberOf Viewer
+     * @instance
+     */
     onMouseUp: function ( event ) {
 
         let onTarget = false;
@@ -1298,6 +1418,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * On tap eveny frame
+     * @param {MouseEvent} event 
+     * @param {string} type 
+     * @memberOf Viewer
+     * @instance
+     */
     onTap: function ( event, type ) {
 
         const { left, top } = this.container.getBoundingClientRect();
@@ -1505,6 +1632,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * Get converted intersect
+     * @param {array} intersects 
+     * @memberOf Viewer
+     * @instance
+     */
     getConvertedIntersect: function ( intersects ) {
 
         let intersect;
@@ -1531,6 +1664,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * Hide infospot
+     * @memberOf Viewer
+     * @instance
+     */
     hideInfospot: function () {
 
         if ( this.infospot ) {
@@ -1544,20 +1682,28 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Toggle control bar
-	 * @fires [PANOLENS.Viewer#control-bar-toggle]
-	 */
+     * Toggle control bar
+     * @memberOf Viewer
+     * @instance
+     * @fires Viewer#control-bar-toggle
+     */
     toggleControlBar: function () {
 
         /**
-		 * Toggle control bar event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#control-bar-toggle
-		 */
+         * Toggle control bar event
+         * @type {object}
+         * @event Viewer#control-bar-toggle
+         */
         this.widget && this.widget.dispatchEvent( { type: 'control-bar-toggle' } );
 
     },
 
+    /**
+     * On key down
+     * @param {KeyboardEvent} event 
+     * @memberOf Viewer
+     * @instance
+     */
     onKeyDown: function ( event ) {
 
         if ( this.options.output && this.options.output !== 'none' && event.key === 'Control' ) {
@@ -1568,6 +1714,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * On key up
+     * @param {KeyboardEvent} event 
+     * @memberOf Viewer
+     * @instance
+     */
     onKeyUp: function () {
 
         this.OUTPUT_INFOSPOT = false;
@@ -1575,8 +1727,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Update control and callbacks
-	 */
+     * Update control and callbacks
+     * @memberOf Viewer
+     * @instance
+     */
     update: function () {
 
         TWEEN.update();
@@ -1605,9 +1759,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Rendering function to be called on every animation frame
-	 * Render reticle last
-	 */
+     * Rendering function to be called on every animation frame
+     * Render reticle last
+     * @memberOf Viewer
+     * @instance
+     */
     render: function () {
 
         if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
@@ -1628,6 +1784,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * Animate
+     * @memberOf Viewer
+     * @instance
+     */
     animate: function () {
 
         this.requestAnimationId = requestAnimationFrame( this.animate.bind( this ) );
@@ -1636,6 +1797,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
+    /**
+     * On change
+     * @memberOf Viewer
+     * @instance
+     */
     onChange: function () {
 
         this.update();
@@ -1644,8 +1810,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Register mouse and touch event on container
-	 */
+     * Register mouse and touch event on container
+     * @memberOf Viewer
+     * @instance
+     */
     registerMouseAndTouchEvents: function () {
 
         const options = { passive: false };
@@ -1659,8 +1827,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Unregister mouse and touch event on container
-	 */
+     * Unregister mouse and touch event on container
+     * @memberOf Viewer
+     * @instance
+     */
     unregisterMouseAndTouchEvents: function () {
 
         this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, false );
@@ -1672,8 +1842,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Register reticle event
-	 */
+     * Register reticle event
+     * @memberOf Viewer
+     * @instance
+     */
     registerReticleEvent: function () {
 
         this.addUpdateCallback( this.HANDLER_TAP );
@@ -1681,8 +1853,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Unregister reticle event
-	 */
+     * Unregister reticle event
+     * @memberOf Viewer
+     * @instance
+     */
     unregisterReticleEvent: function () {
 
         this.removeUpdateCallback( this.HANDLER_TAP );
@@ -1690,8 +1864,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Update reticle event
-	 */
+     * Update reticle event
+     * @memberOf Viewer
+     * @instance
+     */
     updateReticleEvent: function () {
 
         const clientX = this.container.clientWidth / 2 + this.container.offsetLeft;
@@ -1704,8 +1880,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Register container and window listeners
-	 */
+     * Register container and window listeners
+     * @memberOf Viewer
+     * @instance
+     */
     registerEventListeners: function () {
 
         // Resize Event
@@ -1718,8 +1896,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Unregister container and window listeners
-	 */
+     * Unregister container and window listeners
+     * @memberOf Viewer
+     * @instance
+     */
     unregisterEventListeners: function () {
 
         // Resize Event
@@ -1732,8 +1912,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Dispose all scene objects and clear cache
-	 */
+     * Dispose all scene objects and clear cache
+     * @memberOf Viewer
+     * @instance
+     */
     dispose: function () {
 
         // Unregister dom event listeners
@@ -1779,8 +1961,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Destory viewer by disposing and stopping requestAnimationFrame
-	 */
+     * Destory viewer by disposing and stopping requestAnimationFrame
+     * @memberOf Viewer
+     * @instance
+     */
     destory: function () {
 
         this.dispose();
@@ -1790,8 +1974,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * On panorama dispose
-	 */
+     * On panorama dispose
+     * @memberOf Viewer
+     * @instance
+     */
     onPanoramaDispose: function ( panorama ) {
 
         if ( panorama instanceof VideoPanorama ) {
@@ -1809,10 +1995,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Load ajax call
-	 * @param {string} url - URL to be requested
-	 * @param {function} [callback] - Callback after request completes
-	 */
+     * Load ajax call
+     * @param {string} url - URL to be requested
+     * @param {function} [callback] - Callback after request completes
+     * @memberOf Viewer
+     * @instance
+     */
     loadAsyncRequest: function ( url, callback ) {
 
         const request = new XMLHttpRequest();
@@ -1825,8 +2013,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * View indicator in upper left
-	 */
+     * View indicator in upper left
+     * @memberOf Viewer
+     * @instance
+     */
     addViewIndicator: function () {
 
         const scope = this;
@@ -1892,9 +2082,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Append custom control item to existing control bar
-	 * @param {object} [option={}] - Style object to overwirte default element style. It takes 'style', 'onTap' and 'group' properties.
-	 */
+     * Append custom control item to existing control bar
+     * @param {object} [option={}] - Style object to overwirte default element style. It takes 'style', 'onTap' and 'group' properties.
+     * @memberOf Viewer
+     * @instance
+     */
     appendControlItem: function ( option ) {
 
         const item = this.widget.createCustomItem( option );		
@@ -1914,8 +2106,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-	 * Clear all cached files
-	 */
+     * Clear all cached files
+     * @memberOf Viewer
+     * @instance
+     */
     clearAllCache: function () {
 
         Cache.clear();

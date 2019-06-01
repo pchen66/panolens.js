@@ -1,5 +1,12 @@
 import 'three';
 
+/**
+ * @classdesc Device Orientation Control
+ * @constructor
+ * @external DeviceOrientationControls
+ * @param {THREE.Camera} camera 
+ * @param {HTMLElement} domElement 
+ */
 function DeviceOrientationControls ( camera, domElement ) {
 
     var scope = this;

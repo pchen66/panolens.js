@@ -3,7 +3,7 @@ import { ImagePanorama } from './ImagePanorama';
 import 'three';
 
 /**
- * Image Little Planet
+ * @classdesc Image Little Planet
  * @constructor
  * @param {string} source 		- URL for the image source
  * @param {number} [size=10000] - Size of plane geometry
@@ -19,6 +19,12 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
 
     constructor: ImageLittlePlanet,
 
+    /**
+     * On loaded with texture
+     * @param {THREE.Texture} texture
+     * @memberOf ImageLittlePlanet
+     * @instance
+     */
     onLoad: function ( texture ) {
 
         this.updateTexture( texture );
@@ -27,7 +33,13 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
         ImagePanorama.prototype.onLoad.call( this, texture );
 
     },
-	
+    
+    /**
+     * Update texture
+     * @param {THREE.Texture} texture 
+     * @memberOf ImageLittlePlanet
+     * @instance
+     */
     updateTexture: function ( texture ) {
 
         texture.minFilter = texture.magFilter = THREE.LinearFilter;
@@ -36,6 +48,11 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
 
     },
 
+    /**
+     * Dispose
+     * @memberOf ImageLittlePlanet
+     * @instance
+     */
     dispose: function () {
 
         const tDiffuse = this.material.uniforms[ 'tDiffuse' ];

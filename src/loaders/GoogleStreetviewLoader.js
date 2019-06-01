@@ -1,7 +1,12 @@
 
 import { TextureLoader } from './TextureLoader';
 
-function GoogleStreetLoader ( parameters = {} ) {
+/**
+ * @classdesc Google Street View Loader
+ * @constructor
+ * @param {object} parameters 
+ */
+function GoogleStreetviewLoader ( parameters = {} ) {
 
     this._parameters = parameters;
     this._zoom;
@@ -50,10 +55,17 @@ function GoogleStreetLoader ( parameters = {} ) {
 
 }
 
-Object.assign( GoogleStreetLoader.prototype, {
+Object.assign( GoogleStreetviewLoader.prototype, {
 
-    constructor: GoogleStreetLoader,
+    constructor: GoogleStreetviewLoader,
 
+    /**
+     * Set progress
+     * @param {number} loaded 
+     * @param {number} total 
+     * @memberOf GoogleStreetviewLoader
+     * @instance
+     */
     setProgress: function ( loaded, total ) {
 
         if ( this.onProgress ) {
@@ -64,6 +76,12 @@ Object.assign( GoogleStreetLoader.prototype, {
 		
     },
 
+    /**
+     * Throw error
+     * @param {string} message 
+     * @memberOf GoogleStreetviewLoader
+     * @instance
+     */
     throwError: function ( message ) {
 
         if ( this.onError ) {
@@ -78,6 +96,11 @@ Object.assign( GoogleStreetLoader.prototype, {
 		
     },
 
+    /**
+     * Adapt texture to zoom
+     * @memberOf GoogleStreetviewLoader
+     * @instance
+     */
     adaptTextureToZoom: function () {
 
         const w = this.widths [ this._zoom ];
@@ -101,6 +124,14 @@ Object.assign( GoogleStreetLoader.prototype, {
 
     },
 
+    /**
+     * Compose from tile
+     * @param {number} x 
+     * @param {number} y 
+     * @param {*} texture 
+     * @memberOf GoogleStreetviewLoader
+     * @instance
+     */
     composeFromTile: function ( x, y, texture ) {
 
         const maxW = this.maxW;
@@ -121,6 +152,11 @@ Object.assign( GoogleStreetLoader.prototype, {
 		
     },
 
+    /**
+     * Progress
+     * @memberOf GoogleStreetviewLoader
+     * @instance
+     */
     progress: function() {
 
         this._count++;
@@ -142,6 +178,12 @@ Object.assign( GoogleStreetLoader.prototype, {
         }
     },
 
+    /**
+     * Load google street view by id
+     * @param {string} id 
+     * @memberOf GoogleStreetviewLoader
+     * @instance
+     */
     loadFromId: function( id ) {
 
         this._panoId = id;
@@ -149,6 +191,11 @@ Object.assign( GoogleStreetLoader.prototype, {
 
     },
 
+    /**
+     * Compose panorama
+     * @memberOf GoogleStreetviewLoader
+     * @instance
+     */
     composePanorama: function () {
 
         this.setProgress( 0, 1 );
@@ -184,12 +231,24 @@ Object.assign( GoogleStreetLoader.prototype, {
 		
     },
 
+    /**
+     * Load
+     * @param {string} panoid 
+     * @memberOf GoogleStreetviewLoader
+     * @instance
+     */
     load: function ( panoid ) {
 
         this.loadPano( panoid );
 
     },
 
+    /**
+     * Load panorama
+     * @param {string} id
+     * @memberOf GoogleStreetviewLoader
+     * @instance
+     */
     loadPano: function( id ) {
 
         const self = this;
@@ -197,8 +256,10 @@ Object.assign( GoogleStreetLoader.prototype, {
             if (status === google.maps.StreetViewStatus.OK) {
                 self.result = result;
                 if( self.onPanoramaData ) self.onPanoramaData( result );
-                //var h = google.maps.geometry.spherical.computeHeading(location, result.location.latLng);
-                //rotation = (result.tiles.centerHeading - h) * Math.PI / 180.0;
+                /*
+                 * var h = google.maps.geometry.spherical.computeHeading(location, result.location.latLng);
+                 * rotation = (result.tiles.centerHeading - h) * Math.PI / 180.0;
+                 */
                 self.copyright = result.copyright;
                 self._panoId = result.location.pano;
                 self.location = location;
@@ -211,6 +272,12 @@ Object.assign( GoogleStreetLoader.prototype, {
 		
     },
 
+    /**
+     * Set zoom level
+     * @param {number} z 
+     * @memberOf GoogleStreetviewLoader
+     * @instance
+     */
     setZoom: function( z ) {
         this._zoom = z;
         this.adaptTextureToZoom();
@@ -218,4 +285,4 @@ Object.assign( GoogleStreetLoader.prototype, {
 	
 } );
 
-export { GoogleStreetLoader };
+export { GoogleStreetviewLoader };

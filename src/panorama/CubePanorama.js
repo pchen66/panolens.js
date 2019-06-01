@@ -3,9 +3,9 @@ import { CubeTextureLoader } from '../loaders/CubeTextureLoader';
 import 'three';
 
 /**
- * Cubemap-based panorama
+ * @classdesc Cubemap-based panorama
  * @constructor
- * @param {array} images - An array of cubetexture containing six images
+ * @param {array} images - Array of 6 urls to images, one for each side of the CubeTexture. The urls should be specified in the following order: pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
  */
 function CubePanorama ( images = [] ){
 
@@ -35,8 +35,10 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     constructor: CubePanorama,
 
     /**
-	 * Load 6 images and bind listeners
-	 */
+     * Load 6 images and bind listeners
+     * @memberOf CubePanorama
+     * @instance
+     */
     load: function () {
 
         CubeTextureLoader.load( 	
@@ -52,9 +54,11 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * This will be called when 6 textures are ready
-	 * @param  {THREE.CubeTexture} texture - Cube texture
-	 */
+     * This will be called when 6 textures are ready
+     * @param  {THREE.CubeTexture} texture - Cube texture
+     * @memberOf CubePanorama
+     * @instance
+     */
     onLoad: function ( texture ) {
 		
         this.material.uniforms[ 'tCube' ].value = texture;
@@ -63,6 +67,11 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     },
 
+    /**
+     * Dispose
+     * @memberOf CubePanorama
+     * @instance
+     */
     dispose: function () {	
 
         this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );

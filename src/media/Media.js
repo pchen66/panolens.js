@@ -1,8 +1,9 @@
 import 'three';
 
 /**
- * User Media
- * @param {object} [constraints={ video: {}, audio: false }]
+ * @classdesc User Media
+ * @constructor
+ * @param {object} [constraints={ video: { width: { ideal: 1920 }, height: { ideal: 1080 }, facingMode: { exact: 'environment' } }, audio: false }]
  */
 function Media ( constraints ) {
 
@@ -22,6 +23,12 @@ function Media ( constraints ) {
 
 Object.assign( Media.prototype, {
 
+    /**
+     * Enumerate devices
+     * @memberOf Media
+     * @instance
+     * @returns {Promise}
+     */
     enumerateDevices: function () {
 
         const devices = this.devices;
@@ -31,6 +38,11 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * Switch to next available video device
+     * @memberOf Media
+     * @instance
+     */
     switchNextVideoDevice: function () {
 
         const stop = this.stop.bind( this );
@@ -57,6 +69,12 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * Get devices
+     * @param {string} type - type keyword to match device.kind
+     * @memberOf Media
+     * @instance
+     */
     getDevices: function ( type = 'video' ) {
 
         const devices = this.devices;
@@ -83,6 +101,12 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * Get user media
+     * @param {MediaStreamConstraints} constraints
+     * @memberOf Media
+     * @instance
+     */
     getUserMedia: function ( constraints ) {
 
         const setMediaStream = this.setMediaStream.bind( this );
@@ -96,12 +120,24 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * Set video device index
+     * @param {number} index 
+     * @memberOf Media
+     * @instance
+     */
     setVideDeviceIndex: function ( index ) {
 
         this.videoDeviceIndex = index;
 
     },
 
+    /**
+     * Start streaming
+     * @param {MediaDeviceInfo} [targetDevice]
+     * @memberOf Media
+     * @instance
+     */
     start: function( targetDevice ) {
 
         const constraints = this.constraints;
@@ -127,6 +163,11 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * Stop streaming
+     * @memberOf Media
+     * @instance
+     */
     stop: function () {
 
         const stream = this.stream;
@@ -146,6 +187,12 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * Set media stream
+     * @param {MediaStream} stream 
+     * @memberOf Media
+     * @instance
+     */
     setMediaStream: function ( stream ) {
 
         this.stream = stream;
@@ -161,6 +208,11 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * Play video element
+     * @memberOf Media
+     * @instance
+     */
     playVideo: function () {
 
         const { element } = this;
@@ -173,6 +225,11 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * Pause video element
+     * @memberOf Media
+     * @instance
+     */
     pauseVideo: function () {
 
         const { element } = this;
@@ -185,6 +242,12 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * Create video texture
+     * @memberOf Media
+     * @instance
+     * @returns {THREE.VideoTexture}
+     */
     createVideoTexture: function () {
 
         const video = this.element;
@@ -202,6 +265,12 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * Create video element
+     * @memberOf Media
+     * @instance
+     * @returns {HTMLVideoElement}
+     */
     createVideoElement: function() {
 
         const video = document.createElement( 'video' );
@@ -223,6 +292,12 @@ Object.assign( Media.prototype, {
 
     },
 
+    /**
+     * On window resize event
+     * @param {Event} event 
+     * @memberOf Media
+     * @instance
+     */
     onWindowResize: function ( event ) {
 
         if ( this.element && this.element.videoWidth && this.element.videoHeight && this.scene ) {

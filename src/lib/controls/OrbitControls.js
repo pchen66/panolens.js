@@ -1,5 +1,12 @@
 import 'three';
 
+/**
+ * @classdesc Orbit Controls
+ * @constructor
+ * @external OrbitControls
+ * @param {THREE.Object} object 
+ * @param {HTMLElement} domElement 
+ */
 function OrbitControls ( object, domElement ) {
 
     this.object = object;
@@ -11,15 +18,19 @@ function OrbitControls ( object, domElement ) {
     // Set to false to disable this control
     this.enabled = true;
 
-    // "target" sets the location of focus, where the control orbits around
-    // and where it pans with respect to.
+    /*
+     * "target" sets the location of focus, where the control orbits around
+     * and where it pans with respect to.
+     */
     this.target = new THREE.Vector3();
 
     // center is old, deprecated; use "target" instead
     this.center = this.target;
 
-    // This option actually enables dollying in and out; left as "zoom" for
-    // backwards compatibility
+    /*
+     * This option actually enables dollying in and out; left as "zoom" for
+     * backwards compatibility
+     */
     this.noZoom = false;
     this.zoomSpeed = 1.0;
 
@@ -43,8 +54,10 @@ function OrbitControls ( object, domElement ) {
     this.autoRotate = false;
     this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
 
-    // How far you can orbit vertically, upper and lower limits.
-    // Range is 0 to Math.PI radians.
+    /*
+     * How far you can orbit vertically, upper and lower limits.
+     * Range is 0 to Math.PI radians.
+     */
     this.minPolarAngle = 0; // radians
     this.maxPolarAngle = Math.PI; // radians
 
@@ -57,8 +70,10 @@ function OrbitControls ( object, domElement ) {
   	this.minFov = 30;
   	this.maxFov = 120;
 
-    // How far you can orbit horizontally, upper and lower limits.
-    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+    /*
+     * How far you can orbit horizontally, upper and lower limits.
+     * If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+     */
     this.minAzimuthAngle = - Infinity; // radians
     this.maxAzimuthAngle = Infinity; // radians
 
@@ -71,8 +86,10 @@ function OrbitControls ( object, domElement ) {
     // Mouse buttons
     this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
 
-    ////////////
-    // internals
+    /*
+     * //////////
+     * internals
+     */
 
     var scope = this;
 
@@ -191,8 +208,10 @@ function OrbitControls ( object, domElement ) {
 
     };
 
-    // pass in x,y of change desired in pixel space,
-    // right and down are positive
+    /*
+     * pass in x,y of change desired in pixel space,
+     * right and down are positive
+     */
     this.pan = function ( deltaX, deltaY ) {
 
         var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
@@ -357,9 +376,11 @@ function OrbitControls ( object, domElement ) {
         scale = 1;
         pan.set( 0, 0, 0 );
 
-        // update condition is:
-        // min(camera displacement, camera rotation in radians)^2 > EPS
-        // using small-angle approximation cos(x/2) = 1 - x^2 / 8
+        /*
+         * update condition is:
+         * min(camera displacement, camera rotation in radians)^2 > EPS
+         * using small-angle approximation cos(x/2) = 1 - x^2 / 8
+         */
         if ( lastPosition.distanceToSquared( this.object.position ) > EPS
 		    || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
 
@@ -556,7 +577,7 @@ function OrbitControls ( object, domElement ) {
 
         if ( delta > 0 ) {
 
-            //scope.dollyOut();
+            // scope.dollyOut();
             scope.object.fov = ( scope.object.fov < scope.maxFov ) 
                 ? scope.object.fov + 1
                 : scope.maxFov;
@@ -564,7 +585,7 @@ function OrbitControls ( object, domElement ) {
 
         } else if ( delta < 0 ) {
 
-            //scope.dollyIn();
+            // scope.dollyIn();
             scope.object.fov = ( scope.object.fov > scope.minFov ) 
                 ? scope.object.fov - 1
                 : scope.minFov;
@@ -801,7 +822,7 @@ function OrbitControls ( object, domElement ) {
 
     }
 
-    //this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
+    // this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
     this.domElement.addEventListener( 'mousedown', onMouseDown, { passive: false } );
     this.domElement.addEventListener( 'mousewheel', onMouseWheel, { passive: false } );
     this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, { passive: false } ); // firefox

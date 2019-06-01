@@ -2,12 +2,20 @@ import { DataImage } from '../DataImage.js';
 import 'three';
 
 /**
- * Image loader with progress based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/ImageLoader.js}
- * @memberOf PANOLENS
- * @namespace
+ * @module ImageLoader
+ * @description Image loader with progress based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/ImageLoader.js}
  */
 const ImageLoader = {
 
+    /**
+     * Load image
+     * @example PANOLENS.ImageLoader.load( IMAGE_URL )
+     * @method load
+     * @param  {string}   url        - An image url
+     * @param  {function} onLoad     - On load callback
+     * @param  {function} onProgress - In progress callback
+     * @param  {function} onError    - On error callback
+     */
     load: function ( url, onLoad, onProgress, onError ) {
 
         // Enable cache

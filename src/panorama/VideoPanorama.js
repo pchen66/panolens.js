@@ -2,7 +2,7 @@ import { Panorama } from './Panorama';
 import 'three';
 
 /**
- * Video Panorama
+ * @classdesc Video Panorama
  * @constructor
  * @param {string} src - Equirectangular video url
  * @param {object} [options] - Option for video settings
@@ -61,9 +61,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Load video panorama
-	 * @fires  PANOLENS.Panorama#panolens-viewer-handler
-	 */
+     * Load video panorama
+     * @memberOf VideoPanorama
+     * @instance
+     * @fires  Panorama#panolens-viewer-handler
+     */
     load: function () {
 
         const { muted, loop, autoplay, playsinline, crossOrigin } = this.options;
@@ -92,11 +94,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             if ( autoplay ) {
 
                 /**
-				 * Viewer handler event
-				 * @type {object}
-				 * @property {string} method - 'updateVideoPlayButton'
-				 * @property {boolean} data - Pause video or not
-				 */
+                 * Viewer handler event
+                 * @type {object}
+                 * @property {string} method - 'updateVideoPlayButton'
+                 * @property {boolean} data - Pause video or not
+                 */
                 this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
             }
@@ -109,21 +111,21 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
                 if ( autoplay && muted ) {
 
                     /**
-					 * Viewer handler event
-					 * @type {object}
-					 * @property {string} method - 'updateVideoPlayButton'
-					 * @property {boolean} data - Pause video or not
-					 */
+                     * Viewer handler event
+                     * @type {object}
+                     * @property {string} method - 'updateVideoPlayButton'
+                     * @property {boolean} data - Pause video or not
+                     */
                     this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
                 } else {
 
                     /**
-					 * Viewer handler event
-					 * @type {object}
-					 * @property {string} method - 'updateVideoPlayButton'
-					 * @property {boolean} data - Pause video or not
-					 */
+                     * Viewer handler event
+                     * @type {object}
+                     * @property {string} method - 'updateVideoPlayButton'
+                     * @property {boolean} data - Pause video or not
+                     */
                     this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
                 }
@@ -145,13 +147,13 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         };
 
         /**
-		 * Ready state of the audio/video element
-		 * 0 = HAVE_NOTHING - no information whether or not the audio/video is ready
-		 * 1 = HAVE_METADATA - metadata for the audio/video is ready
-		 * 2 = HAVE_CURRENT_DATA - data for the current playback position is available, but not enough data to play next frame/millisecond
-		 * 3 = HAVE_FUTURE_DATA - data for the current and at least the next frame is available
-		 * 4 = HAVE_ENOUGH_DATA - enough data available to start playing
-		 */
+         * Ready state of the audio/video element
+         * 0 = HAVE_NOTHING - no information whether or not the audio/video is ready
+         * 1 = HAVE_METADATA - metadata for the audio/video is ready
+         * 2 = HAVE_CURRENT_DATA - data for the current playback position is available, but not enough data to play next frame/millisecond
+         * 3 = HAVE_FUTURE_DATA - data for the current and at least the next frame is available
+         * 4 = HAVE_ENOUGH_DATA - enough data available to start playing
+         */
         if ( video.readyState > 2 ) {
 
             onloadeddata.call( this );
@@ -174,11 +176,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             this.videoProgress = video.duration >= 0 ? video.currentTime / video.duration : 0;
 
             /**
-			 * Viewer handler event
-			 * @type {object}
-			 * @property {string} method - 'onVideoUpdate'
-			 * @property {number} data - The percentage of video progress. Range from 0.0 to 1.0
-			 */
+             * Viewer handler event
+             * @type {object}
+             * @property {string} method - 'onVideoUpdate'
+             * @property {number} data - The percentage of video progress. Range from 0.0 to 1.0
+             */
             this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: this.videoProgress } );
 
         }.bind( this ) );
@@ -197,10 +199,12 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Set video texture
-	 * @param {HTMLVideoElement} video  - The html5 video element
-	 * @fires PANOLENS.Panorama#panolens-viewer-handler
-	 */
+     * Set video texture
+     * @memberOf VideoPanorama
+     * @instance
+     * @param {HTMLVideoElement} video  - The html5 video element
+     * @fires Panorama#panolens-viewer-handler
+     */
     setVideoTexture: function ( video ) {
 
         if ( !video ) return;
@@ -214,6 +218,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 	
     },
 
+    /**
+     * Reset
+     * @memberOf VideoPanorama
+     * @instance
+     */
     reset: function () {
 
         this.videoElement = undefined;	
@@ -223,9 +232,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Check if video is paused
-	 * @return {boolean} - is video paused or not
-	 */
+     * Check if video is paused
+     * @memberOf VideoPanorama
+     * @instance
+     * @return {boolean} - is video paused or not
+     */
     isVideoPaused: function () {
 
         return this.videoElement.paused;
@@ -233,8 +244,10 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Toggle video to play or pause
-	 */
+     * Toggle video to play or pause
+     * @memberOf VideoPanorama
+     * @instance
+     */
     toggleVideo: function () {
 
         const video = this.videoElement;
@@ -246,9 +259,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Set video currentTime
-	 * @param {object} event - Event contains percentage. Range from 0.0 to 1.0
-	 */
+     * Set video currentTime
+     * @memberOf VideoPanorama
+     * @instance
+     * @param {object} event - Event contains percentage. Range from 0.0 to 1.0
+     */
     setVideoCurrentTime: function ( { percentage } ) {
 
         const video = this.videoElement;
@@ -264,8 +279,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Play video
-	 */
+     * Play video
+     * @memberOf VideoPanorama
+     * @instance
+     * @fires VideoPanorama#play
+     */
     playVideo: function () {
 
         const video = this.videoElement;
@@ -277,17 +295,21 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         }
 
         /**
-		 * Play event
-		 * @type {object}
-		 * @event 'play'
-		 * */
+         * Play event
+         * @type {object}
+         * @event VideoPanorama#play
+         *
+         */
         this.dispatchEvent( { type: 'play' } );
 
     },
 
     /**
-	 * Pause video
-	 */
+     * Pause video
+     * @memberOf VideoPanorama
+     * @instance
+     * @fires VideoPanorama#pause
+     */
     pauseVideo: function () {
 
         const video = this.videoElement;
@@ -299,17 +321,20 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         }
 
         /**
-		 * Pause event
-		 * @type {object}
-		 * @event 'pause'
-		 * */
+         * Pause event
+         * @type {object}
+         * @event VideoPanorama#pause
+         *
+         */
         this.dispatchEvent( { type: 'pause' } );
 
     },
 
     /**
-	 * Resume video
-	 */
+     * Resume video
+     * @memberOf VideoPanorama
+     * @instance
+     */
     resumeVideoProgress: function () {
 
         const video = this.videoElement;
@@ -319,11 +344,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             this.playVideo();
 
             /**
-			 * Viewer handler event
-			 * @type {object}
-			 * @property {string} method - 'updateVideoPlayButton'
-			 * @property {boolean} data - Pause video or not
-			 */
+             * Viewer handler event
+             * @type {object}
+             * @property {string} method - 'updateVideoPlayButton'
+             * @property {boolean} data - Pause video or not
+             */
             this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
 
         } else {
@@ -331,11 +356,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             this.pauseVideo();
 
             /**
-			 * Viewer handler event
-			 * @type {object}
-			 * @property {string} method - 'updateVideoPlayButton'
-			 * @property {boolean} data - Pause video or not
-			 */
+             * Viewer handler event
+             * @type {object}
+             * @property {string} method - 'updateVideoPlayButton'
+             * @property {boolean} data - Pause video or not
+             */
             this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
         }
@@ -345,8 +370,10 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Reset video at stating point
-	 */
+     * Reset video at stating point
+     * @memberOf VideoPanorama
+     * @instance
+     */
     resetVideo: function () {
 
         const video = this.videoElement;
@@ -360,9 +387,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	* Check if video is muted
-	* @return {boolean} - is video muted or not
-	*/
+     * Check if video is muted
+     * @memberOf VideoPanorama
+     * @instance
+     * @return {boolean} - is video muted or not
+     */
     isVideoMuted: function () {
 
         return this.videoElement.muted;
@@ -370,8 +399,10 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Mute video
-	 */
+     * Mute video
+     * @memberOf VideoPanorama
+     * @instance
+     */
     muteVideo: function () {
 
         const video = this.videoElement;
@@ -387,8 +418,10 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Unmute video
-	 */
+     * Unmute video
+     * @memberOf VideoPanorama
+     * @instance
+     */
     unmuteVideo: function () {
 
         const video = this.videoElement;
@@ -404,8 +437,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Returns the video element
-	 */
+     * Returns the video element
+     * @memberOf VideoPanorama
+     * @instance
+     * @returns {HTMLElement}
+     */
     getVideoElement: function () {
 
         return this.videoElement;
@@ -413,8 +449,10 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * Dispose video panorama
-	 */
+     * Dispose video panorama
+     * @memberOf VideoPanorama
+     * @instance
+     */
     dispose: function () {
 
         this.resetVideo();

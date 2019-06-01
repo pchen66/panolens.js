@@ -6,6 +6,18 @@
 
 import 'three';
 
+/**
+ * @description Stereograhpic Shader
+ * @module StereographicShader
+ * @property {object} uniforms
+ * @property {THREE.Texture} uniforms.tDiffuse diffuse map
+ * @property {number} uniforms.resolution image resolution
+ * @property {THREE.Matrix4} uniforms.transform transformation matrix
+ * @property {number} uniforms.zoom image zoom factor
+ * @property {number} uniforms.opacity image opacity
+ * @property {string} vertexShader vertex shader
+ * @property {string} fragmentShader fragment shader
+ */
 const StereographicShader = {
 
     uniforms: {

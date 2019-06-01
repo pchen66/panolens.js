@@ -1,5 +1,11 @@
 import 'three';
 
+/**
+ * @classdesc Stereo Effect Composer
+ * @constructor
+ * @external StereoEffect
+ * @param {THREE.WebGLRenderer} renderer 
+ */
 const StereoEffect = function ( renderer ) {
 
     var _stereo = new THREE.StereoCamera();

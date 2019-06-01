@@ -2,7 +2,7 @@
 import 'three';
 
 /**
- * Reticle 3D Sprite
+ * @classdesc Reticle 3D Sprite
  * @constructor
  * @param {THREE.Color} [color=0xffffff] - Color of the reticle sprite
  * @param {boolean} [autoSelect=true] - Auto selection
@@ -43,12 +43,25 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     constructor: Reticle,
 
+    /**
+     * Set material color
+     * @param {THREE.Color} color 
+     * @memberOf Reticle
+     * @instance
+     */
     setColor: function ( color ) {
 
         this.material.color.copy( color instanceof THREE.Color ? color : new THREE.Color( color ) );
 
     },
 
+    /**
+     * Create canvas texture
+     * @param {HTMLCanvasElement} canvas 
+     * @memberOf Reticle
+     * @instance
+     * @returns {THREE.CanvasTexture}
+     */
     createCanvasTexture: function ( canvas ) {
 
         const texture = new THREE.CanvasTexture( canvas );
@@ -60,6 +73,14 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     },
 
+    /**
+     * Create canvas element
+     * @memberOf Reticle
+     * @instance
+     * @returns {object} object
+     * @returns {HTMLCanvasElement} object.canvas
+     * @returns {CanvasRenderingContext2D} object.context
+     */
     createCanvas: function () {
 
         const width = 32;
@@ -79,6 +100,12 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     },
 
+    /**
+     * Update canvas arc by progress
+     * @param {number} progress 
+     * @memberOf Reticle
+     * @instance
+     */
     updateCanvasArcByProgress: function ( progress ) {
 
         const context = this.context;
@@ -110,6 +137,11 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     },
 
+    /**
+     * Ripple effect
+     * @memberOf Reticle
+     * @instance
+     */
     ripple: function () {
 
         const context = this.context;
@@ -154,6 +186,8 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     /**
      * Make reticle visible
+     * @memberOf Reticle
+     * @instance
      */
     show: function () {
 
@@ -163,6 +197,8 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     /**
      * Make reticle invisible
+     * @memberOf Reticle
+     * @instance
      */
     hide: function () {
 
@@ -172,6 +208,9 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     /**
      * Start dwelling
+     * @param {function} callback 
+     * @memberOf Reticle
+     * @instance
      */
     start: function ( callback ) {
 
@@ -189,6 +228,8 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     /**
      * Stop dwelling
+     * @memberOf Reticle
+     * @instance
      */
     stop: function(){
 
@@ -202,6 +243,8 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     /**
      * Update dwelling
+     * @memberOf Reticle
+     * @instance
      */
     update: function () {
 

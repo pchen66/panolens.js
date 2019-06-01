@@ -3,8 +3,8 @@ import { Media } from '../media/Media';
 import 'three';
 
 /**
- * Camera panorama
- * See https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamConstraints for constraints
+ * @classdesc Camera panorama
+ * @description See {@link https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamConstraints|MediaStreamConstraints} for constraints
  * @param {object} - camera constraints
  * @constructor
  */
@@ -30,24 +30,47 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     constructor: CameraPanorama,
 
+    /**
+     * On container event
+     * @param {object} event
+     * @memberOf CameraPanorama
+     * @instance
+     */
     onPanolensContainer: function ( { container } ) {
 
         this.media.container = container;
 
     },
 
+    /**
+     * On scene event
+     * @param {object} event 
+     * @memberOf CameraPanorama
+     * @instance
+     */
     onPanolensScene: function ( { scene } ) {
 
         this.media.scene = scene;
 
     },
 
+    /**
+     * Start camera streaming
+     * @memberOf CameraPanorama
+     * @instance
+     * @returns {Promise}
+     */
     start: function () {
 
         return this.media.start();
 
     },
 
+    /**
+     * Stop camera streaming
+     * @memberOf CameraPanorama
+     * @instance
+     */
     stop: function () {
 
         this.media.stop();

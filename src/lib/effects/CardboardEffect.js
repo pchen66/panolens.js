@@ -1,6 +1,12 @@
 
 import 'three';
 
+/**
+ * @classdesc Google Cardboard Effect Composer
+ * @constructor
+ * @external CardboardEffect
+ * @param {THREE.WebGLRenderer} renderer 
+ */
 function CardboardEffect ( renderer ) {
 
     var _camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
@@ -16,8 +22,10 @@ function CardboardEffect ( renderer ) {
     _renderTarget.scissorTest = true;
     _renderTarget.texture.generateMipmaps = false;
 
-    // Distortion Mesh ported from:
-    // https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
+    /*
+     * Distortion Mesh ported from:
+     * https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
+     */
 
     var distortion = new THREE.Vector2( 0.441, 0.156 );
 

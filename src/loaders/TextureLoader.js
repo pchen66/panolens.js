@@ -2,20 +2,21 @@ import { ImageLoader } from './ImageLoader.js';
 import 'three';
 
 /**
- * Texture loader based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/TextureLoader.js}
- * @memberOf PANOLENS
- * @namespace
+ * @module TextureLoader
+ * @description Texture loader based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/TextureLoader.js}
  */
 const TextureLoader = {
 
     /**
-	 * Load image texture
-	 * @param  {string}   url        - An image url
-	 * @param  {function} onLoad     - On load callback
-	 * @param  {function} onProgress - In progress callback
-	 * @param  {function} onError    - On error callback
-	 * @return {THREE.Texture}   	 - Image texture
-	 */
+     * Load image texture
+     * @example PANOLENS.TextureLoader.load( IMAGE_URL )
+     * @method load
+     * @param  {string}   url        - An image url
+     * @param  {function} onLoad     - On load callback
+     * @param  {function} onProgress - In progress callback
+     * @param  {function} onError    - On error callback
+     * @return {THREE.Texture}   	 - Image texture
+     */
     load: function ( url, onLoad, onProgress, onError ) {
 
         var texture = new THREE.Texture(); 

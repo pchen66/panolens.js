@@ -5,7 +5,7 @@ import { StereographicShader } from '../shaders/StereographicShader';
 import 'three';
 
 /**
- * Little Planet
+ * @classdesc Little Planet
  * @constructor
  * @param {string} type 		- Type of little planet basic class
  * @param {string} source 		- URL for the image source

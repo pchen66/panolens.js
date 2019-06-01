@@ -1,11 +1,10 @@
 import { ImagePanorama } from './ImagePanorama';
-import { GoogleStreetLoader } from '../loaders/GoogleStreetLoader';
+import { GoogleStreetviewLoader } from '../loaders/GoogleStreetviewLoader';
 import 'three';
 
 /**
- * Google streetview panorama
- * 
- * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
+ * @classdesc Google streetview panorama
+ * @description [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
  * @constructor
  * @param {string} panoId - Panorama id from Google Streetview 
  * @param {string} [apiKey] - Google Street View API Key
@@ -29,9 +28,11 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
     constructor: GoogleStreetviewPanorama,
 
     /**
-	 * Load Google Street View by panorama id
-	 * @param {string} panoId - Gogogle Street View panorama id
-	 */
+     * Load Google Street View by panorama id
+     * @param {string} panoId - Gogogle Street View panorama id
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
     load: function ( panoId ) {
 
         this.loadRequested = true;
@@ -51,8 +52,11 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
     },
 
     /**
-	 * Setup Google Map API
-	 */
+     * Setup Google Map API
+     * @param {string}  apiKey
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
     setupGoogleMapAPI: function ( apiKey ) {
 
         const script = document.createElement( 'script' );
@@ -66,11 +70,13 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
     },
 
     /**
-	 * Set GSV Loader
-	 */
+     * Set GSV Loader
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
     setGSVLoader: function () {
 
-        this.gsvLoader = new GoogleStreetLoader();
+        this.gsvLoader = new GoogleStreetviewLoader();
 
         if ( this.gsvLoader === {} || this.loadRequested ) {
 
@@ -81,9 +87,11 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
     },
 
     /**
-	 * Get GSV Loader
-	 * @return {object} GSV Loader instance
-	 */
+     * Get GSV Loader
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     * @return {GoogleStreetviewLoader} GSV Loader instance
+     */
     getGSVLoader: function () {
 
         return this.gsvLoader;
@@ -91,9 +99,11 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
     },
 
     /**
-	 * Load GSV Loader
-	 * @param  {string} panoId - Gogogle Street View panorama id
-	 */
+     * Load GSV Loader
+     * @param  {string} panoId - Gogogle Street View panorama id
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
     loadGSVLoader: function ( panoId ) {
 
         this.loadRequested = false;
@@ -110,9 +120,11 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
     },
 
     /**
-	 * This will be called when panorama is loaded
-	 * @param  {HTMLCanvasElement} canvas - Canvas where the tiles have been drawn
-	 */
+     * This will be called when panorama is loaded
+     * @param  {HTMLCanvasElement} canvas - Canvas where the tiles have been drawn
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
     onLoad: function ( canvas ) {
 
         if ( !this.gsvLoader ) { return; }
@@ -121,6 +133,11 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
 
     },
 
+    /**
+     * Reset
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
     reset: function () {
 
         this.gsvLoader = undefined;

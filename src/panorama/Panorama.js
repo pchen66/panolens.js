@@ -3,8 +3,9 @@ import { DataImage } from '../DataImage';
 import 'three';
 import TWEEN from '@tweenjs/tween.js';
 
+
 /**
- * Skeleton panorama derived from THREE.Mesh
+ * @classdesc Base Panorama
  * @constructor
  * @param {THREE.Geometry} geometry - The geometry for this panorama
  * @param {THREE.Material} material - The material for this panorama
@@ -59,11 +60,13 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     constructor: Panorama,
 
     /**
-	 * Adding an object
-	 * To counter the scale.x = -1, it will automatically add an 
-	 * empty object with inverted scale on x
-	 * @param {THREE.Object3D} object - The object to be added
-	 */
+     * Adding an object
+     * To counter the scale.x = -1, it will automatically add an 
+     * empty object with inverted scale on x
+     * @memberOf Panorama
+     * @instance
+     * @param {THREE.Object3D} object - The object to be added
+     */
     add: function ( object ) {
 
         let invertedObject;
@@ -92,12 +95,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
                 object.dispatchEvent( { type: 'panolens-infospot-focus', method: function ( vector, duration, easing ) {
 
                     /**
-					 * Infospot focus handler event
-					 * @type {object}
-					 * @event PANOLENS.Panorama#panolens-viewer-handler
-					 * @property {string} method - Viewer function name
-					 * @property {*} data - The argument to be passed into the method
-					 */
+                     * Infospot focus handler event
+                     * @type {object}
+                     * @event Panorama#panolens-viewer-handler
+                     * @property {string} method - Viewer function name
+                     * @property {*} data - The argument to be passed into the method
+                     */
                     this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'tweenControlCenter', data: [ vector, duration, easing ] } );
 
 
@@ -125,10 +128,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * Click event handler
-	 * @param  {object} event - Click event
-	 * @fires PANOLENS.Infospot#dismiss
-	 */
+     * Click event handler
+     * @param  {object} event - Click event
+     * @memberOf Panorama
+     * @instance
+     * @fires Infospot#dismiss
+     */
     onClick: function ( event ) {
 
         if ( event.intersects && event.intersects.length === 0 ) {
@@ -136,10 +141,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
             this.traverse( function ( object ) {
 
                 /**
-				 * Dimiss event
-				 * @type {object}
-				 * @event PANOLENS.Infospot#dismiss
-				 */
+                 * Dimiss event
+                 * @type {object}
+                 * @event Infospot#dismiss
+                 */
                 object.dispatchEvent( { type: 'dismiss' } );
 
             } );
@@ -149,10 +154,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * Set container of this panorama 
-	 * @param {HTMLElement|object} data - Data with container information
-	 * @fires PANOLENS.Infospot#panolens-container
-	 */
+     * Set container of this panorama 
+     * @param {HTMLElement|object} data - Data with container information
+     * @memberOf Panorama
+     * @instance
+     * @fires Infospot#panolens-container
+     */
     setContainer: function ( data ) {
 
         let container;
@@ -174,11 +181,11 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
                 if ( child instanceof Infospot && child.dispatchEvent ) {
 
                     /**
-					 * Set container event
-					 * @type {object}
-					 * @event PANOLENS.Infospot#panolens-container
-					 * @property {HTMLElement} container - The container of this panorama
-					 */
+                     * Set container event
+                     * @type {object}
+                     * @event Infospot#panolens-container
+                     * @property {HTMLElement} container - The container of this panorama
+                     */
                     child.dispatchEvent( { type: 'panolens-container', container: container } );
 
                 }
@@ -192,57 +199,65 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * This will be called when panorama is loaded
-	 * @fires PANOLENS.Panorama#load
-	 */
+     * This will be called when panorama is loaded
+     * @memberOf Panorama
+     * @instance
+     * @fires Panorama#load
+     */
     onLoad: function () {
 
         this.loaded = true;
 
         /**
-		 * Load panorama event
-		 * @type {object}
-		 * @event PANOLENS.Panorama#load
-		 */
+         * Load panorama event
+         * @type {object}
+         * @event Panorama#load
+         */
         this.dispatchEvent( { type: 'load' } );
 
     },
 
     /**
-	 * This will be called when panorama is in progress
-	 * @fires PANOLENS.Panorama#progress
-	 */
+     * This will be called when panorama is in progress
+     * @memberOf Panorama
+     * @instance
+     * @fires Panorama#progress
+     */
     onProgress: function ( progress ) {
 
         /**
-		 * Loading panorama progress event
-		 * @type {object}
-		 * @event PANOLENS.Panorama#progress
-		 * @property {object} progress - The progress object containing loaded and total amount
-		 */
+         * Loading panorama progress event
+         * @type {object}
+         * @event Panorama#progress
+         * @property {object} progress - The progress object containing loaded and total amount
+         */
         this.dispatchEvent( { type: 'progress', progress: progress } );
 
     },
 
     /**
-	 * This will be called when panorama loading has error
-	 * @fires PANOLENS.Panorama#error
-	 */
+     * This will be called when panorama loading has error
+     * @memberOf Panorama
+     * @instance
+     * @fires Panorama#error
+     */
     onError: function () {
 
         /**
-		 * Loading panorama error event
-		 * @type {object}
-		 * @event PANOLENS.Panorama#error
-		 */
+         * Loading panorama error event
+         * @type {object}
+         * @event Panorama#error
+         */
         this.dispatchEvent( { type: 'error' } );
 
     },
 
     /**
-	 * Get zoom level based on window width
-	 * @return {number} zoom level indicating image quality
-	 */
+     * Get zoom level based on window width
+     * @memberOf Panorama
+     * @instance
+     * @return {number} zoom level indicating image quality
+     */
     getZoomLevel: function () {
 
         let zoomLevel;
@@ -274,9 +289,11 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * Update texture of a panorama
-	 * @param {THREE.Texture} texture - Texture to be updated
-	 */
+     * Update texture of a panorama
+     * @memberOf Panorama
+     * @instance
+     * @param {THREE.Texture} texture - Texture to be updated
+     */
     updateTexture: function ( texture ) {
 
         this.material.map = texture;
@@ -285,11 +302,13 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * Toggle visibility of infospots in this panorama
-	 * @param  {boolean} isVisible - Visibility of infospots
-	 * @param  {number} delay - Delay in milliseconds to change visibility
-	 * @fires PANOLENS.Panorama#infospot-animation-complete
-	 */
+     * Toggle visibility of infospots in this panorama
+     * @param  {boolean} isVisible - Visibility of infospots
+     * @param  {number} delay - Delay in milliseconds to change visibility
+     * @memberOf Panorama
+     * @instance
+     * @fires Panorama#infospot-animation-complete
+     */
     toggleInfospotVisibility: function ( isVisible, delay ) {
 
         delay = ( delay !== undefined ) ? delay : 0;
@@ -312,10 +331,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
         this.infospotAnimation.onComplete( function () {
 
             /**
-			 * Complete toggling infospot visibility
-			 * @event PANOLENS.Panorama#infospot-animation-complete
-			 * @type {object} 
-			 */
+             * Complete toggling infospot visibility
+             * @event Panorama#infospot-animation-complete
+             * @type {object} 
+             */
             this.dispatchEvent( { type: 'infospot-animation-complete', visible: visible } );
 
         }.bind( this ) ).delay( delay ).start();
@@ -323,10 +342,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * Set image of this panorama's linking infospot
-	 * @param {string} url   - Url to the image asset
-	 * @param {number} scale - Scale factor of the infospot
-	 */
+     * Set image of this panorama's linking infospot
+     * @memberOf Panorama
+     * @instance
+     * @param {string} url   - Url to the image asset
+     * @param {number} scale - Scale factor of the infospot
+     */
     setLinkingImage: function ( url, scale ) {
 
         this.linkingImageURL = url;
@@ -335,12 +356,14 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * Link one-way panorama
-	 * @param  {PANOLENS.Panorama} pano  - The panorama to be linked to
-	 * @param  {THREE.Vector3} position - The position of infospot which navigates to the pano
-	 * @param  {number} [imageScale=300] - Image scale of linked infospot
-	 * @param  {string} [imageSrc=PANOLENS.DataImage.Arrow] - The image source of linked infospot
-	 */
+     * Link one-way panorama
+     * @param  {Panorama} pano  - The panorama to be linked to
+     * @param  {THREE.Vector3} position - The position of infospot which navigates to the pano
+     * @param  {number} [imageScale=300] - Image scale of linked infospot
+     * @param  {string} [imageSrc=DataImage.Arrow] - The image source of linked infospot
+     * @memberOf Panorama
+     * @instance
+     */
     link: function ( pano, position, imageScale, imageSrc ) {
 
         let scale, img;
@@ -393,12 +416,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
         spot.addEventListener( 'click', function () {
 
             /**
-			 * Viewer handler event
-			 * @type {object}
-			 * @event PANOLENS.Panorama#panolens-viewer-handler
-			 * @property {string} method - Viewer function name
-			 * @property {*} data - The argument to be passed into the method
-			 */
+             * Viewer handler event
+             * @type {object}
+             * @event Panorama#panolens-viewer-handler
+             * @property {string} method - Viewer function name
+             * @property {*} data - The argument to be passed into the method
+             */
             this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setPanorama', data: pano } );
 
         }.bind( this ) );
@@ -424,13 +447,13 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
             .onStart( function () {
 
                 this.visible = true;
-                //this.material.visible = true;
+                // this.material.visible = true;
 
                 /**
-				 * Enter panorama fade in start event
-				 * @event PANOLENS.Panorama#enter-fade-start
-				 * @type {object} 
-				 */
+                 * Enter panorama fade in start event
+                 * @event Panorama#enter-fade-start
+                 * @type {object} 
+                 */
                 this.dispatchEvent( { type: 'enter-fade-start' } );
 
             }.bind( this ) );
@@ -440,13 +463,13 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
             .onComplete( function () {
 
                 this.visible = false;
-                //this.material.visible = true;
+                // this.material.visible = true;
 
                 /**
-				 * Leave panorama complete event
-				 * @event PANOLENS.Panorama#leave-complete
-				 * @type {object} 
-				 */
+                 * Leave panorama complete event
+                 * @event Panorama#leave-complete
+                 * @type {object} 
+                 */
                 this.dispatchEvent( { type: 'leave-complete' } );
 
             }.bind( this ) );
@@ -456,10 +479,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
             .onComplete( function () {
 
                 /**
-				 * Enter panorama and animation complete event
-				 * @event PANOLENS.Panorama#enter-animation-complete
-				 * @type {object} 
-				 */
+                 * Enter panorama and animation complete event
+                 * @event Panorama#enter-animation-complete
+                 * @type {object} 
+                 */
                 this.dispatchEvent( { type: 'enter-animation-complete' } );
 
             }.bind ( this ) )
@@ -482,9 +505,11 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * Start fading in animation
-	 * @fires PANOLENS.Panorama#enter-fade-complete
-	 */
+     * Start fading in animation
+     * @memberOf Panorama
+     * @instance
+     * @fires Panorama#enter-fade-complete
+     */
     fadeIn: function ( duration ) {
 
         duration = duration >= 0 ? duration : this.animationDuration;
@@ -498,10 +523,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
                 this.toggleInfospotVisibility( true, duration / 2 );
 
                 /**
-				 * Enter panorama fade complete event
-				 * @event PANOLENS.Panorama#enter-fade-complete
-				 * @type {object} 
-				 */
+                 * Enter panorama fade complete event
+                 * @event Panorama#enter-fade-complete
+                 * @type {object} 
+                 */
                 this.dispatchEvent( { type: 'enter-fade-complete' } );			
 
             }.bind( this ) )
@@ -510,8 +535,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * Start fading out animation
-	 */
+     * Start fading out animation
+     * @memberOf Panorama
+     * @instance
+     */
     fadeOut: function ( duration ) {
 
         duration = duration >= 0 ? duration : this.animationDuration;
@@ -525,10 +552,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * This will be called when entering a panorama 
-	 * @fires PANOLENS.Panorama#enter
-	 * @fires PANOLENS.Panorama#enter-animation-start
-	 */
+     * This will be called when entering a panorama 
+     * @memberOf Panorama
+     * @instance
+     * @fires Panorama#enter
+     * @fires Panorama#enter-animation-start
+     */
     onEnter: function () {
 
         const duration = this.animationDuration;
@@ -539,10 +568,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
             .onStart( function () {
 
                 /**
-				 * Enter panorama and animation starting event
-				 * @event PANOLENS.Panorama#enter-animation-start
-				 * @type {object} 
-				 */
+                 * Enter panorama and animation starting event
+                 * @event Panorama#enter-animation-start
+                 * @type {object} 
+                 */
                 this.dispatchEvent( { type: 'enter-animation-start' } );
 				
                 if ( this.loaded ) {
@@ -559,10 +588,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
             .start();
 
         /**
-		 * Enter panorama event
-		 * @event PANOLENS.Panorama#enter
-		 * @type {object} 
-		 */
+         * Enter panorama event
+         * @event Panorama#enter
+         * @type {object} 
+         */
         this.dispatchEvent( { type: 'enter' } );
 
         this.children.forEach( child => {
@@ -576,9 +605,11 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * This will be called when leaving a panorama
-	 * @fires PANOLENS.Panorama#leave
-	 */
+     * This will be called when leaving a panorama
+     * @memberOf Panorama
+     * @instance
+     * @fires Panorama#leave
+     */
     onLeave: function () {
 
         const duration = this.animationDuration;
@@ -589,10 +620,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
             .onStart( function () {
 
                 /**
-				 * Leave panorama and animation starting event
-				 * @event PANOLENS.Panorama#leave-animation-start
-				 * @type {object} 
-				 */
+                 * Leave panorama and animation starting event
+                 * @event Panorama#leave-animation-start
+                 * @type {object} 
+                 */
                 this.dispatchEvent( { type: 'leave-animation-start' } );
 
                 this.fadeOut( duration );
@@ -602,10 +633,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
             .start();
 
         /**
-		 * Leave panorama event
-		 * @event PANOLENS.Panorama#leave
-		 * @type {object} 
-		 */
+         * Leave panorama event
+         * @event Panorama#leave
+         * @type {object} 
+         */
         this.dispatchEvent( { type: 'leave' } );
 
         this.children.forEach( child => {
@@ -619,17 +650,19 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     },
 
     /**
-	 * Dispose panorama
-	 */
+     * Dispose panorama
+     * @memberOf Panorama
+     * @instance
+     */
     dispose: function () {
 
         /**
-		 * On panorama dispose handler
-		 * @type {object}
-		 * @event PANOLENS.Panorama#panolens-viewer-handler
-		 * @property {string} method - Viewer function name
-		 * @property {*} data - The argument to be passed into the method
-		 */
+         * On panorama dispose handler
+         * @type {object}
+         * @event Panorama#panolens-viewer-handler
+         * @property {string} method - Viewer function name
+         * @property {*} data - The argument to be passed into the method
+         */
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onPanoramaDispose', data: this } );
 
         // recursive disposal on 3d objects

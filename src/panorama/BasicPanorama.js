@@ -2,7 +2,7 @@ import { CubePanorama } from './CubePanorama';
 import { DataImage } from '../DataImage';
 
 /**
- * Basic panorama with 6 faces tile images
+ * @classdesc Basic panorama with 6 pre-defined grid images
  * @constructor
  */
 function BasicPanorama () {

@@ -3,7 +3,7 @@ import { TextureLoader } from '../loaders/TextureLoader';
 import 'three';
 
 /**
- * Equirectangular based image panorama
+ * @classdesc Equirectangular based image panorama
  * @constructor
  * @param {string} image - Image url or HTMLImageElement
  */
@@ -25,9 +25,11 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     constructor: ImagePanorama,
 
     /**
-	 * Load image asset
-	 * @param  {*} src - Url or image element
-	 */
+     * Load image asset
+     * @param  {*} src - Url or image element
+     * @memberOf ImagePanorama
+     * @instance
+     */
     load: function ( src ) {
 
         src = src || this.src;
@@ -51,9 +53,11 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     },
 
     /**
-	 * This will be called when image is loaded
-	 * @param  {THREE.Texture} texture - Texture to be updated
-	 */
+     * This will be called when image is loaded
+     * @param  {THREE.Texture} texture - Texture to be updated
+     * @memberOf ImagePanorama
+     * @instance
+     */
     onLoad: function ( texture ) {
 
         texture.minFilter = texture.magFilter = THREE.LinearFilter;
@@ -65,12 +69,22 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     },
 
+    /**
+     * Reset
+     * @memberOf ImagePanorama
+     * @instance
+     */
     reset: function () {
 
         Panorama.prototype.reset.call( this );
 
     },
 
+    /**
+     * Dispose
+     * @memberOf ImagePanorama
+     * @instance
+     */
     dispose: function () {
 
         // Release cached image

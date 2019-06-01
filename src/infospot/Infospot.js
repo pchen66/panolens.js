@@ -6,7 +6,7 @@ import { TextureLoader } from '../loaders/TextureLoader';
 import TWEEN from '@tweenjs/tween.js';
 
 /**
- * Information spot attached to panorama
+ * @classdesc Information spot attached to panorama
  * @constructor
  * @param {number} [scale=300] - Default scale
  * @param {string} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
@@ -25,8 +25,10 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     this.animated = animated !== undefined ? animated : true;
     this.isHovering = false;
 
-    // TODO: Three.js bug hotfix for sprite raycasting r104
-    // https://github.com/mrdoob/three.js/issues/14624
+    /*
+     * TODO: Three.js bug hotfix for sprite raycasting r104
+     * https://github.com/mrdoob/three.js/issues/14624
+     */
     this.frustumCulled = false;
 
     this.element;
@@ -95,8 +97,6 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
     this.addEventListener( 'dismiss', this.onDismiss );
     this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
-    this.addEventListener( 'panorama-enter', this.onPanoramaEnter );
-    this.addEventListener( 'panorama-leave', this.onPanoramaLeave );
 
     TextureLoader.load( imageSrc, postLoad );	
 
@@ -106,22 +106,12 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     constructor: Infospot,
 
-    onPanoramaEnter: function () {
-
-		
-
-    },
-
-    onPanoramaLeave: function () {
-
-
-
-    },
-
     /**
-	 * Set infospot container
-	 * @param {HTMLElement|object} data - Data with container information
-	 */
+     * Set infospot container
+     * @param {HTMLElement|object} data - Data with container information
+     * @memberOf Infospot
+     * @instance
+     */
     setContainer: function ( data ) {
 
         let container;
@@ -148,9 +138,11 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Get container
-	 * @return {HTMLElement} - The container of this infospot
-	 */
+     * Get container
+     * @memberOf Infospot
+     * @instance
+     * @return {HTMLElement} - The container of this infospot
+     */
     getContainer: function () {
 
         return this.container;
@@ -158,10 +150,12 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * This will be called by a click event
-	 * Translate and lock the hovering element if any
-	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
-	 */
+     * This will be called by a click event
+     * Translate and lock the hovering element if any
+     * @param  {object} event - Event containing mouseEvent with clientX and clientY
+     * @memberOf Infospot
+     * @instance
+     */
     onClick: function ( event ) {
 
         if ( this.element && this.getContainer() ) {
@@ -176,9 +170,11 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Dismiss current element if any
-	 * @param  {object} event - Dismiss event
-	 */
+     * Dismiss current element if any
+     * @param  {object} event - Dismiss event
+     * @memberOf Infospot
+     * @instance
+     */
     onDismiss: function ( event ) {
 
         if ( this.element ) {
@@ -191,16 +187,21 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * This will be called by a mouse hover event
-	 * Translate the hovering element if any
-	 * @param  {object} event - Event containing mouseEvent with clientX and clientY
-	 */
+     * This will be called by a mouse hover event
+     * Translate the hovering element if any
+     * @param  {object} event - Event containing mouseEvent with clientX and clientY
+     * @memberOf Infospot
+     * @instance
+     */
     onHover: function ( event ) {},
 
     /**
-	 * This will be called on a mouse hover start
-	 * Sets cursor style to 'pointer', display the element and scale up the infospot
-	 */
+     * This will be called on a mouse hover start
+     * Sets cursor style to 'pointer', display the element and scale up the infospot
+     * @param {object} event
+     * @memberOf Infospot
+     * @instance
+     */
     onHoverStart: function ( event ) {
 
         if ( !this.getContainer() ) { return; }
@@ -246,9 +247,11 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * This will be called on a mouse hover end
-	 * Sets cursor style to 'default', hide the element and scale down the infospot
-	 */
+     * This will be called on a mouse hover end
+     * Sets cursor style to 'default', hide the element and scale down the infospot
+     * @memberOf Infospot
+     * @instance
+     */
     onHoverEnd: function () {
 
         if ( !this.getContainer() ) { return; }
@@ -276,10 +279,12 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * On dual eye effect handler
-	 * Creates duplicate left and right element
-	 * @param  {object} event - panolens-dual-eye-effect event
-	 */
+     * On dual eye effect handler
+     * Creates duplicate left and right element
+     * @param  {object} event - panolens-dual-eye-effect event
+     * @memberOf Infospot
+     * @instance
+     */
     onDualEyeEffect: function ( event ) {
 		
         if ( !this.getContainer() ) { return; }
@@ -329,10 +334,12 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Translate the hovering element by css transform
-	 * @param  {number} x - X position on the window screen
-	 * @param  {number} y - Y position on the window screen
-	 */
+     * Translate the hovering element by css transform
+     * @param  {number} x - X position on the window screen
+     * @param  {number} y - Y position on the window screen
+     * @memberOf Infospot
+     * @instance
+     */
     translateElement: function ( x, y ) {
 
         if ( !this.element._width || !this.element._height || !this.getContainer() ) {
@@ -374,11 +381,13 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Set vendor specific css
-	 * @param {string} type - CSS style name
-	 * @param {HTMLElement} element - The element to be modified
-	 * @param {string} value - Style value
-	 */
+     * Set vendor specific css
+     * @param {string} type - CSS style name
+     * @param {HTMLElement} element - The element to be modified
+     * @param {string} value - Style value
+     * @memberOf Infospot
+     * @instance
+     */
     setElementStyle: function ( type, element, value ) {
 
         const style = element.style;
@@ -392,9 +401,11 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Set hovering text content
-	 * @param {string} text - Text to be displayed
-	 */
+     * Set hovering text content
+     * @param {string} text - Text to be displayed
+     * @memberOf Infospot
+     * @instance
+     */
     setText: function ( text ) {
 
         if ( this.element ) {
@@ -406,8 +417,10 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Set cursor css style on hover
-	 */
+     * Set cursor css style on hover
+     * @memberOf Infospot
+     * @instance
+     */
     setCursorHoverStyle: function ( style ) {
 
         this.cursorStyle = style;
@@ -415,10 +428,12 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Add hovering text element
-	 * @param {string} text - Text to be displayed
-	 * @param {number} [delta=40] - Vertical delta to the infospot
-	 */
+     * Add hovering text element
+     * @param {string} text - Text to be displayed
+     * @param {number} [delta=40] - Vertical delta to the infospot
+     * @memberOf Infospot
+     * @instance
+     */
     addHoverText: function ( text, delta ) {
 
         if ( !this.element ) {
@@ -442,10 +457,12 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Add hovering element by cloning an element
-	 * @param {HTMLDOMElement} el - Element to be cloned and displayed
-	 * @param {number} [delta=40] - Vertical delta to the infospot
-	 */
+     * Add hovering element by cloning an element
+     * @param {HTMLDOMElement} el - Element to be cloned and displayed
+     * @param {number} [delta=40] - Vertical delta to the infospot
+     * @memberOf Infospot
+     * @instance
+     */
     addHoverElement: function ( el, delta ) {
 
         if ( !this.element ) { 
@@ -462,8 +479,10 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Remove hovering element
-	 */
+     * Remove hovering element
+     * @memberOf Infospot
+     * @instance
+     */
     removeHoverElement: function () {
 
         if ( this.element ) { 
@@ -490,8 +509,10 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Lock hovering element
-	 */
+     * Lock hovering element
+     * @memberOf Infospot
+     * @instance
+     */
     lockHoverElement: function () {
 
         if ( this.element ) { 
@@ -503,8 +524,10 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Unlock hovering element
-	 */
+     * Unlock hovering element
+     * @memberOf Infospot
+     * @instance
+     */
     unlockHoverElement: function () {
 
         if ( this.element ) { 
@@ -515,6 +538,12 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     },
 
+    /**
+     * Enable raycasting
+     * @param {boolean} [enabled=true]
+     * @memberOf Infospot
+     * @instance
+     */
     enableRaycast: function ( enabled = true ) {
 
         if ( enabled ) {
@@ -530,9 +559,11 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Show infospot
-	 * @param  {number} [delay=0] - Delay time to show
-	 */
+     * Show infospot
+     * @param  {number} [delay=0] - Delay time to show
+     * @memberOf Infospot
+     * @instance
+     */
     show: function ( delay = 0 ) {
 
         if ( this.animated ) {
@@ -549,9 +580,11 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Hide infospot
-	 * @param  {number} [delay=0] - Delay time to hide
-	 */
+     * Hide infospot
+     * @param  {number} [delay=0] - Delay time to hide
+     * @memberOf Infospot
+     * @instance
+     */
     hide: function ( delay = 0 ) {
 
         if ( this.animated ) {
@@ -568,8 +601,10 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Set focus event handler
-	 */
+     * Set focus event handler
+     * @memberOf Infospot
+     * @instance
+     */
     setFocusMethod: function ( event ) {
 
         if ( event ) {
@@ -581,10 +616,12 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Focus camera center to this infospot
-	 * @param {number} [duration=1000] - Duration to tween
-	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
-	 */
+     * Focus camera center to this infospot
+     * @param {number} [duration=1000] - Duration to tween
+     * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+     * @memberOf Infospot
+     * @instance
+     */
     focus: function ( duration, easing ) {
 
         if ( this.HANDLER_FOCUS ) {
@@ -597,8 +634,10 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-	 * Dispose infospot
-	 */
+     * Dispose
+     * @memberOf Infospot
+     * @instance
+     */
     dispose: function () {
 
         this.removeHoverElement();

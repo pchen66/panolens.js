@@ -2,7 +2,7 @@ import { Panorama } from './Panorama';
 import 'three';
 
 /**
- * Empty panorama
+ * @classdesc Empty panorama
  * @constructor
  */
 function EmptyPanorama () {
