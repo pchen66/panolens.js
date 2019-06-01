@@ -22,11 +22,9 @@ This code creates a 360 image panorama. The first panorama added to the viewer w
 
 ```html
 <script>
-
-	const panorama = new PANOLENS.ImagePanorama( 'asset/equirectangular.jpg' );
-	const viewer = new PANOLENS.Viewer();
-	viewer.add( panorama );
-
+    const panorama = new PANOLENS.ImagePanorama( 'asset/equirectangular.jpg' );
+    const viewer = new PANOLENS.Viewer();
+    viewer.add( panorama );
 </script>
 ```
 
@@ -113,15 +111,9 @@ Website Example | Codepen Live Exmaple
 [Memory Leaking Test](http://pchen66.github.io/Panolens/examples/panorama_memoryleak_test.html) |
 [PanoTheater](http://pchen66.github.io/PanoTheater) | 
 
-### How to add an infospot (hotspot)
-
-Move cursor on a specific point in a panorama and press `Ctrl` with clicking or hovering, which will generate position (x, y, z) in the console or on the overlay element based on parameter `output='console' or 'overlay'`. See [Panorama Infospot](http://pchen66.github.io/Panolens/examples/panorama_infospot.html) example for creating and attaching infospots.
-
-![Panorama Finding Infospot Position](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_add_infospot_480p.gif?raw=true)
-
 ### Dependency
 
-Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) by default, meaning `TWEEN` will be available with `windows` object
+Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) by default, meaning `TWEEN` will be available with `window` object
 
 ### How to contribute
 
@@ -129,21 +121,26 @@ Always make your contributions for the latest `dev` branch, not `master`, so it 
 
 ### FAQ
 
-#### PANOLENS.SpriteText (Tile/TileGroup) is not a constructor
+#### **How to add an infospot**
+Move cursor on a specific point in a panorama and press `Ctrl` with clicking or hovering, which will generate position (x, y, z) in the console or on the overlay element based on parameter `output='console' or 'overlay'`. See [Panorama Infospot](http://pchen66.github.io/Panolens/examples/panorama_infospot.html) example for creating and attaching infospots.
+
+![Panorama Finding Infospot Position](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_add_infospot_480p.gif?raw=true)
+
+#### **PANOLENS.SpriteText (Tile/TileGroup) is not a constructor**
 `SpriteText`, `Tile`, and `TileGroup` are deprecated after r10. Fundamentally they are compatible with existing `THREE` methods. If you need text rendering, please checkout [Creating text](https://threejs.org/docs/#manual/en/introduction/Creating-text) from three.js
 
-#### Uncaught TypeError: Cannot read property 'TextureLoader' of undefined
+#### **Uncaught TypeError: Cannot read property 'TextureLoader' of undefined**
 `PANOLENS.Utils` is deprecated after r10. `PANOLENS.Utils.TextureLoader` is now `PANOLENS.TextureLoader`.
 
-#### Device orientation not working on my phone
+#### **Device orientation not working on my phone**
 Apple introduced a new Motion & Orientation Access toggle (off by default) after iOS 12.2 under `Settings > Safari > Privacy & Security`. This requires users to turn on maunally to enable DeviceMotionEvent and DeviceOrientationEvent.
 
 [How (and why) to use Motion & Orientation Settings in iOS](https://www.applemust.com/how-and-why-to-use-motion-orientation-settings-in-ios/)
 
-#### Infospot is not visible
+#### **Infospot is not visible**
 Check again if `position` or `scale` property is being set correctly. It's default to and the border of the panorama with scale value as `300`.
 
-#### No sound for `VideoPanorama`
+#### **No sound for `VideoPanorama`**
 By default the `muted` attribute for video is set to `false` to prevent `DOMException`. [Autoplay Policy Changes](https://developers.google.com/web/updates/2017/09/autoplay-policy-changes) Video `play()` without a user gesture will reject the promise with a DOMException. And the autoplay attribute will also be ignored. Change the default behavior by passing additional options to `VideoPanorama`
 
 ```
