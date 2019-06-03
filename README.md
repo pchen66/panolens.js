@@ -7,12 +7,14 @@
 
 Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible. It's built on top of [Three.JS](https://github.com/mrdoob/three.js).
 
-![Panorama Demo](https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens.gif?raw=true)
-
 [Examples](https://pchen66.github.io/Panolens/#Example) &mdash;
 [Documentation](https://pchen66.github.io/panolens.js) &mdash;
 [Migration](https://github.com/pchen66/panolens.js/wiki/MigrationGuide) &mdash;
 [FAQ](https://github.com/pchen66/panolens.js/wiki/Frequently-Asked-Questions)
+
+<p align="center">
+  <img width="100%" height="300px" alt= "Panorama Demo" style="object-fit:cover" src="https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens.gif?raw=true">
+</p>
 
 ## Usage
 
