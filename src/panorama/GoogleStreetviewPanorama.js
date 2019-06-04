@@ -1,6 +1,5 @@
 import { ImagePanorama } from './ImagePanorama';
 import { GoogleStreetviewLoader } from '../loaders/GoogleStreetviewLoader';
-import 'three';
 
 /**
  * @classdesc Google streetview panorama

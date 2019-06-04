@@ -1,5 +1,4 @@
 import { Panorama } from './Panorama';
-import 'three';
 
 /**
  * @classdesc Video Panorama

@@ -2,7 +2,6 @@ import { ImagePanorama } from './ImagePanorama';
 import { Infospot } from '../infospot/Infospot';
 import { CONTROLS } from '../Constants';
 import { StereographicShader } from '../shaders/StereographicShader';
-import 'three';
 
 /**
  * @classdesc Little Planet

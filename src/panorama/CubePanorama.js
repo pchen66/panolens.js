@@ -1,6 +1,5 @@
 import { Panorama } from './Panorama';
 import { CubeTextureLoader } from '../loaders/CubeTextureLoader';
-import 'three';
 
 /**
  * @classdesc Cubemap-based panorama

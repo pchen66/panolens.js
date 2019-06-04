@@ -1,6 +1,5 @@
 import { Panorama } from './Panorama';
 import { TextureLoader } from '../loaders/TextureLoader';
-import 'three';
 
 /**
  * @classdesc Equirectangular based image panorama

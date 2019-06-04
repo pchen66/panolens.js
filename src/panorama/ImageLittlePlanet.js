@@ -1,6 +1,5 @@
 import { LittlePlanet } from './LittlePlanet';
 import { ImagePanorama } from './ImagePanorama';
-import 'three';
 
 /**
  * @classdesc Image Little Planet
