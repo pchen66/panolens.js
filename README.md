@@ -39,12 +39,12 @@ Panolens.js includes [Tween.js](https://github.com/tweenjs/tween.js/) by default
 
 Always make your contributions for the latest `dev` branch, not `master`, so it can be tracked for the next release. 
 
-Development
+### **Development**
 ```
 npm start
 ```
 
-Update builds
+### **Build**
 ```
 npm run build-closure
 ```
