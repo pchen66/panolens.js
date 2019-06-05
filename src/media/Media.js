@@ -298,7 +298,7 @@ Object.assign( Media.prototype, {
      * @memberOf Media
      * @instance
      */
-    onWindowResize: function ( event ) {
+    onWindowResize: function () {
 
         if ( this.element && this.element.videoWidth && this.element.videoHeight && this.scene ) {
 

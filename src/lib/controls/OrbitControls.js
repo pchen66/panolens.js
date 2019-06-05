@@ -122,7 +122,7 @@ function OrbitControls ( object, domElement ) {
     var lastQuaternion = new THREE.Quaternion();
 
     var momentumLeft = 0, momentumUp = 0;
-    var eventCurrent, eventPrevious;
+    var eventPrevious;
     var momentumOn = false;
 
     var keyUp, keyBottom, keyLeft, keyRight;

@@ -86,7 +86,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         } 
 
-        const onloadeddata = function(event) {
+        const onloadeddata = function() {
 
             this.setVideoTexture( video );
 
@@ -170,7 +170,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         video.addEventListener( 'loadeddata', onloadeddata.bind( this ) );
 		
-        video.addEventListener( 'timeupdate', function ( event ) {
+        video.addEventListener( 'timeupdate', function () {
 
             this.videoProgress = video.duration >= 0 ? video.currentTime / video.duration : 0;
 
@@ -425,9 +425,9 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         const video = this.videoElement;
 
-        if ( this.videoElement && this.isVideoMuted() ) {
+        if ( video && this.isVideoMuted() ) {
 
-            this.videoElement.muted = false;
+            video.muted = false;
 
         }
 

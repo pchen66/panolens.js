@@ -175,7 +175,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    onDismiss: function ( event ) {
+    onDismiss: function () {
 
         if ( this.element ) {
 
@@ -193,7 +193,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    onHover: function ( event ) {},
+    onHover: function () {},
 
     /**
      * This will be called on a mouse hover start

@@ -196,7 +196,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     },
 
-    onMouseUp: function ( event ) {
+    onMouseUp: function () {
 
         this.dragging = false;
 

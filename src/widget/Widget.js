@@ -418,7 +418,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         }
 
-        function onFullScreenChange (e) {
+        function onFullScreenChange () {
 
             if ( tapSkipped ) {
 

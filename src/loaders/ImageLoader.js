@@ -16,7 +16,7 @@ const ImageLoader = {
      * @param  {function} onProgress - In progress callback
      * @param  {function} onError    - On error callback
      */
-    load: function ( url, onLoad, onProgress, onError ) {
+    load: function ( url, onLoad, onProgress, onError = () => {} ) {
 
         // Enable cache
         THREE.Cache.enabled = true;
@@ -85,7 +85,8 @@ const ImageLoader = {
         request = new XMLHttpRequest();
         request.open( 'GET', url, true );
         request.responseType = 'arraybuffer';
-        request.onprogress = function ( event ) {
+        request.addEventListener( 'error', onError );
+        request.addEventListener( 'progress', ( event ) => {
 	
             if ( event.lengthComputable ) {
 	
@@ -93,8 +94,8 @@ const ImageLoader = {
 	
             }
 	
-        };
-        request.onloadend = function( event ) {
+        } );
+        request.addEventListener( 'loadend', () => {
 	
             arrayBufferView = new Uint8Array( this.response );
             blob = new Blob( [ arrayBufferView ] );
@@ -102,7 +103,7 @@ const ImageLoader = {
             image.addEventListener( 'load', onImageLoaded, false );
             image.src = urlCreator.createObjectURL( blob );
 	
-        };
+        } );
 	
         request.send(null);
 	
