@@ -1,7 +1,11 @@
 # Panolens.js
-[![Release][release-badge]][release-badge-url]
-[![License][license-badge]][license-badge-url]
-![GzipSize][gzip-size-badge]
+
+[![NPM package][npm]][npm-url]
+[![License][license]][license-url]
+[![Bundle Size][bundle-size]][bundle-size-url]
+[![Dependencies][dependencies]][dependencies-url]
+[![Dev Dependencies][dev-dependencies]][dev-dependencies-url]
+[![Language Grade][lgtm]][lgtm-url]
 
 ## Javascript 360 Panorama Viewer
 
@@ -49,10 +53,17 @@ npm start
 npm run build-closure
 ```
 
-[release-badge]: https://img.shields.io/github/release/pchen66/panolens.js.svg
-[release-badge-url]:https://github.com/pchen66/panolens.js/releases
-[license-badge]: https://img.shields.io/github/license/pchen66/panolens.js.svg
-[license-badge-url]: ./LICENSE
-[gzip-size-badge]: https://img.badgesize.io/https://raw.githubusercontent.com/pchen66/panolens.js/master/build/panolens.min.js?compression=gzip
+[npm]: https://img.shields.io/npm/v/panolens.svg
+[npm-url]:https://www.npmjs.com/package/panolens
+[license]: https://img.shields.io/github/license/pchen66/panolens.js.svg
+[license-url]: ./LICENSE
+[bundle-size]: https://badgen.net/bundlephobia/minzip/panolens
+[bundle-size-url]: https://bundlephobia.com/result?p=panolens
+[dependencies]: https://img.shields.io/david/pchen66/panolens.js.svg
+[dependencies-url]: https://david-dm.org/pchen66/panolens.js
+[dev-dependencies]: https://img.shields.io/david/dev/pchen66/panolens.js.svg
+[dev-dependencies-url]: https://david-dm.org/pchen66/panolens.js?type=dev
+[lgtm]: https://img.shields.io/lgtm/grade/javascript/g/pchen66/panolens.js.svg?logo=lgtm&logoWidth=18&label=code%20quality
+[lgtm-url]: https://lgtm.com/projects/g/pchen66/panolens.js/context:javascript
 [panolens-support]: https://pics.paypal.com/00/p/NDIyZmRiMGEtMGQyMy00Y2QzLWI1YWQtZmY1OGI1MzRjNDYw/image_2.PNG
 [panolens-support-url]: https://www.paypal.me/panolens
