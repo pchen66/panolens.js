@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js Memory Testing</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      #progress {
+        width: 0;
+        height: 5px;
+        position: fixed;
+        top: 0;
+        background: #fff;
+        -webkit-transition: opacity 0.5s ease;
+        transition: opacity 0.5s ease;
+      }
+
+      #progress.finish {
+        opacity: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+
+  <script src="../node_modules/three/build/three.min.js"></script>
+  <script src="../build/panolens.js"></script>
+
+  <div id="progress"></div>
+
+    <script>
+
+      var panorama, viewer, images, index = 0, renewDuration = 10000;
+
+      var progressElement = document.getElementById( 'progress' );
+
+      images = [
+
+        'asset/textures/equirectangular/mountainpeak15000x7500.jpg',
+        'asset/textures/equirectangular/dusty9000x4500.jpg',
+        'asset/textures/equirectangular/dawn4000x2000.jpg',
+        'asset/textures/equirectangular/lake5000x2500.jpg',
+        'asset/textures/equirectangular/pier4000x2000.jpg'
+
+      ];
+
+      function renew () {
+
+        panorama && panorama.dispose() && viewer.remove( panorama );
+        
+        panorama = new PANOLENS.ImagePanorama( images[ index++ ] );
+        panorama.addEventListener( 'progress', onProgress );
+        panorama.addEventListener( 'load', onLoad ); 
+
+        viewer.add( panorama );
+
+        index = index >= images.length ? 0 : index;
+
+      }
+
+      function onLoad () {
+
+        progressElement.style.width = 0;
+        progressElement.classList.remove( 'finish' );
+
+        setTimeout( renew, renewDuration );
+
+      }
+
+      function onProgress ( event ) {
+
+        var progress;
+
+        progress = event.progress.loaded / event.progress.total * 100;
+        progressElement.style.width = progress + '%';
+        if ( progress === 100 ) {
+          progressElement.classList.add( 'finish' );
+        }
+
+      }
+
+      viewer = new PANOLENS.Viewer();
+
+      renew();
+
+    </script>
+
+  </body>
+</html>
