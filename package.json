@@ -1,5 +1,5 @@
 {
-  "name": "panolens.js",
+  "name": "panolens",
   "version": "0.10.1",
   "description": "Javascript panorama viewer",
   "main": "build/panolens.js",
