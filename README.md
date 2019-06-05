@@ -53,6 +53,6 @@ npm run build-closure
 [release-badge-url]:https://github.com/pchen66/panolens.js/releases
 [license-badge]: https://img.shields.io/github/license/pchen66/panolens.js.svg
 [license-badge-url]: ./LICENSE
-[gzip-size-badge]: http://img.badgesize.io/https://raw.githubusercontent.com/pchen66/panolens.js/master/build/panolens.min.js?compression=gzip&label=gzip%20size
+[gzip-size-badge]: https://img.badgesize.io/https://raw.githubusercontent.com/pchen66/panolens.js/master/build/panolens.min.js?compression=gzip
 [panolens-support]: https://pics.paypal.com/00/p/NDIyZmRiMGEtMGQyMy00Y2QzLWI1YWQtZmY1OGI1MzRjNDYw/image_2.PNG
 [panolens-support-url]: https://www.paypal.me/panolens
