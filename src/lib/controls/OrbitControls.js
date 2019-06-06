@@ -11,7 +11,7 @@ function OrbitControls ( object, domElement ) {
 
     this.object = object;
     this.domElement = ( domElement !== undefined ) ? domElement : document;
-    this.frameId;
+    this.frameId = null;
 
     // API
 
@@ -111,8 +111,8 @@ function OrbitControls ( object, domElement ) {
     var dollyEnd = new THREE.Vector2();
     var dollyDelta = new THREE.Vector2();
 
-    var theta;
-    var phi;
+    var theta = 0;
+    var phi = 0;
     var phiDelta = 0;
     var thetaDelta = 0;
     var scale = 1;
@@ -122,7 +122,7 @@ function OrbitControls ( object, domElement ) {
     var lastQuaternion = new THREE.Quaternion();
 
     var momentumLeft = 0, momentumUp = 0;
-    var eventCurrent, eventPrevious;
+    var eventPrevious;
     var momentumOn = false;
 
     var keyUp, keyBottom, keyLeft, keyRight;
@@ -384,7 +384,7 @@ function OrbitControls ( object, domElement ) {
         if ( lastPosition.distanceToSquared( this.object.position ) > EPS
 		    || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
 
-            ignoreUpdate !== true && this.dispatchEvent( changeEvent );
+            if ( ignoreUpdate !== true ) { this.dispatchEvent( changeEvent ); }
 
             lastPosition.copy( this.object.position );
             lastQuaternion.copy (this.object.quaternion );

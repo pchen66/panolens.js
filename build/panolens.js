@@ -4,7 +4,7 @@
 	(global = global || self, factory(global.PANOLENS = {}));
 }(this, function (exports) { 'use strict';
 
-	const version="0.10.0";
+	const version="0.10.3";
 
 	/**
 	 * REVISION
@@ -79,7 +79,7 @@
 	     * @param  {function} onProgress - In progress callback
 	     * @param  {function} onError    - On error callback
 	     */
-	    load: function ( url, onLoad, onProgress, onError ) {
+	    load: function ( url, onLoad = () => {}, onProgress = () => {}, onError = () => {} ) {
 
 	        // Enable cache
 	        THREE.Cache.enabled = true;
@@ -106,12 +106,7 @@
 		
 	                setTimeout( function () {
 		
-	                    if ( onProgress ) {
-		
-	                        onProgress( { loaded: 1, total: 1 } );
-		
-	                    } 
-						
+	                    onProgress( { loaded: 1, total: 1 } );
 	                    onLoad( cached );
 		
 	                }, 0 );
@@ -132,7 +127,7 @@
 	        const onImageLoaded = () => {
 		
 	            urlCreator.revokeObjectURL( image.src );
-	            onLoad && onLoad( image );
+	            onLoad( image );
 		
 	        };
 		
@@ -148,24 +143,25 @@
 	        request = new XMLHttpRequest();
 	        request.open( 'GET', url, true );
 	        request.responseType = 'arraybuffer';
-	        request.onprogress = function ( event ) {
+	        request.addEventListener( 'error', onError );
+	        request.addEventListener( 'progress', ( { loaded, total } ) => {
 		
 	            if ( event.lengthComputable ) {
 		
-	                onProgress && onProgress( { loaded: event.loaded, total: event.total } );
+	                onProgress( { loaded, total } );
 		
 	            }
 		
-	        };
-	        request.onloadend = function( event ) {
+	        } );
+	        request.addEventListener( 'loadend', ( { currentTarget: { response } } ) => {
 		
-	            arrayBufferView = new Uint8Array( this.response );
+	            arrayBufferView = new Uint8Array( response );
 	            blob = new Blob( [ arrayBufferView ] );
 					
 	            image.addEventListener( 'load', onImageLoaded, false );
 	            image.src = urlCreator.createObjectURL( blob );
 		
-	        };
+	        } );
 		
 	        request.send(null);
 		
@@ -189,7 +185,7 @@
 	     * @param  {function} onError    - On error callback
 	     * @return {THREE.Texture}   	 - Image texture
 	     */
-	    load: function ( url, onLoad, onProgress, onError ) {
+	    load: function ( url, onLoad = () => {}, onProgress, onError ) {
 
 	        var texture = new THREE.Texture(); 
 
@@ -203,7 +199,7 @@
 	            texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
 	            texture.needsUpdate = true;
 
-	            onLoad && onLoad( texture );
+	            onLoad( texture );
 
 	        }, onProgress, onError );
 
@@ -229,7 +225,7 @@
 	     * @param  {function} onError    - On error callback
 	     * @return {THREE.CubeTexture}   - Cube texture
 	     */
-	    load: function ( urls, onLoad, onProgress, onError ) {
+	    load: function ( urls, onLoad = () => {}, onProgress = () => {}, onError ) {
 
 		   var texture, loaded, progress, all, loadings;
 
@@ -251,7 +247,7 @@
 
 					   texture.needsUpdate = true;
 
-					   onLoad && onLoad( texture );
+					   onLoad( texture );
 
 				   }
 
@@ -277,7 +273,7 @@
 
 				   }
 
-				   onProgress && onProgress( all );
+				   onProgress( all );
 
 			   }, onError );
 
@@ -300,11 +296,11 @@
 
 	    this.constraints = Object.assign( defaultConstraints, constraints );
 
-	    this.container;
-	    this.scene;
-	    this.element;
+	    this.container = null;
+	    this.scene = null;
+	    this.element = null;
 	    this.devices = [];
-	    this.stream;
+	    this.stream = null;
 	    this.ratioScalar = 1;
 	    this.videoDeviceIndex = 0;
 
@@ -370,7 +366,7 @@
 
 	            return _devices.map( device => { 
 	                
-	                !devices.includes( device ) && devices.push( device ); 
+	                if ( !devices.includes( device ) ) { devices.push( device ); }
 	                return device; 
 	            
 	            } );
@@ -586,7 +582,7 @@
 	     * @memberOf Media
 	     * @instance
 	     */
-	    onWindowResize: function ( event ) {
+	    onWindowResize: function () {
 
 	        if ( this.element && this.element.videoWidth && this.element.videoHeight && this.scene ) {
 
@@ -637,9 +633,9 @@
 	    this.center.set( 0.5, 0.5 );
 	    this.scale.set( 0.5, 0.5, 1 );
 
-	    this.startTimestamp;
-	    this.timerId;
-	    this.callback;
+	    this.startTimestamp = null;
+	    this.timerId = null;
+	    this.callback = null;
 
 	    this.frustumCulled = false;
 
@@ -866,7 +862,7 @@
 
 	            cancelAnimationFrame( this.timerId );
 	            this.ripple();
-	            this.callback && this.callback();
+	            if ( this.callback ) { this.callback(); }
 	            this.stop();
 
 	        }
@@ -1832,26 +1828,30 @@
 	     */
 	    this.frustumCulled = false;
 
-	    this.element;
-	    this.toPanorama;
-	    this.cursorStyle;
+	    this.element = null;
+	    this.toPanorama = null;
+	    this.cursorStyle = null;
 
 	    this.mode = MODES.UNKNOWN;
 
 	    this.scale.set( scale, scale, 1 );
 	    this.rotation.y = Math.PI;
 
-	    this.container;
+	    this.container = null;
 
 	    this.originalRaycast = this.raycast;
 
 	    // Event Handler
-	    this.HANDLER_FOCUS;	
+	    this.HANDLER_FOCUS = null;	
 
 	    this.material.side = THREE.DoubleSide;
 	    this.material.depthTest = false;
 	    this.material.transparent = true;
 	    this.material.opacity = 0;
+
+	    this.scaleUpAnimation = new Tween.Tween();
+	    this.scaleDownAnimation = new Tween.Tween();
+
 
 	    const postLoad = function ( texture ) {
 
@@ -1975,7 +1975,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    onDismiss: function ( event ) {
+	    onDismiss: function () {
 
 	        if ( this.element ) {
 
@@ -1993,7 +1993,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    onHover: function ( event ) {},
+	    onHover: function () {},
 
 	    /**
 	     * This will be called on a mouse hover start
@@ -2007,38 +2007,41 @@
 	        if ( !this.getContainer() ) { return; }
 
 	        const cursorStyle = this.cursorStyle || ( this.mode === MODES.NORMAL ? 'pointer' : 'default' );
+	        const { scaleDownAnimation, scaleUpAnimation, element } = this;
 
 	        this.isHovering = true;
 	        this.container.style.cursor = cursorStyle;
 			
 	        if ( this.animated ) {
 
-	            this.scaleDownAnimation && this.scaleDownAnimation.stop();
-	            this.scaleUpAnimation && this.scaleUpAnimation.start();
+	            scaleDownAnimation.stop();
+	            scaleUpAnimation.start();
 
 	        }
 			
-	        if ( this.element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
+	        if ( element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
+
+	            const { left, right, style } = element;
 
 	            if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
-	                this.element.style.display = 'none';
-	                this.element.left && ( this.element.left.style.display = 'block' );
-	                this.element.right && ( this.element.right.style.display = 'block' );
+	                style.display = 'none';
+	                if ( left ) { left.style.display = 'block'; }
+	                if ( right ) { right.style.display = 'block'; }
 
 	                // Store element width for reference
-	                this.element._width = this.element.left.clientWidth;
-	                this.element._height = this.element.left.clientHeight;
+	                element._width = left.clientWidth;
+	                element._height = left.clientHeight;
 
 	            } else {
 
-	                this.element.style.display = 'block';
-	                this.element.left && ( this.element.left.style.display = 'none' );
-	                this.element.right && ( this.element.right.style.display = 'none' );
+	                style.display = 'block';
+	                if ( left ) { left.style.display = 'none'; }
+	                if ( right ) { right.style.display = 'none'; }
 
 	                // Store element width for reference
-	                this.element._width = this.element.clientWidth;
-	                this.element._height = this.element.clientHeight;
+	                element._width = element.clientWidth;
+	                element._height = element.clientHeight;
 
 	            }
 				
@@ -2056,21 +2059,25 @@
 
 	        if ( !this.getContainer() ) { return; }
 
+	        const { scaleDownAnimation, scaleUpAnimation, element } = this;
+
 	        this.isHovering = false;
 	        this.container.style.cursor = 'default';
 
 	        if ( this.animated ) {
 
-	            this.scaleUpAnimation && this.scaleUpAnimation.stop();
-	            this.scaleDownAnimation && this.scaleDownAnimation.start();
+	            scaleUpAnimation.stop();
+	            scaleDownAnimation.start();
 
 	        }
 
-	        if ( this.element && !this.element.locked ) {
+	        if ( element && !this.element.locked ) {
 
-	            this.element.style.display = 'none';
-	            this.element.left && ( this.element.left.style.display = 'none' );
-	            this.element.right && ( this.element.right.style.display = 'none' );
+	            const { left, right, style } = element;
+
+	            style.display = 'none';
+	            if ( left ) { left.style.display = 'none'; }
+	            if ( right ) { right.style.display = 'none'; }
 
 	            this.unlockHoverElement();
 
@@ -2366,14 +2373,16 @@
 	     */
 	    show: function ( delay = 0 ) {
 
-	        if ( this.animated ) {
+	        const { animated, hideAnimation, showAnimation, material } = this;
 
-	            this.hideAnimation && this.hideAnimation.stop();
-	            this.showAnimation && this.showAnimation.delay( delay ).start();
+	        if ( animated ) {
+
+	            hideAnimation.stop();
+	            showAnimation.delay( delay ).start();
 
 	        } else {
 
-	            this.material.opacity = 1;
+	            material.opacity = 1;
 
 	        }
 
@@ -2387,14 +2396,16 @@
 	     */
 	    hide: function ( delay = 0 ) {
 
-	        if ( this.animated ) {
+	        const { animated, hideAnimation, showAnimation, material } = this;
 
-	            this.showAnimation && this.showAnimation.stop();
-	            this.hideAnimation && this.hideAnimation.delay( delay ).start();
+	        if ( animated ) {
+
+	            showAnimation.stop();
+	            hideAnimation.delay( delay ).start();
 
 	        } else {
 
-	            this.material.opacity = 0;
+	            material.opacity = 0;
 
 	        }
 			
@@ -2477,16 +2488,16 @@
 
 	    this.container = container;
 
-	    this.barElement;
-	    this.fullscreenElement;
-	    this.videoElement;
-	    this.settingElement;
+	    this.barElement = null;
+	    this.fullscreenElement = null;
+	    this.videoElement = null;
+	    this.settingElement = null;
 
-	    this.mainMenu;
+	    this.mainMenu = null;
 
-	    this.activeMainItem;
-	    this.activeSubMenu;
-	    this.mask;
+	    this.activeMainItem = null;
+	    this.activeSubMenu = null;
+	    this.mask = null;
 
 	}
 
@@ -2832,6 +2843,8 @@
 
 	        let scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
 
+	        const { container } = this;
+
 	        stylesheetId = 'panolens-style-addon';
 
 	        // Don't create button if no support
@@ -2850,17 +2863,23 @@
 	            tapSkipped = false;
 
 	            if ( !isFullscreen ) {
-	                scope.container.requestFullscreen && scope.container.requestFullscreen();
-	                scope.container.msRequestFullscreen && scope.container.msRequestFullscreen();
-	                scope.container.mozRequestFullScreen && scope.container.mozRequestFullScreen();
-	                scope.container.webkitRequestFullscreen && scope.container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+
+	                if ( container.requestFullscreen ) { container.requestFullscreen(); }
+	                if ( container.msRequestFullscreen ) { container.msRequestFullscreen(); }
+	                if ( container.mozRequestFullScreen ) { container.mozRequestFullScreen(); }
+	                if ( container.webkitRequestFullscreen ) { container.webkitRequestFullscreen( Element.ALLOW_KEYBOARD_INPUT ); }
+	              
 	                isFullscreen = true;
+
 	            } else {
-	                document.exitFullscreen && document.exitFullscreen();
-	                document.msExitFullscreen && document.msExitFullscreen();
-	                document.mozCancelFullScreen && document.mozCancelFullScreen();
-	                document.webkitExitFullscreen && document.webkitExitFullscreen();
+
+	                if ( document.exitFullscreen ) { document.exitFullscreen(); }
+	                if ( document.msExitFullscreen ) { document.msExitFullscreen(); }
+	                if ( document.mozCancelFullScreen ) { document.mozCancelFullScreen(); }
+	                if ( document.webkitExitFullscreen ) { document.webkitExitFullscreen( ); }
+
 	                isFullscreen = false;
+
 	            }
 
 	            this.style.backgroundImage = ( isFullscreen ) 
@@ -2869,7 +2888,7 @@
 
 	        }
 
-	        function onFullScreenChange (e) {
+	        function onFullScreenChange () {
 
 	            if ( tapSkipped ) {
 
@@ -3401,7 +3420,7 @@
 	        let scope = this, menu, subMenu = this.createMenu();
 
 	        subMenu.items = items;
-	        subMenu.activeItem;
+	        subMenu.activeItem = null;
 
 	        function onTap ( event ) {
 
@@ -3420,7 +3439,7 @@
 	                subMenu.setActiveItem( this );
 	                scope.activeMainItem.setSelectionTitle( this.textContent );
 
-	                this.handler && this.handler();
+	                if ( this.handler ) { this.handler(); }
 
 	            }
 
@@ -3609,6 +3628,7 @@
 
 	        const scope = this;
 	        const item = options.element || document.createElement( 'span' );
+	        const { onDispose } = options;
 
 	        item.style.cursor = 'pointer';
 	        item.style.float = 'right';
@@ -3645,7 +3665,7 @@
 
 	            item.removeEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', options.onTap, false );
 
-	            options.onDispose && options.onDispose();
+	            if ( onDispose ) { options.onDispose(); }
 
 	        };
 			
@@ -3781,7 +3801,9 @@
 
 	            if ( object.dispatchEvent ) {
 
-	                this.container && object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+	                const { container } = this;
+
+	                if ( container ) { object.dispatchEvent( { type: 'panolens-container', container } ); }
 					
 	                object.dispatchEvent( { type: 'panolens-infospot-focus', method: function ( vector, duration, easing ) {
 
@@ -4010,7 +4032,15 @@
 
 	            if ( object instanceof Infospot ) {
 
-	                visible ? object.show( delay ) : object.hide( delay );
+	                if ( visible ) {
+
+	                    object.show( delay );
+
+	                } else {
+
+	                    object.hide( delay );
+
+	                }
 
 	            }
 
@@ -4359,6 +4389,8 @@
 	        // recursive disposal on 3d objects
 	        function recursiveDispose ( object ) {
 
+	            const { geometry, material } = object;
+
 	            for ( var i = object.children.length - 1; i >= 0; i-- ) {
 
 	                recursiveDispose( object.children[i] );
@@ -4372,8 +4404,9 @@
 
 	            }
 				
-	            object.geometry && object.geometry.dispose();
-	            object.material && object.material.dispose();
+	            if ( geometry ) { geometry.dispose(); }
+	            if ( material ) { material.dispose(); }
+
 	        }
 
 	        recursiveDispose( this );
@@ -4473,10 +4506,12 @@
 	     */
 	    dispose: function () {
 
+	        const { material: { map } } = this;
+
 	        // Release cached image
 	        THREE.Cache.remove( this.src );
 
-	        this.material.map && this.material.map.dispose();
+	        if ( map ) { map.dispose(); }
 
 	        Panorama.prototype.dispose.call( this );
 
@@ -4579,7 +4614,7 @@
 
 	        this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
 
-	        this.material.uniforms[ 'tCube' ] && this.material.uniforms[ 'tCube' ].value.dispose();
+	        this.material.uniforms[ 'tCube' ].value.dispose();
 
 	        Panorama.prototype.dispose.call( this );
 
@@ -4696,7 +4731,7 @@
 
 	        } 
 
-	        const onloadeddata = function(event) {
+	        const onloadeddata = function() {
 
 	            this.setVideoTexture( video );
 
@@ -4780,7 +4815,7 @@
 
 	        video.addEventListener( 'loadeddata', onloadeddata.bind( this ) );
 			
-	        video.addEventListener( 'timeupdate', function ( event ) {
+	        video.addEventListener( 'timeupdate', function () {
 
 	            this.videoProgress = video.duration >= 0 ? video.currentTime / video.duration : 0;
 
@@ -5035,9 +5070,9 @@
 
 	        const video = this.videoElement;
 
-	        if ( this.videoElement && this.isVideoMuted() ) {
+	        if ( video && this.isVideoMuted() ) {
 
-	            this.videoElement.muted = false;
+	            video.muted = false;
 
 	        }
 
@@ -5064,6 +5099,8 @@
 	     */
 	    dispose: function () {
 
+	        const { material: { map } } = this;
+
 	        this.resetVideo();
 	        this.pauseVideo();
 			
@@ -5072,7 +5109,7 @@
 	        this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 	        this.removeEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
-	        this.material.map && this.material.map.dispose();
+	        if ( map ) { map.dispose(); }
 
 	        Panorama.prototype.dispose.call( this );
 
@@ -5088,8 +5125,8 @@
 	function GoogleStreetviewLoader ( parameters = {} ) {
 
 	    this._parameters = parameters;
-	    this._zoom;
-	    this._panoId;
+	    this._zoom = null;
+	    this._panoId = null;
 	    this._panoClient = new google.maps.StreetViewService();
 	    this._count = 0;
 	    this._total = 0;
@@ -5610,7 +5647,7 @@
 	    this.size = size;
 	    this.ratio = ratio;
 	    this.EPS = 0.000001;
-	    this.frameId;
+	    this.frameId = null;
 
 	    this.dragging = false;
 	    this.userMouse = new THREE.Vector2();
@@ -5784,7 +5821,7 @@
 
 	    },
 
-	    onMouseUp: function ( event ) {
+	    onMouseUp: function () {
 
 	        this.dragging = false;
 
@@ -6053,7 +6090,7 @@
 
 	    this.object = object;
 	    this.domElement = ( domElement !== undefined ) ? domElement : document;
-	    this.frameId;
+	    this.frameId = null;
 
 	    // API
 
@@ -6153,8 +6190,8 @@
 	    var dollyEnd = new THREE.Vector2();
 	    var dollyDelta = new THREE.Vector2();
 
-	    var theta;
-	    var phi;
+	    var theta = 0;
+	    var phi = 0;
 	    var phiDelta = 0;
 	    var thetaDelta = 0;
 	    var scale = 1;
@@ -6426,7 +6463,7 @@
 	        if ( lastPosition.distanceToSquared( this.object.position ) > EPS
 			    || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
 
-	            ignoreUpdate !== true && this.dispatchEvent( changeEvent );
+	            if ( ignoreUpdate !== true ) { this.dispatchEvent( changeEvent ); }
 
 	            lastPosition.copy( this.object.position );
 	            lastQuaternion.copy (this.object.quaternion );
@@ -7044,7 +7081,7 @@
 	        setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
 	        scope.alpha = alpha;
 
-	        ignoreUpdate !== true && scope.dispatchEvent( changeEvent );
+	        if ( ignoreUpdate !== true ) { scope.dispatchEvent( changeEvent ); }
 
 	    };
 
@@ -7332,34 +7369,26 @@
 
 	    this.mode = MODES.NORMAL;
 
-	    this.OrbitControls;
-	    this.DeviceOrientationControls;
+	    this.panorama = null;
+	    this.widget = null;
 
-	    this.CardboardEffect;
-	    this.StereoEffect;
-
-	    this.controls;
-	    this.effect;
-	    this.panorama;
-	    this.widget;
-
-	    this.hoverObject;
-	    this.infospot;
-	    this.pressEntityObject;
-	    this.pressObject;
+	    this.hoverObject = null;
+	    this.infospot = null;
+	    this.pressEntityObject = null;
+	    this.pressObject = null;
 
 	    this.raycaster = new THREE.Raycaster();
 	    this.raycasterPoint = new THREE.Vector2();
 	    this.userMouse = new THREE.Vector2();
 	    this.updateCallbacks = [];
-	    this.requestAnimationId;
+	    this.requestAnimationId = null;
 
 	    this.cameraFrustum = new THREE.Frustum();
 	    this.cameraViewProjectionMatrix = new THREE.Matrix4();
 
-	    this.autoRotateRequestId;
+	    this.autoRotateRequestId = null;
 
-	    this.outputDivElement;
+	    this.outputDivElement = null;
 
 	    this.touchSupported = 'ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch;
 
@@ -7597,7 +7626,7 @@
 
 	            const afterEnterComplete = function () {
 
-	                leavingPanorama && leavingPanorama.onLeave();
+	                if ( leavingPanorama ) { leavingPanorama.onLeave(); }
 	                pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
 
 	            };
@@ -7943,13 +7972,15 @@
 	     */
 	    onVideoUpdate: function ( percentage ) {
 
+	        const { widget } = this;
+
 	        /**
 	         * Video update event
 	         * @type {object}
 	         * @event Viewer#video-update
 	         * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
 	         */
-	        this.widget && this.widget.dispatchEvent( { type: 'video-update', percentage: percentage } );
+	        if( widget ) { widget.dispatchEvent( { type: 'video-update', percentage: percentage } ); }
 
 	    },
 
@@ -7994,12 +8025,14 @@
 	     */
 	    showVideoWidget: function () {
 
+	        const { widget } = this;
+
 	        /**
 	         * Show video widget event
 	         * @type {object}
 	         * @event Viewer#video-control-show
 	         */
-	        this.widget && this.widget.dispatchEvent( { type: 'video-control-show' } );
+	        if( widget ) { widget.dispatchEvent( { type: 'video-control-show' } ); }
 
 	    },
 
@@ -8010,12 +8043,14 @@
 	     */
 	    hideVideoWidget: function () {
 
+	        const { widget } = this;
+
 	        /**
 	         * Hide video widget
 	         * @type {object}
 	         * @event Viewer#video-control-hide
 	         */
-	        this.widget && this.widget.dispatchEvent( { type: 'video-control-hide' } );
+	        if( widget ) { widget.dispatchEvent( { type: 'video-control-hide' } ); }
 
 	    },
 
@@ -8027,11 +8062,11 @@
 	     */
 	    updateVideoPlayButton: function ( paused ) {
 
-	        if ( this.widget && 
-					this.widget.videoElement && 
-					this.widget.videoElement.controlButton ) {
+	        const { widget } = this;
 
-	            this.widget.videoElement.controlButton.update( paused );
+	        if ( widget && widget.videoElement && widget.videoElement.controlButton ) {
+
+	            widget.videoElement.controlButton.update( paused );
 
 	        }
 
@@ -8638,8 +8673,19 @@
 
 	        if ( type === 'click' ) {
 
-	            this.options.autoHideInfospot && this.panorama && this.panorama.toggleInfospotVisibility();
-	            this.options.autoHideControlBar && this.toggleControlBar();
+	            const { options: { autoHideInfospot, autoHideControlBar }, panorama, toggleControlBar } = this;
+
+	            if ( autoHideInfospot && panorama ) {
+
+	                panorama.toggleInfospotVisibility();
+
+	            }
+
+	            if ( autoHideControlBar ) {
+
+	                toggleControlBar();
+
+	            }
 
 	        }
 
@@ -8916,12 +8962,18 @@
 	     */
 	    toggleControlBar: function () {
 
+	        const { widget } = this;
+
 	        /**
 	         * Toggle control bar event
 	         * @type {object}
 	         * @event Viewer#control-bar-toggle
 	         */
-	        this.widget && this.widget.dispatchEvent( { type: 'control-bar-toggle' } );
+	        if ( widget ) {
+
+	            widget.dispatchEvent( { type: 'control-bar-toggle' } );
+
+	        }
 
 	    },
 
@@ -9151,6 +9203,8 @@
 	        // recursive disposal on 3d objects
 	        function recursiveDispose ( object ) {
 
+	            const { geometry, material } = object;
+
 	            for ( var i = object.children.length - 1; i >= 0; i-- ) {
 
 	                recursiveDispose( object.children[i] );
@@ -9164,8 +9218,8 @@
 
 	            }
 
-	            object.geometry && object.geometry.dispose();
-	            object.material && object.material.dispose();
+	            if ( geometry ) { geometry.dispose(); }
+	            if ( material ) { material.dispose(); }
 	        }
 
 	        recursiveDispose( this.scene );
@@ -9228,11 +9282,11 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    loadAsyncRequest: function ( url, callback ) {
+	    loadAsyncRequest: function ( url, callback = () => {} ) {
 
 	        const request = new XMLHttpRequest();
 	        request.onloadend = function ( event ) {
-	            callback && callback( event );
+	            callback( event );
 	        };
 	        request.open( 'GET', url, true );
 	        request.send( null );

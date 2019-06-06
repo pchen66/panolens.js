@@ -16,7 +16,7 @@ const CubeTextureLoader = {
      * @param  {function} onError    - On error callback
      * @return {THREE.CubeTexture}   - Cube texture
      */
-    load: function ( urls, onLoad, onProgress, onError ) {
+    load: function ( urls, onLoad = () => {}, onProgress = () => {}, onError ) {
 
 	   var texture, loaded, progress, all, loadings;
 
@@ -38,7 +38,7 @@ const CubeTextureLoader = {
 
 				   texture.needsUpdate = true;
 
-				   onLoad && onLoad( texture );
+				   onLoad( texture );
 
 			   }
 
@@ -64,7 +64,7 @@ const CubeTextureLoader = {
 
 			   }
 
-			   onProgress && onProgress( all );
+			   onProgress( all );
 
 		   }, onError );
 

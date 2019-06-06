@@ -90,7 +90,9 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
             if ( object.dispatchEvent ) {
 
-                this.container && object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+                const { container } = this;
+
+                if ( container ) { object.dispatchEvent( { type: 'panolens-container', container } ); }
 				
                 object.dispatchEvent( { type: 'panolens-infospot-focus', method: function ( vector, duration, easing ) {
 
@@ -319,7 +321,15 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
             if ( object instanceof Infospot ) {
 
-                visible ? object.show( delay ) : object.hide( delay );
+                if ( visible ) {
+
+                    object.show( delay );
+
+                } else {
+
+                    object.hide( delay );
+
+                }
 
             }
 
@@ -668,6 +678,8 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
         // recursive disposal on 3d objects
         function recursiveDispose ( object ) {
 
+            const { geometry, material } = object;
+
             for ( var i = object.children.length - 1; i >= 0; i-- ) {
 
                 recursiveDispose( object.children[i] );
@@ -681,8 +693,9 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
             }
 			
-            object.geometry && object.geometry.dispose();
-            object.material && object.material.dispose();
+            if ( geometry ) { geometry.dispose(); }
+            if ( material ) { material.dispose(); }
+
         }
 
         recursiveDispose( this );

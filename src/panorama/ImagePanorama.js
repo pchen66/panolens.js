@@ -86,10 +86,12 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {
 
+        const { material: { map } } = this;
+
         // Release cached image
         THREE.Cache.remove( this.src );
 
-        this.material.map && this.material.map.dispose();
+        if ( map ) { map.dispose(); }
 
         Panorama.prototype.dispose.call( this );
 

@@ -22,7 +22,7 @@ function LittlePlanet ( type = 'image', source, size = 10000, ratio = 0.5 ) {
     this.size = size;
     this.ratio = ratio;
     this.EPS = 0.000001;
-    this.frameId;
+    this.frameId = null;
 
     this.dragging = false;
     this.userMouse = new THREE.Vector2();
@@ -196,7 +196,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     },
 
-    onMouseUp: function ( event ) {
+    onMouseUp: function () {
 
         this.dragging = false;
 

@@ -104,34 +104,26 @@ function Viewer ( options ) {
 
     this.mode = MODES.NORMAL;
 
-    this.OrbitControls;
-    this.DeviceOrientationControls;
+    this.panorama = null;
+    this.widget = null;
 
-    this.CardboardEffect;
-    this.StereoEffect;
-
-    this.controls;
-    this.effect;
-    this.panorama;
-    this.widget;
-
-    this.hoverObject;
-    this.infospot;
-    this.pressEntityObject;
-    this.pressObject;
+    this.hoverObject = null;
+    this.infospot = null;
+    this.pressEntityObject = null;
+    this.pressObject = null;
 
     this.raycaster = new THREE.Raycaster();
     this.raycasterPoint = new THREE.Vector2();
     this.userMouse = new THREE.Vector2();
     this.updateCallbacks = [];
-    this.requestAnimationId;
+    this.requestAnimationId = null;
 
     this.cameraFrustum = new THREE.Frustum();
     this.cameraViewProjectionMatrix = new THREE.Matrix4();
 
-    this.autoRotateRequestId;
+    this.autoRotateRequestId = null;
 
-    this.outputDivElement;
+    this.outputDivElement = null;
 
     this.touchSupported = 'ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch;
 
@@ -370,7 +362,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             const afterEnterComplete = function () {
 
-                leavingPanorama && leavingPanorama.onLeave();
+                if ( leavingPanorama ) { leavingPanorama.onLeave(); }
                 pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
 
             };
@@ -716,13 +708,15 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     onVideoUpdate: function ( percentage ) {
 
+        const { widget } = this;
+
         /**
          * Video update event
          * @type {object}
          * @event Viewer#video-update
          * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
          */
-        this.widget && this.widget.dispatchEvent( { type: 'video-update', percentage: percentage } );
+        if( widget ) { widget.dispatchEvent( { type: 'video-update', percentage: percentage } ); }
 
     },
 
@@ -767,12 +761,14 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     showVideoWidget: function () {
 
+        const { widget } = this;
+
         /**
          * Show video widget event
          * @type {object}
          * @event Viewer#video-control-show
          */
-        this.widget && this.widget.dispatchEvent( { type: 'video-control-show' } );
+        if( widget ) { widget.dispatchEvent( { type: 'video-control-show' } ); }
 
     },
 
@@ -783,12 +779,14 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     hideVideoWidget: function () {
 
+        const { widget } = this;
+
         /**
          * Hide video widget
          * @type {object}
          * @event Viewer#video-control-hide
          */
-        this.widget && this.widget.dispatchEvent( { type: 'video-control-hide' } );
+        if( widget ) { widget.dispatchEvent( { type: 'video-control-hide' } ); }
 
     },
 
@@ -800,11 +798,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     updateVideoPlayButton: function ( paused ) {
 
-        if ( this.widget && 
-				this.widget.videoElement && 
-				this.widget.videoElement.controlButton ) {
+        const { widget } = this;
 
-            this.widget.videoElement.controlButton.update( paused );
+        if ( widget && widget.videoElement && widget.videoElement.controlButton ) {
+
+            widget.videoElement.controlButton.update( paused );
 
         }
 
@@ -1411,8 +1409,19 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         if ( type === 'click' ) {
 
-            this.options.autoHideInfospot && this.panorama && this.panorama.toggleInfospotVisibility();
-            this.options.autoHideControlBar && this.toggleControlBar();
+            const { options: { autoHideInfospot, autoHideControlBar }, panorama, toggleControlBar } = this;
+
+            if ( autoHideInfospot && panorama ) {
+
+                panorama.toggleInfospotVisibility();
+
+            }
+
+            if ( autoHideControlBar ) {
+
+                toggleControlBar();
+
+            }
 
         }
 
@@ -1689,12 +1698,18 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     toggleControlBar: function () {
 
+        const { widget } = this;
+
         /**
          * Toggle control bar event
          * @type {object}
          * @event Viewer#control-bar-toggle
          */
-        this.widget && this.widget.dispatchEvent( { type: 'control-bar-toggle' } );
+        if ( widget ) {
+
+            widget.dispatchEvent( { type: 'control-bar-toggle' } );
+
+        }
 
     },
 
@@ -1924,6 +1939,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         // recursive disposal on 3d objects
         function recursiveDispose ( object ) {
 
+            const { geometry, material } = object;
+
             for ( var i = object.children.length - 1; i >= 0; i-- ) {
 
                 recursiveDispose( object.children[i] );
@@ -1937,8 +1954,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             }
 
-            object.geometry && object.geometry.dispose();
-            object.material && object.material.dispose();
+            if ( geometry ) { geometry.dispose(); }
+            if ( material ) { material.dispose(); }
         }
 
         recursiveDispose( this.scene );
@@ -2001,11 +2018,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @memberOf Viewer
      * @instance
      */
-    loadAsyncRequest: function ( url, callback ) {
+    loadAsyncRequest: function ( url, callback = () => {} ) {
 
         const request = new XMLHttpRequest();
         request.onloadend = function ( event ) {
-            callback && callback( event );
+            callback( event );
         };
         request.open( 'GET', url, true );
         request.send( null );

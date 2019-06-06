@@ -75,7 +75,7 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
 
-        this.material.uniforms[ 'tCube' ] && this.material.uniforms[ 'tCube' ].value.dispose();
+        this.material.uniforms[ 'tCube' ].value.dispose();
 
         Panorama.prototype.dispose.call( this );
 
