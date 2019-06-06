@@ -26,16 +26,16 @@ function Widget ( container ) {
 
     this.container = container;
 
-    this.barElement;
-    this.fullscreenElement;
-    this.videoElement;
-    this.settingElement;
+    this.barElement = null;
+    this.fullscreenElement = null;
+    this.videoElement = null;
+    this.settingElement = null;
 
-    this.mainMenu;
+    this.mainMenu = null;
 
-    this.activeMainItem;
-    this.activeSubMenu;
-    this.mask;
+    this.activeMainItem = null;
+    this.activeSubMenu = null;
+    this.mask = null;
 
 }
 
@@ -381,6 +381,9 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         let scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
 
+        const { container: { requestFullscreen, msRequestFullscreen, mozRequestFullScreen, webkitRequestFullscreen } } = this;
+        const { exitFullscreen, msExitFullscreen, mozCancelFullScreen, webkitExitFullscreen } = document;
+
         stylesheetId = 'panolens-style-addon';
 
         // Don't create button if no support
@@ -399,17 +402,23 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             tapSkipped = false;
 
             if ( !isFullscreen ) {
-                scope.container.requestFullscreen && scope.container.requestFullscreen();
-                scope.container.msRequestFullscreen && scope.container.msRequestFullscreen();
-                scope.container.mozRequestFullScreen && scope.container.mozRequestFullScreen();
-                scope.container.webkitRequestFullscreen && scope.container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+
+                if ( requestFullscreen ) { requestFullscreen(); }
+                if ( msRequestFullscreen ) { msRequestFullscreen(); }
+                if ( mozRequestFullScreen ) { mozRequestFullScreen(); }
+                if ( webkitRequestFullscreen ) { webkitRequestFullscreen( Element.ALLOW_KEYBOARD_INPUT ); }
+              
                 isFullscreen = true;
+
             } else {
-                document.exitFullscreen && document.exitFullscreen();
-                document.msExitFullscreen && document.msExitFullscreen();
-                document.mozCancelFullScreen && document.mozCancelFullScreen();
-                document.webkitExitFullscreen && document.webkitExitFullscreen();
+
+                if ( exitFullscreen ) { exitFullscreen(); }
+                if ( msExitFullscreen ) { msExitFullscreen(); }
+                if ( mozCancelFullScreen ) { mozCancelFullScreen(); }
+                if ( webkitExitFullscreen ) { webkitExitFullscreen( ); }
+
                 isFullscreen = false;
+
             }
 
             this.style.backgroundImage = ( isFullscreen ) 
@@ -953,7 +962,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         let scope = this, menu, subMenu = this.createMenu();
 
         subMenu.items = items;
-        subMenu.activeItem;
+        subMenu.activeItem = null;
 
         function onTap ( event ) {
 
@@ -972,7 +981,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
                 subMenu.setActiveItem( this );
                 scope.activeMainItem.setSelectionTitle( this.textContent );
 
-                this.handler && this.handler();
+                if ( this.handler ) { this.handler(); }
 
             }
 
@@ -1161,6 +1170,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         const scope = this;
         const item = options.element || document.createElement( 'span' );
+        const { onDispose } = options;
 
         item.style.cursor = 'pointer';
         item.style.float = 'right';
@@ -1197,7 +1207,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             item.removeEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'click', options.onTap, false );
 
-            options.onDispose && options.onDispose();
+            if ( onDispose ) { options.onDispose(); }
 
         };
 		

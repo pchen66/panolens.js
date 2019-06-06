@@ -16,7 +16,7 @@ const ImageLoader = {
      * @param  {function} onProgress - In progress callback
      * @param  {function} onError    - On error callback
      */
-    load: function ( url, onLoad, onProgress, onError = () => {} ) {
+    load: function ( url, onLoad = () => {}, onProgress = () => {}, onError = () => {} ) {
 
         // Enable cache
         THREE.Cache.enabled = true;
@@ -43,12 +43,7 @@ const ImageLoader = {
 	
                 setTimeout( function () {
 	
-                    if ( onProgress ) {
-	
-                        onProgress( { loaded: 1, total: 1 } );
-	
-                    } 
-					
+                    onProgress( { loaded: 1, total: 1 } );
                     onLoad( cached );
 	
                 }, 0 );
@@ -69,7 +64,7 @@ const ImageLoader = {
         const onImageLoaded = () => {
 	
             urlCreator.revokeObjectURL( image.src );
-            onLoad && onLoad( image );
+            onLoad( image );
 	
         };
 	
@@ -86,18 +81,18 @@ const ImageLoader = {
         request.open( 'GET', url, true );
         request.responseType = 'arraybuffer';
         request.addEventListener( 'error', onError );
-        request.addEventListener( 'progress', ( event ) => {
+        request.addEventListener( 'progress', ( { loaded, total } ) => {
 	
             if ( event.lengthComputable ) {
 	
-                onProgress && onProgress( { loaded: event.loaded, total: event.total } );
+                onProgress( { loaded, total } );
 	
             }
 	
         } );
-        request.addEventListener( 'loadend', () => {
+        request.addEventListener( 'loadend', ( { currentTarget: { response } } ) => {
 	
-            arrayBufferView = new Uint8Array( this.response );
+            arrayBufferView = new Uint8Array( response );
             blob = new Blob( [ arrayBufferView ] );
 				
             image.addEventListener( 'load', onImageLoaded, false );

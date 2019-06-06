@@ -16,7 +16,7 @@ const TextureLoader = {
      * @param  {function} onError    - On error callback
      * @return {THREE.Texture}   	 - Image texture
      */
-    load: function ( url, onLoad, onProgress, onError ) {
+    load: function ( url, onLoad = () => {}, onProgress, onError ) {
 
         var texture = new THREE.Texture(); 
 
@@ -30,7 +30,7 @@ const TextureLoader = {
             texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
             texture.needsUpdate = true;
 
-            onLoad && onLoad( texture );
+            onLoad( texture );
 
         }, onProgress, onError );
 

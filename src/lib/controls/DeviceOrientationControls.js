@@ -158,7 +158,7 @@ function DeviceOrientationControls ( camera, domElement ) {
         setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
         scope.alpha = alpha;
 
-        ignoreUpdate !== true && scope.dispatchEvent( changeEvent );
+        if ( ignoreUpdate !== true ) { scope.dispatchEvent( changeEvent ); }
 
     };
 

@@ -11,11 +11,11 @@ function Media ( constraints ) {
 
     this.constraints = Object.assign( defaultConstraints, constraints );
 
-    this.container;
-    this.scene;
-    this.element;
+    this.container = null;
+    this.scene = null;
+    this.element = null;
     this.devices = [];
-    this.stream;
+    this.stream = null;
     this.ratioScalar = 1;
     this.videoDeviceIndex = 0;
 
@@ -82,7 +82,7 @@ Object.assign( Media.prototype, {
 
             return _devices.map( device => { 
                 
-                !devices.includes( device ) && devices.push( device ); 
+                if ( !devices.includes( device ) ) { devices.push( device ); }
                 return device; 
             
             } );

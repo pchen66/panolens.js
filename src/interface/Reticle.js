@@ -29,9 +29,9 @@ function Reticle ( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
     this.center.set( 0.5, 0.5 );
     this.scale.set( 0.5, 0.5, 1 );
 
-    this.startTimestamp;
-    this.timerId;
-    this.callback;
+    this.startTimestamp = null;
+    this.timerId = null;
+    this.callback = null;
 
     this.frustumCulled = false;
 
@@ -259,7 +259,7 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
             cancelAnimationFrame( this.timerId );
             this.ripple();
-            this.callback && this.callback();
+            if ( this.callback ) { this.callback(); }
             this.stop();
 
         }

@@ -9,8 +9,8 @@ import { TextureLoader } from './TextureLoader';
 function GoogleStreetviewLoader ( parameters = {} ) {
 
     this._parameters = parameters;
-    this._zoom;
-    this._panoId;
+    this._zoom = null;
+    this._panoId = null;
     this._panoClient = new google.maps.StreetViewService();
     this._count = 0;
     this._total = 0;

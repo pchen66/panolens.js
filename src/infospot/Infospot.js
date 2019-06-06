@@ -31,26 +31,30 @@ function Infospot ( scale = 300, imageSrc, animated ) {
      */
     this.frustumCulled = false;
 
-    this.element;
-    this.toPanorama;
-    this.cursorStyle;
+    this.element = null;
+    this.toPanorama = null;
+    this.cursorStyle = null;
 
     this.mode = MODES.UNKNOWN;
 
     this.scale.set( scale, scale, 1 );
     this.rotation.y = Math.PI;
 
-    this.container;
+    this.container = null;
 
     this.originalRaycast = this.raycast;
 
     // Event Handler
-    this.HANDLER_FOCUS;	
+    this.HANDLER_FOCUS = null;	
 
     this.material.side = THREE.DoubleSide;
     this.material.depthTest = false;
     this.material.transparent = true;
     this.material.opacity = 0;
+
+    this.scaleUpAnimation = new TWEEN.Tween();
+    this.scaleDownAnimation = new TWEEN.Tween();
+
 
     const postLoad = function ( texture ) {
 
@@ -207,38 +211,41 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
         if ( !this.getContainer() ) { return; }
 
         const cursorStyle = this.cursorStyle || ( this.mode === MODES.NORMAL ? 'pointer' : 'default' );
+        const { scaleDownAnimation, scaleUpAnimation, element } = this;
 
         this.isHovering = true;
         this.container.style.cursor = cursorStyle;
 		
         if ( this.animated ) {
 
-            this.scaleDownAnimation && this.scaleDownAnimation.stop();
-            this.scaleUpAnimation && this.scaleUpAnimation.start();
+            scaleDownAnimation.stop();
+            scaleUpAnimation.start();
 
         }
 		
-        if ( this.element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
+        if ( element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
+
+            const { left, right, style } = element;
 
             if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
-                this.element.style.display = 'none';
-                this.element.left && ( this.element.left.style.display = 'block' );
-                this.element.right && ( this.element.right.style.display = 'block' );
+                style.display = 'none';
+                if ( left ) { left.style.display = 'block'; }
+                if ( right ) { right.style.display = 'block'; }
 
                 // Store element width for reference
-                this.element._width = this.element.left.clientWidth;
-                this.element._height = this.element.left.clientHeight;
+                element._width = left.clientWidth;
+                element._height = left.clientHeight;
 
             } else {
 
-                this.element.style.display = 'block';
-                this.element.left && ( this.element.left.style.display = 'none' );
-                this.element.right && ( this.element.right.style.display = 'none' );
+                style.display = 'block';
+                if ( left ) { left.style.display = 'none'; }
+                if ( right ) { right.style.display = 'none'; }
 
                 // Store element width for reference
-                this.element._width = this.element.clientWidth;
-                this.element._height = this.element.clientHeight;
+                element._width = element.clientWidth;
+                element._height = element.clientHeight;
 
             }
 			
@@ -256,21 +263,25 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         if ( !this.getContainer() ) { return; }
 
+        const { scaleDownAnimation, scaleUpAnimation, element } = this;
+
         this.isHovering = false;
         this.container.style.cursor = 'default';
 
         if ( this.animated ) {
 
-            this.scaleUpAnimation && this.scaleUpAnimation.stop();
-            this.scaleDownAnimation && this.scaleDownAnimation.start();
+            scaleUpAnimation.stop();
+            scaleDownAnimation.start();
 
         }
 
-        if ( this.element && !this.element.locked ) {
+        if ( element && !this.element.locked ) {
 
-            this.element.style.display = 'none';
-            this.element.left && ( this.element.left.style.display = 'none' );
-            this.element.right && ( this.element.right.style.display = 'none' );
+            const { left, right, style } = element;
+
+            style.display = 'none';
+            if ( left ) { left.style.display = 'none'; }
+            if ( right ) { right.style.display = 'none'; }
 
             this.unlockHoverElement();
 
@@ -566,14 +577,16 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      */
     show: function ( delay = 0 ) {
 
-        if ( this.animated ) {
+        const { animated, hideAnimation, showAnimation, material } = this;
 
-            this.hideAnimation && this.hideAnimation.stop();
-            this.showAnimation && this.showAnimation.delay( delay ).start();
+        if ( animated ) {
+
+            hideAnimation.stop();
+            showAnimation.delay( delay ).start();
 
         } else {
 
-            this.material.opacity = 1;
+            material.opacity = 1;
 
         }
 
@@ -587,14 +600,16 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      */
     hide: function ( delay = 0 ) {
 
-        if ( this.animated ) {
+        const { animated, hideAnimation, showAnimation, material } = this;
 
-            this.showAnimation && this.showAnimation.stop();
-            this.hideAnimation && this.hideAnimation.delay( delay ).start();
+        if ( animated ) {
+
+            showAnimation.stop();
+            hideAnimation.delay( delay ).start();
 
         } else {
 
-            this.material.opacity = 0;
+            material.opacity = 0;
 
         }
 		

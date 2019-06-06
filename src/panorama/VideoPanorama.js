@@ -454,6 +454,8 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {
 
+        const { material: { map } } = this;
+
         this.resetVideo();
         this.pauseVideo();
 		
@@ -462,7 +464,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
         this.removeEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
-        this.material.map && this.material.map.dispose();
+        if ( map ) { map.dispose(); }
 
         Panorama.prototype.dispose.call( this );
 
