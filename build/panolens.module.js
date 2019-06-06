@@ -2839,8 +2839,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         let scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
 
-        const { container: { requestFullscreen, msRequestFullscreen, mozRequestFullScreen, webkitRequestFullscreen } } = this;
-        const { exitFullscreen, msExitFullscreen, mozCancelFullScreen, webkitExitFullscreen } = document;
+        const { container } = this;
 
         stylesheetId = 'panolens-style-addon';
 
@@ -2861,19 +2860,19 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             if ( !isFullscreen ) {
 
-                if ( requestFullscreen ) { requestFullscreen(); }
-                if ( msRequestFullscreen ) { msRequestFullscreen(); }
-                if ( mozRequestFullScreen ) { mozRequestFullScreen(); }
-                if ( webkitRequestFullscreen ) { webkitRequestFullscreen( Element.ALLOW_KEYBOARD_INPUT ); }
+                if ( container.requestFullscreen ) { container.requestFullscreen(); }
+                if ( container.msRequestFullscreen ) { container.msRequestFullscreen(); }
+                if ( container.mozRequestFullScreen ) { container.mozRequestFullScreen(); }
+                if ( container.webkitRequestFullscreen ) { container.webkitRequestFullscreen( Element.ALLOW_KEYBOARD_INPUT ); }
               
                 isFullscreen = true;
 
             } else {
 
-                if ( exitFullscreen ) { exitFullscreen(); }
-                if ( msExitFullscreen ) { msExitFullscreen(); }
-                if ( mozCancelFullScreen ) { mozCancelFullScreen(); }
-                if ( webkitExitFullscreen ) { webkitExitFullscreen( ); }
+                if ( document.exitFullscreen ) { document.exitFullscreen(); }
+                if ( document.msExitFullscreen ) { document.msExitFullscreen(); }
+                if ( document.mozCancelFullScreen ) { document.mozCancelFullScreen(); }
+                if ( document.webkitExitFullscreen ) { document.webkitExitFullscreen( ); }
 
                 isFullscreen = false;
 
