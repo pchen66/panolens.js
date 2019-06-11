@@ -1,5 +1,6 @@
 import { LittlePlanet } from './LittlePlanet';
 import { ImagePanorama } from './ImagePanorama';
+import * as THREE from 'three';
 
 /**
  * @classdesc Image Little Planet
@@ -28,8 +29,7 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
 
         this.updateTexture( texture );
 
-        LittlePlanet.prototype.onLoad.call( this );
-        ImagePanorama.prototype.onLoad.call( this, texture );
+        LittlePlanet.prototype.onLoad.call( this, texture );
 
     },
     

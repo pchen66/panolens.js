@@ -1,5 +1,6 @@
 import { Panorama } from './Panorama';
 import { CubeTextureLoader } from '../loaders/CubeTextureLoader';
+import * as THREE from 'three';
 
 /**
  * @classdesc Cubemap-based panorama
@@ -9,7 +10,7 @@ import { CubeTextureLoader } from '../loaders/CubeTextureLoader';
 function CubePanorama ( images = [] ){
 
     const edgeLength = 10000;
-    const shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
+    const shader = Object.assign( {}, THREE.ShaderLib[ 'cube' ] );
     const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
     const material = new THREE.ShaderMaterial( {
 
@@ -73,9 +74,15 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {	
 
+        const { value } = this.material.uniforms.tCube;
+
         this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
 
-        this.material.uniforms[ 'tCube' ].value.dispose();
+        if ( value instanceof THREE.CubeTexture ) {
+
+            value.dispose();
+
+        }
 
         Panorama.prototype.dispose.call( this );
 

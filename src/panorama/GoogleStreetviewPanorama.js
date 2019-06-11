@@ -1,5 +1,6 @@
 import { ImagePanorama } from './ImagePanorama';
 import { GoogleStreetviewLoader } from '../loaders/GoogleStreetviewLoader';
+import * as THREE from 'three';
 
 /**
  * @classdesc Google streetview panorama
@@ -14,7 +15,7 @@ function GoogleStreetviewPanorama ( panoId, apiKey ) {
 
     this.panoId = panoId;
 
-    this.gsvLoader = undefined;
+    this.gsvLoader = null;
 
     this.loadRequested = false;
 
@@ -41,10 +42,6 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
         if ( panoId && this.gsvLoader ) {
 
             this.loadGSVLoader( panoId );
-
-        } else {
-
-            this.gsvLoader = {};
 
         }
 
@@ -77,7 +74,7 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
 
         this.gsvLoader = new GoogleStreetviewLoader();
 
-        if ( this.gsvLoader === {} || this.loadRequested ) {
+        if ( this.loadRequested ) {
 
             this.load();
 
@@ -125,8 +122,6 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
      * @instance
      */
     onLoad: function ( canvas ) {
-
-        if ( !this.gsvLoader ) { return; }
 
         ImagePanorama.prototype.onLoad.call( this, new THREE.Texture( canvas ) );
 
