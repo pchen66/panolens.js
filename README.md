@@ -3,9 +3,11 @@
 [![NPM package][npm]][npm-url]
 [![License][license]][license-url]
 [![Bundle Size][bundle-size]][bundle-size-url]
+[![Build Status][build-status]][build-status-url]
 [![Dependencies][dependencies]][dependencies-url]
 [![Dev Dependencies][dev-dependencies]][dev-dependencies-url]
 [![Language Grade][lgtm]][lgtm-url]
+[![Coverage][coverage]][coverage-url]
 
 ## Javascript 360 Panorama Viewer
 
@@ -59,11 +61,15 @@ npm run build-closure
 [license-url]: ./LICENSE
 [bundle-size]: https://badgen.net/bundlephobia/minzip/panolens
 [bundle-size-url]: https://bundlephobia.com/result?p=panolens
+[build-status]: https://travis-ci.com/pchen66/panolens.js.svg?branch=dev
+[build-status-url]: https://travis-ci.com/pchen66/panolens.js
 [dependencies]: https://img.shields.io/david/pchen66/panolens.js.svg
 [dependencies-url]: https://david-dm.org/pchen66/panolens.js
 [dev-dependencies]: https://img.shields.io/david/dev/pchen66/panolens.js.svg
 [dev-dependencies-url]: https://david-dm.org/pchen66/panolens.js?type=dev
 [lgtm]: https://img.shields.io/lgtm/grade/javascript/g/pchen66/panolens.js.svg?logo=lgtm&logoWidth=18&label=code%20quality
 [lgtm-url]: https://lgtm.com/projects/g/pchen66/panolens.js/context:javascript
+[coverage]: https://coveralls.io/repos/github/pchen66/panolens.js/badge.svg?branch=dev
+[coverage-url]: https://coveralls.io/github/pchen66/panolens.js?branch=dev
 [panolens-support]: https://pics.paypal.com/00/p/NDIyZmRiMGEtMGQyMy00Y2QzLWI1YWQtZmY1OGI1MzRjNDYw/image_2.PNG
 [panolens-support-url]: https://www.paypal.me/panolens
