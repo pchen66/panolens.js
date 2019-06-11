@@ -27,7 +27,9 @@
     "lint-fix": "eslint src --fix",
     "test": "nyc --reporter=html --reporter=text ava ./test/src",
     "start": "npm run dev",
-    "docs": "node_modules/.bin/jsdoc -c jsdoc.json -d ./docs"
+    "docs": "node_modules/.bin/jsdoc -c jsdoc.json -d ./docs",
+    "travis": "npm run lint && npm test",
+    "prepublishOnly": "npm run build-closure && npm run docs"
   },
   "repository": {
     "type": "git",
