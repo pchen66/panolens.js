@@ -1,5 +1,5 @@
 import { DataImage } from '../DataImage.js';
-import 'three';
+import * as THREE from 'three';
 
 /**
  * @module ImageLoader

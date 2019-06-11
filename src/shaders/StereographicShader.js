@@ -4,7 +4,7 @@
  * @author pchen66
  */
 
-import 'three';
+import * as THREE from 'three';
 
 /**
  * @description Stereograhpic Shader

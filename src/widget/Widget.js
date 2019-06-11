@@ -1,6 +1,6 @@
 import { CONTROLS, MODES } from '../Constants';
 import { DataImage } from '../DataImage';
-import 'three';
+import * as THREE from 'three';
 
 /**
  * @classdesc Widget for controls

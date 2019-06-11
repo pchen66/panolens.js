@@ -10,7 +10,7 @@ import { DataImage } from '../DataImage';
 import { Panorama } from '../panorama/Panorama';
 import { VideoPanorama } from '../panorama/VideoPanorama';
 import { CameraPanorama } from '../panorama/CameraPanorama';
-import 'three';
+import * as THREE from 'three';
 
 /**
  * @classdesc Viewer contains pre-defined scene, camera and renderer

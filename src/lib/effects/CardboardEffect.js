@@ -1,5 +1,5 @@
 
-import 'three';
+import * as THREE from 'three';
 
 /**
  * @classdesc Google Cardboard Effect Composer

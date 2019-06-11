@@ -1,4 +1,4 @@
-import 'three';
+import * as THREE from 'three';
 
 /**
  * @classdesc Orbit Controls

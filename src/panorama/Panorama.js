@@ -1,6 +1,6 @@
 import { Infospot } from '../infospot/Infospot';
 import { DataImage } from '../DataImage';
-import 'three';
+import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
 
 

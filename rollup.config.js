@@ -1,6 +1,7 @@
 import resolve from 'rollup-plugin-node-resolve';
 import json from 'rollup-plugin-json';
 import commonjs from 'rollup-plugin-commonjs'
+import inject from 'rollup-plugin-inject';
 
 export default {
     external: ['three'],
@@ -29,6 +30,9 @@ export default {
             indent: '\t',
             compact: true, 
             namedExports: true 
+        }),
+        inject({
+            THREE: [ 'three', '*' ]
         })
     ]
 };

@@ -1,5 +1,4 @@
-
-import 'three';
+import * as THREE from 'three';
 import { DataImage } from '../DataImage';
 import { MODES } from '../Constants';
 import { TextureLoader } from '../loaders/TextureLoader';
