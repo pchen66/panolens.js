@@ -57,6 +57,8 @@ function Infospot ( scale = 300, imageSrc, animated ) {
 
     const postLoad = function ( texture ) {
 
+        if ( !this.material ) { return; }
+
         const ratio = texture.image.width / texture.image.height;
         const textureScale = new THREE.Vector3();
 
@@ -585,6 +587,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         } else {
 
+            this.enableRaycast( true );
             material.opacity = 1;
 
         }
@@ -608,6 +611,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         } else {
 
+            this.enableRaycast( false );
             material.opacity = 0;
 
         }
@@ -654,14 +658,20 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      */
     dispose: function () {
 
+        const { geometry, material } = this;
+        const { map } = material;
+
         this.removeHoverElement();
-        this.material.dispose();
 
         if ( this.parent ) {
 
             this.parent.remove( this );
 
         }
+
+        if ( map ) { map.dispose(); material.map = null; }
+        if ( geometry ) { geometry.dispose(); this.geometry = null; }
+        if ( material ) { material.dispose(); this.material = null; }
 
     }
 
