@@ -95,12 +95,14 @@
       "./src/**/*.js"
     ],
     "require": [
-      "esm"
+      "esm",
+      "./test/_browserENV.js"
     ]
   },
   "devDependencies": {
     "@tweenjs/tween.js": "^17.4.0",
     "ava": "^1.4.1",
+    "browser-env": "^3.2.6",
     "concurrently": "^4.1.0",
     "docdash": "^1.1.1",
     "eslint": "^5.16.0",
@@ -114,7 +116,8 @@
     "rollup-plugin-inject": "^2.2.0",
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-node-resolve": "^5.0.0",
-    "three": "^0.104.0"
+    "three": "^0.104.0",
+    "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {},
   "jspm": {
