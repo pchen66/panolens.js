@@ -30,6 +30,9 @@ function GoogleStreetviewLoader ( parameters = {} ) {
     this.widths = [ 416, 832, 1664, 3328, 6656, 13312 ];
     this.heights = [ 416, 416, 832, 1664, 3328, 6656 ];
 
+    this.maxW = 6656;
+    this.maxH = 6656;
+
     let gl;
 
     try {
@@ -49,9 +52,8 @@ function GoogleStreetviewLoader ( parameters = {} ) {
 
     }
 
-    const maxTexSize = Math.max( gl.getParameter( gl.MAX_TEXTURE_SIZE ), 6656 );
-    this.maxW = maxTexSize;
-    this.maxH = maxTexSize;
+    this.maxW = Math.max( gl.getParameter( gl.MAX_TEXTURE_SIZE ), this.maxW );
+    this.maxH = Math.max( gl.getParameter( gl.MAX_TEXTURE_SIZE ), this.maxH );
 
 }
 
@@ -71,26 +73,6 @@ Object.assign( GoogleStreetviewLoader.prototype, {
         if ( this.onProgress ) {
 
             this.onProgress( { loaded: loaded, total: total } );
-
-        }
-		
-    },
-
-    /**
-     * Throw error
-     * @param {string} message 
-     * @memberOf GoogleStreetviewLoader
-     * @instance
-     */
-    throwError: function ( message ) {
-
-        if ( this.onError ) {
-
-            this.onError( message );
-			
-        } else {
-
-            console.error( message );
 
         }
 		
@@ -179,19 +161,6 @@ Object.assign( GoogleStreetviewLoader.prototype, {
     },
 
     /**
-     * Load google street view by id
-     * @param {string} id 
-     * @memberOf GoogleStreetviewLoader
-     * @instance
-     */
-    loadFromId: function( id ) {
-
-        this._panoId = id;
-        this.composePanorama();
-
-    },
-
-    /**
      * Compose panorama
      * @memberOf GoogleStreetviewLoader
      * @instance
@@ -255,18 +224,9 @@ Object.assign( GoogleStreetviewLoader.prototype, {
         this._panoClient.getPanoramaById( id, function (result, status) {
             if (status === google.maps.StreetViewStatus.OK) {
                 self.result = result;
-                if( self.onPanoramaData ) self.onPanoramaData( result );
-                /*
-                 * var h = google.maps.geometry.spherical.computeHeading(location, result.location.latLng);
-                 * rotation = (result.tiles.centerHeading - h) * Math.PI / 180.0;
-                 */
                 self.copyright = result.copyright;
                 self._panoId = result.location.pano;
-                self.location = location;
                 self.composePanorama();
-            } else {
-                if( self.onNoPanoramaData ) self.onNoPanoramaData( status );
-                self.throwError('Could not retrieve panorama for the following reason: ' + status);
             }
         });
 		
@@ -279,6 +239,7 @@ Object.assign( GoogleStreetviewLoader.prototype, {
      * @instance
      */
     setZoom: function( z ) {
+
         this._zoom = z;
         this.adaptTextureToZoom();
     }
