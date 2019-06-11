@@ -1,8 +1,8 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('three')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'three'], factory) :
-	(global = global || self, factory(global.PANOLENS = {}));
-}(this, function (exports) { 'use strict';
+	(global = global || self, factory(global.PANOLENS = {}, global.THREE));
+}(this, function (exports, THREE) { 'use strict';
 
 	const version="0.10.4";
 
@@ -130,9 +130,9 @@
 	            onLoad( image );
 		
 	        };
-		
+
 	        if ( url.indexOf( 'data:' ) === 0 ) {
-		
+
 	            image.addEventListener( 'load', onImageLoaded, false );
 	            image.src = url;
 	            return image;
@@ -140,23 +140,31 @@
 		
 	        image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
 		
-	        request = new XMLHttpRequest();
+	        request = new window.XMLHttpRequest();
 	        request.open( 'GET', url, true );
 	        request.responseType = 'arraybuffer';
 	        request.addEventListener( 'error', onError );
-	        request.addEventListener( 'progress', ( { loaded, total } ) => {
-		
-	            if ( event.lengthComputable ) {
+	        request.addEventListener( 'progress', event => {
+
+	            if  ( !event ) return;
+
+	            const { loaded, total, lengthComputable } = event;
+	            
+	            if ( lengthComputable ) {
 		
 	                onProgress( { loaded, total } );
 		
 	            }
 		
 	        } );
-	        request.addEventListener( 'loadend', ( { currentTarget: { response } } ) => {
-		
+	        
+	        request.addEventListener( 'loadend', event => {
+
+	            if  ( !event ) return;
+	            const { currentTarget: { response } } = event;
+
 	            arrayBufferView = new Uint8Array( response );
-	            blob = new Blob( [ arrayBufferView ] );
+	            blob = new window.Blob( [ arrayBufferView ] );
 					
 	            image.addEventListener( 'load', onImageLoaded, false );
 	            image.src = urlCreator.createObjectURL( blob );
@@ -305,7 +313,19 @@
 	    this.videoDeviceIndex = 0;
 
 	}
-	Object.assign( Media.prototype, {
+	Media.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
+
+	    setContainer: function ( container ) {
+
+	        this.container = container;
+
+	    },
+
+	    setScene: function ( scene ) {
+
+	        this.scene = scene;
+
+	    },
 
 	    /**
 	     * Enumerate devices
@@ -318,7 +338,7 @@
 	        const devices = this.devices;
 	        const resolvedPromise = new Promise( resolve => { resolve( devices ); } );
 
-	        return devices.length > 0 ? resolvedPromise : navigator.mediaDevices.enumerateDevices();
+	        return devices.length > 0 ? resolvedPromise : window.navigator.mediaDevices.enumerateDevices();
 
 	    },
 
@@ -397,7 +417,7 @@
 	        const playVideo = this.playVideo.bind( this );
 	        const onCatchError = error => { console.warn( `PANOLENS.Media: ${error}` ); };
 
-	        return navigator.mediaDevices.getUserMedia( constraints )
+	        return window.navigator.mediaDevices.getUserMedia( constraints )
 	            .then( setMediaStream )
 	            .then( playVideo )
 	            .catch( onCatchError );
@@ -504,6 +524,7 @@
 	        if ( element ) {
 
 	            element.play();
+	            this.dispatchEvent( { type: 'play' } );
 
 	        }
 
@@ -521,6 +542,7 @@
 	        if ( element ) {
 
 	            element.pause();
+	            this.dispatchEvent( { type: 'pause' } );
 
 	        }
 
@@ -554,10 +576,19 @@
 	     * @memberOf Media
 	     * @instance
 	     * @returns {HTMLVideoElement}
+	     * @fires Media#canplay
 	     */
 	    createVideoElement: function() {
 
+	        const dispatchEvent = this.dispatchEvent.bind( this );
 	        const video = document.createElement( 'video' );
+
+	        /**
+	         * Video can play event
+	         * @type {object}
+	         * @event Media#canplay
+	         */
+	        const canPlay = () => dispatchEvent( { type: 'canplay' } );
 	        
 	        video.setAttribute( 'autoplay', '' );
 	        video.setAttribute( 'muted', '' );
@@ -571,6 +602,8 @@
 	        video.style.objectPosition = 'center';
 	        video.style.objectFit = 'cover';
 	        video.style.display = this.scene ? 'none' : '';
+
+	        video.addEventListener( 'canplay', canPlay );
 
 	        return video;
 
@@ -629,6 +662,7 @@
 
 	    this.autoSelect = autoSelect;
 	    this.dwellTime = dwellTime;
+	    this.rippleDuration = 500;
 	    this.position.z = -10;
 	    this.center.set( 0.5, 0.5 );
 	    this.scale.set( 0.5, 0.5, 1 );
@@ -744,13 +778,14 @@
 	     * Ripple effect
 	     * @memberOf Reticle
 	     * @instance
+	     * @fires Reticle#reticle-ripple-start
+	     * @fires Reticle#reticle-ripple-end
 	     */
 	    ripple: function () {
 
 	        const context = this.context;
-	        const stop = this.stop.bind( this );
 	        const { canvasWidth, canvasHeight, material } = this;
-	        const duration = 500;
+	        const duration = this.rippleDuration;
 	        const timestamp = performance.now();
 	        const color = this.color;
 	        const dpr = this.dpr;
@@ -759,7 +794,7 @@
 
 	        const update = () => {
 
-	            const timerId = requestAnimationFrame( update );
+	            const timerId = window.requestAnimationFrame( update );
 	            const elapsed = performance.now() - timestamp;
 	            const progress = elapsed / duration;
 	            const opacity = 1.0 - progress > 0 ? 1.0 - progress : 0;
@@ -772,16 +807,30 @@
 	            context.fill();
 	            context.closePath();
 
-	            if ( progress > 1.0 ) {
+	            if ( progress >= 1.0 ) {
 
-	                cancelAnimationFrame( timerId );
-	                stop();
+	                window.cancelAnimationFrame( timerId );
+	                this.updateCanvasArcByProgress( 0 );
+
+	                /**
+	                 * Reticle ripple end event
+	                 * @type {object}
+	                 * @event Reticle#reticle-ripple-end
+	                 */
+	                this.dispatchEvent( { type: 'reticle-ripple-end' } );
 
 	            }
 
 	            material.map.needsUpdate = true;
 
 	        };
+
+	        /**
+	         * Reticle ripple start event
+	         * @type {object}
+	         * @event Reticle#reticle-ripple-start
+	         */
+	        this.dispatchEvent( { type: 'reticle-ripple-start' } );
 
 	        update();
 
@@ -814,6 +863,7 @@
 	     * @param {function} callback 
 	     * @memberOf Reticle
 	     * @instance
+	     * @fires Reticle#reticle-start
 	     */
 	    start: function ( callback ) {
 
@@ -823,6 +873,13 @@
 
 	        }
 
+	        /**
+	         * Reticle start event
+	         * @type {object}
+	         * @event Reticle#reticle-start
+	         */
+	        this.dispatchEvent( { type: 'reticle-start' } );
+
 	        this.startTimestamp = performance.now();
 	        this.callback = callback;
 	        this.update();
@@ -830,17 +887,28 @@
 	    },
 
 	    /**
-	     * Stop dwelling
+	     * End dwelling
 	     * @memberOf Reticle
 	     * @instance
+	     * @fires Reticle#reticle-end
 	     */
-	    stop: function(){
+	    end: function(){
 
-	        cancelAnimationFrame( this.timerId );
+	        if ( !this.startTimestamp ) { return; }
+
+	        window.cancelAnimationFrame( this.timerId );
 
 	        this.updateCanvasArcByProgress( 0 );
 	        this.callback = null;
 	        this.timerId = null;
+	        this.startTimestamp = null;
+
+	        /**
+	         * Reticle end event
+	         * @type {object}
+	         * @event Reticle#reticle-end
+	         */
+	        this.dispatchEvent( { type: 'reticle-end' } );
 
 	    },
 
@@ -848,22 +916,30 @@
 	     * Update dwelling
 	     * @memberOf Reticle
 	     * @instance
+	     * @fires Reticle#reticle-update
 	     */
 	    update: function () {
 
-	        this.timerId = requestAnimationFrame( this.update.bind( this ) );
+	        this.timerId = window.requestAnimationFrame( this.update.bind( this ) );
 
 	        const elapsed = performance.now() - this.startTimestamp;
 	        const progress = elapsed / this.dwellTime;
 
 	        this.updateCanvasArcByProgress( progress );
 
-	        if ( progress > 1.0 ) {
+	        /**
+	         * Reticle update event
+	         * @type {object}
+	         * @event Reticle#reticle-update
+	         */
+	        this.dispatchEvent( { type: 'reticle-update', progress } );
 
-	            cancelAnimationFrame( this.timerId );
-	            this.ripple();
+	        if ( progress >= 1.0 ) {
+
+	            window.cancelAnimationFrame( this.timerId );
 	            if ( this.callback ) { this.callback(); }
-	            this.stop();
+	            this.end();
+	            this.ripple();
 
 	        }
 
@@ -1855,6 +1931,8 @@
 
 	    const postLoad = function ( texture ) {
 
+	        if ( !this.material ) { return; }
+
 	        const ratio = texture.image.width / texture.image.height;
 	        const textureScale = new THREE.Vector3();
 
@@ -2382,6 +2460,7 @@
 
 	        } else {
 
+	            this.enableRaycast( true );
 	            material.opacity = 1;
 
 	        }
@@ -2405,6 +2484,7 @@
 
 	        } else {
 
+	            this.enableRaycast( false );
 	            material.opacity = 0;
 
 	        }
@@ -2451,14 +2531,20 @@
 	     */
 	    dispose: function () {
 
+	        const { geometry, material } = this;
+	        const { map } = material;
+
 	        this.removeHoverElement();
-	        this.material.dispose();
 
 	        if ( this.parent ) {
 
 	            this.parent.remove( this );
 
 	        }
+
+	        if ( map ) { map.dispose(); material.map = null; }
+	        if ( geometry ) { geometry.dispose(); this.geometry = null; }
+	        if ( material ) { material.dispose(); this.material = null; }
 
 	    }
 
@@ -2903,10 +2989,10 @@
 	            /**
 	             * Viewer handler event
 	             * @type {object}
-	             * @event Widget#panolens-dual-eye-effect
+	             * @event Widget#panolens-viewer-handler
 	             * @property {string} method - 'onWindowResize' function call on Viewer
 	             */
-	            scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize', data: false } );
+	            scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize' } );
 
 	            tapSkipped = true;
 
@@ -3208,6 +3294,9 @@
 	            item.setProgress( event.percentage ); 
 
 	        } );
+
+	        item.progressElement = progressElement;
+	        item.progressElementControl = progressElementControl;
 
 	        return item;
 
@@ -4201,10 +4290,10 @@
 
 	                /**
 	                 * Enter panorama and animation complete event
-	                 * @event Panorama#enter-animation-complete
+	                 * @event Panorama#enter-complete
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'enter-animation-complete' } );
+	                this.dispatchEvent( { type: 'enter-complete' } );
 
 	            }.bind ( this ) )
 	            .start();
@@ -4277,7 +4366,7 @@
 	     * @memberOf Panorama
 	     * @instance
 	     * @fires Panorama#enter
-	     * @fires Panorama#enter-animation-start
+	     * @fires Panorama#enter-start
 	     */
 	    onEnter: function () {
 
@@ -4290,10 +4379,10 @@
 
 	                /**
 	                 * Enter panorama and animation starting event
-	                 * @event Panorama#enter-animation-start
+	                 * @event Panorama#enter-start
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'enter-animation-start' } );
+	                this.dispatchEvent( { type: 'enter-start' } );
 					
 	                if ( this.loaded ) {
 
@@ -4342,10 +4431,10 @@
 
 	                /**
 	                 * Leave panorama and animation starting event
-	                 * @event Panorama#leave-animation-start
+	                 * @event Panorama#leave-start
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'leave-animation-start' } );
+	                this.dispatchEvent( { type: 'leave-start' } );
 
 	                this.fadeOut( duration );
 	                this.toggleInfospotVisibility( false );
@@ -4377,6 +4466,12 @@
 	     */
 	    dispose: function () {
 
+	        this.infospotAnimation.stop();
+	        this.fadeInAnimation.stop();
+	        this.fadeOutAnimation.stop();
+	        this.enterTransition.stop();
+	        this.leaveTransition.stop();
+
 	        /**
 	         * On panorama dispose handler
 	         * @type {object}
@@ -4404,8 +4499,8 @@
 
 	            }
 				
-	            if ( geometry ) { geometry.dispose(); }
-	            if ( material ) { material.dispose(); }
+	            if ( geometry ) { geometry.dispose(); object.geometry = null; }
+	            if ( material ) { material.dispose(); object.material = null; }
 
 	        }
 
@@ -4484,7 +4579,7 @@
 			
 	        this.updateTexture( texture );
 
-	        requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
+	        window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
 
 	    },
 
@@ -4548,7 +4643,7 @@
 	function CubePanorama ( images = [] ){
 
 	    const edgeLength = 10000;
-	    const shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
+	    const shader = Object.assign( {}, THREE.ShaderLib[ 'cube' ] );
 	    const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
 	    const material = new THREE.ShaderMaterial( {
 
@@ -4612,9 +4707,15 @@
 	     */
 	    dispose: function () {	
 
+	        const { value } = this.material.uniforms.tCube;
+
 	        this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
 
-	        this.material.uniforms[ 'tCube' ].value.dispose();
+	        if ( value instanceof THREE.CubeTexture ) {
+
+	            value.dispose();
+
+	        }
 
 	        Panorama.prototype.dispose.call( this );
 
@@ -4699,7 +4800,7 @@
 	    isMobile: function () {
 
 	        let check = false;
-	        (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})( navigator.userAgent || navigator.vendor || window.opera );
+	        (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})( window.navigator.userAgent || window.navigator.vendor || window.opera );
 	        return check;
 
 	    },
@@ -4786,7 +4887,7 @@
 
 	            };
 
-	            requestAnimationFrame( loaded );
+	            window.requestAnimationFrame( loaded );
 				
 	        };
 
@@ -5146,6 +5247,9 @@
 	    this.widths = [ 416, 832, 1664, 3328, 6656, 13312 ];
 	    this.heights = [ 416, 416, 832, 1664, 3328, 6656 ];
 
+	    this.maxW = 6656;
+	    this.maxH = 6656;
+
 	    let gl;
 
 	    try {
@@ -5165,9 +5269,8 @@
 
 	    }
 
-	    const maxTexSize = Math.max( gl.getParameter( gl.MAX_TEXTURE_SIZE ), 6656 );
-	    this.maxW = maxTexSize;
-	    this.maxH = maxTexSize;
+	    this.maxW = Math.max( gl.getParameter( gl.MAX_TEXTURE_SIZE ), this.maxW );
+	    this.maxH = Math.max( gl.getParameter( gl.MAX_TEXTURE_SIZE ), this.maxH );
 
 	}
 
@@ -5187,26 +5290,6 @@
 	        if ( this.onProgress ) {
 
 	            this.onProgress( { loaded: loaded, total: total } );
-
-	        }
-			
-	    },
-
-	    /**
-	     * Throw error
-	     * @param {string} message 
-	     * @memberOf GoogleStreetviewLoader
-	     * @instance
-	     */
-	    throwError: function ( message ) {
-
-	        if ( this.onError ) {
-
-	            this.onError( message );
-				
-	        } else {
-
-	            console.error( message );
 
 	        }
 			
@@ -5295,19 +5378,6 @@
 	    },
 
 	    /**
-	     * Load google street view by id
-	     * @param {string} id 
-	     * @memberOf GoogleStreetviewLoader
-	     * @instance
-	     */
-	    loadFromId: function( id ) {
-
-	        this._panoId = id;
-	        this.composePanorama();
-
-	    },
-
-	    /**
 	     * Compose panorama
 	     * @memberOf GoogleStreetviewLoader
 	     * @instance
@@ -5371,18 +5441,9 @@
 	        this._panoClient.getPanoramaById( id, function (result, status) {
 	            if (status === google.maps.StreetViewStatus.OK) {
 	                self.result = result;
-	                if( self.onPanoramaData ) self.onPanoramaData( result );
-	                /*
-	                 * var h = google.maps.geometry.spherical.computeHeading(location, result.location.latLng);
-	                 * rotation = (result.tiles.centerHeading - h) * Math.PI / 180.0;
-	                 */
 	                self.copyright = result.copyright;
 	                self._panoId = result.location.pano;
-	                self.location = location;
 	                self.composePanorama();
-	            } else {
-	                if( self.onNoPanoramaData ) self.onNoPanoramaData( status );
-	                self.throwError('Could not retrieve panorama for the following reason: ' + status);
 	            }
 	        });
 			
@@ -5395,6 +5456,7 @@
 	     * @instance
 	     */
 	    setZoom: function( z ) {
+
 	        this._zoom = z;
 	        this.adaptTextureToZoom();
 	    }
@@ -5414,7 +5476,7 @@
 
 	    this.panoId = panoId;
 
-	    this.gsvLoader = undefined;
+	    this.gsvLoader = null;
 
 	    this.loadRequested = false;
 
@@ -5441,10 +5503,6 @@
 	        if ( panoId && this.gsvLoader ) {
 
 	            this.loadGSVLoader( panoId );
-
-	        } else {
-
-	            this.gsvLoader = {};
 
 	        }
 
@@ -5477,7 +5535,7 @@
 
 	        this.gsvLoader = new GoogleStreetviewLoader();
 
-	        if ( this.gsvLoader === {} || this.loadRequested ) {
+	        if ( this.loadRequested ) {
 
 	            this.load();
 
@@ -5525,8 +5583,6 @@
 	     * @instance
 	     */
 	    onLoad: function ( canvas ) {
-
-	        if ( !this.gsvLoader ) { return; }
 
 	        ImagePanorama.prototype.onLoad.call( this, new THREE.Texture( canvas ) );
 
@@ -5674,7 +5730,7 @@
 				
 	            for ( let i = 0; i < arguments.length; i ++ ) {
 
-	                this.add( argument );
+	                this.add( arguments[ i ] );
 
 	            }
 
@@ -5700,7 +5756,7 @@
 
 	    createMaterial: function ( size ) {
 
-	        const shader = StereographicShader, uniforms = shader.uniforms;
+	        const shader = Object.assign( {}, StereographicShader ), uniforms = shader.uniforms;
 
 	        uniforms.zoom.value = size;
 	        uniforms.opacity.value = 0.0;
@@ -5871,14 +5927,19 @@
 
 	    onUpdateCallback: function () {
 
-	        this.frameId = requestAnimationFrame( this.onUpdateCallback.bind( this ) );
+	        this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
 
 	        this.quatSlerp.slerp( this.quatCur, 0.1 );
-	        this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
-			
+
+	        if ( this.material ) {
+
+	            this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
+
+	        }
+	        
 	        if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
 				
-	            cancelAnimationFrame( this.frameId );
+	            window.cancelAnimationFrame( this.frameId );
 
 	        }
 
@@ -5892,7 +5953,7 @@
 
 	    },
 
-	    onLoad: function () {
+	    onLoad: function ( texture ) {
 
 	        this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 
@@ -5900,6 +5961,8 @@
 	        this.onUpdateCallback();
 			
 	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' } );
+
+	        ImagePanorama.prototype.onLoad.call( this, texture );
 			
 	    },
 
@@ -5909,7 +5972,7 @@
 
 	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: CONTROLS.ORBIT } );
 
-	        cancelAnimationFrame( this.frameId );
+	        window.cancelAnimationFrame( this.frameId );
 
 	        ImagePanorama.prototype.onLeave.call( this );
 			
@@ -5928,6 +5991,8 @@
 	    },
 
 	    dispose: function () {	
+
+	        this.unregisterMouseEvents();
 
 	        ImagePanorama.prototype.dispose.call( this );
 
@@ -5962,8 +6027,7 @@
 
 	        this.updateTexture( texture );
 
-	        LittlePlanet.prototype.onLoad.call( this );
-	        ImagePanorama.prototype.onLoad.call( this, texture );
+	        LittlePlanet.prototype.onLoad.call( this, texture );
 
 	    },
 	    
@@ -6038,7 +6102,7 @@
 	     */
 	    onPanolensContainer: function ( { container } ) {
 
-	        this.media.container = container;
+	        this.media.setContainer( container );
 
 	    },
 
@@ -6050,7 +6114,7 @@
 	     */
 	    onPanolensScene: function ( { scene } ) {
 
-	        this.media.scene = scene;
+	        this.media.setScene( scene );
 
 	    },
 
@@ -6901,6 +6965,21 @@
 
 	    }
 
+	    this.dispose = function() {
+
+	        this.domElement.removeEventListener( 'mousedown', onMouseDown );
+	        this.domElement.removeEventListener( 'mousewheel', onMouseWheel );
+	        this.domElement.removeEventListener( 'DOMMouseScroll', onMouseWheel );
+
+	        this.domElement.removeEventListener( 'touchstart', touchstart );
+	        this.domElement.removeEventListener( 'touchend', touchend );
+	        this.domElement.removeEventListener( 'touchmove', touchmove );
+
+	        window.removeEventListener( 'keyup', onKeyUp );
+	        window.removeEventListener( 'keydown', onKeyDown );
+
+	    };
+
 	    // this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
 	    this.domElement.addEventListener( 'mousedown', onMouseDown, { passive: false } );
 	    this.domElement.addEventListener( 'mousewheel', onMouseWheel, { passive: false } );
@@ -7408,8 +7487,8 @@
 	    this.OUTPUT_INFOSPOT = false;
 
 	    // Animations
-	    this.tweenLeftAnimation = new TWEEN.Tween();
-	    this.tweenUpAnimation = new TWEEN.Tween();
+	    this.tweenLeftAnimation = new Tween.Tween();
+	    this.tweenUpAnimation = new Tween.Tween();
 
 	    // Renderer
 	    this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -7680,7 +7759,7 @@
 	     * Set widget content
 	     * @method activateWidgetItem
 	     * @param  {integer} controlIndex - Control index
-	     * @param  {MODES} mode - Modes for effects
+	     * @param  {integer} mode - Modes for effects
 	     * @memberOf Viewer
 	     * @instance
 	     */
@@ -8191,7 +8270,7 @@
 	     * @instance
 	     * @return {string} - Next control id
 	     */
-	    getNextControlName: function () {
+	    getNextControlId: function () {
 
 	        return this.controls[ this.getNextControlIndex() ].id;
 
@@ -8378,7 +8457,7 @@
 	        }
 
 	        duration = duration !== undefined ? duration : 1000;
-	        easing = easing || TWEEN.Easing.Exponential.Out;
+	        easing = easing || Tween.Easing.Exponential.Out;
 
 	        var scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
 
@@ -8410,7 +8489,7 @@
 	        this.tweenLeftAnimation.stop();
 	        this.tweenUpAnimation.stop();
 
-	        this.tweenLeftAnimation = new TWEEN.Tween( ov )
+	        this.tweenLeftAnimation = new Tween.Tween( ov )
 	            .to( { left: ha }, duration )
 	            .easing( easing )
 	            .onUpdate(function(ov){
@@ -8419,7 +8498,7 @@
 	            })
 	            .start();
 
-	        this.tweenUpAnimation = new TWEEN.Tween( ov )
+	        this.tweenUpAnimation = new Tween.Tween( ov )
 	            .to( { up: va }, duration )
 	            .easing( easing )
 	            .onUpdate(function(ov){
@@ -8488,7 +8567,7 @@
 
 	        } else {
 
-	            const isAndroid = /(android)/i.test(navigator.userAgent);
+	            const isAndroid = /(android)/i.test(window.navigator.userAgent);
 
 	            const adjustWidth = isAndroid 
 	                ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 
@@ -8556,11 +8635,11 @@
 	    },
 
 	    /**
-	     * Output infospot attach position in developer console by holding down Ctrl button
+	     * Output position in developer console by holding down Ctrl button
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    outputInfospotPosition: function () {
+	    outputPosition: function () {
 
 	        const intersects = this.raycaster.intersectObject( this.panorama, true );
 
@@ -8718,7 +8797,7 @@
 	        // output infospot information
 	        if ( event.type !== 'mousedown' && this.touchSupported || this.OUTPUT_INFOSPOT ) { 
 
-	            this.outputInfospotPosition(); 
+	            this.outputPosition(); 
 
 	        }
 
@@ -8777,7 +8856,7 @@
 
 	                    this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
 
-	                    this.reticle.stop();
+	                    this.reticle.end();
 
 	                }
 
@@ -9012,7 +9091,7 @@
 	     */
 	    update: function () {
 
-	        TWEEN.update();
+	        Tween.update();
 
 	        this.updateCallbacks.forEach( function( callback ){ callback(); } );
 
@@ -9070,7 +9149,7 @@
 	     */
 	    animate: function () {
 
-	        this.requestAnimationId = requestAnimationFrame( this.animate.bind( this ) );
+	        this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
 	        this.onChange();
 
@@ -9203,8 +9282,6 @@
 	        // recursive disposal on 3d objects
 	        function recursiveDispose ( object ) {
 
-	            const { geometry, material } = object;
-
 	            for ( var i = object.children.length - 1; i >= 0; i-- ) {
 
 	                recursiveDispose( object.children[i] );
@@ -9212,14 +9289,9 @@
 
 	            }
 
-	            if ( object instanceof Infospot ) {
+	            object.dispose();
+	            object = null;
 
-	                object.dispose();
-
-	            }
-
-	            if ( geometry ) { geometry.dispose(); }
-	            if ( material ) { material.dispose(); }
 	        }
 
 	        recursiveDispose( this.scene );
@@ -9233,24 +9305,24 @@
 	        }
 
 	        // clear cache
-	        if ( Cache && Cache.enabled ) {
+	        if ( THREE.Cache && THREE.Cache.enabled ) {
 
-	            Cache.clear();
+	            THREE.Cache.clear();
 
 	        }
 
 	    },
 
 	    /**
-	     * Destory viewer by disposing and stopping requestAnimationFrame
+	     * Destroy viewer by disposing and stopping requestAnimationFrame
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    destory: function () {
+	    destroy: function () {
 
 	        this.dispose();
 	        this.render();
-	        cancelAnimationFrame( this.requestAnimationId );		
+	        window.cancelAnimationFrame( this.requestAnimationId );		
 
 	    },
 
@@ -9284,7 +9356,7 @@
 	     */
 	    loadAsyncRequest: function ( url, callback = () => {} ) {
 
-	        const request = new XMLHttpRequest();
+	        const request = new window.XMLHttpRequest();
 	        request.onloadend = function ( event ) {
 	            callback( event );
 	        };
@@ -9393,7 +9465,7 @@
 	     */
 	    clearAllCache: function () {
 
-	        Cache.clear();
+	        THREE.Cache.clear();
 
 	    }
 
