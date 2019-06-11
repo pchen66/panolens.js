@@ -25,6 +25,7 @@ function Reticle ( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
 
     this.autoSelect = autoSelect;
     this.dwellTime = dwellTime;
+    this.rippleDuration = 500;
     this.position.z = -10;
     this.center.set( 0.5, 0.5 );
     this.scale.set( 0.5, 0.5, 1 );
@@ -141,13 +142,14 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * Ripple effect
      * @memberOf Reticle
      * @instance
+     * @fires Reticle#reticle-ripple-start
+     * @fires Reticle#reticle-ripple-end
      */
     ripple: function () {
 
         const context = this.context;
-        const stop = this.stop.bind( this );
         const { canvasWidth, canvasHeight, material } = this;
-        const duration = 500;
+        const duration = this.rippleDuration;
         const timestamp = performance.now();
         const color = this.color;
         const dpr = this.dpr;
@@ -156,7 +158,7 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         const update = () => {
 
-            const timerId = requestAnimationFrame( update );
+            const timerId = window.requestAnimationFrame( update );
             const elapsed = performance.now() - timestamp;
             const progress = elapsed / duration;
             const opacity = 1.0 - progress > 0 ? 1.0 - progress : 0;
@@ -169,16 +171,30 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
             context.fill();
             context.closePath();
 
-            if ( progress > 1.0 ) {
+            if ( progress >= 1.0 ) {
 
-                cancelAnimationFrame( timerId );
-                stop();
+                window.cancelAnimationFrame( timerId );
+                this.updateCanvasArcByProgress( 0 );
+
+                /**
+                 * Reticle ripple end event
+                 * @type {object}
+                 * @event Reticle#reticle-ripple-end
+                 */
+                this.dispatchEvent( { type: 'reticle-ripple-end' } );
 
             }
 
             material.map.needsUpdate = true;
 
         };
+
+        /**
+         * Reticle ripple start event
+         * @type {object}
+         * @event Reticle#reticle-ripple-start
+         */
+        this.dispatchEvent( { type: 'reticle-ripple-start' } );
 
         update();
 
@@ -211,6 +227,7 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @param {function} callback 
      * @memberOf Reticle
      * @instance
+     * @fires Reticle#reticle-start
      */
     start: function ( callback ) {
 
@@ -220,6 +237,13 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
+        /**
+         * Reticle start event
+         * @type {object}
+         * @event Reticle#reticle-start
+         */
+        this.dispatchEvent( { type: 'reticle-start' } );
+
         this.startTimestamp = performance.now();
         this.callback = callback;
         this.update();
@@ -227,17 +251,28 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-     * Stop dwelling
+     * End dwelling
      * @memberOf Reticle
      * @instance
+     * @fires Reticle#reticle-end
      */
-    stop: function(){
+    end: function(){
 
-        cancelAnimationFrame( this.timerId );
+        if ( !this.startTimestamp ) { return; }
+
+        window.cancelAnimationFrame( this.timerId );
 
         this.updateCanvasArcByProgress( 0 );
         this.callback = null;
         this.timerId = null;
+        this.startTimestamp = null;
+
+        /**
+         * Reticle end event
+         * @type {object}
+         * @event Reticle#reticle-end
+         */
+        this.dispatchEvent( { type: 'reticle-end' } );
 
     },
 
@@ -245,22 +280,30 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * Update dwelling
      * @memberOf Reticle
      * @instance
+     * @fires Reticle#reticle-update
      */
     update: function () {
 
-        this.timerId = requestAnimationFrame( this.update.bind( this ) );
+        this.timerId = window.requestAnimationFrame( this.update.bind( this ) );
 
         const elapsed = performance.now() - this.startTimestamp;
         const progress = elapsed / this.dwellTime;
 
         this.updateCanvasArcByProgress( progress );
 
-        if ( progress > 1.0 ) {
+        /**
+         * Reticle update event
+         * @type {object}
+         * @event Reticle#reticle-update
+         */
+        this.dispatchEvent( { type: 'reticle-update', progress } );
 
-            cancelAnimationFrame( this.timerId );
-            this.ripple();
+        if ( progress >= 1.0 ) {
+
+            window.cancelAnimationFrame( this.timerId );
             if ( this.callback ) { this.callback(); }
-            this.stop();
+            this.end();
+            this.ripple();
 
         }
 
