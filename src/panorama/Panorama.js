@@ -490,10 +490,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
                 /**
                  * Enter panorama and animation complete event
-                 * @event Panorama#enter-animation-complete
+                 * @event Panorama#enter-complete
                  * @type {object} 
                  */
-                this.dispatchEvent( { type: 'enter-animation-complete' } );
+                this.dispatchEvent( { type: 'enter-complete' } );
 
             }.bind ( this ) )
             .start();
@@ -566,7 +566,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      * @memberOf Panorama
      * @instance
      * @fires Panorama#enter
-     * @fires Panorama#enter-animation-start
+     * @fires Panorama#enter-start
      */
     onEnter: function () {
 
@@ -579,10 +579,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
                 /**
                  * Enter panorama and animation starting event
-                 * @event Panorama#enter-animation-start
+                 * @event Panorama#enter-start
                  * @type {object} 
                  */
-                this.dispatchEvent( { type: 'enter-animation-start' } );
+                this.dispatchEvent( { type: 'enter-start' } );
 				
                 if ( this.loaded ) {
 
@@ -631,10 +631,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
                 /**
                  * Leave panorama and animation starting event
-                 * @event Panorama#leave-animation-start
+                 * @event Panorama#leave-start
                  * @type {object} 
                  */
-                this.dispatchEvent( { type: 'leave-animation-start' } );
+                this.dispatchEvent( { type: 'leave-start' } );
 
                 this.fadeOut( duration );
                 this.toggleInfospotVisibility( false );
@@ -666,6 +666,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      */
     dispose: function () {
 
+        this.infospotAnimation.stop();
+        this.fadeInAnimation.stop();
+        this.fadeOutAnimation.stop();
+        this.enterTransition.stop();
+        this.leaveTransition.stop();
+
         /**
          * On panorama dispose handler
          * @type {object}
@@ -693,8 +699,8 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
             }
 			
-            if ( geometry ) { geometry.dispose(); }
-            if ( material ) { material.dispose(); }
+            if ( geometry ) { geometry.dispose(); object.geometry = null; }
+            if ( material ) { material.dispose(); object.material = null; }
 
         }
 
