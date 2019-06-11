@@ -29,7 +29,8 @@
     "start": "npm run dev",
     "docs": "node_modules/.bin/jsdoc -c jsdoc.json -d ./docs",
     "travis": "npm run lint && npm test",
-    "prepublishOnly": "npm run build-closure && npm run docs"
+    "prepublishOnly": "npm run build-closure && npm run docs",
+    "preversion": "npm run test && npm run prepublishOnly"
   },
   "repository": {
     "type": "git",
