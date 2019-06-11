@@ -3,3 +3,4 @@ node_js:
   - node
 script:
   - npm run travis
+after_success: npm run coverage
