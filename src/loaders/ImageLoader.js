@@ -67,9 +67,9 @@ const ImageLoader = {
             onLoad( image );
 	
         };
-	
+
         if ( url.indexOf( 'data:' ) === 0 ) {
-	
+
             image.addEventListener( 'load', onImageLoaded, false );
             image.src = url;
             return image;
@@ -77,23 +77,31 @@ const ImageLoader = {
 	
         image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
 	
-        request = new XMLHttpRequest();
+        request = new window.XMLHttpRequest();
         request.open( 'GET', url, true );
         request.responseType = 'arraybuffer';
         request.addEventListener( 'error', onError );
-        request.addEventListener( 'progress', ( { loaded, total } ) => {
-	
-            if ( event.lengthComputable ) {
+        request.addEventListener( 'progress', event => {
+
+            if  ( !event ) return;
+
+            const { loaded, total, lengthComputable } = event;
+            
+            if ( lengthComputable ) {
 	
                 onProgress( { loaded, total } );
 	
             }
 	
         } );
-        request.addEventListener( 'loadend', ( { currentTarget: { response } } ) => {
-	
+        
+        request.addEventListener( 'loadend', event => {
+
+            if  ( !event ) return;
+            const { currentTarget: { response } } = event;
+
             arrayBufferView = new Uint8Array( response );
-            blob = new Blob( [ arrayBufferView ] );
+            blob = new window.Blob( [ arrayBufferView ] );
 				
             image.addEventListener( 'load', onImageLoaded, false );
             image.src = urlCreator.createObjectURL( blob );
