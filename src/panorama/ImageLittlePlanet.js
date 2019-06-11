@@ -1,5 +1,4 @@
 import { LittlePlanet } from './LittlePlanet';
-import { ImagePanorama } from './ImagePanorama';
 import * as THREE from 'three';
 
 /**
