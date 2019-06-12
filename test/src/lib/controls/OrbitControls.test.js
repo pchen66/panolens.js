@@ -166,6 +166,14 @@ test.cb('OrthoCamera Mouse Down, Move and Up Events - DOLLY IN', t => {
     start( 'mouse', container, { button: THREE.MOUSE.MIDDLE, scalarY: 1 }, onComplete( control, t ) );
 });
 
+
+test.cb('OrthoCamera Mouse Down, Move and Up Events - DOLLY OUT', t => {
+    const camera = new THREE.OrthographicCamera();
+    const container = document.createElement( 'div' );
+    const control = new OrbitControls( camera, container );
+    start( 'mouse', container, { button: THREE.MOUSE.MIDDLE, scalarY: -1 }, onComplete( control, t ) );
+});
+
 test.cb('OrthoCamera Mouse Down, Move and Up Events - PAN', t => {
     const camera = new THREE.OrthographicCamera();
     const container = document.createElement( 'div' );
@@ -187,4 +195,48 @@ test('Access Internal Functions', t => {
     control.rotateUp();
     control.getPolarAngle();
     control.getAzimuthalAngle();
+});
+
+test.cb('Mouse Down, Move and Up Events - PAN - not recognized camera', t => {
+    const camera = new THREE.Camera();
+    const control = new OrbitControls( camera );
+    control.noPan = false;
+    control.pan( 20, 0 );
+    start( 'mouse', document, { button: THREE.MOUSE.RIGHT }, onComplete( control, t ) );
+});
+
+
+test.cb('Mouse Down, Move and Up Events - Dolly In - not recognized camera', t => {
+    const camera = new THREE.Camera();
+    const control = new OrbitControls( camera );
+    control.dollyIn( 1 );
+    control.dollyOut( 1 );
+    camera.position.x = 100;
+    control.update( true );
+    start( 'mouse', control.domElement, { button: THREE.MOUSE.MIDDLE }, onComplete( control, t ) );
+});
+
+test('Mouse Down with different options', t => {
+    const camera = new THREE.PerspectiveCamera();
+    const container = document.createElement( 'div' );
+    const control = new OrbitControls( camera, container );
+    const generateEvent = ( type = 'mousedown', button = THREE.MOUSE.LEFT ) => {
+        return { type, preventDefault: () => {}, button }
+    };
+    control.enabled = false;
+    container.dispatchEvent( generateEvent( 'mousedown', THREE.MOUSE.LEFT ) );
+    control.enabled = true;
+    container.dispatchEvent( generateEvent( 'mousedown', THREE.MOUSE.LEFT ) );
+    document.dispatchEvent( generateEvent( 'mousemove', THREE.MOUSE.LEFT ) );
+    document.dispatchEvent( generateEvent( 'mouseup', THREE.MOUSE.LEFT ) )
+    control.enabled = true
+    control.noRotate =  true;
+    container.dispatchEvent( generateEvent( 'mousedown', THREE.MOUSE.LEFT ) );
+    control.noRotate =  false;
+    control.noZoom = true;
+    container.dispatchEvent( generateEvent( 'mousedown', THREE.MOUSE.MIDDLE ) );
+    control.noZoom =  false;
+    control.noPan = true;
+    container.dispatchEvent( generateEvent( 'mousedown', THREE.MOUSE.RIGHT ) );
+    t.pass();
 });
