@@ -947,10 +947,10 @@ const customWebGLContext = function () {
 	};
 
 	this.getProgramParameter = function () {};
-	this.getProgramInfoLog = function () {};
+	this.getProgramInfoLog = function () { return ''; };
 	this.getRenderbufferParameter = function () {};
 	this.getShaderParameter = function () {};
-	this.getShaderInfoLog = function () {};
+	this.getShaderInfoLog = function () { return ''; };
 	this.getShaderPrecisionFormat = function () {
 
 		return { 'rangeMin': 1, 'rangeMax': 1, 'precision': 1 };
