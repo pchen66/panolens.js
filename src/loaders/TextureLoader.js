@@ -1,4 +1,5 @@
 import { ImageLoader } from './ImageLoader.js';
+import * as THREE from 'three';
 
 /**
  * @module TextureLoader

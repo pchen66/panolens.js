@@ -1,4 +1,5 @@
 import { Panorama } from './Panorama';
+import * as THREE from 'three';
 
 /**
  * @classdesc Empty panorama

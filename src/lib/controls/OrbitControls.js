@@ -1,4 +1,4 @@
-import 'three';
+import * as THREE from 'three';
 
 /**
  * @classdesc Orbit Controls
@@ -821,6 +821,21 @@ function OrbitControls ( object, domElement ) {
         state = STATE.NONE;
 
     }
+
+    this.dispose = function() {
+
+        this.domElement.removeEventListener( 'mousedown', onMouseDown );
+        this.domElement.removeEventListener( 'mousewheel', onMouseWheel );
+        this.domElement.removeEventListener( 'DOMMouseScroll', onMouseWheel );
+
+        this.domElement.removeEventListener( 'touchstart', touchstart );
+        this.domElement.removeEventListener( 'touchend', touchend );
+        this.domElement.removeEventListener( 'touchmove', touchmove );
+
+        window.removeEventListener( 'keyup', onKeyUp );
+        window.removeEventListener( 'keydown', onKeyDown );
+
+    };
 
     // this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
     this.domElement.addEventListener( 'mousedown', onMouseDown, { passive: false } );

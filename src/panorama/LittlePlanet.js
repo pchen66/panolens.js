@@ -2,6 +2,7 @@ import { ImagePanorama } from './ImagePanorama';
 import { Infospot } from '../infospot/Infospot';
 import { CONTROLS } from '../Constants';
 import { StereographicShader } from '../shaders/StereographicShader';
+import * as THREE from 'three';
 
 /**
  * @classdesc Little Planet
@@ -49,7 +50,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 			
             for ( let i = 0; i < arguments.length; i ++ ) {
 
-                this.add( argument );
+                this.add( arguments[ i ] );
 
             }
 
@@ -75,7 +76,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     createMaterial: function ( size ) {
 
-        const shader = StereographicShader, uniforms = shader.uniforms;
+        const shader = Object.assign( {}, StereographicShader ), uniforms = shader.uniforms;
 
         uniforms.zoom.value = size;
         uniforms.opacity.value = 0.0;
@@ -246,14 +247,19 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     onUpdateCallback: function () {
 
-        this.frameId = requestAnimationFrame( this.onUpdateCallback.bind( this ) );
+        this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
 
         this.quatSlerp.slerp( this.quatCur, 0.1 );
-        this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
-		
+
+        if ( this.material ) {
+
+            this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
+
+        }
+        
         if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
 			
-            cancelAnimationFrame( this.frameId );
+            window.cancelAnimationFrame( this.frameId );
 
         }
 
@@ -267,7 +273,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     },
 
-    onLoad: function () {
+    onLoad: function ( texture ) {
 
         this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 
@@ -275,6 +281,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         this.onUpdateCallback();
 		
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' } );
+
+        ImagePanorama.prototype.onLoad.call( this, texture );
 		
     },
 
@@ -284,7 +292,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: CONTROLS.ORBIT } );
 
-        cancelAnimationFrame( this.frameId );
+        window.cancelAnimationFrame( this.frameId );
 
         ImagePanorama.prototype.onLeave.call( this );
 		
@@ -303,6 +311,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
     },
 
     dispose: function () {	
+
+        this.unregisterMouseEvents();
 
         ImagePanorama.prototype.dispose.call( this );
 

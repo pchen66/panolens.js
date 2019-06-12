@@ -1,4 +1,4 @@
-import 'three';
+import * as THREE from 'three';
 
 /**
  * @classdesc User Media
@@ -21,7 +21,19 @@ function Media ( constraints ) {
 
 };
 
-Object.assign( Media.prototype, {
+Media.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
+
+    setContainer: function ( container ) {
+
+        this.container = container;
+
+    },
+
+    setScene: function ( scene ) {
+
+        this.scene = scene;
+
+    },
 
     /**
      * Enumerate devices
@@ -34,7 +46,7 @@ Object.assign( Media.prototype, {
         const devices = this.devices;
         const resolvedPromise = new Promise( resolve => { resolve( devices ); } );
 
-        return devices.length > 0 ? resolvedPromise : navigator.mediaDevices.enumerateDevices();
+        return devices.length > 0 ? resolvedPromise : window.navigator.mediaDevices.enumerateDevices();
 
     },
 
@@ -113,7 +125,7 @@ Object.assign( Media.prototype, {
         const playVideo = this.playVideo.bind( this );
         const onCatchError = error => { console.warn( `PANOLENS.Media: ${error}` ); };
 
-        return navigator.mediaDevices.getUserMedia( constraints )
+        return window.navigator.mediaDevices.getUserMedia( constraints )
             .then( setMediaStream )
             .then( playVideo )
             .catch( onCatchError );
@@ -220,6 +232,7 @@ Object.assign( Media.prototype, {
         if ( element ) {
 
             element.play();
+            this.dispatchEvent( { type: 'play' } );
 
         }
 
@@ -237,6 +250,7 @@ Object.assign( Media.prototype, {
         if ( element ) {
 
             element.pause();
+            this.dispatchEvent( { type: 'pause' } );
 
         }
 
@@ -270,10 +284,19 @@ Object.assign( Media.prototype, {
      * @memberOf Media
      * @instance
      * @returns {HTMLVideoElement}
+     * @fires Media#canplay
      */
     createVideoElement: function() {
 
+        const dispatchEvent = this.dispatchEvent.bind( this );
         const video = document.createElement( 'video' );
+
+        /**
+         * Video can play event
+         * @type {object}
+         * @event Media#canplay
+         */
+        const canPlay = () => dispatchEvent( { type: 'canplay' } );
         
         video.setAttribute( 'autoplay', '' );
         video.setAttribute( 'muted', '' );
@@ -287,6 +310,8 @@ Object.assign( Media.prototype, {
         video.style.objectPosition = 'center';
         video.style.objectFit = 'cover';
         video.style.display = this.scene ? 'none' : '';
+
+        video.addEventListener( 'canplay', canPlay );
 
         return video;
 

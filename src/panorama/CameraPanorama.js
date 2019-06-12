@@ -1,5 +1,6 @@
 import { Panorama } from './Panorama';
 import { Media } from '../media/Media';
+import * as THREE from 'three';
 
 /**
  * @classdesc Camera panorama
@@ -37,7 +38,7 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     onPanolensContainer: function ( { container } ) {
 
-        this.media.container = container;
+        this.media.setContainer( container );
 
     },
 
@@ -49,7 +50,7 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     onPanolensScene: function ( { scene } ) {
 
-        this.media.scene = scene;
+        this.media.setScene( scene );
 
     },
 

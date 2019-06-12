@@ -1,5 +1,6 @@
 import { Panorama } from './Panorama';
 import { TextureLoader } from '../loaders/TextureLoader';
+import * as THREE from 'three';
 
 /**
  * @classdesc Equirectangular based image panorama
@@ -64,7 +65,7 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 		
         this.updateTexture( texture );
 
-        requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
+        window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
 
     },
 

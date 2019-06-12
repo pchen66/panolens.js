@@ -79,7 +79,7 @@
 
       const reticle = new PANOLENS.Reticle();
 
-      const camera = new PANOLENS.CameraPanorama();
+      const camera = new PANOLENS.CameraPanorama({video: {facingMode: 'user'} });
 
       const viewer = new PANOLENS.Viewer({output: 'console'});
 

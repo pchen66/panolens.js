@@ -1,14 +1,38 @@
-import 'three';
+import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
 
-const version="0.10.3";
+const version="0.11.0";const dependencies={three:"^0.105.2"};
 
 /**
  * REVISION
  * @module REVISION
  * @example PANOLENS.REVISION
+ * @type {string} revision
+ */
+const REVISION = version.split( '.' )[ 1 ];
+
+/**
+ * VERSION
+ * @module VERSION
+ * @example PANOLENS.VERSION
  * @type {string} version
  */
-const REVISION = version;
+const VERSION = version;
+
+/**
+ * THREEJS REVISION
+ * @module THREE_REVISION
+ * @example PANOLENS.THREE_REVISION
+ * @type {string} threejs revision
+ */
+const THREE_REVISION = dependencies.three.split( '.' )[ 1 ];
+
+/**
+ * THREEJS VERSION
+ * @module THREE_VERSION
+ * @example PANOLENS.THREE_VERSION
+ * @type {string} threejs version
+ */
+const THREE_VERSION = dependencies.three.replace( /[^0-9.]/g, '' );
 
 /**
  * CONTROLS
@@ -78,7 +102,7 @@ const ImageLoader = {
     load: function ( url, onLoad = () => {}, onProgress = () => {}, onError = () => {} ) {
 
         // Enable cache
-        THREE.Cache.enabled = true;
+        Cache.enabled = true;
 
         let cached, request, arrayBufferView, blob, urlCreator, image, reference;
 	
@@ -94,7 +118,7 @@ const ImageLoader = {
         }
 	
         // Cached
-        cached = THREE.Cache.get( reference ? reference : url );
+        cached = Cache.get( reference ? reference : url );
 	
         if ( cached !== undefined ) {
 	
@@ -118,7 +142,7 @@ const ImageLoader = {
         image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
 	
         // Add to cache
-        THREE.Cache.add( reference ? reference : url, image );
+        Cache.add( reference ? reference : url, image );
 	
         const onImageLoaded = () => {
 	
@@ -126,9 +150,9 @@ const ImageLoader = {
             onLoad( image );
 	
         };
-	
+
         if ( url.indexOf( 'data:' ) === 0 ) {
-	
+
             image.addEventListener( 'load', onImageLoaded, false );
             image.src = url;
             return image;
@@ -136,23 +160,31 @@ const ImageLoader = {
 	
         image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
 	
-        request = new XMLHttpRequest();
+        request = new window.XMLHttpRequest();
         request.open( 'GET', url, true );
         request.responseType = 'arraybuffer';
         request.addEventListener( 'error', onError );
-        request.addEventListener( 'progress', ( { loaded, total } ) => {
-	
-            if ( event.lengthComputable ) {
+        request.addEventListener( 'progress', event => {
+
+            if  ( !event ) return;
+
+            const { loaded, total, lengthComputable } = event;
+            
+            if ( lengthComputable ) {
 	
                 onProgress( { loaded, total } );
 	
             }
 	
         } );
-        request.addEventListener( 'loadend', ( { currentTarget: { response } } ) => {
-	
+        
+        request.addEventListener( 'loadend', event => {
+
+            if  ( !event ) return;
+            const { currentTarget: { response } } = event;
+
             arrayBufferView = new Uint8Array( response );
-            blob = new Blob( [ arrayBufferView ] );
+            blob = new window.Blob( [ arrayBufferView ] );
 				
             image.addEventListener( 'load', onImageLoaded, false );
             image.src = urlCreator.createObjectURL( blob );
@@ -183,7 +215,7 @@ const TextureLoader = {
      */
     load: function ( url, onLoad = () => {}, onProgress, onError ) {
 
-        var texture = new THREE.Texture(); 
+        var texture = new Texture(); 
 
         ImageLoader.load( url, function ( image ) {
 
@@ -192,7 +224,7 @@ const TextureLoader = {
             // JPEGs can't have an alpha channel, so memory can be saved by storing them as RGB.
             const isJPEG = url.search( /\.(jpg|jpeg)$/ ) > 0 || url.search( /^data\:image\/jpeg/ ) === 0;
 
-            texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
+            texture.format = isJPEG ? RGBFormat : RGBAFormat;
             texture.needsUpdate = true;
 
             onLoad( texture );
@@ -225,7 +257,7 @@ const CubeTextureLoader = {
 
 	   var texture, loaded, progress, all, loadings;
 
-	   texture = new THREE.CubeTexture( [] );
+	   texture = new CubeTexture( [] );
 
 	   loaded = 0;
 	   progress = {};
@@ -301,7 +333,19 @@ function Media ( constraints ) {
     this.videoDeviceIndex = 0;
 
 }
-Object.assign( Media.prototype, {
+Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
+
+    setContainer: function ( container ) {
+
+        this.container = container;
+
+    },
+
+    setScene: function ( scene ) {
+
+        this.scene = scene;
+
+    },
 
     /**
      * Enumerate devices
@@ -314,7 +358,7 @@ Object.assign( Media.prototype, {
         const devices = this.devices;
         const resolvedPromise = new Promise( resolve => { resolve( devices ); } );
 
-        return devices.length > 0 ? resolvedPromise : navigator.mediaDevices.enumerateDevices();
+        return devices.length > 0 ? resolvedPromise : window.navigator.mediaDevices.enumerateDevices();
 
     },
 
@@ -393,7 +437,7 @@ Object.assign( Media.prototype, {
         const playVideo = this.playVideo.bind( this );
         const onCatchError = error => { console.warn( `PANOLENS.Media: ${error}` ); };
 
-        return navigator.mediaDevices.getUserMedia( constraints )
+        return window.navigator.mediaDevices.getUserMedia( constraints )
             .then( setMediaStream )
             .then( playVideo )
             .catch( onCatchError );
@@ -500,6 +544,7 @@ Object.assign( Media.prototype, {
         if ( element ) {
 
             element.play();
+            this.dispatchEvent( { type: 'play' } );
 
         }
 
@@ -517,6 +562,7 @@ Object.assign( Media.prototype, {
         if ( element ) {
 
             element.pause();
+            this.dispatchEvent( { type: 'pause' } );
 
         }
 
@@ -531,12 +577,12 @@ Object.assign( Media.prototype, {
     createVideoTexture: function () {
 
         const video = this.element;
-        const texture = new THREE.VideoTexture( video );
+        const texture = new VideoTexture( video );
 
         texture.generateMipmaps = false;
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        texture.format = THREE.RGBFormat;
+        texture.minFilter = LinearFilter;
+        texture.magFilter = LinearFilter;
+        texture.format = RGBFormat;
         texture.center.set( 0.5, 0.5 );
 
         video.addEventListener( 'canplay', this.onWindowResize.bind( this ) );
@@ -550,10 +596,19 @@ Object.assign( Media.prototype, {
      * @memberOf Media
      * @instance
      * @returns {HTMLVideoElement}
+     * @fires Media#canplay
      */
     createVideoElement: function() {
 
+        const dispatchEvent = this.dispatchEvent.bind( this );
         const video = document.createElement( 'video' );
+
+        /**
+         * Video can play event
+         * @type {object}
+         * @event Media#canplay
+         */
+        const canPlay = () => dispatchEvent( { type: 'canplay' } );
         
         video.setAttribute( 'autoplay', '' );
         video.setAttribute( 'muted', '' );
@@ -567,6 +622,8 @@ Object.assign( Media.prototype, {
         video.style.objectPosition = 'center';
         video.style.objectFit = 'cover';
         video.style.display = this.scene ? 'none' : '';
+
+        video.addEventListener( 'canplay', canPlay );
 
         return video;
 
@@ -614,17 +671,18 @@ function Reticle ( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
     this.dpr = window.devicePixelRatio;
 
     const { canvas, context } = this.createCanvas();
-    const material = new THREE.SpriteMaterial( { color, map: this.createCanvasTexture( canvas ) } );
+    const material = new SpriteMaterial( { color, map: this.createCanvasTexture( canvas ) } );
 
-    THREE.Sprite.call( this, material );
+    Sprite.call( this, material );
 
     this.canvasWidth = canvas.width;
     this.canvasHeight = canvas.height;
     this.context = context;
-    this.color = color instanceof THREE.Color ? color : new THREE.Color( color );    
+    this.color = color instanceof Color ? color : new Color( color );    
 
     this.autoSelect = autoSelect;
     this.dwellTime = dwellTime;
+    this.rippleDuration = 500;
     this.position.z = -10;
     this.center.set( 0.5, 0.5 );
     this.scale.set( 0.5, 0.5, 1 );
@@ -638,7 +696,7 @@ function Reticle ( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
     this.updateCanvasArcByProgress( 0 );
 
 }
-Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
+Reticle.prototype = Object.assign( Object.create( Sprite.prototype ), {
 
     constructor: Reticle,
 
@@ -650,7 +708,7 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      */
     setColor: function ( color ) {
 
-        this.material.color.copy( color instanceof THREE.Color ? color : new THREE.Color( color ) );
+        this.material.color.copy( color instanceof Color ? color : new Color( color ) );
 
     },
 
@@ -663,9 +721,9 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      */
     createCanvasTexture: function ( canvas ) {
 
-        const texture = new THREE.CanvasTexture( canvas );
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
+        const texture = new CanvasTexture( canvas );
+        texture.minFilter = LinearFilter;
+        texture.magFilter = LinearFilter;
         texture.generateMipmaps = false;
 
         return texture;
@@ -740,13 +798,14 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * Ripple effect
      * @memberOf Reticle
      * @instance
+     * @fires Reticle#reticle-ripple-start
+     * @fires Reticle#reticle-ripple-end
      */
     ripple: function () {
 
         const context = this.context;
-        const stop = this.stop.bind( this );
         const { canvasWidth, canvasHeight, material } = this;
-        const duration = 500;
+        const duration = this.rippleDuration;
         const timestamp = performance.now();
         const color = this.color;
         const dpr = this.dpr;
@@ -755,7 +814,7 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         const update = () => {
 
-            const timerId = requestAnimationFrame( update );
+            const timerId = window.requestAnimationFrame( update );
             const elapsed = performance.now() - timestamp;
             const progress = elapsed / duration;
             const opacity = 1.0 - progress > 0 ? 1.0 - progress : 0;
@@ -768,16 +827,30 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
             context.fill();
             context.closePath();
 
-            if ( progress > 1.0 ) {
+            if ( progress >= 1.0 ) {
 
-                cancelAnimationFrame( timerId );
-                stop();
+                window.cancelAnimationFrame( timerId );
+                this.updateCanvasArcByProgress( 0 );
+
+                /**
+                 * Reticle ripple end event
+                 * @type {object}
+                 * @event Reticle#reticle-ripple-end
+                 */
+                this.dispatchEvent( { type: 'reticle-ripple-end' } );
 
             }
 
             material.map.needsUpdate = true;
 
         };
+
+        /**
+         * Reticle ripple start event
+         * @type {object}
+         * @event Reticle#reticle-ripple-start
+         */
+        this.dispatchEvent( { type: 'reticle-ripple-start' } );
 
         update();
 
@@ -810,6 +883,7 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @param {function} callback 
      * @memberOf Reticle
      * @instance
+     * @fires Reticle#reticle-start
      */
     start: function ( callback ) {
 
@@ -819,6 +893,13 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
+        /**
+         * Reticle start event
+         * @type {object}
+         * @event Reticle#reticle-start
+         */
+        this.dispatchEvent( { type: 'reticle-start' } );
+
         this.startTimestamp = performance.now();
         this.callback = callback;
         this.update();
@@ -826,17 +907,28 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-     * Stop dwelling
+     * End dwelling
      * @memberOf Reticle
      * @instance
+     * @fires Reticle#reticle-end
      */
-    stop: function(){
+    end: function(){
 
-        cancelAnimationFrame( this.timerId );
+        if ( !this.startTimestamp ) { return; }
+
+        window.cancelAnimationFrame( this.timerId );
 
         this.updateCanvasArcByProgress( 0 );
         this.callback = null;
         this.timerId = null;
+        this.startTimestamp = null;
+
+        /**
+         * Reticle end event
+         * @type {object}
+         * @event Reticle#reticle-end
+         */
+        this.dispatchEvent( { type: 'reticle-end' } );
 
     },
 
@@ -844,30 +936,36 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * Update dwelling
      * @memberOf Reticle
      * @instance
+     * @fires Reticle#reticle-update
      */
     update: function () {
 
-        this.timerId = requestAnimationFrame( this.update.bind( this ) );
+        this.timerId = window.requestAnimationFrame( this.update.bind( this ) );
 
         const elapsed = performance.now() - this.startTimestamp;
         const progress = elapsed / this.dwellTime;
 
         this.updateCanvasArcByProgress( progress );
 
-        if ( progress > 1.0 ) {
+        /**
+         * Reticle update event
+         * @type {object}
+         * @event Reticle#reticle-update
+         */
+        this.dispatchEvent( { type: 'reticle-update', progress } );
 
-            cancelAnimationFrame( this.timerId );
-            this.ripple();
+        if ( progress >= 1.0 ) {
+
+            window.cancelAnimationFrame( this.timerId );
             if ( this.callback ) { this.callback(); }
-            this.stop();
+            this.end();
+            this.ripple();
 
         }
 
     }
 
 } );
-
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -1795,7 +1893,7 @@ TWEEN.Interpolation = {
 
 	}
 
-})(commonjsGlobal);
+})();
 });
 
 /**
@@ -1811,7 +1909,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
 
     imageSrc = imageSrc || DataImage.Info;
 
-    THREE.Sprite.call( this );
+    Sprite.call( this );
 
     this.type = 'infospot';
 
@@ -1828,7 +1926,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     this.toPanorama = null;
     this.cursorStyle = null;
 
-    this.mode = MODES.UNKNOWN;
+    this.mode = MODES.NORMAL;
 
     this.scale.set( scale, scale, 1 );
     this.rotation.y = Math.PI;
@@ -1840,7 +1938,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     // Event Handler
     this.HANDLER_FOCUS = null;	
 
-    this.material.side = THREE.DoubleSide;
+    this.material.side = DoubleSide;
     this.material.depthTest = false;
     this.material.transparent = true;
     this.material.opacity = 0;
@@ -1851,8 +1949,10 @@ function Infospot ( scale = 300, imageSrc, animated ) {
 
     const postLoad = function ( texture ) {
 
+        if ( !this.material ) { return; }
+
         const ratio = texture.image.width / texture.image.height;
-        const textureScale = new THREE.Vector3();
+        const textureScale = new Vector3();
 
         texture.image.width = texture.image.naturalWidth || 64;
         texture.image.height = texture.image.naturalHeight || 64;
@@ -1898,7 +1998,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     TextureLoader.load( imageSrc, postLoad );	
 
 }
-Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
+Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
 
     constructor: Infospot,
 
@@ -2022,8 +2122,8 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
             if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
                 style.display = 'none';
-                if ( left ) { left.style.display = 'block'; }
-                if ( right ) { right.style.display = 'block'; }
+                left.style.display = 'block';
+                right.style.display = 'block';
 
                 // Store element width for reference
                 element._width = left.clientWidth;
@@ -2107,7 +2207,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-        if ( !element.left || !element.right ) {
+        if ( !element.left && !element.right ) {
 
             element.left = element.cloneNode( true );
             element.right = element.cloneNode( true );
@@ -2237,7 +2337,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    addHoverText: function ( text, delta ) {
+    addHoverText: function ( text, delta = 40 ) {
 
         if ( !this.element ) {
 
@@ -2251,7 +2351,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
             this.element.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
             this.element.style.position = 'absolute';
             this.element.classList.add( 'panolens-infospot' );
-            this.element.verticalDelta = delta !== undefined ? delta : 40;
+            this.element.verticalDelta = delta;
 
         }
 
@@ -2266,7 +2366,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    addHoverElement: function ( el, delta ) {
+    addHoverElement: function ( el, delta = 40 ) {
 
         if ( !this.element ) { 
 
@@ -2275,7 +2375,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
             this.element.style.top = 0;
             this.element.style.position = 'absolute';
             this.element.classList.add( 'panolens-infospot' );
-            this.element.verticalDelta = delta !== undefined ? delta : 40;
+            this.element.verticalDelta = delta;
 
         }
 
@@ -2378,6 +2478,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         } else {
 
+            this.enableRaycast( true );
             material.opacity = 1;
 
         }
@@ -2401,6 +2502,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         } else {
 
+            this.enableRaycast( false );
             material.opacity = 0;
 
         }
@@ -2447,14 +2549,20 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      */
     dispose: function () {
 
+        const { geometry, material } = this;
+        const { map } = material;
+
         this.removeHoverElement();
-        this.material.dispose();
 
         if ( this.parent ) {
 
             this.parent.remove( this );
 
         }
+
+        if ( map ) { map.dispose(); material.map = null; }
+        if ( geometry ) { geometry.dispose(); this.geometry = null; }
+        if ( material ) { material.dispose(); this.material = null; }
 
     }
 
@@ -2473,7 +2581,7 @@ function Widget ( container ) {
 
     }
 
-    THREE.EventDispatcher.call( this );
+    EventDispatcher.call( this );
 
     this.DEFAULT_TRANSITION  = 'all 0.27s ease';
     this.TOUCH_ENABLED = !!(( 'ontouchstart' in window ) || window.DocumentTouch && document instanceof DocumentTouch);
@@ -2497,7 +2605,7 @@ function Widget ( container ) {
 
 }
 
-Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
+Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     constructor: Widget,
 
@@ -2899,10 +3007,10 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             /**
              * Viewer handler event
              * @type {object}
-             * @event Widget#panolens-dual-eye-effect
+             * @event Widget#panolens-viewer-handler
              * @property {string} method - 'onWindowResize' function call on Viewer
              */
-            scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize', data: false } );
+            scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize' } );
 
             tapSkipped = true;
 
@@ -3204,6 +3312,9 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             item.setProgress( event.percentage ); 
 
         } );
+
+        item.progressElement = progressElement;
+        item.progressElementControl = progressElementControl;
 
         return item;
 
@@ -3719,7 +3830,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
  */
 function Panorama ( geometry, material ) {
 
-    THREE.Mesh.call( this, geometry, material );
+    Mesh.call( this, geometry, material );
 
     this.type = 'panorama';
 
@@ -3744,7 +3855,7 @@ function Panorama ( geometry, material ) {
     this.linkingImageURL = undefined;
     this.linkingImageScale = undefined;
 
-    this.material.side = THREE.BackSide;
+    this.material.side = BackSide;
     this.material.opacity = 0;
 
     this.scale.x *= -1;
@@ -3762,7 +3873,7 @@ function Panorama ( geometry, material ) {
 
 }
 
-Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
+Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 
     constructor: Panorama,
 
@@ -3819,14 +3930,14 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
         } else {
 
             // Counter scale.x = -1 effect
-            invertedObject = new THREE.Object3D();
+            invertedObject = new Object3D();
             invertedObject.scale.x = -1;
             invertedObject.scalePlaceHolder = true;
             invertedObject.add( object );
 
         }
 
-        THREE.Object3D.prototype.add.call( this, invertedObject );
+        Object3D.prototype.add.call( this, invertedObject );
 
     },
 
@@ -4197,10 +4308,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
                 /**
                  * Enter panorama and animation complete event
-                 * @event Panorama#enter-animation-complete
+                 * @event Panorama#enter-complete
                  * @type {object} 
                  */
-                this.dispatchEvent( { type: 'enter-animation-complete' } );
+                this.dispatchEvent( { type: 'enter-complete' } );
 
             }.bind ( this ) )
             .start();
@@ -4273,7 +4384,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      * @memberOf Panorama
      * @instance
      * @fires Panorama#enter
-     * @fires Panorama#enter-animation-start
+     * @fires Panorama#enter-start
      */
     onEnter: function () {
 
@@ -4286,10 +4397,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
                 /**
                  * Enter panorama and animation starting event
-                 * @event Panorama#enter-animation-start
+                 * @event Panorama#enter-start
                  * @type {object} 
                  */
-                this.dispatchEvent( { type: 'enter-animation-start' } );
+                this.dispatchEvent( { type: 'enter-start' } );
 				
                 if ( this.loaded ) {
 
@@ -4338,10 +4449,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
                 /**
                  * Leave panorama and animation starting event
-                 * @event Panorama#leave-animation-start
+                 * @event Panorama#leave-start
                  * @type {object} 
                  */
-                this.dispatchEvent( { type: 'leave-animation-start' } );
+                this.dispatchEvent( { type: 'leave-start' } );
 
                 this.fadeOut( duration );
                 this.toggleInfospotVisibility( false );
@@ -4373,6 +4484,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      */
     dispose: function () {
 
+        this.infospotAnimation.stop();
+        this.fadeInAnimation.stop();
+        this.fadeOutAnimation.stop();
+        this.enterTransition.stop();
+        this.leaveTransition.stop();
+
         /**
          * On panorama dispose handler
          * @type {object}
@@ -4400,8 +4517,8 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
             }
 			
-            if ( geometry ) { geometry.dispose(); }
-            if ( material ) { material.dispose(); }
+            if ( geometry ) { geometry.dispose(); object.geometry = null; }
+            if ( material ) { material.dispose(); object.material = null; }
 
         }
 
@@ -4425,8 +4542,8 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 function ImagePanorama ( image, _geometry, _material ) {
 
     const radius = 5000;
-    const geometry = _geometry || new THREE.SphereBufferGeometry( radius, 60, 40 );
-    const material = _material || new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
+    const geometry = _geometry || new SphereBufferGeometry( radius, 60, 40 );
+    const material = _material || new MeshBasicMaterial( { opacity: 0, transparent: true } );
 
     Panorama.call( this, geometry, material );
 
@@ -4461,7 +4578,7 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         } else if ( src instanceof HTMLImageElement ) {
 
-            this.onLoad( new THREE.Texture( src ) );
+            this.onLoad( new Texture( src ) );
 
         }
 
@@ -4475,12 +4592,12 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     onLoad: function ( texture ) {
 
-        texture.minFilter = texture.magFilter = THREE.LinearFilter;
+        texture.minFilter = texture.magFilter = LinearFilter;
         texture.needsUpdate = true;
 		
         this.updateTexture( texture );
 
-        requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
+        window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
 
     },
 
@@ -4505,7 +4622,7 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         const { material: { map } } = this;
 
         // Release cached image
-        THREE.Cache.remove( this.src );
+        Cache.remove( this.src );
 
         if ( map ) { map.dispose(); }
 
@@ -4521,10 +4638,10 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
  */
 function EmptyPanorama () {
 
-    const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+    const geometry = new BufferGeometry();
+    const material = new MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
 
-    geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
+    geometry.addAttribute( 'position', new BufferAttribute( new Float32Array(), 1 ) );
 
     Panorama.call( this, geometry, material );
 
@@ -4544,14 +4661,14 @@ EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 function CubePanorama ( images = [] ){
 
     const edgeLength = 10000;
-    const shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
-    const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
-    const material = new THREE.ShaderMaterial( {
+    const shader = Object.assign( {}, ShaderLib[ 'cube' ] );
+    const geometry = new BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+    const material = new ShaderMaterial( {
 
         fragmentShader: shader.fragmentShader,
         vertexShader: shader.vertexShader,
         uniforms: shader.uniforms,
-        side: THREE.BackSide,
+        side: BackSide,
         transparent: true
 
     } );
@@ -4608,9 +4725,15 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {	
 
-        this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
+        const { value } = this.material.uniforms.tCube;
 
-        this.material.uniforms[ 'tCube' ].value.dispose();
+        this.images.forEach( ( image ) => { Cache.remove( image ); } );
+
+        if ( value instanceof CubeTexture ) {
+
+            value.dispose();
+
+        }
 
         Panorama.prototype.dispose.call( this );
 
@@ -4658,8 +4781,8 @@ BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype )
 function VideoPanorama ( src, options = {} ) {
 
     const radius = 5000;
-    const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
-    const material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
+    const geometry = new SphereBufferGeometry( radius, 60, 40 );
+    const material = new MeshBasicMaterial( { opacity: 0, transparent: true } );
 
     Panorama.call( this, geometry, material );
 
@@ -4695,7 +4818,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     isMobile: function () {
 
         let check = false;
-        (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})( navigator.userAgent || navigator.vendor || window.opera );
+        (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})( window.navigator.userAgent || window.navigator.vendor || window.opera );
         return check;
 
     },
@@ -4782,7 +4905,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
             };
 
-            requestAnimationFrame( loaded );
+            window.requestAnimationFrame( loaded );
 			
         };
 
@@ -4800,9 +4923,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         } else {
 
-            if ( !video.querySelectorAll( 'source' ).length || !video.src ) {
+            if ( video.querySelectorAll( 'source' ).length === 0 ) {
 
-                video.src = this.src;
+                const source = document.createElement( 'source' );
+                source.src = this.src;
+                video.appendChild( source );
 
             }
 
@@ -4849,10 +4974,10 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         if ( !video ) return;
 
-        const videoTexture = new THREE.VideoTexture( video );
-        videoTexture.minFilter = THREE.LinearFilter;
-        videoTexture.magFilter = THREE.LinearFilter;
-        videoTexture.format = THREE.RGBFormat;
+        const videoTexture = new VideoTexture( video );
+        videoTexture.minFilter = LinearFilter;
+        videoTexture.magFilter = LinearFilter;
+        videoTexture.format = RGBFormat;
 
         this.updateTexture( videoTexture );
 	
@@ -4923,24 +5048,44 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @memberOf VideoPanorama
      * @instance
      * @fires VideoPanorama#play
+     * @fires VideoPanorama#play-error
      */
     playVideo: function () {
 
         const video = this.videoElement;
+        const playVideo = this.playVideo.bind( this );
+        const dispatchEvent = this.dispatchEvent.bind( this );
+        const onSuccess = () => {
+
+            /**
+             * Play event
+             * @type {object}
+             * @event VideoPanorama#play
+             *
+             */
+            dispatchEvent( { type: 'play' } );
+
+        };
+        const onError = ( error ) => {
+
+            // Error playing video. Retry next frame. Possibly Waiting for user interaction
+            window.requestAnimationFrame( playVideo );
+
+            /**
+             * Play event
+             * @type {object}
+             * @event VideoPanorama#play-error
+             *
+             */
+            dispatchEvent( { type: 'play-error', error } );
+
+        };
 
         if ( video && video.paused ) {
 
-            video.play();
+            video.play().then( onSuccess ).catch( onError );
 
         }
-
-        /**
-         * Play event
-         * @type {object}
-         * @event VideoPanorama#play
-         *
-         */
-        this.dispatchEvent( { type: 'play' } );
 
     },
 
@@ -5097,7 +5242,6 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         const { material: { map } } = this;
 
-        this.resetVideo();
         this.pauseVideo();
 		
         this.removeEventListener( 'leave', this.pauseVideo.bind( this ) );
@@ -5142,6 +5286,9 @@ function GoogleStreetviewLoader ( parameters = {} ) {
     this.widths = [ 416, 832, 1664, 3328, 6656, 13312 ];
     this.heights = [ 416, 416, 832, 1664, 3328, 6656 ];
 
+    this.maxW = 6656;
+    this.maxH = 6656;
+
     let gl;
 
     try {
@@ -5161,9 +5308,8 @@ function GoogleStreetviewLoader ( parameters = {} ) {
 
     }
 
-    const maxTexSize = Math.max( gl.getParameter( gl.MAX_TEXTURE_SIZE ), 6656 );
-    this.maxW = maxTexSize;
-    this.maxH = maxTexSize;
+    this.maxW = Math.max( gl.getParameter( gl.MAX_TEXTURE_SIZE ), this.maxW );
+    this.maxH = Math.max( gl.getParameter( gl.MAX_TEXTURE_SIZE ), this.maxH );
 
 }
 
@@ -5183,26 +5329,6 @@ Object.assign( GoogleStreetviewLoader.prototype, {
         if ( this.onProgress ) {
 
             this.onProgress( { loaded: loaded, total: total } );
-
-        }
-		
-    },
-
-    /**
-     * Throw error
-     * @param {string} message 
-     * @memberOf GoogleStreetviewLoader
-     * @instance
-     */
-    throwError: function ( message ) {
-
-        if ( this.onError ) {
-
-            this.onError( message );
-			
-        } else {
-
-            console.error( message );
 
         }
 		
@@ -5291,19 +5417,6 @@ Object.assign( GoogleStreetviewLoader.prototype, {
     },
 
     /**
-     * Load google street view by id
-     * @param {string} id 
-     * @memberOf GoogleStreetviewLoader
-     * @instance
-     */
-    loadFromId: function( id ) {
-
-        this._panoId = id;
-        this.composePanorama();
-
-    },
-
-    /**
      * Compose panorama
      * @memberOf GoogleStreetviewLoader
      * @instance
@@ -5367,18 +5480,9 @@ Object.assign( GoogleStreetviewLoader.prototype, {
         this._panoClient.getPanoramaById( id, function (result, status) {
             if (status === google.maps.StreetViewStatus.OK) {
                 self.result = result;
-                if( self.onPanoramaData ) self.onPanoramaData( result );
-                /*
-                 * var h = google.maps.geometry.spherical.computeHeading(location, result.location.latLng);
-                 * rotation = (result.tiles.centerHeading - h) * Math.PI / 180.0;
-                 */
                 self.copyright = result.copyright;
                 self._panoId = result.location.pano;
-                self.location = location;
                 self.composePanorama();
-            } else {
-                if( self.onNoPanoramaData ) self.onNoPanoramaData( status );
-                self.throwError('Could not retrieve panorama for the following reason: ' + status);
             }
         });
 		
@@ -5391,6 +5495,7 @@ Object.assign( GoogleStreetviewLoader.prototype, {
      * @instance
      */
     setZoom: function( z ) {
+
         this._zoom = z;
         this.adaptTextureToZoom();
     }
@@ -5410,7 +5515,7 @@ function GoogleStreetviewPanorama ( panoId, apiKey ) {
 
     this.panoId = panoId;
 
-    this.gsvLoader = undefined;
+    this.gsvLoader = null;
 
     this.loadRequested = false;
 
@@ -5437,10 +5542,6 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
         if ( panoId && this.gsvLoader ) {
 
             this.loadGSVLoader( panoId );
-
-        } else {
-
-            this.gsvLoader = {};
 
         }
 
@@ -5473,7 +5574,7 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
 
         this.gsvLoader = new GoogleStreetviewLoader();
 
-        if ( this.gsvLoader === {} || this.loadRequested ) {
+        if ( this.loadRequested ) {
 
             this.load();
 
@@ -5522,9 +5623,7 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
      */
     onLoad: function ( canvas ) {
 
-        if ( !this.gsvLoader ) { return; }
-
-        ImagePanorama.prototype.onLoad.call( this, new THREE.Texture( canvas ) );
+        ImagePanorama.prototype.onLoad.call( this, new Texture( canvas ) );
 
     },
 
@@ -5565,9 +5664,9 @@ const StereographicShader = {
 
     uniforms: {
 
-        'tDiffuse': { value: new THREE.Texture() },
+        'tDiffuse': { value: new Texture() },
         'resolution': { value: 1.0 },
-        'transform': { value: new THREE.Matrix4() },
+        'transform': { value: new Matrix4() },
         'zoom': { value: 1.0 },
         'opacity': { value: 1.0 }
 
@@ -5646,15 +5745,15 @@ function LittlePlanet ( type = 'image', source, size = 10000, ratio = 0.5 ) {
     this.frameId = null;
 
     this.dragging = false;
-    this.userMouse = new THREE.Vector2();
+    this.userMouse = new Vector2();
 
-    this.quatA = new THREE.Quaternion();
-    this.quatB = new THREE.Quaternion();
-    this.quatCur = new THREE.Quaternion();
-    this.quatSlerp = new THREE.Quaternion();
+    this.quatA = new Quaternion();
+    this.quatB = new Quaternion();
+    this.quatCur = new Quaternion();
+    this.quatSlerp = new Quaternion();
 
-    this.vectorX = new THREE.Vector3( 1, 0, 0 );
-    this.vectorY = new THREE.Vector3( 0, 1, 0 );
+    this.vectorX = new Vector3( 1, 0, 0 );
+    this.vectorY = new Vector3( 0, 1, 0 );
 
     this.addEventListener( 'window-resize', this.onWindowResize );
 
@@ -5670,7 +5769,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 			
             for ( let i = 0; i < arguments.length; i ++ ) {
 
-                this.add( argument );
+                this.add( arguments[ i ] );
 
             }
 
@@ -5690,23 +5789,23 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     createGeometry: function ( size, ratio ) {
 
-        return new THREE.PlaneBufferGeometry( size, size * ratio );
+        return new PlaneBufferGeometry( size, size * ratio );
 
     },
 
     createMaterial: function ( size ) {
 
-        const shader = StereographicShader, uniforms = shader.uniforms;
+        const shader = Object.assign( {}, StereographicShader ), uniforms = shader.uniforms;
 
         uniforms.zoom.value = size;
         uniforms.opacity.value = 0.0;
 
-        return new THREE.ShaderMaterial( {
+        return new ShaderMaterial( {
 
             uniforms: uniforms,
             vertexShader: shader.vertexShader,
             fragmentShader: shader.fragmentShader,
-            side: THREE.BackSide,
+            side: BackSide,
             transparent: true
 
         } );
@@ -5787,8 +5886,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
             const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
             const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
-            const angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
-            const angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
+            const angleX = Math$1.degToRad( x - this.userMouse.x ) * 0.4;
+            const angleY = Math$1.degToRad( y - this.userMouse.y ) * 0.4;
 
             if ( this.dragging ) {
                 this.quatA.setFromAxisAngle( this.vectorY, angleX );
@@ -5867,14 +5966,19 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     onUpdateCallback: function () {
 
-        this.frameId = requestAnimationFrame( this.onUpdateCallback.bind( this ) );
+        this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
 
         this.quatSlerp.slerp( this.quatCur, 0.1 );
-        this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
-		
+
+        if ( this.material ) {
+
+            this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
+
+        }
+        
         if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
 			
-            cancelAnimationFrame( this.frameId );
+            window.cancelAnimationFrame( this.frameId );
 
         }
 
@@ -5888,7 +5992,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     },
 
-    onLoad: function () {
+    onLoad: function ( texture ) {
 
         this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 
@@ -5896,6 +6000,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         this.onUpdateCallback();
 		
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' } );
+
+        ImagePanorama.prototype.onLoad.call( this, texture );
 		
     },
 
@@ -5905,7 +6011,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: CONTROLS.ORBIT } );
 
-        cancelAnimationFrame( this.frameId );
+        window.cancelAnimationFrame( this.frameId );
 
         ImagePanorama.prototype.onLeave.call( this );
 		
@@ -5924,6 +6030,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
     },
 
     dispose: function () {	
+
+        this.unregisterMouseEvents();
 
         ImagePanorama.prototype.dispose.call( this );
 
@@ -5958,8 +6066,7 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
 
         this.updateTexture( texture );
 
-        LittlePlanet.prototype.onLoad.call( this );
-        ImagePanorama.prototype.onLoad.call( this, texture );
+        LittlePlanet.prototype.onLoad.call( this, texture );
 
     },
     
@@ -5971,7 +6078,7 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
      */
     updateTexture: function ( texture ) {
 
-        texture.minFilter = texture.magFilter = THREE.LinearFilter;
+        texture.minFilter = texture.magFilter = LinearFilter;
 		
         this.material.uniforms[ 'tDiffuse' ].value = texture;
 
@@ -6007,8 +6114,8 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
 function CameraPanorama ( constraints ) {
 
     const radius = 5000;
-    const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
-    const material = new THREE.MeshBasicMaterial( { visible: false });
+    const geometry = new SphereBufferGeometry( radius, 60, 40 );
+    const material = new MeshBasicMaterial( { visible: false });
 
     Panorama.call( this, geometry, material );
 
@@ -6034,7 +6141,7 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     onPanolensContainer: function ( { container } ) {
 
-        this.media.container = container;
+        this.media.setContainer( container );
 
     },
 
@@ -6046,7 +6153,7 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     onPanolensScene: function ( { scene } ) {
 
-        this.media.scene = scene;
+        this.media.setScene( scene );
 
     },
 
@@ -6097,7 +6204,7 @@ function OrbitControls ( object, domElement ) {
      * "target" sets the location of focus, where the control orbits around
      * and where it pans with respect to.
      */
-    this.target = new THREE.Vector3();
+    this.target = new Vector3();
 
     // center is old, deprecated; use "target" instead
     this.center = this.target;
@@ -6159,7 +6266,7 @@ function OrbitControls ( object, domElement ) {
     this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
 
     // Mouse buttons
-    this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
+    this.mouseButtons = { ORBIT: MOUSE.LEFT, ZOOM: MOUSE.MIDDLE, PAN: MOUSE.RIGHT };
 
     /*
      * //////////
@@ -6171,30 +6278,30 @@ function OrbitControls ( object, domElement ) {
     var EPS = 10e-8;
     var MEPS = 10e-5;
 
-    var rotateStart = new THREE.Vector2();
-    var rotateEnd = new THREE.Vector2();
-    var rotateDelta = new THREE.Vector2();
+    var rotateStart = new Vector2();
+    var rotateEnd = new Vector2();
+    var rotateDelta = new Vector2();
 
-    var panStart = new THREE.Vector2();
-    var panEnd = new THREE.Vector2();
-    var panDelta = new THREE.Vector2();
-    var panOffset = new THREE.Vector3();
+    var panStart = new Vector2();
+    var panEnd = new Vector2();
+    var panDelta = new Vector2();
+    var panOffset = new Vector3();
 
-    var offset = new THREE.Vector3();
+    var offset = new Vector3();
 
-    var dollyStart = new THREE.Vector2();
-    var dollyEnd = new THREE.Vector2();
-    var dollyDelta = new THREE.Vector2();
+    var dollyStart = new Vector2();
+    var dollyEnd = new Vector2();
+    var dollyDelta = new Vector2();
 
     var theta = 0;
     var phi = 0;
     var phiDelta = 0;
     var thetaDelta = 0;
     var scale = 1;
-    var pan = new THREE.Vector3();
+    var pan = new Vector3();
 
-    var lastPosition = new THREE.Vector3();
-    var lastQuaternion = new THREE.Quaternion();
+    var lastPosition = new Vector3();
+    var lastQuaternion = new Quaternion();
 
     var momentumLeft = 0, momentumUp = 0;
     var eventPrevious;
@@ -6214,7 +6321,7 @@ function OrbitControls ( object, domElement ) {
 
     // so camera.up is the orbit axis
 
-    var quat = new THREE.Quaternion().setFromUnitVectors( object.up, new THREE.Vector3( 0, 1, 0 ) );
+    var quat = new Quaternion().setFromUnitVectors( object.up, new Vector3( 0, 1, 0 ) );
     var quatInverse = quat.clone().inverse();
 
     // events
@@ -6291,7 +6398,7 @@ function OrbitControls ( object, domElement ) {
 
         var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-        if ( scope.object instanceof THREE.PerspectiveCamera ) {
+        if ( scope.object instanceof PerspectiveCamera ) {
 
             // perspective
             var position = scope.object.position;
@@ -6305,7 +6412,7 @@ function OrbitControls ( object, domElement ) {
             scope.panLeft( 2 * deltaX * targetDistance / element.clientHeight );
             scope.panUp( 2 * deltaY * targetDistance / element.clientHeight );
 
-        } else if ( scope.object instanceof THREE.OrthographicCamera ) {
+        } else if ( scope.object instanceof OrthographicCamera ) {
 
             // orthographic
             scope.panLeft( deltaX * (scope.object.right - scope.object.left) / element.clientWidth );
@@ -6346,11 +6453,11 @@ function OrbitControls ( object, domElement ) {
 
         }
 
-        if ( scope.object instanceof THREE.PerspectiveCamera ) {
+        if ( scope.object instanceof PerspectiveCamera ) {
 
             scale /= dollyScale;
 
-        } else if ( scope.object instanceof THREE.OrthographicCamera ) {
+        } else if ( scope.object instanceof OrthographicCamera ) {
 
             scope.object.zoom = Math.max( this.minZoom, Math.min( this.maxZoom, this.object.zoom * dollyScale ) );
             scope.object.updateProjectionMatrix();
@@ -6372,11 +6479,11 @@ function OrbitControls ( object, domElement ) {
 
         }
 
-        if ( scope.object instanceof THREE.PerspectiveCamera ) {
+        if ( scope.object instanceof PerspectiveCamera ) {
 
             scale *= dollyScale;
 
-        } else if ( scope.object instanceof THREE.OrthographicCamera ) {
+        } else if ( scope.object instanceof OrthographicCamera ) {
 
             scope.object.zoom = Math.max( this.minZoom, Math.min( this.maxZoom, this.object.zoom / dollyScale ) );
             scope.object.updateProjectionMatrix();
@@ -6897,6 +7004,21 @@ function OrbitControls ( object, domElement ) {
 
     }
 
+    this.dispose = function() {
+
+        this.domElement.removeEventListener( 'mousedown', onMouseDown );
+        this.domElement.removeEventListener( 'mousewheel', onMouseWheel );
+        this.domElement.removeEventListener( 'DOMMouseScroll', onMouseWheel );
+
+        this.domElement.removeEventListener( 'touchstart', touchstart );
+        this.domElement.removeEventListener( 'touchend', touchend );
+        this.domElement.removeEventListener( 'touchmove', touchmove );
+
+        window.removeEventListener( 'keyup', onKeyUp );
+        window.removeEventListener( 'keydown', onKeyDown );
+
+    };
+
     // this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
     this.domElement.addEventListener( 'mousedown', onMouseDown, { passive: false } );
     this.domElement.addEventListener( 'mousewheel', onMouseWheel, { passive: false } );
@@ -6913,7 +7035,7 @@ function OrbitControls ( object, domElement ) {
     this.update();
 
 }
-OrbitControls.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
+OrbitControls.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     constructor: OrbitControls
 
@@ -6976,8 +7098,8 @@ function DeviceOrientationControls ( camera, domElement ) {
         event.preventDefault();
         event.stopPropagation();
 
-        rotY += THREE.Math.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 );
-        rotX += THREE.Math.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
+        rotY += Math$1.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 );
+        rotX += Math$1.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
 
         scope.updateAlphaOffsetAngle( rotY );
 
@@ -6990,36 +7112,36 @@ function DeviceOrientationControls ( camera, domElement ) {
 
     var setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
 
-        var zee = new THREE.Vector3( 0, 0, 1 );
+        var zee = new Vector3( 0, 0, 1 );
 
-        var euler = new THREE.Euler();
+        var euler = new Euler();
 
-        var q0 = new THREE.Quaternion();
+        var q0 = new Quaternion();
 
-        var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
+        var q1 = new Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
 
         var vectorFingerY;
-        var fingerQY = new THREE.Quaternion();
-        var fingerQX = new THREE.Quaternion();
+        var fingerQY = new Quaternion();
+        var fingerQX = new Quaternion();
 
         if ( scope.screenOrientation == 0 ) {
 
-            vectorFingerY = new THREE.Vector3( 1, 0, 0 );
+            vectorFingerY = new Vector3( 1, 0, 0 );
             fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
 
         } else if ( scope.screenOrientation == 180 ) {
 
-            vectorFingerY = new THREE.Vector3( 1, 0, 0 );
+            vectorFingerY = new Vector3( 1, 0, 0 );
             fingerQY.setFromAxisAngle( vectorFingerY, rotX );
 
         } else if ( scope.screenOrientation == 90 ) {
 
-            vectorFingerY = new THREE.Vector3( 0, 1, 0 );
+            vectorFingerY = new Vector3( 0, 1, 0 );
             fingerQY.setFromAxisAngle( vectorFingerY, rotX );
 
         } else if ( scope.screenOrientation == - 90) {
 
-            vectorFingerY = new THREE.Vector3( 0, 1, 0 );
+            vectorFingerY = new Vector3( 0, 1, 0 );
             fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
 
         }
@@ -7069,10 +7191,10 @@ function DeviceOrientationControls ( camera, domElement ) {
 
         if ( scope.enabled === false ) return;
 
-        var alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
-        var beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
-        var gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
-        var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
+        var alpha = scope.deviceOrientation.alpha ? Math$1.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
+        var beta = scope.deviceOrientation.beta ? Math$1.degToRad( scope.deviceOrientation.beta ) : 0; // X'
+        var gamma = scope.deviceOrientation.gamma ? Math$1.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
+        var orient = scope.screenOrientation ? Math$1.degToRad( scope.screenOrientation ) : 0; // O
 
         setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
         scope.alpha = alpha;
@@ -7097,7 +7219,7 @@ function DeviceOrientationControls ( camera, domElement ) {
     this.connect();
 
 }
-DeviceOrientationControls.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype), {
+DeviceOrientationControls.prototype = Object.assign( Object.create( EventDispatcher.prototype), {
 
     constructor: DeviceOrientationControls
 
@@ -7111,16 +7233,16 @@ DeviceOrientationControls.prototype = Object.assign( Object.create( THREE.EventD
  */
 function CardboardEffect ( renderer ) {
 
-    var _camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+    var _camera = new OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 
-    var _scene = new THREE.Scene();
+    var _scene = new Scene();
 
-    var _stereo = new THREE.StereoCamera();
+    var _stereo = new StereoCamera();
     _stereo.aspect = 0.5;
 
-    var _params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
+    var _params = { minFilter: LinearFilter, magFilter: NearestFilter, format: RGBAFormat };
 
-    var _renderTarget = new THREE.WebGLRenderTarget( 512, 512, _params );
+    var _renderTarget = new WebGLRenderTarget( 512, 512, _params );
     _renderTarget.scissorTest = true;
     _renderTarget.texture.generateMipmaps = false;
 
@@ -7129,9 +7251,9 @@ function CardboardEffect ( renderer ) {
      * https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
      */
 
-    var distortion = new THREE.Vector2( 0.441, 0.156 );
+    var distortion = new Vector2( 0.441, 0.156 );
 
-    var geometry = new THREE.PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
+    var geometry = new PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
 
     var positions = geometry.attributes.position.array;
     var uvs = geometry.attributes.uv.array;
@@ -7148,7 +7270,7 @@ function CardboardEffect ( renderer ) {
     uvs2.set( uvs );
     uvs2.set( uvs, uvs.length );
 
-    var vector = new THREE.Vector2();
+    var vector = new Vector2();
     var length = positions.length / 3;
 
     for ( var i = 0, l = positions2.length / 3; i < l; i ++ ) {
@@ -7173,8 +7295,8 @@ function CardboardEffect ( renderer ) {
 
     //
 
-    var material = new THREE.MeshBasicMaterial( { map: _renderTarget.texture } );
-    var mesh = new THREE.Mesh( geometry, material );
+    var material = new MeshBasicMaterial( { map: _renderTarget.texture } );
+    var mesh = new Mesh( geometry, material );
     _scene.add( mesh );
 
     //
@@ -7230,9 +7352,9 @@ function CardboardEffect ( renderer ) {
  */
 const StereoEffect = function ( renderer ) {
 
-    var _stereo = new THREE.StereoCamera();
+    var _stereo = new StereoCamera();
     _stereo.aspect = 0.5;
-    var size = new THREE.Vector2();
+    var size = new Vector2();
 
     this.setEyeSeparation = function ( eyeSep ) {
 
@@ -7301,8 +7423,6 @@ const StereoEffect = function ( renderer ) {
  */
 function Viewer ( options ) {
 
-    THREE.EventDispatcher.call( this );
-
     let container;
 
     options = options || {};
@@ -7353,10 +7473,10 @@ function Viewer ( options ) {
 
     this.container = container;
 
-    this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
-    this.scene = options.scene || new THREE.Scene();
-    this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
-    this.sceneReticle = new THREE.Scene();
+    this.camera = options.camera || new PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
+    this.scene = options.scene || new Scene();
+    this.renderer = options.renderer || new WebGLRenderer( { alpha: true, antialias: false } );
+    this.sceneReticle = new Scene();
 
     this.viewIndicatorSize = this.options.indicatorSize;
 
@@ -7373,14 +7493,14 @@ function Viewer ( options ) {
     this.pressEntityObject = null;
     this.pressObject = null;
 
-    this.raycaster = new THREE.Raycaster();
-    this.raycasterPoint = new THREE.Vector2();
-    this.userMouse = new THREE.Vector2();
+    this.raycaster = new Raycaster();
+    this.raycasterPoint = new Vector2();
+    this.userMouse = new Vector2();
     this.updateCallbacks = [];
     this.requestAnimationId = null;
 
-    this.cameraFrustum = new THREE.Frustum();
-    this.cameraViewProjectionMatrix = new THREE.Matrix4();
+    this.cameraFrustum = new Frustum();
+    this.cameraViewProjectionMatrix = new Matrix4();
 
     this.autoRotateRequestId = null;
 
@@ -7404,8 +7524,8 @@ function Viewer ( options ) {
     this.OUTPUT_INFOSPOT = false;
 
     // Animations
-    this.tweenLeftAnimation = new TWEEN.Tween();
-    this.tweenUpAnimation = new TWEEN.Tween();
+    this.tweenLeftAnimation = new Tween.Tween();
+    this.tweenUpAnimation = new Tween.Tween();
 
     // Renderer
     this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -7496,7 +7616,7 @@ function Viewer ( options ) {
     this.animate.call( this );
 
 }
-Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
+Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     constructor: Viewer,
 
@@ -7512,7 +7632,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         if ( arguments.length > 1 ) {
 
-            for ( var i = 0; i < arguments.length; i ++ ) {
+            for ( let i = 0; i < arguments.length; i ++ ) {
 
                 this.add( arguments[ i ] );
 
@@ -7676,7 +7796,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * Set widget content
      * @method activateWidgetItem
      * @param  {integer} controlIndex - Control index
-     * @param  {MODES} mode - Modes for effects
+     * @param  {integer} mode - Modes for effects
      * @memberOf Viewer
      * @instance
      */
@@ -8187,7 +8307,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @return {string} - Next control id
      */
-    getNextControlName: function () {
+    getNextControlId: function () {
 
         return this.controls[ this.getNextControlIndex() ].id;
 
@@ -8374,16 +8494,16 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         }
 
         duration = duration !== undefined ? duration : 1000;
-        easing = easing || TWEEN.Easing.Exponential.Out;
+        easing = easing || Tween.Easing.Exponential.Out;
 
-        var scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
+        let scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
 
         scope = this;
 
-        chv = this.camera.getWorldDirection( new THREE.Vector3() );
+        chv = this.camera.getWorldDirection( new Vector3() );
         cvv = chv.clone();
 
-        vptc = this.panorama.getWorldPosition( new THREE.Vector3() ).sub( this.camera.getWorldPosition( new THREE.Vector3() ) );
+        vptc = this.panorama.getWorldPosition( new Vector3() ).sub( this.camera.getWorldPosition( new Vector3() ) );
 
         hv = vector.clone();
         // Scale effect
@@ -8406,7 +8526,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         this.tweenLeftAnimation.stop();
         this.tweenUpAnimation.stop();
 
-        this.tweenLeftAnimation = new TWEEN.Tween( ov )
+        this.tweenLeftAnimation = new Tween.Tween( ov )
             .to( { left: ha }, duration )
             .easing( easing )
             .onUpdate(function(ov){
@@ -8415,7 +8535,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             })
             .start();
 
-        this.tweenUpAnimation = new TWEEN.Tween( ov )
+        this.tweenUpAnimation = new Tween.Tween( ov )
             .to( { up: va }, duration )
             .easing( easing )
             .onUpdate(function(ov){
@@ -8449,13 +8569,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         if ( isUnderScalePlaceHolder ) {
 
-            var invertXVector = new THREE.Vector3( -1, 1, 1 );
+            const invertXVector = new Vector3( -1, 1, 1 );
 
-            this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ).multiply( invertXVector ), duration, easing );
+            this.tweenControlCenter( object.getWorldPosition( new Vector3() ).multiply( invertXVector ), duration, easing );
 
         } else {
 
-            this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ), duration, easing );
+            this.tweenControlCenter( object.getWorldPosition( new Vector3() ), duration, easing );
 
         }
 
@@ -8484,7 +8604,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         } else {
 
-            const isAndroid = /(android)/i.test(navigator.userAgent);
+            const isAndroid = /(android)/i.test(window.navigator.userAgent);
 
             const adjustWidth = isAndroid 
                 ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 
@@ -8552,19 +8672,19 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-     * Output infospot attach position in developer console by holding down Ctrl button
+     * Output position in developer console by holding down Ctrl button
      * @memberOf Viewer
      * @instance
      */
-    outputInfospotPosition: function () {
+    outputPosition: function () {
 
         const intersects = this.raycaster.intersectObject( this.panorama, true );
 
         if ( intersects.length > 0 ) {
 
             const point = intersects[ 0 ].point.clone();
-            const converter = new THREE.Vector3( -1, 1, 1 );
-            const world = this.panorama.getWorldPosition( new THREE.Vector3() );
+            const converter = new Vector3( -1, 1, 1 );
+            const world = this.panorama.getWorldPosition( new Vector3() );
             point.sub( world ).multiply( converter );
 
             const message = `${point.x.toFixed(2)}, ${point.y.toFixed(2)}, ${point.z.toFixed(2)}`;
@@ -8714,7 +8834,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         // output infospot information
         if ( event.type !== 'mousedown' && this.touchSupported || this.OUTPUT_INFOSPOT ) { 
 
-            this.outputInfospotPosition(); 
+            this.outputPosition(); 
 
         }
 
@@ -8773,7 +8893,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
                     this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
 
-                    this.reticle.stop();
+                    this.reticle.end();
 
                 }
 
@@ -8911,7 +9031,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         let intersect;
 
-        for ( var i = 0; i < intersects.length; i++ ) {
+        for ( let i = 0; i < intersects.length; i++ ) {
 
             if ( intersects[i].distance >= 0 && intersects[i].object && !intersects[i].object.passThrough ) {
 
@@ -9008,7 +9128,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     update: function () {
 
-        TWEEN.update();
+        Tween.update();
 
         this.updateCallbacks.forEach( function( callback ){ callback(); } );
 
@@ -9022,7 +9142,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 					|| (child.element.left && child.element.left.style.display !== 'none')
 					|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
                 if ( this.checkSpriteInViewport( child ) ) {
-                    const { x, y } = this.getScreenVector( child.getWorldPosition( new THREE.Vector3() ) );
+                    const { x, y } = this.getScreenVector( child.getWorldPosition( new Vector3() ) );
                     child.translateElement( x, y );
                 } else {
                     child.onDismiss();
@@ -9066,7 +9186,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     animate: function () {
 
-        this.requestAnimationId = requestAnimationFrame( this.animate.bind( this ) );
+        this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
         this.onChange();
 
@@ -9193,29 +9313,33 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     dispose: function () {
 
+        this.tweenLeftAnimation.stop();
+        this.tweenUpAnimation.stop();
+
         // Unregister dom event listeners
         this.unregisterEventListeners();
 
         // recursive disposal on 3d objects
         function recursiveDispose ( object ) {
 
-            const { geometry, material } = object;
-
-            for ( var i = object.children.length - 1; i >= 0; i-- ) {
+            for ( let i = object.children.length - 1; i >= 0; i-- ) {
 
                 recursiveDispose( object.children[i] );
                 object.remove( object.children[i] );
 
             }
 
-            if ( object instanceof Infospot ) {
+            if ( object instanceof Panorama || object instanceof Infospot ) {
 
                 object.dispose();
+                object = null;
+
+            } else if ( object.dispatchEvent ){
+
+                object.dispatchEvent( 'dispose' );
 
             }
 
-            if ( geometry ) { geometry.dispose(); }
-            if ( material ) { material.dispose(); }
         }
 
         recursiveDispose( this.scene );
@@ -9238,15 +9362,15 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-     * Destory viewer by disposing and stopping requestAnimationFrame
+     * Destroy viewer by disposing and stopping requestAnimationFrame
      * @memberOf Viewer
      * @instance
      */
-    destory: function () {
+    destroy: function () {
 
         this.dispose();
         this.render();
-        cancelAnimationFrame( this.requestAnimationId );		
+        window.cancelAnimationFrame( this.requestAnimationId );		
 
     },
 
@@ -9280,7 +9404,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     loadAsyncRequest: function ( url, callback = () => {} ) {
 
-        const request = new XMLHttpRequest();
+        const request = new window.XMLHttpRequest();
         request.onloadend = function ( event ) {
             callback( event );
         };
@@ -9318,8 +9442,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             const setIndicatorD = function () {
 
                 scope.radius = scope.viewIndicatorSize * 0.225;
-                scope.currentPanoAngle = scope.camera.rotation.y - THREE.Math.degToRad( 90 );
-                scope.fovAngle = THREE.Math.degToRad( scope.camera.fov ) ;
+                scope.currentPanoAngle = scope.camera.rotation.y - Math$1.degToRad( 90 );
+                scope.fovAngle = Math$1.degToRad( scope.camera.fov ) ;
                 scope.leftAngle = -scope.currentPanoAngle - scope.fovAngle / 2;
                 scope.rightAngle = -scope.currentPanoAngle + scope.fovAngle / 2;
                 scope.leftX = scope.radius * Math.cos( scope.leftAngle );
@@ -9395,6 +9519,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
 } );
 
+if ( REVISION$1 != THREE_REVISION ) {
+
+    console.warn( `three.js version is not matched. Please consider use the target revision ${THREE_REVISION}` );
+
+}
+
 /**
  * Panolens.js
  * @author pchen66
@@ -9402,4 +9532,4 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
  */
 window.TWEEN = Tween;
 
-export { BasicPanorama, CONTROLS, CameraPanorama, CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, TextureLoader, VideoPanorama, Viewer, Widget };
+export { BasicPanorama, CONTROLS, CameraPanorama, CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget };

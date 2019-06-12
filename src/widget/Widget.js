@@ -1,6 +1,6 @@
 import { CONTROLS, MODES } from '../Constants';
 import { DataImage } from '../DataImage';
-import 'three';
+import * as THREE from 'three';
 
 /**
  * @classdesc Widget for controls
@@ -441,10 +441,10 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             /**
              * Viewer handler event
              * @type {object}
-             * @event Widget#panolens-dual-eye-effect
+             * @event Widget#panolens-viewer-handler
              * @property {string} method - 'onWindowResize' function call on Viewer
              */
-            scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize', data: false } );
+            scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize' } );
 
             tapSkipped = true;
 
@@ -748,6 +748,9 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             item.setProgress( event.percentage ); 
 
         } );
+
+        item.progressElement = progressElement;
+        item.progressElementControl = progressElementControl;
 
         return item;
 

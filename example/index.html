@@ -58,6 +58,13 @@
       // Main panorama
       viewer_main = new PANOLENS.Viewer({ enableReticle: false, output: 'console', viewIndicator: true, autoRotate: false, autoRotateSpeed: 2, autoRotateActivationDuration: 5000, dwellTime: 1000 });
 
+      const logEvent = ( { type } ) => console.log( type );
+      viewer_main.reticle.addEventListener('reticle-start', logEvent );
+      viewer_main.reticle.addEventListener('reticle-update', logEvent );
+      viewer_main.reticle.addEventListener('reticle-end', logEvent );
+      viewer_main.reticle.addEventListener('reticle-ripple-start', logEvent );
+      viewer_main.reticle.addEventListener('reticle-ripple-end', logEvent );
+
       panorama_main_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: false });
 
       var cube = new THREE.Mesh( new THREE.BoxGeometry(50, 50, 50), new THREE.MeshNormalMaterial() );

@@ -10,7 +10,8 @@ import { DataImage } from '../DataImage';
 import { Panorama } from '../panorama/Panorama';
 import { VideoPanorama } from '../panorama/VideoPanorama';
 import { CameraPanorama } from '../panorama/CameraPanorama';
-import 'three';
+import * as THREE from 'three';
+import TWEEN from '@tweenjs/tween.js';
 
 /**
  * @classdesc Viewer contains pre-defined scene, camera and renderer
@@ -39,8 +40,6 @@ import 'three';
  * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
  */
 function Viewer ( options ) {
-
-    THREE.EventDispatcher.call( this );
 
     let container;
 
@@ -252,7 +251,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         if ( arguments.length > 1 ) {
 
-            for ( var i = 0; i < arguments.length; i ++ ) {
+            for ( let i = 0; i < arguments.length; i ++ ) {
 
                 this.add( arguments[ i ] );
 
@@ -416,7 +415,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * Set widget content
      * @method activateWidgetItem
      * @param  {integer} controlIndex - Control index
-     * @param  {MODES} mode - Modes for effects
+     * @param  {integer} mode - Modes for effects
      * @memberOf Viewer
      * @instance
      */
@@ -927,7 +926,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @return {string} - Next control id
      */
-    getNextControlName: function () {
+    getNextControlId: function () {
 
         return this.controls[ this.getNextControlIndex() ].id;
 
@@ -1116,7 +1115,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         duration = duration !== undefined ? duration : 1000;
         easing = easing || TWEEN.Easing.Exponential.Out;
 
-        var scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
+        let scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
 
         scope = this;
 
@@ -1189,7 +1188,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         if ( isUnderScalePlaceHolder ) {
 
-            var invertXVector = new THREE.Vector3( -1, 1, 1 );
+            const invertXVector = new THREE.Vector3( -1, 1, 1 );
 
             this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ).multiply( invertXVector ), duration, easing );
 
@@ -1224,7 +1223,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         } else {
 
-            const isAndroid = /(android)/i.test(navigator.userAgent);
+            const isAndroid = /(android)/i.test(window.navigator.userAgent);
 
             const adjustWidth = isAndroid 
                 ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 
@@ -1292,11 +1291,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-     * Output infospot attach position in developer console by holding down Ctrl button
+     * Output position in developer console by holding down Ctrl button
      * @memberOf Viewer
      * @instance
      */
-    outputInfospotPosition: function () {
+    outputPosition: function () {
 
         const intersects = this.raycaster.intersectObject( this.panorama, true );
 
@@ -1454,7 +1453,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         // output infospot information
         if ( event.type !== 'mousedown' && this.touchSupported || this.OUTPUT_INFOSPOT ) { 
 
-            this.outputInfospotPosition(); 
+            this.outputPosition(); 
 
         }
 
@@ -1513,7 +1512,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
                     this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
 
-                    this.reticle.stop();
+                    this.reticle.end();
 
                 }
 
@@ -1651,7 +1650,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         let intersect;
 
-        for ( var i = 0; i < intersects.length; i++ ) {
+        for ( let i = 0; i < intersects.length; i++ ) {
 
             if ( intersects[i].distance >= 0 && intersects[i].object && !intersects[i].object.passThrough ) {
 
@@ -1806,7 +1805,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     animate: function () {
 
-        this.requestAnimationId = requestAnimationFrame( this.animate.bind( this ) );
+        this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
         this.onChange();
 
@@ -1933,29 +1932,33 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     dispose: function () {
 
+        this.tweenLeftAnimation.stop();
+        this.tweenUpAnimation.stop();
+
         // Unregister dom event listeners
         this.unregisterEventListeners();
 
         // recursive disposal on 3d objects
         function recursiveDispose ( object ) {
 
-            const { geometry, material } = object;
-
-            for ( var i = object.children.length - 1; i >= 0; i-- ) {
+            for ( let i = object.children.length - 1; i >= 0; i-- ) {
 
                 recursiveDispose( object.children[i] );
                 object.remove( object.children[i] );
 
             }
 
-            if ( object instanceof Infospot ) {
+            if ( object instanceof Panorama || object instanceof Infospot ) {
 
                 object.dispose();
+                object = null;
+
+            } else if ( object.dispatchEvent ){
+
+                object.dispatchEvent( 'dispose' );
 
             }
 
-            if ( geometry ) { geometry.dispose(); }
-            if ( material ) { material.dispose(); }
         }
 
         recursiveDispose( this.scene );
@@ -1969,24 +1972,24 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         }
 
         // clear cache
-        if ( Cache && Cache.enabled ) {
+        if ( THREE.Cache && THREE.Cache.enabled ) {
 
-            Cache.clear();
+            THREE.Cache.clear();
 
         }
 
     },
 
     /**
-     * Destory viewer by disposing and stopping requestAnimationFrame
+     * Destroy viewer by disposing and stopping requestAnimationFrame
      * @memberOf Viewer
      * @instance
      */
-    destory: function () {
+    destroy: function () {
 
         this.dispose();
         this.render();
-        cancelAnimationFrame( this.requestAnimationId );		
+        window.cancelAnimationFrame( this.requestAnimationId );		
 
     },
 
@@ -2020,7 +2023,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     loadAsyncRequest: function ( url, callback = () => {} ) {
 
-        const request = new XMLHttpRequest();
+        const request = new window.XMLHttpRequest();
         request.onloadend = function ( event ) {
             callback( event );
         };
@@ -2129,7 +2132,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     clearAllCache: function () {
 
-        Cache.clear();
+        THREE.Cache.clear();
 
     }
 
