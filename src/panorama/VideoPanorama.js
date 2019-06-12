@@ -457,7 +457,6 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         const { material: { map } } = this;
 
-        this.resetVideo();
         this.pauseVideo();
 		
         this.removeEventListener( 'leave', this.pauseVideo.bind( this ) );

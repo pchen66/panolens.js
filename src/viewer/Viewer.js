@@ -1948,8 +1948,16 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             }
 
-            object.dispose();
-            object = null;
+            if ( object instanceof Panorama || object instanceof Infospot ) {
+
+                object.dispose();
+                object = null;
+
+            } else if ( object.dispatchEvent ){
+
+                object.dispatchEvent( 'dispose' );
+
+            }
 
         }
 
