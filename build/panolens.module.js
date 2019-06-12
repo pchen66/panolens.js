@@ -1904,7 +1904,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     this.toPanorama = null;
     this.cursorStyle = null;
 
-    this.mode = MODES.UNKNOWN;
+    this.mode = MODES.NORMAL;
 
     this.scale.set( scale, scale, 1 );
     this.rotation.y = Math.PI;
@@ -2100,8 +2100,8 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
             if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
                 style.display = 'none';
-                if ( left ) { left.style.display = 'block'; }
-                if ( right ) { right.style.display = 'block'; }
+                left.style.display = 'block';
+                right.style.display = 'block';
 
                 // Store element width for reference
                 element._width = left.clientWidth;
@@ -2185,7 +2185,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
 
         }
 
-        if ( !element.left || !element.right ) {
+        if ( !element.left && !element.right ) {
 
             element.left = element.cloneNode( true );
             element.right = element.cloneNode( true );
@@ -2315,7 +2315,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    addHoverText: function ( text, delta ) {
+    addHoverText: function ( text, delta = 40 ) {
 
         if ( !this.element ) {
 
@@ -2329,7 +2329,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
             this.element.style.fontFamily = '"Trebuchet MS", Helvetica, sans-serif';
             this.element.style.position = 'absolute';
             this.element.classList.add( 'panolens-infospot' );
-            this.element.verticalDelta = delta !== undefined ? delta : 40;
+            this.element.verticalDelta = delta;
 
         }
 
@@ -2344,7 +2344,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    addHoverElement: function ( el, delta ) {
+    addHoverElement: function ( el, delta = 40 ) {
 
         if ( !this.element ) { 
 
@@ -2353,7 +2353,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
             this.element.style.top = 0;
             this.element.style.position = 'absolute';
             this.element.classList.add( 'panolens-infospot' );
-            this.element.verticalDelta = delta !== undefined ? delta : 40;
+            this.element.verticalDelta = delta;
 
         }
 
