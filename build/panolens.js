@@ -4,15 +4,31 @@
 	(global = global || self, factory(global.PANOLENS = {}, global.THREE));
 }(this, function (exports, THREE) { 'use strict';
 
-	const version="0.10.4";
+	const version="0.10.4";const dependencies={three:"^0.105.2"};
 
 	/**
 	 * REVISION
 	 * @module REVISION
 	 * @example PANOLENS.REVISION
+	 * @type {string} revision
+	 */
+	const REVISION = version.split( '.' )[ 1 ];
+
+	/**
+	 * VERSION
+	 * @module VERSION
+	 * @example PANOLENS.VERSION
 	 * @type {string} version
 	 */
-	const REVISION = version;
+	const VERSION = version;
+
+	/**
+	 * THREEJS VERSION
+	 * @module THREE_VERSION
+	 * @example PANOLENS.THREE_VERSION
+	 * @type {string} threejs version
+	 */
+	const THREE_VERSION = dependencies.three.replace( /[^0-9.]/g, '' );
 
 	/**
 	 * CONTROLS
@@ -947,8 +963,6 @@
 
 	} );
 
-	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
 	function createCommonjsModule(fn, module) {
 		return module = { exports: {} }, fn(module, module.exports), module.exports;
 	}
@@ -1875,7 +1889,7 @@
 
 		}
 
-	})(commonjsGlobal);
+	})();
 	});
 
 	/**
@@ -5030,24 +5044,44 @@
 	     * @memberOf VideoPanorama
 	     * @instance
 	     * @fires VideoPanorama#play
+	     * @fires VideoPanorama#play-error
 	     */
 	    playVideo: function () {
 
 	        const video = this.videoElement;
+	        const playVideo = this.playVideo.bind( this );
+	        const dispatchEvent = this.dispatchEvent.bind( this );
+	        const onSuccess = () => {
+
+	            /**
+	             * Play event
+	             * @type {object}
+	             * @event VideoPanorama#play
+	             *
+	             */
+	            dispatchEvent( { type: 'play' } );
+
+	        };
+	        const onError = ( error ) => {
+
+	            // Error playing video. Retry next frame. Possibly Waiting for user interaction
+	            window.requestAnimationFrame( playVideo );
+
+	            /**
+	             * Play event
+	             * @type {object}
+	             * @event VideoPanorama#play-error
+	             *
+	             */
+	            dispatchEvent( { type: 'play-error', error } );
+
+	        };
 
 	        if ( video && video.paused ) {
 
-	            video.play();
+	            video.play().then( onSuccess ).catch( onError );
 
 	        }
-
-	        /**
-	         * Play event
-	         * @type {object}
-	         * @event VideoPanorama#play
-	         *
-	         */
-	        this.dispatchEvent( { type: 'play' } );
 
 	    },
 
@@ -9506,7 +9540,9 @@
 	exports.Panorama = Panorama;
 	exports.REVISION = REVISION;
 	exports.Reticle = Reticle;
+	exports.THREE_VERSION = THREE_VERSION;
 	exports.TextureLoader = TextureLoader;
+	exports.VERSION = VERSION;
 	exports.VideoPanorama = VideoPanorama;
 	exports.Viewer = Viewer;
 	exports.Widget = Widget;
