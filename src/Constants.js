@@ -1,12 +1,28 @@
-import { version } from '../package.json';
+import { version, dependencies } from '../package.json';
 
 /**
  * REVISION
  * @module REVISION
  * @example PANOLENS.REVISION
+ * @type {string} revision
+ */
+export const REVISION = version.split( '.' )[ 1 ];
+
+/**
+ * VERSION
+ * @module VERSION
+ * @example PANOLENS.VERSION
  * @type {string} version
  */
-export const REVISION = version;
+export const VERSION = version;
+
+/**
+ * THREEJS VERSION
+ * @module THREE_VERSION
+ * @example PANOLENS.THREE_VERSION
+ * @type {string} threejs version
+ */
+export const THREE_VERSION = dependencies.three.replace( /[^0-9.]/g, '' );
 
 /**
  * CONTROLS
