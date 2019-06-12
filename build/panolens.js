@@ -4905,9 +4905,11 @@
 
 	        } else {
 
-	            if ( !video.querySelectorAll( 'source' ).length || !video.src ) {
+	            if ( video.querySelectorAll( 'source' ).length === 0 ) {
 
-	                video.src = this.src;
+	                const source = document.createElement( 'source' );
+	                source.src = this.src;
+	                video.appendChild( source );
 
 	            }
 
@@ -5202,7 +5204,6 @@
 
 	        const { material: { map } } = this;
 
-	        this.resetVideo();
 	        this.pauseVideo();
 			
 	        this.removeEventListener( 'leave', this.pauseVideo.bind( this ) );
@@ -7384,8 +7385,6 @@
 	 */
 	function Viewer ( options ) {
 
-	    THREE.EventDispatcher.call( this );
-
 	    let container;
 
 	    options = options || {};
@@ -7595,7 +7594,7 @@
 
 	        if ( arguments.length > 1 ) {
 
-	            for ( var i = 0; i < arguments.length; i ++ ) {
+	            for ( let i = 0; i < arguments.length; i ++ ) {
 
 	                this.add( arguments[ i ] );
 
@@ -8459,7 +8458,7 @@
 	        duration = duration !== undefined ? duration : 1000;
 	        easing = easing || Tween.Easing.Exponential.Out;
 
-	        var scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
+	        let scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
 
 	        scope = this;
 
@@ -8532,7 +8531,7 @@
 
 	        if ( isUnderScalePlaceHolder ) {
 
-	            var invertXVector = new THREE.Vector3( -1, 1, 1 );
+	            const invertXVector = new THREE.Vector3( -1, 1, 1 );
 
 	            this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ).multiply( invertXVector ), duration, easing );
 
@@ -8994,7 +8993,7 @@
 
 	        let intersect;
 
-	        for ( var i = 0; i < intersects.length; i++ ) {
+	        for ( let i = 0; i < intersects.length; i++ ) {
 
 	            if ( intersects[i].distance >= 0 && intersects[i].object && !intersects[i].object.passThrough ) {
 
@@ -9276,21 +9275,32 @@
 	     */
 	    dispose: function () {
 
+	        this.tweenLeftAnimation.stop();
+	        this.tweenUpAnimation.stop();
+
 	        // Unregister dom event listeners
 	        this.unregisterEventListeners();
 
 	        // recursive disposal on 3d objects
 	        function recursiveDispose ( object ) {
 
-	            for ( var i = object.children.length - 1; i >= 0; i-- ) {
+	            for ( let i = object.children.length - 1; i >= 0; i-- ) {
 
 	                recursiveDispose( object.children[i] );
 	                object.remove( object.children[i] );
 
 	            }
 
-	            object.dispose();
-	            object = null;
+	            if ( object instanceof Panorama || object instanceof Infospot ) {
+
+	                object.dispose();
+	                object = null;
+
+	            } else if ( object.dispatchEvent ){
+
+	                object.dispatchEvent( 'dispose' );
+
+	            }
 
 	        }
 
