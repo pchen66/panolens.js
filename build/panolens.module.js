@@ -1,4 +1,4 @@
-import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum } from 'three';
+import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
 
 const version="0.10.4";const dependencies={three:"^0.105.2"};
 
@@ -17,6 +17,14 @@ const REVISION = version.split( '.' )[ 1 ];
  * @type {string} version
  */
 const VERSION = version;
+
+/**
+ * THREEJS REVISION
+ * @module THREE_REVISION
+ * @example PANOLENS.THREE_REVISION
+ * @type {string} threejs revision
+ */
+const THREE_REVISION = dependencies.three.split( '.' )[ 1 ];
 
 /**
  * THREEJS VERSION
@@ -9511,6 +9519,12 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
 } );
 
+if ( REVISION$1 != THREE_REVISION ) {
+
+    console.warn( `three.js version is not matched. Please consider use the target revision ${THREE_REVISION}` );
+
+}
+
 /**
  * Panolens.js
  * @author pchen66
@@ -9518,4 +9532,4 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
  */
 window.TWEEN = Tween;
 
-export { BasicPanorama, CONTROLS, CameraPanorama, CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget };
+export { BasicPanorama, CONTROLS, CameraPanorama, CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget };

@@ -23,6 +23,14 @@
 	const VERSION = version;
 
 	/**
+	 * THREEJS REVISION
+	 * @module THREE_REVISION
+	 * @example PANOLENS.THREE_REVISION
+	 * @type {string} threejs revision
+	 */
+	const THREE_REVISION = dependencies.three.split( '.' )[ 1 ];
+
+	/**
 	 * THREEJS VERSION
 	 * @module THREE_VERSION
 	 * @example PANOLENS.THREE_VERSION
@@ -9515,6 +9523,12 @@
 
 	} );
 
+	if ( THREE.REVISION != THREE_REVISION ) {
+
+	    console.warn( `three.js version is not matched. Please consider use the target revision ${THREE_REVISION}` );
+
+	}
+
 	/**
 	 * Panolens.js
 	 * @author pchen66
@@ -9540,6 +9554,7 @@
 	exports.Panorama = Panorama;
 	exports.REVISION = REVISION;
 	exports.Reticle = Reticle;
+	exports.THREE_REVISION = THREE_REVISION;
 	exports.THREE_VERSION = THREE_VERSION;
 	exports.TextureLoader = TextureLoader;
 	exports.VERSION = VERSION;
