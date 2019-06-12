@@ -160,9 +160,11 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         } else {
 
-            if ( !video.querySelectorAll( 'source' ).length || !video.src ) {
+            if ( video.querySelectorAll( 'source' ).length === 0 ) {
 
-                video.src = this.src;
+                const source = document.createElement( 'source' );
+                source.src = this.src;
+                video.appendChild( source );
 
             }
 
