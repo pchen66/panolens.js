@@ -17,6 +17,14 @@ export const REVISION = version.split( '.' )[ 1 ];
 export const VERSION = version;
 
 /**
+ * THREEJS REVISION
+ * @module THREE_REVISION
+ * @example PANOLENS.THREE_REVISION
+ * @type {string} threejs revision
+ */
+export const THREE_REVISION = dependencies.three.split( '.' )[ 1 ];
+
+/**
  * THREEJS VERSION
  * @module THREE_VERSION
  * @example PANOLENS.THREE_VERSION
