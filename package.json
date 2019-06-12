@@ -25,7 +25,7 @@
     "dev-https": "concurrently --names \"ROLLUP,HTTP\" \"rollup -c -w -m inline\" \"ws -p 8080 --https\"",
     "lint": "eslint src",
     "lint-fix": "eslint src --fix",
-    "test": "nyc --reporter=html --reporter=text ava ./test/src",
+    "test": "nyc --reporter=html --reporter=text ava",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "start": "npm run dev",
     "docs": "node_modules/.bin/jsdoc -c jsdoc.json -d ./docs",
@@ -105,7 +105,7 @@
   },
   "devDependencies": {
     "@tweenjs/tween.js": "^17.4.0",
-    "ava": "^1.4.1",
+    "ava": "^2.1.0",
     "browser-env": "^3.2.6",
     "concurrently": "^4.1.0",
     "coveralls": "^3.0.4",
