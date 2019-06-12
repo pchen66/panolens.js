@@ -416,6 +416,7 @@ function customVideo () {
 	this.play = function () {
 		this.paused = false;
 		playIntervalId = setInterval( onTimeUpdate, 10 );
+		return Promise.resolve();
 	};
 	this.pause = function () {
 		this.paused = true;

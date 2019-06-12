@@ -285,24 +285,44 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @memberOf VideoPanorama
      * @instance
      * @fires VideoPanorama#play
+     * @fires VideoPanorama#play-error
      */
     playVideo: function () {
 
         const video = this.videoElement;
+        const playVideo = this.playVideo.bind( this );
+        const dispatchEvent = this.dispatchEvent.bind( this );
+        const onSuccess = () => {
+
+            /**
+             * Play event
+             * @type {object}
+             * @event VideoPanorama#play
+             *
+             */
+            dispatchEvent( { type: 'play' } );
+
+        };
+        const onError = ( error ) => {
+
+            // Error playing video. Retry next frame. Possibly Waiting for user interaction
+            window.requestAnimationFrame( playVideo );
+
+            /**
+             * Play event
+             * @type {object}
+             * @event VideoPanorama#play-error
+             *
+             */
+            dispatchEvent( { type: 'play-error', error } );
+
+        };
 
         if ( video && video.paused ) {
 
-            video.play();
+            video.play().then( onSuccess ).catch( onError );
 
         }
-
-        /**
-         * Play event
-         * @type {object}
-         * @event VideoPanorama#play
-         *
-         */
-        this.dispatchEvent( { type: 'play' } );
 
     },
 
