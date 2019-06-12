@@ -116,15 +116,16 @@
     "jsdoc": "^3.6.2",
     "local-web-server": "^2.6.1",
     "nyc": "^14.1.1",
-    "rollup": "^1.12.4",
+    "rollup": "^1.15.1",
     "rollup-plugin-commonjs": "^10.0.0",
     "rollup-plugin-inject": "^2.2.0",
     "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-node-resolve": "^5.0.0",
-    "three": "^0.104.0",
+    "rollup-plugin-node-resolve": "^5.0.1",
     "xmlhttprequest": "^1.8.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "three": "^0.105.2"
+  },
   "jspm": {
     "files": [
       "build/panolens.js",
