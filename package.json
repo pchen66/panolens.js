@@ -122,11 +122,10 @@
     "rollup-plugin-inject": "^2.2.0",
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-node-resolve": "^5.0.1",
+    "three": "^0.105.2",
     "xmlhttprequest": "^1.8.0"
   },
-  "dependencies": {
-    "three": "^0.105.2"
-  },
+  "dependencies": {},
   "jspm": {
     "files": [
       "build/panolens.js",
