@@ -28,11 +28,13 @@ const StereoEffect = function ( renderer ) {
 
     this.render = function ( scene, camera, panorama ) {
 
+        const stereoEnabled = panorama instanceof StereoImagePanorama || panorama instanceof StereoVideoPanorama;
+
         scene.updateMatrixWorld();
 
         if ( camera.parent === null ) camera.updateMatrixWorld();
         
-        if ( panorama instanceof StereoImagePanorama || panorama instanceof StereoVideoPanorama ) this.setEyeSeparation( panorama.stereo.eyeSep );
+        if ( stereoEnabled ) this.setEyeSeparation( panorama.stereo.eyeSep );
 
         _stereo.update( camera );
 
@@ -41,19 +43,21 @@ const StereoEffect = function ( renderer ) {
         if ( renderer.autoClear ) renderer.clear();
         renderer.setScissorTest( true );
 
-        if ( panorama instanceof StereoImagePanorama || panorama instanceof StereoVideoPanorama ) panorama.updateTextureToLeft();
+        if ( stereoEnabled ) panorama.updateTextureToLeft();
 
         renderer.setScissor( 0, 0, size.width / 2, size.height );
         renderer.setViewport( 0, 0, size.width / 2, size.height );
         renderer.render( scene, _stereo.cameraL );
 
-        if ( panorama instanceof StereoImagePanorama || panorama instanceof StereoVideoPanorama ) panorama.updateTextureToRight();
+        if ( stereoEnabled ) panorama.updateTextureToRight();
 
         renderer.setScissor( size.width / 2, 0, size.width / 2, size.height );
         renderer.setViewport( size.width / 2, 0, size.width / 2, size.height );
         renderer.render( scene, _stereo.cameraR );
 
         renderer.setScissorTest( false );
+
+        if ( stereoEnabled ) panorama.updateTextureToLeft();
 
     };
 

@@ -2,6 +2,7 @@ import { Infospot } from '../infospot/Infospot';
 import { DataImage } from '../DataImage';
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
+import { EquirectShader } from '../shaders/EquirectShader';
 
 
 /**
@@ -10,9 +11,11 @@ import TWEEN from '@tweenjs/tween.js';
  * @param {THREE.Geometry} geometry - The geometry for this panorama
  * @param {THREE.Material} material - The material for this panorama
  */
-function Panorama ( geometry, material ) {
+function Panorama () {
 
-    THREE.Mesh.call( this, geometry, material );
+    this.edgeLength = 10000;
+
+    THREE.Mesh.call( this, this.createGeometry( this.edgeLength ), this.createMaterial() );
 
     this.type = 'panorama';
 
@@ -58,6 +61,46 @@ function Panorama ( geometry, material ) {
 Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
     constructor: Panorama,
+
+    /**
+     * Create a skybox geometry
+     * @memberOf Panorama
+     * @instance
+     */
+    createGeometry: function ( edgeLength ) {
+
+        return new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+
+    },
+
+    /**
+     * Create equirectangular shader material
+     * @param {THREE.Vector2} [repeat=new THREE.Vector2( 1, 1 )] - Texture Repeat
+     * @param {THREE.Vector2} [offset=new THREE.Vector2( 0, 0 )] - Texture Offset
+     * @memberOf Panorama
+     * @instance
+     */
+    createMaterial: function ( repeat = new THREE.Vector2( 1, 1 ), offset = new THREE.Vector2( 0, 0 ) ) {
+
+        const { fragmentShader, vertexShader } = EquirectShader;
+        const uniforms = THREE.UniformsUtils.clone( EquirectShader.uniforms );
+        
+        uniforms.repeat.value.copy( repeat );
+        uniforms.offset.value.copy( offset );
+
+        const material = new THREE.ShaderMaterial( {
+
+            fragmentShader,
+            vertexShader,
+            uniforms,
+            side: THREE.BackSide,
+            transparent: true
+    
+        } );
+
+        return material;
+
+    },
 
     /**
      * Adding an object
@@ -298,8 +341,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      */
     updateTexture: function ( texture ) {
 
-        this.material.map = texture;
-        this.material.needsUpdate = true;
+        this.material.uniforms.tEquirect.value = texture;
 
     },
 

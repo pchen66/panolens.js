@@ -8,64 +8,21 @@ import { Stereo } from '../auxiliary/Stereo';
  * @classdesc Stereo Image Panorama
  * @constructor
  * @param {string} src - image source
+ * @param {object} options - { @see VideoPanorama }
  * @param {number} [stereo=new Stereo()] - stereo mixin
  */
-function StereoVideoPanorama ( src, stereo = new Stereo() ){
+function StereoVideoPanorama ( src, options = {}, stereo = new Stereo() ){
 
-    const edgeLength = 10000;
-    const geometry = this.createGeometry( edgeLength );
-    const material = this.createEquiShaderMaterial();
+    VideoPanorama.call( this, src, options );
 
-    VideoPanorama.call( this, src, {}, geometry, material );
-
-    this.edgeLength = edgeLength;
     this.stereo = stereo;
+    this.type = 'stereo_video_panorama';
 
 }
 
 StereoVideoPanorama.prototype = Object.assign( Object.create( VideoPanorama.prototype ), {
 
     constructor: StereoVideoPanorama,
-
-    /**
-     * Create a skybox geometry
-     * @memberOf StereoVideoPanorama
-     * @instance
-     */
-    createGeometry: function ( edgeLength ) {
-
-        return new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
-
-    },
-
-    /**
-     * Create equirectangular shader material
-     * @param {THREE.Vector2} [repeat=new THREE.Vector2( 1, 1 )] - Texture Repeat
-     * @param {THREE.Vector2} [offset=new THREE.Vector2( 0, 0 )] - Texture Offset
-     * @memberOf StereoVideoPanorama
-     * @instance
-     */
-    createEquiShaderMaterial: function ( repeat = new THREE.Vector2( 1, 1 ), offset = new THREE.Vector2( 0, 0 ) ) {
-
-        const { fragmentShader, vertexShader } = EquirectShader;
-        const uniforms = THREE.UniformsUtils.clone( EquirectShader.uniforms );
-        
-        uniforms.repeat.value.copy( repeat );
-        uniforms.offset.value.copy( offset );
-
-        const material = new THREE.ShaderMaterial( {
-
-            fragmentShader,
-            vertexShader,
-            uniforms,
-            side: THREE.BackSide,
-            transparent: true
-    
-        } );
-
-        return material;
-
-    },
 
     /**
      * This will be called when video texture is ready

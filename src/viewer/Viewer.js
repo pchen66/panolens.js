@@ -285,7 +285,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         }
 
         // Hookup default panorama event listeners
-        if ( object.type === 'panorama' ) {
+        if ( object instanceof Panorama ) {
 
             this.addPanoramaEventListener( object );
 
@@ -355,7 +355,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         const leavingPanorama = this.panorama;
 
-        if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
+        if ( pano instanceof Panorama && leavingPanorama !== pano ) {
 
             // Clear exisiting infospot
             this.hideInfospot();

@@ -14,12 +14,11 @@ function GoogleStreetviewPanorama ( panoId, apiKey ) {
     ImagePanorama.call( this );
 
     this.panoId = panoId;
-
     this.gsvLoader = null;
-
     this.loadRequested = false;
-
     this.setupGoogleMapAPI( apiKey );
+
+    this.type = 'google_streetview_panorama';
 
 }
 

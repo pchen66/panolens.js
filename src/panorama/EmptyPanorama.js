@@ -7,18 +7,39 @@ import * as THREE from 'three';
  */
 function EmptyPanorama () {
 
-    const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+    Panorama.call( this );
 
-    geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
-
-    Panorama.call( this, geometry, material );
+    this.type = 'empty_panorama';
 
 }
 
 EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
-    constructor: EmptyPanorama
+    constructor: EmptyPanorama,
+
+    /**
+     * Create a skybox geometry
+     * @memberOf EmptyPanorama
+     * @instance
+     */
+    createGeometry: function() {
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
+        return geometry;
+
+    },
+
+    /**
+     * Create material
+     * @memberOf EmptyPanorama
+     * @instance
+     */
+    createMaterial: function() {
+
+        new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+
+    }
 
 } );
 

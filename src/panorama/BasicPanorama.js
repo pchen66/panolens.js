@@ -17,6 +17,8 @@ function BasicPanorama () {
 
     CubePanorama.call( this, images );
 
+    this.type = 'basic_panorama';
+
 }
 
 BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype ), {

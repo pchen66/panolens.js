@@ -16,15 +16,10 @@ import * as THREE from 'three';
  */
 function VideoPanorama ( src, options = {} ) {
 
-    const radius = 5000;
-    const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
-    const material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
-
-    Panorama.call( this, geometry, material );
+    Panorama.call( this );
 
     this.src = src;
-
-    this.options = {
+    this.options = Object.assign( {
 
         videoElement: document.createElement( 'video' ),
         loop: true,
@@ -33,13 +28,12 @@ function VideoPanorama ( src, options = {} ) {
         playsinline: true,
         crossOrigin: 'anonymous'
 
-    };
-
-    Object.assign( this.options, options );
+    }, options );
 
     this.videoElement = this.options.videoElement;
     this.videoProgress = 0;
-    this.radius = radius;
+
+    this.type = 'video_panorama';
 
     this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
     this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
@@ -89,7 +83,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         const onloadeddata = function() {
 
-            this.setVideoTexture( video );
+            const videoTexture = this.setVideoTexture( video );
 
             if ( autoplay ) {
 
@@ -135,10 +129,10 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             const loaded = () => {
 
                 // Fix for threejs r89 delayed update
-                material.map.needsUpdate = true;
+                //material.map.needsUpdate = true;
 
                 onProgress( { loaded: 1, total: 1 } );
-                onLoad();
+                onLoad( videoTexture );
 
             };
 
@@ -200,6 +194,12 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     },
 
+    onLoad: function () {
+
+        Panorama.prototype.onLoad.call( this );
+
+    },
+
     /**
      * Set video texture
      * @memberOf VideoPanorama
@@ -217,6 +217,8 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         videoTexture.format = THREE.RGBFormat;
 
         this.updateTexture( videoTexture );
+
+        return videoTexture;
 	
     },
 

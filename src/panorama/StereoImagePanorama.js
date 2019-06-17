@@ -12,60 +12,16 @@ import { Stereo } from '../auxiliary/Stereo';
  */
 function StereoImagePanorama ( src, stereo = new Stereo() ){
 
-    const edgeLength = 10000;
-    const geometry = this.createGeometry( edgeLength );
-    const material = this.createEquiShaderMaterial();
+    ImagePanorama.call( this, src );
 
-    ImagePanorama.call( this, src, geometry, material );
-
-    this.edgeLength = edgeLength;
     this.stereo = stereo;
+    this.type = 'stereo_image_panorama';
 
 }
 
 StereoImagePanorama.prototype = Object.assign( Object.create( ImagePanorama.prototype ), {
 
     constructor: StereoImagePanorama,
-
-    /**
-     * Create a skybox geometry
-     * @memberOf StereoImagePanorama
-     * @instance
-     */
-    createGeometry: function ( edgeLength ) {
-
-        return new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
-
-    },
-
-    /**
-     * Create equirectangular shader material
-     * @param {THREE.Vector2} [repeat=new THREE.Vector2( 1, 1 )] - Texture Repeat
-     * @param {THREE.Vector2} [offset=new THREE.Vector2( 0, 0 )] - Texture Offset
-     * @memberOf StereoImagePanorama
-     * @instance
-     */
-    createEquiShaderMaterial: function ( repeat = new THREE.Vector2( 1, 1 ), offset = new THREE.Vector2( 0, 0 ) ) {
-
-        const { fragmentShader, vertexShader } = EquirectShader;
-        const uniforms = THREE.UniformsUtils.clone( EquirectShader.uniforms );
-        
-        uniforms.repeat.value.copy( repeat );
-        uniforms.offset.value.copy( offset );
-
-        const material = new THREE.ShaderMaterial( {
-
-            fragmentShader,
-            vertexShader,
-            uniforms,
-            side: THREE.BackSide,
-            transparent: true
-    
-        } );
-
-        return material;
-
-    },
 
     /**
      * This will be called when texture is ready

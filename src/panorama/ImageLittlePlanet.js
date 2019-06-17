@@ -5,12 +5,12 @@ import * as THREE from 'three';
  * @classdesc Image Little Planet
  * @constructor
  * @param {string} source 		- URL for the image source
- * @param {number} [size=10000] - Size of plane geometry
- * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
  */
-function ImageLittlePlanet ( source, size, ratio ) {
+function ImageLittlePlanet ( source ) {
 
-    LittlePlanet.call( this, 'image', source, size, ratio );
+    LittlePlanet.call( this, 'image', source );
+
+    this.type = 'image_little_planet';
 
 }
 
