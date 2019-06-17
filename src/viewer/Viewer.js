@@ -12,6 +12,7 @@ import { VideoPanorama } from '../panorama/VideoPanorama';
 import { CameraPanorama } from '../panorama/CameraPanorama';
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
+import { StereoImagePanorama } from '../panorama/StereoImagePanorama';
 
 /**
  * @classdesc Viewer contains pre-defined scene, camera and renderer
@@ -1783,7 +1784,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
             this.renderer.clear();
-            this.effect.render( this.scene, this.camera );
+            this.effect.render( this.scene, this.camera, this.panorama );
             this.effect.render( this.sceneReticle, this.camera );
 			
 
