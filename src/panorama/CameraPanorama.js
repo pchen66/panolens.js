@@ -1,5 +1,5 @@
 import { Panorama } from './Panorama';
-import { Media } from '../media/Media';
+import { Media } from '../auxiliary/Media';
 import * as THREE from 'three';
 
 /**
