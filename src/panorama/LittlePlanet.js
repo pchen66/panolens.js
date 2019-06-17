@@ -76,16 +76,17 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     createMaterial: function ( size ) {
 
-        const shader = Object.assign( {}, StereographicShader ), uniforms = shader.uniforms;
+        const { fragmentShader, vertexShader, uniforms: _uniforms } = StereographicShader;
+        const uniforms = THREE.UniformsUtils.clone( _uniforms );
 
         uniforms.zoom.value = size;
         uniforms.opacity.value = 0.0;
 
         return new THREE.ShaderMaterial( {
 
-            uniforms: uniforms,
-            vertexShader: shader.vertexShader,
-            fragmentShader: shader.fragmentShader,
+            vertexShader,
+            fragmentShader,
+            uniforms,
             side: THREE.BackSide,
             transparent: true
 
