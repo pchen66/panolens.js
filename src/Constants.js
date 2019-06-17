@@ -1,4 +1,4 @@
-import { version, dependencies } from '../package.json';
+import { version, devDependencies } from '../package.json';
 
 /**
  * REVISION
@@ -22,7 +22,7 @@ export const VERSION = version;
  * @example PANOLENS.THREE_REVISION
  * @type {string} threejs revision
  */
-export const THREE_REVISION = dependencies.three.split( '.' )[ 1 ];
+export const THREE_REVISION = devDependencies.three.split( '.' )[ 1 ];
 
 /**
  * THREEJS VERSION
@@ -30,7 +30,7 @@ export const THREE_REVISION = dependencies.three.split( '.' )[ 1 ];
  * @example PANOLENS.THREE_VERSION
  * @type {string} threejs version
  */
-export const THREE_VERSION = dependencies.three.replace( /[^0-9.]/g, '' );
+export const THREE_VERSION = devDependencies.three.replace( /[^0-9.]/g, '' );
 
 /**
  * CONTROLS
@@ -51,3 +51,12 @@ export const CONTROLS = { ORBIT: 0, DEVICEORIENTATION: 1 };
  * @property {number} STEREO 3
  */
 export const MODES = { UNKNOWN: 0, NORMAL: 1, CARDBOARD: 2, STEREO: 3 };
+
+/**
+ * STEREOFORMAT
+ * @module STEREOFORMAT
+ * @example PANOLENS.STEREOFORMAT.TAB
+ * @property {number} TAB 0
+ * @property {number} SBS 1
+ */
+export const STEREOFORMAT = { TAB: 0, SBS: 1 };
