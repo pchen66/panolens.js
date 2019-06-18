@@ -56,11 +56,10 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             return; 
         }
 
-        var scope = this, bar, styleTranslate, styleOpacity, gradientStyle;
+        const scope = this;
+        const gradientStyle = 'linear-gradient(bottom, rgba(0,0,0,0.2), rgba(0,0,0,0))';
 
-        gradientStyle = 'linear-gradient(bottom, rgba(0,0,0,0.2), rgba(0,0,0,0))';
-
-        bar = document.createElement( 'div' );
+        const bar = document.createElement( 'div' );
         bar.style.width = '100%';
         bar.style.height = '44px';
         bar.style.float = 'left';
@@ -75,19 +74,19 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         bar.isHidden = false;
         bar.toggle = function () {
             bar.isHidden = !bar.isHidden;
-            styleTranslate = bar.isHidden ? 'translateY(0)' : 'translateY(-100%)';
-            styleOpacity = bar.isHidden ? 0 : 1;
+            const styleTranslate = bar.isHidden ? 'translateY(0)' : 'translateY(-100%)';
+            const styleOpacity = bar.isHidden ? 0 : 1;
             bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = styleTranslate;
             bar.style.opacity = styleOpacity;
         };
 
         // Menu
-        var menu = this.createDefaultMenu();
+        const menu = this.createDefaultMenu();
         this.mainMenu = this.createMainMenu( menu );
         bar.appendChild( this.mainMenu );
 
         // Mask
-        var mask = this.createMask();
+        const mask = this.createMask();
         this.mask = mask;
         this.container.appendChild( mask );
 
@@ -150,9 +149,8 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     createDefaultMenu: function () {
 
-        var scope = this, handler;
-
-        handler = function ( method, data ) {
+        const scope = this;
+        const handler = function ( method, data ) {
 
             return function () {
 
@@ -927,9 +925,9 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         };
 
-        for ( var i = 0; i < menus.length; i++ ) {
+        for ( let i = 0; i < menus.length; i++ ) {
 
-            var item = menu.addItem( menus[ i ].title );
+            const item = menu.addItem( menus[ i ].title );
 
             item.style.paddingLeft = '20px';
 
@@ -938,7 +936,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             if ( menus[ i ].subMenu && menus[ i ].subMenu.length > 0 ) {
 
-                var title = menus[ i ].subMenu[ 0 ].title;
+                const title = menus[ i ].subMenu[ 0 ].title;
 
                 item.addSelection( title )
                     .addSubMenu( menus[ i ].title, menus[ i ].subMenu );

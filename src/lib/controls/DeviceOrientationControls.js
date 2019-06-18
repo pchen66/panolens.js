@@ -9,13 +9,13 @@ import * as THREE from 'three';
  */
 function DeviceOrientationControls ( camera, domElement ) {
 
-    var scope = this;
-    var changeEvent = { type: 'change' };
+    const scope = this;
+    const changeEvent = { type: 'change' };
 
-    var rotY = 0;
-    var rotX = 0;
-    var tempX = 0;
-    var tempY = 0;
+    let rotY = 0;
+    let rotX = 0;
+    let tempX = 0;
+    let tempY = 0;
 
     this.camera = camera;
     this.camera.rotation.reorder( 'YXZ' );
@@ -30,19 +30,19 @@ function DeviceOrientationControls ( camera, domElement ) {
     this.alphaOffsetAngle = 0;
 
 
-    var onDeviceOrientationChangeEvent = function( event ) {
+    const onDeviceOrientationChangeEvent = function( event ) {
 
         scope.deviceOrientation = event;
 
     };
 
-    var onScreenOrientationChangeEvent = function() {
+    const onScreenOrientationChangeEvent = function() {
 
         scope.screenOrientation = window.orientation || 0;
 
     };
 
-    var onTouchStartEvent = function (event) {
+    const onTouchStartEvent = function (event) {
 
         event.preventDefault();
         event.stopPropagation();
@@ -52,7 +52,7 @@ function DeviceOrientationControls ( camera, domElement ) {
 
     };
 
-    var onTouchMoveEvent = function (event) {
+    const onTouchMoveEvent = function (event) {
 
         event.preventDefault();
         event.stopPropagation();
@@ -69,19 +69,19 @@ function DeviceOrientationControls ( camera, domElement ) {
 
     // The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
 
-    var setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
+    const setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
 
-        var zee = new THREE.Vector3( 0, 0, 1 );
+        const zee = new THREE.Vector3( 0, 0, 1 );
 
-        var euler = new THREE.Euler();
+        const euler = new THREE.Euler();
 
-        var q0 = new THREE.Quaternion();
+        const q0 = new THREE.Quaternion();
 
-        var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
+        const q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
 
-        var vectorFingerY;
-        var fingerQY = new THREE.Quaternion();
-        var fingerQX = new THREE.Quaternion();
+        let vectorFingerY;
+        const fingerQY = new THREE.Quaternion();
+        const fingerQX = new THREE.Quaternion();
 
         if ( scope.screenOrientation == 0 ) {
 
@@ -150,10 +150,10 @@ function DeviceOrientationControls ( camera, domElement ) {
 
         if ( scope.enabled === false ) return;
 
-        var alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
-        var beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
-        var gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
-        var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
+        const alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
+        const beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
+        const gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
+        const orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
 
         setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
         scope.alpha = alpha;

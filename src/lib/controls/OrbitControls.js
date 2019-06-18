@@ -91,45 +91,45 @@ function OrbitControls ( object, domElement ) {
      * internals
      */
 
-    var scope = this;
+    const scope = this;
 
-    var EPS = 10e-8;
-    var MEPS = 10e-5;
+    const EPS = 10e-8;
+    const MEPS = 10e-5;
 
-    var rotateStart = new THREE.Vector2();
-    var rotateEnd = new THREE.Vector2();
-    var rotateDelta = new THREE.Vector2();
+    const rotateStart = new THREE.Vector2();
+    const rotateEnd = new THREE.Vector2();
+    const rotateDelta = new THREE.Vector2();
 
-    var panStart = new THREE.Vector2();
-    var panEnd = new THREE.Vector2();
-    var panDelta = new THREE.Vector2();
-    var panOffset = new THREE.Vector3();
+    const panStart = new THREE.Vector2();
+    const panEnd = new THREE.Vector2();
+    const panDelta = new THREE.Vector2();
+    const panOffset = new THREE.Vector3();
 
-    var offset = new THREE.Vector3();
+    const offset = new THREE.Vector3();
 
-    var dollyStart = new THREE.Vector2();
-    var dollyEnd = new THREE.Vector2();
-    var dollyDelta = new THREE.Vector2();
+    const dollyStart = new THREE.Vector2();
+    const dollyEnd = new THREE.Vector2();
+    const dollyDelta = new THREE.Vector2();
 
-    var theta = 0;
-    var phi = 0;
-    var phiDelta = 0;
-    var thetaDelta = 0;
-    var scale = 1;
-    var pan = new THREE.Vector3();
+    let theta = 0;
+    let phi = 0;
+    let phiDelta = 0;
+    let thetaDelta = 0;
+    let scale = 1;
+    const pan = new THREE.Vector3();
 
-    var lastPosition = new THREE.Vector3();
-    var lastQuaternion = new THREE.Quaternion();
+    const lastPosition = new THREE.Vector3();
+    const lastQuaternion = new THREE.Quaternion();
 
-    var momentumLeft = 0, momentumUp = 0;
-    var eventPrevious;
-    var momentumOn = false;
+    let momentumLeft = 0, momentumUp = 0;
+    let eventPrevious;
+    let momentumOn = false;
 
-    var keyUp, keyBottom, keyLeft, keyRight;
+    let keyUp, keyBottom, keyLeft, keyRight;
 
-    var STATE = { NONE: -1, ROTATE: 0, DOLLY: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_DOLLY: 4, TOUCH_PAN: 5 };
+    const STATE = { NONE: -1, ROTATE: 0, DOLLY: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_DOLLY: 4, TOUCH_PAN: 5 };
 
-    var state = STATE.NONE;
+    let state = STATE.NONE;
 
     // for reset
 
@@ -139,14 +139,14 @@ function OrbitControls ( object, domElement ) {
 
     // so camera.up is the orbit axis
 
-    var quat = new THREE.Quaternion().setFromUnitVectors( object.up, new THREE.Vector3( 0, 1, 0 ) );
-    var quatInverse = quat.clone().inverse();
+    const quat = new THREE.Quaternion().setFromUnitVectors( object.up, new THREE.Vector3( 0, 1, 0 ) );
+    const quatInverse = quat.clone().inverse();
 
     // events
 
-    var changeEvent = { type: 'change' };
-    var startEvent = { type: 'start' };
-    var endEvent = { type: 'end' };
+    const changeEvent = { type: 'change' };
+    const startEvent = { type: 'start' };
+    const endEvent = { type: 'end' };
 
     this.setLastQuaternion = function ( quaternion ) {
         lastQuaternion.copy( quaternion );
@@ -185,7 +185,7 @@ function OrbitControls ( object, domElement ) {
     // pass in distance in world space to move left
     this.panLeft = function ( distance ) {
 
-        var te = this.object.matrix.elements;
+        const te = this.object.matrix.elements;
 
         // get X column of matrix
         panOffset.set( te[ 0 ], te[ 1 ], te[ 2 ] );
@@ -198,7 +198,7 @@ function OrbitControls ( object, domElement ) {
     // pass in distance in world space to move up
     this.panUp = function ( distance ) {
 
-        var te = this.object.matrix.elements;
+        const te = this.object.matrix.elements;
 
         // get Y column of matrix
         panOffset.set( te[ 4 ], te[ 5 ], te[ 6 ] );
@@ -214,14 +214,14 @@ function OrbitControls ( object, domElement ) {
      */
     this.pan = function ( deltaX, deltaY ) {
 
-        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+        const element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
         if ( scope.object instanceof THREE.PerspectiveCamera ) {
 
             // perspective
-            var position = scope.object.position;
-            var offset = position.clone().sub( scope.target );
-            var targetDistance = offset.length();
+            const position = scope.object.position;
+            const offset = position.clone().sub( scope.target );
+            let targetDistance = offset.length();
 
             // half of the fov is center to top of screen
             targetDistance *= Math.tan( ( scope.object.fov / 2 ) * Math.PI / 180.0 );
@@ -317,7 +317,7 @@ function OrbitControls ( object, domElement ) {
 
     this.update = function ( ignoreUpdate ) {
 
-        var position = this.object.position;
+        const position = this.object.position;
 
         offset.copy( position ).sub( this.target );
 
@@ -352,7 +352,7 @@ function OrbitControls ( object, domElement ) {
         // restrict phi to be betwee EPS and PI-EPS
         phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
 
-        var radius = offset.length() * scale;
+        const radius = offset.length() * scale;
 
         // restrict radius to be between desired limits
         radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
@@ -481,7 +481,7 @@ function OrbitControls ( object, domElement ) {
 
         event.preventDefault();
 
-        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+        const element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
         if ( state === STATE.ROTATE ) {
 
@@ -563,7 +563,7 @@ function OrbitControls ( object, domElement ) {
         event.preventDefault();
         event.stopPropagation();
 
-        var delta = 0;
+        let delta = 0;
 
         if ( event.wheelDelta !== undefined ) { // WebKit / Opera / Explorer 9
 
@@ -686,9 +686,9 @@ function OrbitControls ( object, domElement ) {
 
             state = STATE.TOUCH_DOLLY;
 
-            var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-            var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-            var distance = Math.sqrt( dx * dx + dy * dy );
+            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+            const distance = Math.sqrt( dx * dx + dy * dy );
 
             dollyStart.set( 0, distance );
 
@@ -720,7 +720,7 @@ function OrbitControls ( object, domElement ) {
         event.preventDefault();
         event.stopPropagation();
 
-        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+        const element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
         switch ( event.touches.length ) {
 
@@ -757,9 +757,9 @@ function OrbitControls ( object, domElement ) {
             if ( scope.noZoom === true ) return;
             if ( state !== STATE.TOUCH_DOLLY ) return;
 
-            var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-            var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-            var distance = Math.sqrt( dx * dx + dy * dy );
+            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+            const distance = Math.sqrt( dx * dx + dy * dy );
 
             dollyEnd.set( 0, distance );
             dollyDelta.subVectors( dollyEnd, dollyStart );

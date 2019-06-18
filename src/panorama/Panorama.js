@@ -110,7 +110,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
         if ( arguments.length > 1 ) {
 
-            for ( var i = 0; i < arguments.length; i ++ ) {
+            for ( let i = 0; i < arguments.length; i ++ ) {
 
                 this.add( arguments[ i ] );
 
@@ -713,7 +713,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
             const { geometry, material } = object;
 
-            for ( var i = object.children.length - 1; i >= 0; i-- ) {
+            for ( let i = object.children.length - 1; i >= 0; i-- ) {
 
                 recursiveDispose( object.children[i] );
                 object.remove( object.children[i] );

@@ -19,7 +19,7 @@ const CubeTextureLoader = {
      */
     load: function ( urls, onLoad = () => {}, onProgress = () => {}, onError ) {
 
-	   var texture, loaded, progress, all, loadings;
+	   let texture, loaded, progress, all, loadings;
 
 	   texture = new THREE.CubeTexture( [] );
 
@@ -51,7 +51,7 @@ const CubeTextureLoader = {
 			   all.total = 0;
 			   loadings = 0;
 
-			   for ( var i in progress ) {
+			   for ( let i in progress ) {
 
 				   loadings++;
 				   all.loaded += progress[ i ].loaded;

@@ -10,9 +10,9 @@ import { StereoVideoPanorama } from '../../panorama/StereoVideoPanorama';
  */
 const StereoEffect = function ( renderer ) {
 
-    var _stereo = new THREE.StereoCamera();
+    const _stereo = new THREE.StereoCamera();
     _stereo.aspect = 0.5;
-    var size = new THREE.Vector2();
+    const size = new THREE.Vector2();
 
     this.setEyeSeparation = function ( eyeSep ) {
 

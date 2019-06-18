@@ -19,7 +19,7 @@ const TextureLoader = {
      */
     load: function ( url, onLoad = () => {}, onProgress, onError ) {
 
-        var texture = new THREE.Texture(); 
+        const texture = new THREE.Texture(); 
 
         ImageLoader.load( url, function ( image ) {
 

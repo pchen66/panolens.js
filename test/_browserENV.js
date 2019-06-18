@@ -938,7 +938,7 @@ const customWebGLContext = function () {
 	this.getExtension = function () {};
 	this.getFramebufferAttachmentParameter = function () {};
 
-	var parameters = {};
+	const parameters = {};
 	parameters[ this.VERSION ] = "Custom";
 	parameters[ this.MAX_TEXTURE_SIZE ] = 4096;
 	this.getParameter = function ( parameterID ) {
