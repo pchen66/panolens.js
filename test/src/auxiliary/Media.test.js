@@ -1,6 +1,6 @@
 import test from 'ava';
 import * as THREE from 'three';
-import { Media } from '../../../src/media/Media';
+import { Media } from '../../../src/auxiliary/Media';
 
 const container = document.createElement( 'div' );
 const scene = new THREE.Scene();

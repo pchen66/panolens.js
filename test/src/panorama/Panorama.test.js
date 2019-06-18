@@ -19,7 +19,7 @@ test('Add Infospots to Panoramas', t => {
 
 test('Add Object to Panoramas', t => {
     panorama.add( object3D );
-    t.true(panorama.children.includes( object3D.parent ));
+    t.true(panorama.children.includes( object3D ));
 });
 
 test('Infospot Event Delegation - Click', t => {

@@ -1108,15 +1108,6 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         }
 
-        // Pass in arguments as array
-        if ( vector instanceof Array ) {
-
-            duration = vector[ 1 ];
-            easing = vector[ 2 ];
-            vector = vector[ 0 ];
-
-        }
-
         let ha, va, chv, cvv, hv, vv, vptc;
 
         chv = this.camera.getWorldDirection( new THREE.Vector3() );
@@ -1171,6 +1162,14 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         if ( this.control !== this.OrbitControls ) {
 
             return;
+
+        }
+
+        if ( vector instanceof Array ) {
+
+            vector = vector[ 0 ];
+            duration = vector[ 1 ];
+            easing = vector[ 2 ];
 
         }
 

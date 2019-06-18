@@ -283,6 +283,12 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     },
 
+    updateTexture: function ( texture ) {
+
+        this.material.uniforms.tDiffuse.value = texture;
+
+    },
+
     onLoad: function ( texture ) {
 
         this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
