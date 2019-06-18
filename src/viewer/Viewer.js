@@ -12,7 +12,6 @@ import { VideoPanorama } from '../panorama/VideoPanorama';
 import { CameraPanorama } from '../panorama/CameraPanorama';
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
-import { StereoImagePanorama } from '../panorama/StereoImagePanorama';
 
 /**
  * @classdesc Viewer contains pre-defined scene, camera and renderer
@@ -64,12 +63,6 @@ function Viewer ( options ) {
     options.autoRotateActivationDuration = options.autoRotateActivationDuration || 5000;
 
     this.options = options;
-
-    /*
-     * CSS Icon
-     * const styleLoader = new StyleLoader();
-     * styleLoader.inject( 'icono' );
-     */
 
     // Container
     if ( options.container ) {
@@ -817,7 +810,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     addPanoramaEventListener: function ( pano ) {
 
         // Set camera control on every panorama
-        pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
+        pano.addEventListener( 'enter', this.setCameraControl.bind( this ) );
 
         // Show and hide widget event only when it's VideoPanorama
         if ( pano instanceof VideoPanorama ) {
@@ -1088,15 +1081,26 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
-    /**
-     * Tween control looking center
-     * @param {THREE.Vector3} vector - Vector to be looked at the center
-     * @param {number} [duration=1000] - Duration to tween
-     * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
-     * @memberOf Viewer
-     * @instance
-     */
-    tweenControlCenter: function ( vector, duration, easing ) {
+    rotateOrbitControlLeft: function ( left ) {
+
+        this.control.rotateLeft( left );
+
+    },
+
+    rotateOrbitControlUp: function ( up ) {
+
+        this.control.rotateUp( up );
+
+    },
+
+    rotateOrbitControl: function ( left, up ) {
+
+        this.rotateOrbitControlLeft( left );
+        this.rotateOrbitControlUp( up );
+
+    },
+
+    calculateOrbitControlDelta: function ( vector ) {
 
         if ( this.control !== this.OrbitControls ) {
 
@@ -1113,12 +1117,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         }
 
-        duration = duration !== undefined ? duration : 1000;
-        easing = easing || TWEEN.Easing.Exponential.Out;
-
-        let scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
-
-        scope = this;
+        let ha, va, chv, cvv, hv, vv, vptc;
 
         chv = this.camera.getWorldDirection( new THREE.Vector3() );
         cvv = chv.clone();
@@ -1126,8 +1125,6 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         vptc = this.panorama.getWorldPosition( new THREE.Vector3() ).sub( this.camera.getWorldPosition( new THREE.Vector3() ) );
 
         hv = vector.clone();
-        // Scale effect
-        hv.x *= -1;
         hv.add( vptc ).normalize();
         vv = hv.clone();
 
@@ -1140,26 +1137,70 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         va = Math.abs( cvv.angleTo( chv ) + ( cvv.y * vv.y <= 0 ? vv.angleTo( hv ) : -vv.angleTo( hv ) ) );
         va *= vv.y < cvv.y ? 1 : -1;
 
-        ov = { left: 0, up: 0 };
-        nv = { left: 0, up: 0 };
+        return { left: ha, up: va };
+
+    },
+
+    /**
+     * Set control center
+     * @param {THREE.Vector3} vector - Vector to be looked at the center
+     */
+    setControlCenter: function( vector ) {
+
+        if ( this.control !== this.OrbitControls ) {
+
+            return;
+
+        }
+
+        const { left, up } = this.calculateOrbitControlDelta( vector );
+        this.rotateOrbitControl( left, up );
+
+    },
+
+    /**
+     * Tween control looking center
+     * @param {THREE.Vector3} vector - Vector to be looked at the center
+     * @param {number} [duration=1000] - Duration to tween
+     * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+     * @memberOf Viewer
+     * @instance
+     */
+    tweenControlCenter: function ( vector, duration, easing ) {
+
+        if ( this.control !== this.OrbitControls ) {
+
+            return;
+
+        }
+
+        duration = duration !== undefined ? duration : 1000;
+        easing = easing || TWEEN.Easing.Exponential.Out;
+
+        const { left, up } = this.calculateOrbitControlDelta( vector );
+        const rotateOrbitControlLeft = this.rotateOrbitControlLeft.bind( this );
+        const rotateOrbitControlUp = this.rotateOrbitControlUp.bind( this );
+
+        const ov = { left: 0, up: 0 };
+        const nv = { left: 0, up: 0 };
 
         this.tweenLeftAnimation.stop();
         this.tweenUpAnimation.stop();
 
         this.tweenLeftAnimation = new TWEEN.Tween( ov )
-            .to( { left: ha }, duration )
+            .to( { left }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateLeft( ov.left - nv.left );
+                rotateOrbitControlLeft( ov.left - nv.left );
                 nv.left = ov.left;
             })
             .start();
 
         this.tweenUpAnimation = new TWEEN.Tween( ov )
-            .to( { up: va }, duration )
+            .to( { up }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateUp( ov.up - nv.up );
+                rotateOrbitControlUp( ov.up - nv.up );
                 nv.up = ov.up;
             })
             .start();
@@ -1176,28 +1217,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     tweenControlCenterByObject: function ( object, duration, easing ) {
 
-        let isUnderScalePlaceHolder = false;
-
-        object.traverseAncestors( function ( ancestor ) {
-
-            if ( ancestor.scalePlaceHolder ) {
-
-                isUnderScalePlaceHolder = true;
-
-            }
-        } );
-
-        if ( isUnderScalePlaceHolder ) {
-
-            const invertXVector = new THREE.Vector3( -1, 1, 1 );
-
-            this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ).multiply( invertXVector ), duration, easing );
-
-        } else {
-
-            this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ), duration, easing );
-
-        }
+        this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ), duration, easing );
 
     },
 
@@ -1303,9 +1323,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         if ( intersects.length > 0 ) {
 
             const point = intersects[ 0 ].point.clone();
-            const converter = new THREE.Vector3( -1, 1, 1 );
             const world = this.panorama.getWorldPosition( new THREE.Vector3() );
-            point.sub( world ).multiply( converter );
+            point.sub( world );
 
             const message = `${point.x.toFixed(2)}, ${point.y.toFixed(2)}, ${point.z.toFixed(2)}`;
 

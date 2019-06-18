@@ -29,6 +29,7 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         const { fragmentShader, vertexShader, uniforms: _uniforms } = THREE.ShaderLib[ 'cube' ];
         const uniforms = THREE.UniformsUtils.clone( _uniforms );
+        
         uniforms.opacity.value = 0;
 
         const material = new THREE.ShaderMaterial( {
@@ -37,7 +38,8 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             vertexShader,
             uniforms,
             side: THREE.BackSide,
-            transparent: true
+            transparent: true,
+            opacity: 0
 
         } );
 

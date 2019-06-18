@@ -96,8 +96,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
             vertexShader,
             fragmentShader,
             uniforms,
-            side: THREE.BackSide,
-            transparent: true
+            transparent: true,
+            opacity: 0
 
         } );
 		
