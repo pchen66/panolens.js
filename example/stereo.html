@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js Development Example</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      #panolens-separate-container {
+        position: absolute;
+        width: 300px;
+        height: 150px;
+        right: 0;
+        top: 100px;
+      }
+
+      #panolens-separate-container:-webkit-full-screen{
+        left: 0;
+        top: 0;
+      }
+      #panolens-separate-container:-moz-full-screen{
+        left: 0;
+        top: 0;
+      }
+      #panolens-separate-container:-ms-fullscreen{
+        left: 0;
+        top: 0;
+      }
+      #panolens-separate-container:fullscreen {
+        left: 0;
+        top: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+
+  <script src="../node_modules/three/build/three.min.js"></script>
+  <script src="../build/panolens.js"></script>
+
+
+  <div id="panolens-separate-container"></div>
+
+    <script>
+
+      /**
+       * This demo is using a proxy workaround to avoid CORS restriction. May be slow / down if the proxy is under heavy requests.
+       * Host your own video on the same origin. Do not use in production.
+       */ 
+
+      const stereo = new PANOLENS.Stereo( 0 );
+      const panorama = new PANOLENS.StereoImagePanorama( 'https://cors-anywhere.herokuapp.com/https://fd210b1b-b131-4beb-b60f-2e3352887a8e.s3-us-west-1.amazonaws.com/hellblade2.jpeg', stereo );
+      panorama.addEventListener( 'progress', e => console.log(e));
+
+      const videoPanorama = new PANOLENS.StereoVideoPanorama( 'https://cors-anywhere.herokuapp.com/https://fd210b1b-b131-4beb-b60f-2e3352887a8e.s3-us-west-1.amazonaws.com/titans.mp4', { autoplay: true }, stereo );
+      videoPanorama.addEventListener( 'progress', e => console.log(e));
+
+      const viewer = new PANOLENS.Viewer({output: 'console'});
+
+      const infospot = new PANOLENS.Infospot();
+      infospot.position.set( -5000.00, 371.70, -278.36 );
+      panorama.add( infospot );
+      
+      videoPanorama.link( panorama, new THREE.Vector3( 1000, 0, -4000 ) );
+
+      viewer.add( videoPanorama, panorama );
+
+    </script>
+
+  </body>
+</html>

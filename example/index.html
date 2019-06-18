@@ -68,7 +68,7 @@
       panorama_main_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: false });
 
       var cube = new THREE.Mesh( new THREE.BoxGeometry(50, 50, 50), new THREE.MeshNormalMaterial() );
-      cube.position.set(1000, 0, 0);
+      cube.position.set(-5000.00, -914.91, 1624.23).multiplyScalar( 0.1 );
       panorama_main_video.add( cube );
       panorama_main_video.addEventListener( 'progress',function(e){
         console.log(e.progress);
@@ -85,10 +85,10 @@
         console.log(e.progress);
       });
 
-      panorama_main_video.link( panorama_main_video2, new THREE.Vector3( -3260.34, -700.96, -3017.16 ) );
+      panorama_main_video.link( panorama_main_video2, new THREE.Vector3( 5000.00, 709.21, -411.63 ) );
       panorama_main_video2.link( panorama_main_video, new THREE.Vector3( -2358.58, 1205.94, -3626.21 ) );
 
-      panorama_main_video.link( panorama_main_image, new THREE.Vector3( 4464.14, 364.49, 393.76 ) );
+      panorama_main_video.link( panorama_main_image, new THREE.Vector3( 125.51, 277.85, 5000.00 ) );
       panorama_main_image.link( panorama_main_video, new THREE.Vector3( 2630.30, 132.81, 3643.93 ) );
 
       infospot2 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
@@ -97,12 +97,16 @@
       panorama_main_image.add( infospot2 );
 
       infospot1 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
-      infospot1.position.set( 3187.12, 1036.61, -2996.43 );
+      infospot1.position.set( 1400.39, 1294.49, -5000.00 );
       infospot1.addHoverText( 'Mountain Tip' );
       infospot1.addEventListener( 'click', function(){
         viewer_main.tweenControlCenterByObject( cube );
       } );
       panorama_main_video.add( infospot1 );
+
+      panorama_main_video.addEventListener('enter', function(){console.log('enter')
+      viewer_main.setControlCenter( new THREE.Vector3(0, 0, -5000) );
+      });
       
       viewer_main.add( panorama_main_video, panorama_main_image, panorama_main_video2  );
 
