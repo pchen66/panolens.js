@@ -1,6 +1,5 @@
 import { STEREOFORMAT } from '../Constants';
 import { ImagePanorama } from './ImagePanorama';
-import { EquirectShader } from '../shaders/EquirectShader';
 import * as THREE from 'three';
 import { Stereo } from '../auxiliary/Stereo';
 

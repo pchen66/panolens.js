@@ -64,7 +64,6 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         const { muted, loop, autoplay, playsinline, crossOrigin } = this.options;
         const video = this.videoElement;
-        const material = this.material;
         const onProgress = this.onProgress.bind( this );
         const onLoad = this.onLoad.bind( this );
 
@@ -127,9 +126,6 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             }
 
             const loaded = () => {
-
-                // Fix for threejs r89 delayed update
-                //material.map.needsUpdate = true;
 
                 onProgress( { loaded: 1, total: 1 } );
                 onLoad( videoTexture );

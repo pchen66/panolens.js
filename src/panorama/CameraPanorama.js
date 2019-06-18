@@ -1,6 +1,5 @@
 import { Panorama } from './Panorama';
 import { Media } from '../auxiliary/Media';
-import * as THREE from 'three';
 
 /**
  * @classdesc Camera panorama

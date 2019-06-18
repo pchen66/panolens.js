@@ -36,21 +36,21 @@ Object.assign( Stereo.prototype, {
 
         switch ( format ) {
 
-            case STEREOFORMAT.TAB:
-                repeat.set( 1.0, 0.5 );
-                offset.set( 0.0, 0.5 );
-                loffset.set( 0.0, 0.5 );
-                roffset.set( 0.0, 0.0 );
-                break;
+        case STEREOFORMAT.TAB:
+            repeat.set( 1.0, 0.5 );
+            offset.set( 0.0, 0.5 );
+            loffset.set( 0.0, 0.5 );
+            roffset.set( 0.0, 0.0 );
+            break;
 
-            case STEREOFORMAT.SBS:
-                repeat.set( 0.5, 1.0 );
-                offset.set( 0.0, 0.0 );
-                loffset.set( 0.0, 0.0 );
-                roffset.set( 0.5, 0.0 );
-                break;
+        case STEREOFORMAT.SBS:
+            repeat.set( 0.5, 1.0 );
+            offset.set( 0.0, 0.0 );
+            loffset.set( 0.0, 0.0 );
+            roffset.set( 0.5, 0.0 );
+            break;
 
-            default: break;
+        default: break;
 
         }
 
