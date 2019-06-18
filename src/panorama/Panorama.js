@@ -693,6 +693,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      */
     dispose: function () {
 
+        const { material } = this;
+
+        if ( material && material.uniforms && material.uniforms.tEquirect ) material.uniforms.tEquirect.value.dispose();
+
         this.infospotAnimation.stop();
         this.fadeInAnimation.stop();
         this.fadeOutAnimation.stop();

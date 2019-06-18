@@ -475,16 +475,12 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {
 
-        const { material: { map } } = this;
-
         this.pauseVideo();
 		
         this.removeEventListener( 'leave', this.pauseVideo.bind( this ) );
         this.removeEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
         this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
         this.removeEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
-
-        if ( map ) { map.dispose(); }
 
         Panorama.prototype.dispose.call( this );
 
