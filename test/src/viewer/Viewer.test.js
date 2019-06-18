@@ -20,6 +20,9 @@ import { GoogleStreetviewPanorama } from '../../../src/panorama/GoogleStreetview
 import { LittlePlanet } from '../../../src/panorama/LittlePlanet';
 import { ImageLittlePlanet } from '../../../src/panorama/ImageLittlePlanet';
 import { VideoPanorama } from '../../../src/panorama/VideoPanorama';
+import { StereoImagePanorama } from '../../../src/panorama/StereoImagePanorama';
+import { StereoVideoPanorama } from '../../../src/panorama/StereoVideoPanorama';
+import { Stereo } from '../../../src/auxiliary/Stereo';
 
 const localImageFolder = '../../../example/asset/textures/equirectangular';
 const cabinImageURL = join( __dirname, localImageFolder, 'cabin.jpg' );
@@ -366,4 +369,34 @@ test('Append Custom Control Widget', t => {
     t.true( viewer.widget.barElement.contains( item1 ) );
     viewer.widget.barElement.removeChild( item2 );
     t.false( viewer.widget.barElement.contains( item2 ) );
+});
+
+test.cb('Stereo Image Panorama', t => {
+
+    const renderer = new THREE.WebGLRenderer();
+    const viewer = new Viewer( { renderer } );
+    const stereo = new Stereo( 0 );
+    const stereoImage = new StereoImagePanorama( cabinImageURL, stereo );
+    stereoImage.addEventListener( 'load', () => {
+        renderer.autoClear = true;
+        viewer.render();
+        t.end();
+    });
+    viewer.add( stereoImage );
+    viewer.enableEffect( MODES.STEREO );
+
+});
+
+test.cb('Stereo Video Panorama', t => {
+
+    const viewer = new Viewer();
+    const stereo = new Stereo( 0 );
+    const stereoVideo = new StereoVideoPanorama( '../../../example/asset/textures/video/1941-battle-low.mp4', stereo );
+    stereoVideo.addEventListener( 'load', () => {
+        viewer.render();
+        t.end();
+    });
+    viewer.add( stereoVideo );
+    viewer.enableEffect( MODES.STEREO );
+
 });

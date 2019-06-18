@@ -102,8 +102,8 @@ test.cb('Video Non Loopable Video', t => {
 
 test('Set Empty Video Texture', t => {
     const panorama = new VideoPanorama( videoURL );
-    panorama.setVideoTexture( null );
-    t.falsy(panorama.material.map);
+    const texture = panorama.setVideoTexture( null );
+    t.falsy(texture);
 });
 
 test.cb('Reset', t => {
