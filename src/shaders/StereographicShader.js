@@ -30,55 +30,52 @@ const StereographicShader = {
 
     },
 
-    vertexShader: [
+    vertexShader: `
 
-        'varying vec2 vUv;',
+        varying vec2 vUv;
 
-        'void main() {',
+        void main() {
 
-        'vUv = uv;',
-        'gl_Position = vec4( position, 1.0 );',
+            vUv = uv;
+            gl_Position = vec4( position, 1.0 );
 
-        '}' 
+        }
 
-    ].join( '\n' ),
+    `,
 
-    fragmentShader: [
+    fragmentShader: `
 
-        'uniform sampler2D tDiffuse;',
-        'uniform float resolution;',
-        'uniform mat4 transform;',
-        'uniform float zoom;',
-        'uniform float opacity;',
+        uniform sampler2D tDiffuse;
+        uniform float resolution;
+        uniform mat4 transform;
+        uniform float zoom;
+        uniform float opacity;
 
-        'varying vec2 vUv;',
+        varying vec2 vUv;
 
-        'const float PI = 3.141592653589793;',
+        const float PI = 3.141592653589793;
 
-        'void main(){',
+        void main(){
 
-        'vec2 position = -1.0 +  2.0 * vUv;',
+            vec2 position = -1.0 +  2.0 * vUv;
 
-        'position *= vec2( zoom * resolution, zoom * 0.5 );',
+            position *= vec2( zoom * resolution, zoom * 0.5 );
 
-        'float x2y2 = position.x * position.x + position.y * position.y;',
-        'vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );',
+            float x2y2 = position.x * position.x + position.y * position.y;
+            vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );
 
-        'sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );',
+            sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );
 
-        'vec2 sampleUV = vec2(',
-        '(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,',
-        '(asin(sphere_pnt.z) / PI + 0.5)',
-        ');',
+            vec2 sampleUV = vec2(
+                (atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,
+                (asin(sphere_pnt.z) / PI + 0.5)
+            );
 
-        'gl_FragColor = texture2D( tDiffuse, sampleUV );',
+            gl_FragColor = texture2D( tDiffuse, sampleUV );
+            gl_FragColor.a *= opacity;
 
-        'gl_FragColor.a *= opacity;',
-
-        '}'
-
-    ].join( '\n' )
-
+        }
+    `
 };
 
 export { StereographicShader };
