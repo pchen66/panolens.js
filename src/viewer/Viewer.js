@@ -34,197 +34,105 @@ import TWEEN from '@tweenjs/tween.js';
  * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
  * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
  * @param {number}  [options.indicatorSize=30] - Size of View Indicator
- * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
+ * @param {string}  [options.output=null] - Whether and where to output raycast position. Could be 'console' or 'overlay'
  * @param {boolean} [options.autoRotate=false] - Auto rotate
  * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
  * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
  */
-function Viewer ( options ) {
+function Viewer ( options = {} ) {
 
-    let container;
+    this.options = Object.assign( {
 
-    options = options || {};
-    options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
-    options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
-    options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
-    options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
-    options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
-    options.clickTolerance = options.clickTolerance || 10;
-    options.cameraFov = options.cameraFov || 60;
-    options.reverseDragging = options.reverseDragging || false;
-    options.enableReticle = options.enableReticle || false;
-    options.dwellTime = options.dwellTime || 1500;
-    options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
-    options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
-    options.indicatorSize = options.indicatorSize || 30;
-    options.output = options.output ? options.output : 'none';
-    options.autoRotate = options.autoRotate || false;
-    options.autoRotateSpeed = options.autoRotateSpeed || 2.0;
-    options.autoRotateActivationDuration = options.autoRotateActivationDuration || 5000;
+        controlBar: true,
+        controlButtons: [ 'fullscreen', 'setting', 'video' ],
+        autoHideControlBar: false,
+        autoHideInfospot: true,
+        horizontalView: false,
+        clickTolerance: 10,
+        cameraFov: 60,
+        reverseDragging: false,
+        enableReticle: false,
+        dwellTime: 1500,
+        autoReticleSelect: true,
+        viewIndicator: false,
+        indicatorSize: 30,
+        output: null,
+        autoRotate: false,
+        autoRotateSpeed: 2.0,
+        autoRotateActivationDuration: 5000
 
-    this.options = options;
+    }, options );
 
-    // Container
-    if ( options.container ) {
+    this.container = this.setupContainer( this.options.container );
 
-        container = options.container;
-        container._width = container.clientWidth;
-        container._height = container.clientHeight;
+    const { 
+        container,
+        container: { 
+            clientWidth, 
+            clientHeight 
+        },
+        options: {
+            cameraFov,
+            controlBar,
+            controlButtons,
+            viewIndicator,
+            indicatorSize,
+            enableReticle,
+            reverseDragging,
+            output,
+            scene,
+            camera,
+            renderer
+        }
+    } = this;
 
-    } else {
-
-        container = document.createElement( 'div' );
-        container.classList.add( 'panolens-container' );
-        container.style.width = '100%';
-        container.style.height = '100%';
-        container._width = window.innerWidth;
-        container._height = window.innerHeight;
-        document.body.appendChild( container );
-
-    }
-
-    this.container = container;
-
-    this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
-    this.scene = options.scene || new THREE.Scene();
-    this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
+    this.scene = this.setupScene( scene );
     this.sceneReticle = new THREE.Scene();
-
-    this.viewIndicatorSize = this.options.indicatorSize;
-
-    this.reticle = {};
-    this.tempEnableReticle = this.options.enableReticle;
+    this.camera = this.setupCamera( cameraFov, clientWidth / clientHeight, camera );
+    this.renderer = this.setupRenderer( renderer, container );
+    this.reticle = this.addReticle( this.camera, this.sceneReticle );
+    this.control = this.setupControls( this.camera, container );
+    this.effect = this.setupEffects( this.renderer, container );
 
     this.mode = MODES.NORMAL;
-
     this.panorama = null;
     this.widget = null;
-
     this.hoverObject = null;
     this.infospot = null;
     this.pressEntityObject = null;
     this.pressObject = null;
-
     this.raycaster = new THREE.Raycaster();
     this.raycasterPoint = new THREE.Vector2();
     this.userMouse = new THREE.Vector2();
     this.updateCallbacks = [];
     this.requestAnimationId = null;
-
     this.cameraFrustum = new THREE.Frustum();
     this.cameraViewProjectionMatrix = new THREE.Matrix4();
-
     this.autoRotateRequestId = null;
-
     this.outputDivElement = null;
-
     this.touchSupported = 'ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch;
-
-    // Handler references
-    this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
-    this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
-    this.HANDLER_MOUSE_MOVE = this.onMouseMove.bind( this );
-    this.HANDLER_WINDOW_RESIZE = this.onWindowResize.bind( this );
-    this.HANDLER_KEY_DOWN = this.onKeyDown.bind( this );
-    this.HANDLER_KEY_UP = this.onKeyUp.bind( this );
-    this.HANDLER_TAP = this.onTap.bind( this, {
-        clientX: this.container.clientWidth / 2,
-        clientY: this.container.clientHeight / 2
-    } );
-
-    // Flag for infospot output
-    this.OUTPUT_INFOSPOT = false;
-
-    // Animations
     this.tweenLeftAnimation = new TWEEN.Tween();
     this.tweenUpAnimation = new TWEEN.Tween();
+    this.outputEnabled = false;
+    this.viewIndicatorSize = indicatorSize;
+    this.tempEnableReticle = enableReticle;
 
-    // Renderer
-    this.renderer.setPixelRatio( window.devicePixelRatio );
-    this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
-    this.renderer.setClearColor( 0x000000, 0 );
-    this.renderer.autoClear = false;
+    this.handlerMouseUp = this.onMouseUp.bind( this );
+    this.handlerMouseDown = this.onMouseDown.bind( this );
+    this.handlerMouseMove = this.onMouseMove.bind( this );
+    this.handlerWindowResize = this.onWindowResize.bind( this );
+    this.handlerKeyDown = this.onKeyDown.bind( this );
+    this.handlerKeyUp = this.onKeyUp.bind( this );
+    this.handlerTap = this.onTap.bind( this, { clientX: clientWidth / 2, clientY: clientHeight / 2 } );
 
-    // Append Renderer Element to container
-    this.renderer.domElement.classList.add( 'panolens-canvas' );
-    this.renderer.domElement.style.display = 'block';
-    this.container.style.backgroundColor = '#000';
-    this.container.appendChild( this.renderer.domElement );
+    if ( controlBar ) this.addDefaultControlBar( controlButtons );
+    if ( viewIndicator ) this.addViewIndicator();
+    if ( reverseDragging ) this.reverseDraggingDirection();
+    if ( enableReticle ) this.enableReticleControl(); else this.registerMouseAndTouchEvents(); 
+    if ( output === 'overlay' ) this.addOutputElement();
 
-    // Camera Controls
-    this.OrbitControls = new OrbitControls( this.camera, this.container );
-    this.OrbitControls.id = 'orbit';
-    this.OrbitControls.minDistance = 1;
-    this.OrbitControls.noPan = true;
-    this.OrbitControls.autoRotate = this.options.autoRotate;
-    this.OrbitControls.autoRotateSpeed = this.options.autoRotateSpeed;
-
-    this.DeviceOrientationControls = new DeviceOrientationControls( this.camera, this.container );
-    this.DeviceOrientationControls.id = 'device-orientation';
-    this.DeviceOrientationControls.enabled = false;
-    this.camera.position.z = 1;
-
-    // Register change event if passiveRenering
-    if ( this.options.passiveRendering ) {
-
-        console.warn( 'passiveRendering is now deprecated' );
-
-    }
-
-    // Controls
-    this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
-    this.control = this.OrbitControls;
-
-    // Cardboard effect
-    this.CardboardEffect = new CardboardEffect( this.renderer );
-    this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
-
-    // Stereo effect
-    this.StereoEffect = new StereoEffect( this.renderer );
-    this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
-
-    this.effect = this.CardboardEffect;
-
-    // Add default hidden reticle
-    this.addReticle();
-
-    // Lock horizontal view
-    if ( this.options.horizontalView ) {
-        this.OrbitControls.minPolarAngle = Math.PI / 2;
-        this.OrbitControls.maxPolarAngle = Math.PI / 2;
-    }
-
-    // Add Control UI
-    if ( this.options.controlBar !== false ) {
-        this.addDefaultControlBar( this.options.controlButtons );
-    }
-
-    // Add View Indicator
-    if ( this.options.viewIndicator ) {
-        this.addViewIndicator();
-    }
-
-    // Reverse dragging direction
-    if ( this.options.reverseDragging ) {
-        this.reverseDraggingDirection();
-    }
-
-    // Register event if reticle is enabled, otherwise defaults to mouse
-    if ( this.options.enableReticle ) {
-        this.enableReticleControl();
-    } else {
-        this.registerMouseAndTouchEvents();
-    }
-
-    // Output infospot position to an overlay container if specified
-    if ( this.options.output === 'overlay' ) {
-        this.addOutputElement();
-    }
-
-    // Register dom event listeners
     this.registerEventListeners();
 
-    // Animate
     this.animate.call( this );
 
 };
@@ -232,6 +140,104 @@ function Viewer ( options ) {
 Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
 
     constructor: Viewer,
+
+    setupScene: function ( scene = new THREE.Scene() ) {
+
+        return scene;
+
+    },
+
+    setupCamera: function ( cameraFov, ratio, camera = new THREE.PerspectiveCamera( cameraFov, ratio, 1, 10000 ) ) {
+
+        camera.position.z = 1;
+        return camera;
+
+    },
+
+    setupRenderer: function ( renderer = new THREE.WebGLRenderer( { alpha: true, antialias: false } ), container ) {
+
+        const { clientWidth, clientHeight } = container;
+
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( clientWidth, clientHeight );
+        renderer.setClearColor( 0x000000, 0 );
+        renderer.autoClear = false;
+        renderer.domElement.classList.add( 'panolens-canvas' );
+        renderer.domElement.style.display = 'block';
+        container.style.backgroundColor = '#000';
+        container.appendChild( renderer.domElement );
+
+        return renderer;
+
+    },
+
+    setupControls: function ( camera, container ) {
+
+        const { autoRotate, autoRotateSpeed, horizontalView } = this.options;
+
+        const orbit = new OrbitControls( camera, container );
+        orbit.id = 'orbit';
+        orbit.minDistance = 1;
+        orbit.noPan = true;
+        orbit.autoRotate = autoRotate;
+        orbit.autoRotateSpeed = autoRotateSpeed;
+
+        if ( horizontalView ) {
+
+            orbit.minPolarAngle = Math.PI / 2;
+            orbit.maxPolarAngle = Math.PI / 2;
+
+        }
+
+        const orient = new DeviceOrientationControls( camera, container );
+        orient.id = 'device-orientation';
+        orient.enabled = false;
+
+        this.controls = [ orbit, orient ];
+        this.OrbitControls = orbit;
+        this.DeviceOrientationControls = orient;
+
+        return orbit;
+ 
+    },
+
+    setupEffects: function ( renderer, { clientWidth, clientHeight } ) {
+
+        const cardboard = new CardboardEffect( renderer );
+        cardboard.setSize( clientWidth, clientHeight );
+
+        const stereo = new StereoEffect( renderer );
+        stereo.setSize( clientWidth, clientHeight );
+
+        this.CardboardEffect = cardboard;
+        this.StereoEffect = stereo;
+
+        return cardboard;
+
+    },
+
+    setupContainer: function ( container ) {
+
+        if ( container ) {
+
+            container._width = container.clientWidth;
+            container._height = container.clientHeight;
+
+            return container;
+
+        } else {
+
+            const element = document.createElement( 'div' );
+            element.classList.add( 'panolens-container' );
+            element.style.width = '100%';
+            element.style.height = '100%';
+            document.body.appendChild( element );
+            
+            return element;
+            
+        }
+
+    },
 
     /**
      * Add an object to the scene
@@ -1072,12 +1078,14 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @memberOf Viewer
      * @instance
      */
-    addReticle: function () {
+    addReticle: function ( camera, sceneReticle ) {
 
-        this.reticle = new Reticle( 0xffffff, true, this.options.dwellTime );
-        this.reticle.hide();
-        this.camera.add( this.reticle );
-        this.sceneReticle.add( this.camera );
+        const reticle = new Reticle( 0xffffff, true, this.options.dwellTime );
+        reticle.hide();
+        camera.add( reticle );
+        sceneReticle.add( camera );
+
+        return reticle;
 
     },
 
@@ -1470,7 +1478,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         }
 
         // output infospot information
-        if ( event.type !== 'mousedown' && this.touchSupported || this.OUTPUT_INFOSPOT ) { 
+        if ( event.type !== 'mousedown' && this.touchSupported || this.outputEnabled ) { 
 
             this.outputPosition(); 
 
@@ -1505,7 +1513,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         }
 
         if ( type === 'click' ) {
-
+            
             this.panorama.dispatchEvent( { type: 'click', intersects: intersects, mouseEvent: event } );
 
             if ( intersect_entity && intersect_entity.dispatchEvent ) {
@@ -1741,7 +1749,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         if ( this.options.output && this.options.output !== 'none' && event.key === 'Control' ) {
 
-            this.OUTPUT_INFOSPOT = true;
+            this.outputEnabled = true;
 
         }
 
@@ -1755,7 +1763,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     onKeyUp: function () {
 
-        this.OUTPUT_INFOSPOT = false;
+        this.outputEnabled = false;
 
     },
 
@@ -1851,11 +1859,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         const options = { passive: false };
 
-        this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, options );
-        this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, options );
-        this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , options );
-        this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, options );
-        this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , options );
+        this.container.addEventListener( 'mousedown' , 	this.handlerMouseDown, options );
+        this.container.addEventListener( 'mousemove' , 	this.handlerMouseMove, options );
+        this.container.addEventListener( 'mouseup'	 , 	this.handlerMouseUp  , options );
+        this.container.addEventListener( 'touchstart', 	this.handlerMouseDown, options );
+        this.container.addEventListener( 'touchend'  , 	this.handlerMouseUp  , options );
 
     },
 
@@ -1866,11 +1874,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     unregisterMouseAndTouchEvents: function () {
 
-        this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, false );
-        this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, false );
-        this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , false );
-        this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, false );
-        this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , false );
+        this.container.removeEventListener( 'mousedown' ,  this.handlerMouseDown, false );
+        this.container.removeEventListener( 'mousemove' ,  this.handlerMouseMove, false );
+        this.container.removeEventListener( 'mouseup'	,  this.handlerMouseUp  , false );
+        this.container.removeEventListener( 'touchstart',  this.handlerMouseDown, false );
+        this.container.removeEventListener( 'touchend'  ,  this.handlerMouseUp  , false );
 
     },
 
@@ -1881,7 +1889,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     registerReticleEvent: function () {
 
-        this.addUpdateCallback( this.HANDLER_TAP );
+        this.addUpdateCallback( this.handlerTap );
 
     },
 
@@ -1892,7 +1900,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     unregisterReticleEvent: function () {
 
-        this.removeUpdateCallback( this.HANDLER_TAP );
+        this.removeUpdateCallback( this.handlerTap );
 
     },
 
@@ -1906,9 +1914,9 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         const clientX = this.container.clientWidth / 2 + this.container.offsetLeft;
         const clientY = this.container.clientHeight / 2;
 
-        this.removeUpdateCallback( this.HANDLER_TAP );
-        this.HANDLER_TAP = this.onTap.bind( this, { clientX, clientY } );
-        this.addUpdateCallback( this.HANDLER_TAP );
+        this.removeUpdateCallback( this.handlerTap );
+        this.handlerTap = this.onTap.bind( this, { clientX, clientY } );
+        this.addUpdateCallback( this.handlerTap );
 
     },
 
@@ -1920,11 +1928,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     registerEventListeners: function () {
 
         // Resize Event
-        window.addEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
+        window.addEventListener( 'resize' , this.handlerWindowResize, true );
 
         // Keyboard Event
-        window.addEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
-        window.addEventListener( 'keyup'  , this.HANDLER_KEY_UP	 , true );
+        window.addEventListener( 'keydown', this.handlerKeyDown, true );
+        window.addEventListener( 'keyup'  , this.handlerKeyUp	 , true );
 
     },
 
@@ -1936,11 +1944,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     unregisterEventListeners: function () {
 
         // Resize Event
-        window.removeEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
+        window.removeEventListener( 'resize' , this.handlerWindowResize, true );
 
         // Keyboard Event
-        window.removeEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
-        window.removeEventListener( 'keyup'  , this.HANDLER_KEY_UP  , true );
+        window.removeEventListener( 'keydown', this.handlerKeyDown, true );
+        window.removeEventListener( 'keyup'  , this.handlerKeyUp  , true );
 
     },
 
@@ -1950,6 +1958,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      */
     dispose: function () {
+
+        this.disableAutoRate();
 
         this.tweenLeftAnimation.stop();
         this.tweenUpAnimation.stop();
