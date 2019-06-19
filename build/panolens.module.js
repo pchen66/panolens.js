@@ -1,6 +1,6 @@
-import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
+import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, Vector2, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BoxBufferGeometry, UniformsUtils, ShaderMaterial, BackSide, Object3D, BufferGeometry, BufferAttribute, MeshBasicMaterial, ShaderLib, Matrix4, Quaternion, PlaneBufferGeometry, Math as Math$1, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
 
-const version="0.11.0";const dependencies={three:"^0.105.2"};
+const version="0.11.0";const devDependencies={"@tweenjs/tween.js":"^17.4.0",ava:"^2.1.0","browser-env":"^3.2.6",concurrently:"^4.1.0",coveralls:"^3.0.4",docdash:"^1.1.1",eslint:"^5.16.0","google-closure-compiler":"^20190528.0.0","http-server":"^0.11.1",jsdoc:"^3.6.2","local-web-server":"^3.0.0",nyc:"^14.1.1",rollup:"^1.15.1","rollup-plugin-commonjs":"^10.0.0","rollup-plugin-inject":"^2.2.0","rollup-plugin-json":"^4.0.0","rollup-plugin-node-resolve":"^5.0.1",three:"^0.105.2",xmlhttprequest:"^1.8.0"};
 
 /**
  * REVISION
@@ -24,7 +24,7 @@ const VERSION = version;
  * @example PANOLENS.THREE_REVISION
  * @type {string} threejs revision
  */
-const THREE_REVISION = dependencies.three.split( '.' )[ 1 ];
+const THREE_REVISION = devDependencies.three.split( '.' )[ 1 ];
 
 /**
  * THREEJS VERSION
@@ -32,7 +32,7 @@ const THREE_REVISION = dependencies.three.split( '.' )[ 1 ];
  * @example PANOLENS.THREE_VERSION
  * @type {string} threejs version
  */
-const THREE_VERSION = dependencies.three.replace( /[^0-9.]/g, '' );
+const THREE_VERSION = devDependencies.three.replace( /[^0-9.]/g, '' );
 
 /**
  * CONTROLS
@@ -53,6 +53,15 @@ const CONTROLS = { ORBIT: 0, DEVICEORIENTATION: 1 };
  * @property {number} STEREO 3
  */
 const MODES = { UNKNOWN: 0, NORMAL: 1, CARDBOARD: 2, STEREO: 3 };
+
+/**
+ * STEREOFORMAT
+ * @module STEREOFORMAT
+ * @example PANOLENS.STEREOFORMAT.TAB
+ * @property {number} TAB 0
+ * @property {number} SBS 1
+ */
+const STEREOFORMAT = { TAB: 0, SBS: 1 };
 
 /**
  * Data URI Images
@@ -215,7 +224,7 @@ const TextureLoader = {
      */
     load: function ( url, onLoad = () => {}, onProgress, onError ) {
 
-        var texture = new Texture(); 
+        const texture = new Texture(); 
 
         ImageLoader.load( url, function ( image ) {
 
@@ -255,7 +264,7 @@ const CubeTextureLoader = {
      */
     load: function ( urls, onLoad = () => {}, onProgress = () => {}, onError ) {
 
-	   var texture, loaded, progress, all, loadings;
+	   let texture, loaded, progress, all, loadings;
 
 	   texture = new CubeTexture( [] );
 
@@ -287,7 +296,7 @@ const CubeTextureLoader = {
 			   all.total = 0;
 			   loadings = 0;
 
-			   for ( var i in progress ) {
+			   for ( let i in progress ) {
 
 				   loadings++;
 				   all.loaded += progress[ i ].loaded;
@@ -653,6 +662,81 @@ Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             }
 
         }
+
+    }
+
+} );
+
+/**
+ * @classdesc Stereo Mixin - format based on {@link https://opticalflow.wordpress.com/2010/09/19/side-by-side-versus-top-and-bottom-3d-formats/} will be determined by image width:height ratio (TAB is 1:1, SBS is 4:1)
+ * @constructor
+ * @param {number} [eyeSep=0.064] - eye separation distance
+ */
+function Stereo ( eyeSep = 0.064 ){
+
+    this.format = null;
+    this.eyeSep = eyeSep;
+
+    this.loffset = new Vector2();
+    this.roffset = new Vector2();
+
+}
+
+Object.assign( Stereo.prototype, {
+
+    constructor: Stereo,
+
+    /**
+     * Update unifroms by stereo format
+     * @param {integer} format - { @see STEREOFORMAT }
+     * @param {object} uniforms
+     */
+    updateUniformByFormat: function( format, uniforms ) {
+
+        this.format = format;
+
+        const repeat = uniforms.repeat.value;
+        const offset = uniforms.offset.value;
+        const loffset = this.loffset;
+        const roffset = this.roffset;
+
+        switch ( format ) {
+
+        case STEREOFORMAT.TAB:
+            repeat.set( 1.0, 0.5 );
+            offset.set( 0.0, 0.5 );
+            loffset.set( 0.0, 0.5 );
+            roffset.set( 0.0, 0.0 );
+            break;
+
+        case STEREOFORMAT.SBS:
+            repeat.set( 0.5, 1.0 );
+            offset.set( 0.0, 0.0 );
+            loffset.set( 0.0, 0.0 );
+            roffset.set( 0.5, 0.0 );
+            break;
+
+        default: break;
+
+        }
+
+    },
+
+    /**
+     * Update Texture for Stereo Left Eye
+     */
+    updateTextureToLeft: function( offset ) {
+
+        offset.copy( this.loffset );
+
+    },
+
+    /**
+     * Update Texture for Stereo Right Eye
+     */
+    updateTextureToRight: function( offset ) {
+
+        offset.copy( this.roffset );
 
     }
 
@@ -2622,11 +2706,10 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             return; 
         }
 
-        var scope = this, bar, styleTranslate, styleOpacity, gradientStyle;
+        const scope = this;
+        const gradientStyle = 'linear-gradient(bottom, rgba(0,0,0,0.2), rgba(0,0,0,0))';
 
-        gradientStyle = 'linear-gradient(bottom, rgba(0,0,0,0.2), rgba(0,0,0,0))';
-
-        bar = document.createElement( 'div' );
+        const bar = document.createElement( 'div' );
         bar.style.width = '100%';
         bar.style.height = '44px';
         bar.style.float = 'left';
@@ -2641,19 +2724,19 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         bar.isHidden = false;
         bar.toggle = function () {
             bar.isHidden = !bar.isHidden;
-            styleTranslate = bar.isHidden ? 'translateY(0)' : 'translateY(-100%)';
-            styleOpacity = bar.isHidden ? 0 : 1;
+            const styleTranslate = bar.isHidden ? 'translateY(0)' : 'translateY(-100%)';
+            const styleOpacity = bar.isHidden ? 0 : 1;
             bar.style.transform = bar.style.webkitTransform = bar.style.msTransform = styleTranslate;
             bar.style.opacity = styleOpacity;
         };
 
         // Menu
-        var menu = this.createDefaultMenu();
+        const menu = this.createDefaultMenu();
         this.mainMenu = this.createMainMenu( menu );
         bar.appendChild( this.mainMenu );
 
         // Mask
-        var mask = this.createMask();
+        const mask = this.createMask();
         this.mask = mask;
         this.container.appendChild( mask );
 
@@ -2716,9 +2799,8 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      */
     createDefaultMenu: function () {
 
-        var scope = this, handler;
-
-        handler = function ( method, data ) {
+        const scope = this;
+        const handler = function ( method, data ) {
 
             return function () {
 
@@ -3490,9 +3572,9 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             window.requestAnimationFrame( onNextTick );
 
         }
-        for ( var i = 0; i < menus.length; i++ ) {
+        for ( let i = 0; i < menus.length; i++ ) {
 
-            var item = menu.addItem( menus[ i ].title );
+            const item = menu.addItem( menus[ i ].title );
 
             item.style.paddingLeft = '20px';
 
@@ -3501,7 +3583,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             if ( menus[ i ].subMenu && menus[ i ].subMenu.length > 0 ) {
 
-                var title = menus[ i ].subMenu[ 0 ].title;
+                const title = menus[ i ].subMenu[ 0 ].title;
 
                 item.addSelection( title )
                     .addSubMenu( menus[ i ].title, menus[ i ].subMenu );
@@ -3823,14 +3905,76 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 } );
 
 /**
+ * Equirectangular shader
+ * based on three.js equirect shader
+ * @author pchen66
+ */
+
+/**
+ * @description Equirectangular Shader
+ * @module EquirectShader
+ * @property {object} uniforms
+ * @property {THREE.Texture} uniforms.tEquirect diffuse map
+ * @property {number} uniforms.opacity image opacity
+ * @property {string} vertexShader vertex shader
+ * @property {string} fragmentShader fragment shader
+ */
+const EquirectShader = {
+
+    uniforms: {
+
+        'tEquirect': { value: new Texture() },
+        'repeat': { value: new Vector2( 1.0, 1.0 ) },
+        'offset': { value: new Vector2( 0.0, 0.0 ) },
+        'opacity': { value: 1.0 }
+
+    },
+
+    vertexShader: `
+        varying vec3 vWorldDirection;
+        #include <common>
+        void main() {
+            vWorldDirection = transformDirection( position, modelMatrix );
+            #include <begin_vertex>
+            #include <project_vertex>
+        }
+    `,
+
+    fragmentShader: `
+        uniform sampler2D tEquirect;
+        uniform vec2 repeat;
+        uniform vec2 offset;
+        uniform float opacity;
+        varying vec3 vWorldDirection;
+        #include <common>
+        void main() {
+            vec3 direction = normalize( vWorldDirection );
+            vec2 sampleUV;
+            sampleUV.y = asin( clamp( direction.y, - 1.0, 1.0 ) ) * RECIPROCAL_PI + 0.5;
+            sampleUV.x = atan( direction.z, direction.x ) * RECIPROCAL_PI2 + 0.5;
+            sampleUV *= repeat;
+            sampleUV += offset;
+            vec4 texColor = texture2D( tEquirect, sampleUV );
+            gl_FragColor = mapTexelToLinear( texColor );
+            gl_FragColor.a *= opacity;
+            #include <tonemapping_fragment>
+            #include <encodings_fragment>
+        }
+    `
+
+};
+
+/**
  * @classdesc Base Panorama
  * @constructor
  * @param {THREE.Geometry} geometry - The geometry for this panorama
  * @param {THREE.Material} material - The material for this panorama
  */
-function Panorama ( geometry, material ) {
+function Panorama () {
 
-    Mesh.call( this, geometry, material );
+    this.edgeLength = 10000;
+
+    Mesh.call( this, this.createGeometry( this.edgeLength ), this.createMaterial() );
 
     this.type = 'panorama';
 
@@ -3855,10 +3999,6 @@ function Panorama ( geometry, material ) {
     this.linkingImageURL = undefined;
     this.linkingImageScale = undefined;
 
-    this.material.side = BackSide;
-    this.material.opacity = 0;
-
-    this.scale.x *= -1;
     this.renderOrder = -1;
 
     this.active = false;
@@ -3878,20 +4018,58 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
     constructor: Panorama,
 
     /**
+     * Create a skybox geometry
+     * @memberOf Panorama
+     * @instance
+     */
+    createGeometry: function ( edgeLength ) {
+
+        return new BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+
+    },
+
+    /**
+     * Create equirectangular shader material
+     * @param {THREE.Vector2} [repeat=new THREE.Vector2( 1, 1 )] - Texture Repeat
+     * @param {THREE.Vector2} [offset=new THREE.Vector2( 0, 0 )] - Texture Offset
+     * @memberOf Panorama
+     * @instance
+     */
+    createMaterial: function ( repeat = new Vector2( 1, 1 ), offset = new Vector2( 0, 0 ) ) {
+
+        const { fragmentShader, vertexShader } = EquirectShader;
+        const uniforms = UniformsUtils.clone( EquirectShader.uniforms );
+        
+        uniforms.repeat.value.copy( repeat );
+        uniforms.offset.value.copy( offset );
+        uniforms.opacity.value = 0.0;
+
+        const material = new ShaderMaterial( {
+
+            fragmentShader,
+            vertexShader,
+            uniforms,
+            side: BackSide,
+            transparent: true,
+            opacity: 0
+    
+        } );
+
+        return material;
+
+    },
+
+    /**
      * Adding an object
-     * To counter the scale.x = -1, it will automatically add an 
-     * empty object with inverted scale on x
      * @memberOf Panorama
      * @instance
      * @param {THREE.Object3D} object - The object to be added
      */
     add: function ( object ) {
 
-        let invertedObject;
-
         if ( arguments.length > 1 ) {
 
-            for ( var i = 0; i < arguments.length; i ++ ) {
+            for ( let i = 0; i < arguments.length; i ++ ) {
 
                 this.add( arguments[ i ] );
 
@@ -3904,40 +4082,31 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
         // In case of infospots
         if ( object instanceof Infospot ) {
 
-            invertedObject = object;
+            const { container } = this;
 
-            if ( object.dispatchEvent ) {
-
-                const { container } = this;
-
-                if ( container ) { object.dispatchEvent( { type: 'panolens-container', container } ); }
-				
-                object.dispatchEvent( { type: 'panolens-infospot-focus', method: function ( vector, duration, easing ) {
-
-                    /**
-                     * Infospot focus handler event
-                     * @type {object}
-                     * @event Panorama#panolens-viewer-handler
-                     * @property {string} method - Viewer function name
-                     * @property {*} data - The argument to be passed into the method
-                     */
-                    this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'tweenControlCenter', data: [ vector, duration, easing ] } );
-
-
-                }.bind( this ) } );
+            if ( container ) { 
+                
+                object.dispatchEvent( { type: 'panolens-container', container } ); 
+            
             }
+            
+            object.dispatchEvent( { type: 'panolens-infospot-focus', method: function ( vector, duration, easing ) {
 
-        } else {
+                /**
+                 * Infospot focus handler event
+                 * @type {object}
+                 * @event Panorama#panolens-viewer-handler
+                 * @property {string} method - Viewer function name
+                 * @property {*} data - The argument to be passed into the method
+                 */
+                this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'tweenControlCenter', data: [ vector, duration, easing ] } );
 
-            // Counter scale.x = -1 effect
-            invertedObject = new Object3D();
-            invertedObject.scale.x = -1;
-            invertedObject.scalePlaceHolder = true;
-            invertedObject.add( object );
+
+            }.bind( this ) } );
 
         }
 
-        Object3D.prototype.add.call( this, invertedObject );
+        Object3D.prototype.add.call( this, object );
 
     },
 
@@ -4116,8 +4285,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
      */
     updateTexture: function ( texture ) {
 
-        this.material.map = texture;
-        this.material.needsUpdate = true;
+        this.material.uniforms.tEquirect.value = texture;
 
     },
 
@@ -4389,6 +4557,13 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
     onEnter: function () {
 
         const duration = this.animationDuration;
+        
+        /**
+         * Enter panorama event
+         * @event Panorama#enter
+         * @type {object} 
+         */
+        this.dispatchEvent( { type: 'enter' } );
 
         this.leaveTransition.stop();
         this.enterTransition
@@ -4414,13 +4589,6 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 				
             }.bind( this ) )
             .start();
-
-        /**
-         * Enter panorama event
-         * @event Panorama#enter
-         * @type {object} 
-         */
-        this.dispatchEvent( { type: 'enter' } );
 
         this.children.forEach( child => {
 
@@ -4484,6 +4652,10 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
      */
     dispose: function () {
 
+        const { material } = this;
+
+        if ( material && material.uniforms && material.uniforms.tEquirect ) material.uniforms.tEquirect.value.dispose();
+
         this.infospotAnimation.stop();
         this.fadeInAnimation.stop();
         this.fadeOutAnimation.stop();
@@ -4504,7 +4676,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 
             const { geometry, material } = object;
 
-            for ( var i = object.children.length - 1; i >= 0; i-- ) {
+            for ( let i = object.children.length - 1; i >= 0; i-- ) {
 
                 recursiveDispose( object.children[i] );
                 object.remove( object.children[i] );
@@ -4539,16 +4711,12 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
  * @constructor
  * @param {string} image - Image url or HTMLImageElement
  */
-function ImagePanorama ( image, _geometry, _material ) {
+function ImagePanorama ( image ) {
 
-    const radius = 5000;
-    const geometry = _geometry || new SphereBufferGeometry( radius, 60, 40 );
-    const material = _material || new MeshBasicMaterial( { opacity: 0, transparent: true } );
-
-    Panorama.call( this, geometry, material );
+    Panorama.call( this );
 
     this.src = image;
-    this.radius = radius;
+    this.type = 'image_panorama';
 
 }
 
@@ -4619,12 +4787,8 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {
 
-        const { material: { map } } = this;
-
         // Release cached image
         Cache.remove( this.src );
-
-        if ( map ) { map.dispose(); }
 
         Panorama.prototype.dispose.call( this );
 
@@ -4638,18 +4802,39 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
  */
 function EmptyPanorama () {
 
-    const geometry = new BufferGeometry();
-    const material = new MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+    Panorama.call( this );
 
-    geometry.addAttribute( 'position', new BufferAttribute( new Float32Array(), 1 ) );
-
-    Panorama.call( this, geometry, material );
+    this.type = 'empty_panorama';
 
 }
 
 EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
-    constructor: EmptyPanorama
+    constructor: EmptyPanorama,
+
+    /**
+     * Create a skybox geometry
+     * @memberOf EmptyPanorama
+     * @instance
+     */
+    createGeometry: function() {
+
+        const geometry = new BufferGeometry();
+        geometry.addAttribute( 'position', new BufferAttribute( new Float32Array(), 1 ) );
+        return geometry;
+
+    },
+
+    /**
+     * Create material
+     * @memberOf EmptyPanorama
+     * @instance
+     */
+    createMaterial: function() {
+
+        new MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+
+    }
 
 } );
 
@@ -4660,30 +4845,43 @@ EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
  */
 function CubePanorama ( images = [] ){
 
-    const edgeLength = 10000;
-    const shader = Object.assign( {}, ShaderLib[ 'cube' ] );
-    const geometry = new BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
-    const material = new ShaderMaterial( {
-
-        fragmentShader: shader.fragmentShader,
-        vertexShader: shader.vertexShader,
-        uniforms: shader.uniforms,
-        side: BackSide,
-        transparent: true
-
-    } );
-
-    Panorama.call( this, geometry, material );
+    Panorama.call( this );
 
     this.images = images;
-    this.edgeLength = edgeLength;
-    this.material.uniforms.opacity.value = 0;
+    this.type = 'cube_panorama';
 
 }
 
 CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     constructor: CubePanorama,
+
+    /**
+     * Create material
+     * @memberOf CubePanorama
+     * @instance
+     */
+    createMaterial: function() {
+
+        const { fragmentShader, vertexShader, uniforms: _uniforms } = ShaderLib[ 'cube' ];
+        const uniforms = UniformsUtils.clone( _uniforms );
+        
+        uniforms.opacity.value = 0;
+
+        const material = new ShaderMaterial( {
+
+            fragmentShader,
+            vertexShader,
+            uniforms,
+            side: BackSide,
+            transparent: true,
+            opacity: 0
+
+        } );
+
+        return material;
+
+    },
 
     /**
      * Load 6 images and bind listeners
@@ -4757,6 +4955,8 @@ function BasicPanorama () {
 
     CubePanorama.call( this, images );
 
+    this.type = 'basic_panorama';
+
 }
 
 BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype ), {
@@ -4780,15 +4980,10 @@ BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype )
  */
 function VideoPanorama ( src, options = {} ) {
 
-    const radius = 5000;
-    const geometry = new SphereBufferGeometry( radius, 60, 40 );
-    const material = new MeshBasicMaterial( { opacity: 0, transparent: true } );
-
-    Panorama.call( this, geometry, material );
+    Panorama.call( this );
 
     this.src = src;
-
-    this.options = {
+    this.options = Object.assign( {
 
         videoElement: document.createElement( 'video' ),
         loop: true,
@@ -4797,13 +4992,12 @@ function VideoPanorama ( src, options = {} ) {
         playsinline: true,
         crossOrigin: 'anonymous'
 
-    };
-
-    Object.assign( this.options, options );
+    }, options );
 
     this.videoElement = this.options.videoElement;
     this.videoProgress = 0;
-    this.radius = radius;
+
+    this.type = 'video_panorama';
 
     this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
     this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
@@ -4833,7 +5027,6 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         const { muted, loop, autoplay, playsinline, crossOrigin } = this.options;
         const video = this.videoElement;
-        const material = this.material;
         const onProgress = this.onProgress.bind( this );
         const onLoad = this.onLoad.bind( this );
 
@@ -4852,7 +5045,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         const onloadeddata = function() {
 
-            this.setVideoTexture( video );
+            const videoTexture = this.setVideoTexture( video );
 
             if ( autoplay ) {
 
@@ -4897,11 +5090,8 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
             const loaded = () => {
 
-                // Fix for threejs r89 delayed update
-                material.map.needsUpdate = true;
-
                 onProgress( { loaded: 1, total: 1 } );
-                onLoad();
+                onLoad( videoTexture );
 
             };
 
@@ -4963,6 +5153,12 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     },
 
+    onLoad: function () {
+
+        Panorama.prototype.onLoad.call( this );
+
+    },
+
     /**
      * Set video texture
      * @memberOf VideoPanorama
@@ -4980,6 +5176,8 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         videoTexture.format = RGBFormat;
 
         this.updateTexture( videoTexture );
+
+        return videoTexture;
 	
     },
 
@@ -5240,16 +5438,12 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {
 
-        const { material: { map } } = this;
-
         this.pauseVideo();
 		
         this.removeEventListener( 'leave', this.pauseVideo.bind( this ) );
         this.removeEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
         this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
         this.removeEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
-
-        if ( map ) { map.dispose(); }
 
         Panorama.prototype.dispose.call( this );
 
@@ -5514,12 +5708,11 @@ function GoogleStreetviewPanorama ( panoId, apiKey ) {
     ImagePanorama.call( this );
 
     this.panoId = panoId;
-
     this.gsvLoader = null;
-
     this.loadRequested = false;
-
     this.setupGoogleMapAPI( apiKey );
+
+    this.type = 'google_streetview_panorama';
 
 }
 
@@ -5728,19 +5921,15 @@ const StereographicShader = {
  * @constructor
  * @param {string} type 		- Type of little planet basic class
  * @param {string} source 		- URL for the image source
- * @param {number} [size=10000] - Size of plane geometry
- * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
  */
-function LittlePlanet ( type = 'image', source, size = 10000, ratio = 0.5 ) {
+function LittlePlanet ( type = 'image', source ) {
 
     if ( type === 'image' ) {
 
-        ImagePanorama.call( this, source, this.createGeometry( size, ratio ), this.createMaterial( size ) );
+        ImagePanorama.call( this, source );
 
     }
 
-    this.size = size;
-    this.ratio = ratio;
     this.EPS = 0.000001;
     this.frameId = null;
 
@@ -5754,6 +5943,8 @@ function LittlePlanet ( type = 'image', source, size = 10000, ratio = 0.5 ) {
 
     this.vectorX = new Vector3( 1, 0, 0 );
     this.vectorY = new Vector3( 0, 1, 0 );
+
+    this.type = 'little_planet';
 
     this.addEventListener( 'window-resize', this.onWindowResize );
 
@@ -5787,26 +5978,38 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     },
 
-    createGeometry: function ( size, ratio ) {
+    /**
+     * Create a skybox geometry
+     * @memberOf LittlePlanet
+     * @instance
+     */
+    createGeometry: function ( edgeLength ) {
 
-        return new PlaneBufferGeometry( size, size * ratio );
+        const ratio = 0.5;
+        return new PlaneBufferGeometry( edgeLength, ratio * edgeLength );
 
     },
 
-    createMaterial: function ( size ) {
+    /**
+     * Create material
+     * @memberOf LittlePlanet
+     * @instance
+     */
+    createMaterial: function ( size = this.edgeLength ) {
 
-        const shader = Object.assign( {}, StereographicShader ), uniforms = shader.uniforms;
+        const { fragmentShader, vertexShader, uniforms: _uniforms } = StereographicShader;
+        const uniforms = UniformsUtils.clone( _uniforms );
 
         uniforms.zoom.value = size;
         uniforms.opacity.value = 0.0;
 
         return new ShaderMaterial( {
 
-            uniforms: uniforms,
-            vertexShader: shader.vertexShader,
-            fragmentShader: shader.fragmentShader,
-            side: BackSide,
-            transparent: true
+            vertexShader,
+            fragmentShader,
+            uniforms,
+            transparent: true,
+            opacity: 0
 
         } );
 		
@@ -5992,6 +6195,12 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     },
 
+    updateTexture: function ( texture ) {
+
+        this.material.uniforms.tDiffuse.value = texture;
+
+    },
+
     onLoad: function ( texture ) {
 
         this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
@@ -6043,12 +6252,12 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
  * @classdesc Image Little Planet
  * @constructor
  * @param {string} source 		- URL for the image source
- * @param {number} [size=10000] - Size of plane geometry
- * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
  */
-function ImageLittlePlanet ( source, size, ratio ) {
+function ImageLittlePlanet ( source ) {
 
-    LittlePlanet.call( this, 'image', source, size, ratio );
+    LittlePlanet.call( this, 'image', source );
+
+    this.type = 'image_little_planet';
 
 }
 
@@ -6113,14 +6322,11 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
  */
 function CameraPanorama ( constraints ) {
 
-    const radius = 5000;
-    const geometry = new SphereBufferGeometry( radius, 60, 40 );
-    const material = new MeshBasicMaterial( { visible: false });
-
-    Panorama.call( this, geometry, material );
+    Panorama.call( this );
 
     this.media = new Media( constraints );
-    this.radius = radius;
+
+    this.type = 'camera_panorama';
 
     this.addEventListener( 'enter', this.start.bind( this ) );
     this.addEventListener( 'leave', this.stop.bind( this ) );
@@ -6179,6 +6385,189 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         this.media.stop();
 
     },
+
+} );
+
+/**
+ * @classdesc Stereo Image Panorama
+ * @constructor
+ * @param {string} src - image source
+ * @param {number} [stereo=new Stereo()] - stereo mixin
+ */
+function StereoImagePanorama ( src, stereo = new Stereo() ){
+
+    ImagePanorama.call( this, src );
+
+    this.stereo = stereo;
+    this.type = 'stereo_image_panorama';
+
+}
+
+StereoImagePanorama.prototype = Object.assign( Object.create( ImagePanorama.prototype ), {
+
+    constructor: StereoImagePanorama,
+
+    /**
+     * This will be called when texture is ready
+     * @param  {THREE.Texture} texture - Image texture
+     * @memberOf StereoImagePanorama
+     * @instance
+     */
+    onLoad: function ( texture ) {
+
+        const { width, height } = texture.image;
+        let format = null;
+
+        if ( width / height === 4 ) { 
+            
+            format = STEREOFORMAT.SBS;
+        
+        } else { 
+
+            format = STEREOFORMAT.TAB;
+        
+        }
+
+        this.stereo.updateUniformByFormat( format, this.material.uniforms );
+
+        this.material.uniforms[ 'tEquirect' ].value = texture;
+
+        ImagePanorama.prototype.onLoad.call( this, texture );
+
+    },
+
+    /**
+     * Update Texture for Stereo Left Eye
+     * @memberOf StereoImagePanorama
+     * @instance
+     */
+    updateTextureToLeft: function() {
+
+        this.stereo.updateTextureToLeft( this.material.uniforms.offset.value );
+
+    },
+
+    /**
+     * Update Texture for Stereo Right Eye
+     * @memberOf StereoImagePanorama
+     * @instance
+     */
+    updateTextureToRight: function() {
+
+        this.stereo.updateTextureToRight( this.material.uniforms.offset.value );
+
+    },
+
+    /**
+     * Dispose
+     * @memberOf StereoImagePanorama
+     * @instance
+     */
+    dispose: function () {	
+
+        const { value } = this.material.uniforms.tEquirect;
+
+        if ( value instanceof Texture ) {
+
+            value.dispose();
+
+        }
+
+        ImagePanorama.prototype.dispose.call( this );
+
+    }
+
+} );
+
+/**
+ * @classdesc Stereo Image Panorama
+ * @constructor
+ * @param {string} src - image source
+ * @param {object} options - { @see VideoPanorama }
+ * @param {number} [stereo=new Stereo()] - stereo mixin
+ */
+function StereoVideoPanorama ( src, options = {}, stereo = new Stereo() ){
+
+    VideoPanorama.call( this, src, options );
+
+    this.stereo = stereo;
+    this.type = 'stereo_video_panorama';
+
+}
+
+StereoVideoPanorama.prototype = Object.assign( Object.create( VideoPanorama.prototype ), {
+
+    constructor: StereoVideoPanorama,
+
+    /**
+     * This will be called when video texture is ready
+     * @param  {THREE.VideoTexture} texture - Video texture
+     * @memberOf StereoVideoPanorama
+     * @instance
+     */
+    onLoad: function ( texture ) {
+
+        const { videoWidth, videoHeight } = texture.image;
+        let format = null;
+
+        if ( videoWidth / videoHeight === 4 ) { 
+            
+            format = STEREOFORMAT.SBS;
+        
+        } else { 
+
+            format = STEREOFORMAT.TAB;
+        
+        }
+
+        this.stereo.updateUniformByFormat( format, this.material.uniforms );
+
+        this.material.uniforms[ 'tEquirect' ].value = texture;
+
+        VideoPanorama.prototype.onLoad.call( this );
+
+    },
+
+    /**
+     * Update Texture for Stereo Left Eye
+     * @memberOf StereoVideoPanorama
+     * @instance
+     */
+    updateTextureToLeft: function() {
+
+        this.stereo.updateTextureToLeft( this.material.uniforms.offset.value );
+
+    },
+
+    /**
+     * Update Texture for Stereo Right Eye
+     * @memberOf StereoVideoPanorama
+     * @instance
+     */
+    updateTextureToRight: function() {
+
+        this.stereo.updateTextureToRight( this.material.uniforms.offset.value );
+
+    },
+
+    /**
+     * Dispose
+     * @memberOf StereoVideoPanorama
+     * @instance
+     */
+    dispose: function () {	
+
+        const { value } = this.material.uniforms.tEquirect;
+
+        if ( value instanceof Texture ) {
+
+            value.dispose();
+
+        }
+
+        VideoPanorama.prototype.dispose.call( this );
+
+    }
 
 } );
 
@@ -6273,45 +6662,45 @@ function OrbitControls ( object, domElement ) {
      * internals
      */
 
-    var scope = this;
+    const scope = this;
 
-    var EPS = 10e-8;
-    var MEPS = 10e-5;
+    const EPS = 10e-8;
+    const MEPS = 10e-5;
 
-    var rotateStart = new Vector2();
-    var rotateEnd = new Vector2();
-    var rotateDelta = new Vector2();
+    const rotateStart = new Vector2();
+    const rotateEnd = new Vector2();
+    const rotateDelta = new Vector2();
 
-    var panStart = new Vector2();
-    var panEnd = new Vector2();
-    var panDelta = new Vector2();
-    var panOffset = new Vector3();
+    const panStart = new Vector2();
+    const panEnd = new Vector2();
+    const panDelta = new Vector2();
+    const panOffset = new Vector3();
 
-    var offset = new Vector3();
+    const offset = new Vector3();
 
-    var dollyStart = new Vector2();
-    var dollyEnd = new Vector2();
-    var dollyDelta = new Vector2();
+    const dollyStart = new Vector2();
+    const dollyEnd = new Vector2();
+    const dollyDelta = new Vector2();
 
-    var theta = 0;
-    var phi = 0;
-    var phiDelta = 0;
-    var thetaDelta = 0;
-    var scale = 1;
-    var pan = new Vector3();
+    let theta = 0;
+    let phi = 0;
+    let phiDelta = 0;
+    let thetaDelta = 0;
+    let scale = 1;
+    const pan = new Vector3();
 
-    var lastPosition = new Vector3();
-    var lastQuaternion = new Quaternion();
+    const lastPosition = new Vector3();
+    const lastQuaternion = new Quaternion();
 
-    var momentumLeft = 0, momentumUp = 0;
-    var eventPrevious;
-    var momentumOn = false;
+    let momentumLeft = 0, momentumUp = 0;
+    let eventPrevious;
+    let momentumOn = false;
 
-    var keyUp, keyBottom, keyLeft, keyRight;
+    let keyUp, keyBottom, keyLeft, keyRight;
 
-    var STATE = { NONE: -1, ROTATE: 0, DOLLY: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_DOLLY: 4, TOUCH_PAN: 5 };
+    const STATE = { NONE: -1, ROTATE: 0, DOLLY: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_DOLLY: 4, TOUCH_PAN: 5 };
 
-    var state = STATE.NONE;
+    let state = STATE.NONE;
 
     // for reset
 
@@ -6321,14 +6710,14 @@ function OrbitControls ( object, domElement ) {
 
     // so camera.up is the orbit axis
 
-    var quat = new Quaternion().setFromUnitVectors( object.up, new Vector3( 0, 1, 0 ) );
-    var quatInverse = quat.clone().inverse();
+    const quat = new Quaternion().setFromUnitVectors( object.up, new Vector3( 0, 1, 0 ) );
+    const quatInverse = quat.clone().inverse();
 
     // events
 
-    var changeEvent = { type: 'change' };
-    var startEvent = { type: 'start' };
-    var endEvent = { type: 'end' };
+    const changeEvent = { type: 'change' };
+    const startEvent = { type: 'start' };
+    const endEvent = { type: 'end' };
 
     this.setLastQuaternion = function ( quaternion ) {
         lastQuaternion.copy( quaternion );
@@ -6367,7 +6756,7 @@ function OrbitControls ( object, domElement ) {
     // pass in distance in world space to move left
     this.panLeft = function ( distance ) {
 
-        var te = this.object.matrix.elements;
+        const te = this.object.matrix.elements;
 
         // get X column of matrix
         panOffset.set( te[ 0 ], te[ 1 ], te[ 2 ] );
@@ -6380,7 +6769,7 @@ function OrbitControls ( object, domElement ) {
     // pass in distance in world space to move up
     this.panUp = function ( distance ) {
 
-        var te = this.object.matrix.elements;
+        const te = this.object.matrix.elements;
 
         // get Y column of matrix
         panOffset.set( te[ 4 ], te[ 5 ], te[ 6 ] );
@@ -6396,14 +6785,14 @@ function OrbitControls ( object, domElement ) {
      */
     this.pan = function ( deltaX, deltaY ) {
 
-        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+        const element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
         if ( scope.object instanceof PerspectiveCamera ) {
 
             // perspective
-            var position = scope.object.position;
-            var offset = position.clone().sub( scope.target );
-            var targetDistance = offset.length();
+            const position = scope.object.position;
+            const offset = position.clone().sub( scope.target );
+            let targetDistance = offset.length();
 
             // half of the fov is center to top of screen
             targetDistance *= Math.tan( ( scope.object.fov / 2 ) * Math.PI / 180.0 );
@@ -6499,7 +6888,7 @@ function OrbitControls ( object, domElement ) {
 
     this.update = function ( ignoreUpdate ) {
 
-        var position = this.object.position;
+        const position = this.object.position;
 
         offset.copy( position ).sub( this.target );
 
@@ -6534,7 +6923,7 @@ function OrbitControls ( object, domElement ) {
         // restrict phi to be betwee EPS and PI-EPS
         phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
 
-        var radius = offset.length() * scale;
+        let radius = offset.length() * scale;
 
         // restrict radius to be between desired limits
         radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
@@ -6663,7 +7052,7 @@ function OrbitControls ( object, domElement ) {
 
         event.preventDefault();
 
-        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+        const element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
         if ( state === STATE.ROTATE ) {
 
@@ -6745,7 +7134,7 @@ function OrbitControls ( object, domElement ) {
         event.preventDefault();
         event.stopPropagation();
 
-        var delta = 0;
+        let delta = 0;
 
         if ( event.wheelDelta !== undefined ) { // WebKit / Opera / Explorer 9
 
@@ -6868,9 +7257,9 @@ function OrbitControls ( object, domElement ) {
 
             state = STATE.TOUCH_DOLLY;
 
-            var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-            var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-            var distance = Math.sqrt( dx * dx + dy * dy );
+            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+            const distance = Math.sqrt( dx * dx + dy * dy );
 
             dollyStart.set( 0, distance );
 
@@ -6902,7 +7291,7 @@ function OrbitControls ( object, domElement ) {
         event.preventDefault();
         event.stopPropagation();
 
-        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+        const element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
         switch ( event.touches.length ) {
 
@@ -6939,9 +7328,9 @@ function OrbitControls ( object, domElement ) {
             if ( scope.noZoom === true ) return;
             if ( state !== STATE.TOUCH_DOLLY ) return;
 
-            var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-            var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-            var distance = Math.sqrt( dx * dx + dy * dy );
+            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+            const distance = Math.sqrt( dx * dx + dy * dy );
 
             dollyEnd.set( 0, distance );
             dollyDelta.subVectors( dollyEnd, dollyStart );
@@ -7050,13 +7439,13 @@ OrbitControls.prototype = Object.assign( Object.create( EventDispatcher.prototyp
  */
 function DeviceOrientationControls ( camera, domElement ) {
 
-    var scope = this;
-    var changeEvent = { type: 'change' };
+    const scope = this;
+    const changeEvent = { type: 'change' };
 
-    var rotY = 0;
-    var rotX = 0;
-    var tempX = 0;
-    var tempY = 0;
+    let rotY = 0;
+    let rotX = 0;
+    let tempX = 0;
+    let tempY = 0;
 
     this.camera = camera;
     this.camera.rotation.reorder( 'YXZ' );
@@ -7071,19 +7460,19 @@ function DeviceOrientationControls ( camera, domElement ) {
     this.alphaOffsetAngle = 0;
 
 
-    var onDeviceOrientationChangeEvent = function( event ) {
+    const onDeviceOrientationChangeEvent = function( event ) {
 
         scope.deviceOrientation = event;
 
     };
 
-    var onScreenOrientationChangeEvent = function() {
+    const onScreenOrientationChangeEvent = function() {
 
         scope.screenOrientation = window.orientation || 0;
 
     };
 
-    var onTouchStartEvent = function (event) {
+    const onTouchStartEvent = function (event) {
 
         event.preventDefault();
         event.stopPropagation();
@@ -7093,7 +7482,7 @@ function DeviceOrientationControls ( camera, domElement ) {
 
     };
 
-    var onTouchMoveEvent = function (event) {
+    const onTouchMoveEvent = function (event) {
 
         event.preventDefault();
         event.stopPropagation();
@@ -7110,19 +7499,19 @@ function DeviceOrientationControls ( camera, domElement ) {
 
     // The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
 
-    var setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
+    const setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
 
-        var zee = new Vector3( 0, 0, 1 );
+        const zee = new Vector3( 0, 0, 1 );
 
-        var euler = new Euler();
+        const euler = new Euler();
 
-        var q0 = new Quaternion();
+        const q0 = new Quaternion();
 
-        var q1 = new Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
+        const q1 = new Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
 
-        var vectorFingerY;
-        var fingerQY = new Quaternion();
-        var fingerQX = new Quaternion();
+        let vectorFingerY;
+        const fingerQY = new Quaternion();
+        const fingerQX = new Quaternion();
 
         if ( scope.screenOrientation == 0 ) {
 
@@ -7191,10 +7580,10 @@ function DeviceOrientationControls ( camera, domElement ) {
 
         if ( scope.enabled === false ) return;
 
-        var alpha = scope.deviceOrientation.alpha ? Math$1.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
-        var beta = scope.deviceOrientation.beta ? Math$1.degToRad( scope.deviceOrientation.beta ) : 0; // X'
-        var gamma = scope.deviceOrientation.gamma ? Math$1.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
-        var orient = scope.screenOrientation ? Math$1.degToRad( scope.screenOrientation ) : 0; // O
+        const alpha = scope.deviceOrientation.alpha ? Math$1.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
+        const beta = scope.deviceOrientation.beta ? Math$1.degToRad( scope.deviceOrientation.beta ) : 0; // X'
+        const gamma = scope.deviceOrientation.gamma ? Math$1.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
+        const orient = scope.screenOrientation ? Math$1.degToRad( scope.screenOrientation ) : 0; // O
 
         setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
         scope.alpha = alpha;
@@ -7233,16 +7622,16 @@ DeviceOrientationControls.prototype = Object.assign( Object.create( EventDispatc
  */
 function CardboardEffect ( renderer ) {
 
-    var _camera = new OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+    const _camera = new OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 
-    var _scene = new Scene();
+    const _scene = new Scene();
 
-    var _stereo = new StereoCamera();
+    const _stereo = new StereoCamera();
     _stereo.aspect = 0.5;
 
-    var _params = { minFilter: LinearFilter, magFilter: NearestFilter, format: RGBAFormat };
+    const _params = { minFilter: LinearFilter, magFilter: NearestFilter, format: RGBAFormat };
 
-    var _renderTarget = new WebGLRenderTarget( 512, 512, _params );
+    const _renderTarget = new WebGLRenderTarget( 512, 512, _params );
     _renderTarget.scissorTest = true;
     _renderTarget.texture.generateMipmaps = false;
 
@@ -7251,37 +7640,37 @@ function CardboardEffect ( renderer ) {
      * https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
      */
 
-    var distortion = new Vector2( 0.441, 0.156 );
+    const distortion = new Vector2( 0.441, 0.156 );
 
-    var geometry = new PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
+    const geometry = new PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
 
-    var positions = geometry.attributes.position.array;
-    var uvs = geometry.attributes.uv.array;
+    const positions = geometry.attributes.position.array;
+    const uvs = geometry.attributes.uv.array;
 
     // duplicate
     geometry.attributes.position.count *= 2;
     geometry.attributes.uv.count *= 2;
 
-    var positions2 = new Float32Array( positions.length * 2 );
+    const positions2 = new Float32Array( positions.length * 2 );
     positions2.set( positions );
     positions2.set( positions, positions.length );
 
-    var uvs2 = new Float32Array( uvs.length * 2 );
+    const uvs2 = new Float32Array( uvs.length * 2 );
     uvs2.set( uvs );
     uvs2.set( uvs, uvs.length );
 
-    var vector = new Vector2();
-    var length = positions.length / 3;
+    const vector = new Vector2();
+    const length = positions.length / 3;
 
-    for ( var i = 0, l = positions2.length / 3; i < l; i ++ ) {
+    for ( let i = 0, l = positions2.length / 3; i < l; i ++ ) {
 
         vector.x = positions2[ i * 3 + 0 ];
         vector.y = positions2[ i * 3 + 1 ];
 
-        var dot = vector.dot( vector );
-        var scalar = 1.5 + ( distortion.x + distortion.y * dot ) * dot;
+        const dot = vector.dot( vector );
+        const scalar = 1.5 + ( distortion.x + distortion.y * dot ) * dot;
 
-        var offset = i < length ? 0 : 1;
+        const offset = i < length ? 0 : 1;
 
         positions2[ i * 3 + 0 ] = ( vector.x / scalar ) * 1.5 - 0.5 + offset;
         positions2[ i * 3 + 1 ] = ( vector.y / scalar ) * 3.0;
@@ -7295,8 +7684,8 @@ function CardboardEffect ( renderer ) {
 
     //
 
-    var material = new MeshBasicMaterial( { map: _renderTarget.texture } );
-    var mesh = new Mesh( geometry, material );
+    const material = new MeshBasicMaterial( { map: _renderTarget.texture } );
+    const mesh = new Mesh( geometry, material );
     _scene.add( mesh );
 
     //
@@ -7305,7 +7694,7 @@ function CardboardEffect ( renderer ) {
 
         renderer.setSize( width, height );
 
-        var pixelRatio = renderer.getPixelRatio();
+        const pixelRatio = renderer.getPixelRatio();
 
         _renderTarget.setSize( width * pixelRatio, height * pixelRatio );
 
@@ -7319,8 +7708,8 @@ function CardboardEffect ( renderer ) {
 
         _stereo.update( camera );
 
-        var width = _renderTarget.width / 2;
-        var height = _renderTarget.height;
+        const width = _renderTarget.width / 2;
+        const height = _renderTarget.height;
 
         if ( renderer.autoClear ) renderer.clear();
 
@@ -7352,9 +7741,9 @@ function CardboardEffect ( renderer ) {
  */
 const StereoEffect = function ( renderer ) {
 
-    var _stereo = new StereoCamera();
+    const _stereo = new StereoCamera();
     _stereo.aspect = 0.5;
-    var size = new Vector2();
+    const size = new Vector2();
 
     this.setEyeSeparation = function ( eyeSep ) {
 
@@ -7368,11 +7757,15 @@ const StereoEffect = function ( renderer ) {
 
     };
 
-    this.render = function ( scene, camera ) {
+    this.render = function ( scene, camera, panorama ) {
+
+        const stereoEnabled = panorama instanceof StereoImagePanorama || panorama instanceof StereoVideoPanorama;
 
         scene.updateMatrixWorld();
 
         if ( camera.parent === null ) camera.updateMatrixWorld();
+        
+        if ( stereoEnabled ) this.setEyeSeparation( panorama.stereo.eyeSep );
 
         _stereo.update( camera );
 
@@ -7381,15 +7774,21 @@ const StereoEffect = function ( renderer ) {
         if ( renderer.autoClear ) renderer.clear();
         renderer.setScissorTest( true );
 
+        if ( stereoEnabled ) panorama.updateTextureToLeft();
+
         renderer.setScissor( 0, 0, size.width / 2, size.height );
         renderer.setViewport( 0, 0, size.width / 2, size.height );
         renderer.render( scene, _stereo.cameraL );
+
+        if ( stereoEnabled ) panorama.updateTextureToRight();
 
         renderer.setScissor( size.width / 2, 0, size.width / 2, size.height );
         renderer.setViewport( size.width / 2, 0, size.width / 2, size.height );
         renderer.render( scene, _stereo.cameraR );
 
         renderer.setScissorTest( false );
+
+        if ( stereoEnabled ) panorama.updateTextureToLeft();
 
     };
 
@@ -7445,12 +7844,6 @@ function Viewer ( options ) {
     options.autoRotateActivationDuration = options.autoRotateActivationDuration || 5000;
 
     this.options = options;
-
-    /*
-     * CSS Icon
-     * const styleLoader = new StyleLoader();
-     * styleLoader.inject( 'icono' );
-     */
 
     // Container
     if ( options.container ) {
@@ -7665,7 +8058,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         }
 
         // Hookup default panorama event listeners
-        if ( object.type === 'panorama' ) {
+        if ( object instanceof Panorama ) {
 
             this.addPanoramaEventListener( object );
 
@@ -7735,7 +8128,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         const leavingPanorama = this.panorama;
 
-        if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
+        if ( pano instanceof Panorama && leavingPanorama !== pano ) {
 
             // Clear exisiting infospot
             this.hideInfospot();
@@ -8197,7 +8590,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
     addPanoramaEventListener: function ( pano ) {
 
         // Set camera control on every panorama
-        pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
+        pano.addEventListener( 'enter', this.setCameraControl.bind( this ) );
 
         // Show and hide widget event only when it's VideoPanorama
         if ( pano instanceof VideoPanorama ) {
@@ -8468,6 +8861,74 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     },
 
+    rotateOrbitControlLeft: function ( left ) {
+
+        this.control.rotateLeft( left );
+
+    },
+
+    rotateOrbitControlUp: function ( up ) {
+
+        this.control.rotateUp( up );
+
+    },
+
+    rotateOrbitControl: function ( left, up ) {
+
+        this.rotateOrbitControlLeft( left );
+        this.rotateOrbitControlUp( up );
+
+    },
+
+    calculateOrbitControlDelta: function ( vector ) {
+
+        if ( this.control !== this.OrbitControls ) {
+
+            return;
+
+        }
+
+        let ha, va, chv, cvv, hv, vv, vptc;
+
+        chv = this.camera.getWorldDirection( new Vector3() );
+        cvv = chv.clone();
+
+        vptc = this.panorama.getWorldPosition( new Vector3() ).sub( this.camera.getWorldPosition( new Vector3() ) );
+
+        hv = vector.clone();
+        hv.add( vptc ).normalize();
+        vv = hv.clone();
+
+        chv.y = 0;
+        hv.y = 0;
+
+        ha = Math.atan2( hv.z, hv.x ) - Math.atan2( chv.z, chv.x );
+        ha = ha > Math.PI ? ha - 2 * Math.PI : ha;
+        ha = ha < -Math.PI ? ha + 2 * Math.PI : ha;
+        va = Math.abs( cvv.angleTo( chv ) + ( cvv.y * vv.y <= 0 ? vv.angleTo( hv ) : -vv.angleTo( hv ) ) );
+        va *= vv.y < cvv.y ? 1 : -1;
+
+        return { left: ha, up: va };
+
+    },
+
+    /**
+     * Set control center
+     * @param {THREE.Vector3} vector - Vector to be looked at the center
+     */
+    setControlCenter: function( vector ) {
+
+        if ( this.control !== this.OrbitControls ) {
+
+            return;
+
+        }
+
+        const { left, up } = this.calculateOrbitControlDelta( vector );
+        this.rotateOrbitControl( left, up );
+
+    },
+
     /**
      * Tween control looking center
      * @param {THREE.Vector3} vector - Vector to be looked at the center
@@ -8484,62 +8945,41 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         }
 
-        // Pass in arguments as array
         if ( vector instanceof Array ) {
 
+            vector = vector[ 0 ];
             duration = vector[ 1 ];
             easing = vector[ 2 ];
-            vector = vector[ 0 ];
 
         }
 
         duration = duration !== undefined ? duration : 1000;
         easing = easing || Tween.Easing.Exponential.Out;
 
-        let scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
+        const { left, up } = this.calculateOrbitControlDelta( vector );
+        const rotateOrbitControlLeft = this.rotateOrbitControlLeft.bind( this );
+        const rotateOrbitControlUp = this.rotateOrbitControlUp.bind( this );
 
-        scope = this;
-
-        chv = this.camera.getWorldDirection( new Vector3() );
-        cvv = chv.clone();
-
-        vptc = this.panorama.getWorldPosition( new Vector3() ).sub( this.camera.getWorldPosition( new Vector3() ) );
-
-        hv = vector.clone();
-        // Scale effect
-        hv.x *= -1;
-        hv.add( vptc ).normalize();
-        vv = hv.clone();
-
-        chv.y = 0;
-        hv.y = 0;
-
-        ha = Math.atan2( hv.z, hv.x ) - Math.atan2( chv.z, chv.x );
-        ha = ha > Math.PI ? ha - 2 * Math.PI : ha;
-        ha = ha < -Math.PI ? ha + 2 * Math.PI : ha;
-        va = Math.abs( cvv.angleTo( chv ) + ( cvv.y * vv.y <= 0 ? vv.angleTo( hv ) : -vv.angleTo( hv ) ) );
-        va *= vv.y < cvv.y ? 1 : -1;
-
-        ov = { left: 0, up: 0 };
-        nv = { left: 0, up: 0 };
+        const ov = { left: 0, up: 0 };
+        const nv = { left: 0, up: 0 };
 
         this.tweenLeftAnimation.stop();
         this.tweenUpAnimation.stop();
 
         this.tweenLeftAnimation = new Tween.Tween( ov )
-            .to( { left: ha }, duration )
+            .to( { left }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateLeft( ov.left - nv.left );
+                rotateOrbitControlLeft( ov.left - nv.left );
                 nv.left = ov.left;
             })
             .start();
 
         this.tweenUpAnimation = new Tween.Tween( ov )
-            .to( { up: va }, duration )
+            .to( { up }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateUp( ov.up - nv.up );
+                rotateOrbitControlUp( ov.up - nv.up );
                 nv.up = ov.up;
             })
             .start();
@@ -8556,28 +8996,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      */
     tweenControlCenterByObject: function ( object, duration, easing ) {
 
-        let isUnderScalePlaceHolder = false;
-
-        object.traverseAncestors( function ( ancestor ) {
-
-            if ( ancestor.scalePlaceHolder ) {
-
-                isUnderScalePlaceHolder = true;
-
-            }
-        } );
-
-        if ( isUnderScalePlaceHolder ) {
-
-            const invertXVector = new Vector3( -1, 1, 1 );
-
-            this.tweenControlCenter( object.getWorldPosition( new Vector3() ).multiply( invertXVector ), duration, easing );
-
-        } else {
-
-            this.tweenControlCenter( object.getWorldPosition( new Vector3() ), duration, easing );
-
-        }
+        this.tweenControlCenter( object.getWorldPosition( new Vector3() ), duration, easing );
 
     },
 
@@ -8683,9 +9102,8 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         if ( intersects.length > 0 ) {
 
             const point = intersects[ 0 ].point.clone();
-            const converter = new Vector3( -1, 1, 1 );
             const world = this.panorama.getWorldPosition( new Vector3() );
-            point.sub( world ).multiply( converter );
+            point.sub( world );
 
             const message = `${point.x.toFixed(2)}, ${point.y.toFixed(2)}, ${point.z.toFixed(2)}`;
 
@@ -9164,7 +9582,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
             this.renderer.clear();
-            this.effect.render( this.scene, this.camera );
+            this.effect.render( this.scene, this.camera, this.panorama );
             this.effect.render( this.sceneReticle, this.camera );
 			
 
@@ -9532,4 +9950,4 @@ if ( REVISION$1 != THREE_REVISION ) {
  */
 window.TWEEN = Tween;
 
-export { BasicPanorama, CONTROLS, CameraPanorama, CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget };
+export { BasicPanorama, CONTROLS, CameraPanorama, CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, STEREOFORMAT, Stereo, StereoImagePanorama, StereoVideoPanorama, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget };
