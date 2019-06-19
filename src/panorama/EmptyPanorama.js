@@ -39,6 +39,12 @@ EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
 
+    },
+
+    getTexture: function () {
+
+        return null;
+
     }
 
 } );

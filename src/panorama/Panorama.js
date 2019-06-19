@@ -151,6 +151,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
     },
 
+    getTexture: function(){
+
+        return this.material.uniforms.tEquirect.value;
+
+    },
+
     load: function () {
 
         this.onLoad();

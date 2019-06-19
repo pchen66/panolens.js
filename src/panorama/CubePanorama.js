@@ -80,6 +80,12 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     },
 
+    getTexture: function () {
+
+        return this.material.uniforms.tCube.value;
+
+    },
+
     /**
      * Dispose
      * @memberOf CubePanorama
