@@ -43,6 +43,7 @@ function Viewer ( options = {} ) {
 
     this.options = Object.assign( {
 
+        container: this.setupContainer( options.container ),
         controlBar: true,
         controlButtons: [ 'fullscreen', 'setting', 'video' ],
         autoHideControlBar: false,
@@ -63,29 +64,10 @@ function Viewer ( options = {} ) {
 
     }, options );
 
-    this.container = this.setupContainer( this.options.container );
+    const { container, cameraFov, controlBar, controlButtons, viewIndicator, indicatorSize, enableReticle, reverseDragging, output, scene, camera, renderer } = this.options;
+    const { clientWidth, clientHeight } = container;
 
-    const { 
-        container,
-        container: { 
-            clientWidth, 
-            clientHeight 
-        },
-        options: {
-            cameraFov,
-            controlBar,
-            controlButtons,
-            viewIndicator,
-            indicatorSize,
-            enableReticle,
-            reverseDragging,
-            output,
-            scene,
-            camera,
-            renderer
-        }
-    } = this;
-
+    this.container = container;
     this.scene = this.setupScene( scene );
     this.sceneReticle = new THREE.Scene();
     this.camera = this.setupCamera( cameraFov, clientWidth / clientHeight, camera );
