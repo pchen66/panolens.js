@@ -56,10 +56,10 @@
        */ 
 
       const stereo = new PANOLENS.Stereo( 0 );
-      const panorama = new PANOLENS.StereoImagePanorama( 'https://cors-anywhere.herokuapp.com/https://fd210b1b-b131-4beb-b60f-2e3352887a8e.s3-us-west-1.amazonaws.com/hellblade2.jpeg', stereo );
+      const panorama = new PANOLENS.StereoImagePanorama( 'https://fd210b1b-b131-4beb-b60f-2e3352887a8e.s3-us-west-1.amazonaws.com/hellblade.jpeg', stereo );
       panorama.addEventListener( 'progress', e => console.log(e));
 
-      const videoPanorama = new PANOLENS.StereoVideoPanorama( 'https://cors-anywhere.herokuapp.com/https://fd210b1b-b131-4beb-b60f-2e3352887a8e.s3-us-west-1.amazonaws.com/titans.mp4', { autoplay: true }, stereo );
+      const videoPanorama = new PANOLENS.StereoVideoPanorama( 'https://fd210b1b-b131-4beb-b60f-2e3352887a8e.s3-us-west-1.amazonaws.com/stereo2.mp4', { autoplay: true, muted: true, loop: true }, stereo );
       videoPanorama.addEventListener( 'progress', e => console.log(e));
 
       const viewer = new PANOLENS.Viewer({output: 'console'});
@@ -70,7 +70,7 @@
       
       videoPanorama.link( panorama, new THREE.Vector3( 1000, 0, -4000 ) );
 
-      viewer.add( videoPanorama, panorama );
+      viewer.add( panorama, videoPanorama );
 
     </script>
 
