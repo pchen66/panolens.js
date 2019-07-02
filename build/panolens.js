@@ -7715,6 +7715,12 @@
 
 	    //
 
+	    this.setEyeSeparation = function ( eyeSep ) {
+
+	        _stereo.eyeSep = eyeSep;
+
+	    };
+
 	    this.setSize = function ( width, height ) {
 
 	        renderer.setSize( width, height );
@@ -7725,9 +7731,13 @@
 
 	    };
 
-	    this.render = function ( scene, camera ) {
+	    this.render = function ( scene, camera, panorama ) {
+
+	        const stereoEnabled = panorama instanceof StereoImagePanorama || panorama instanceof StereoVideoPanorama;
 
 	        scene.updateMatrixWorld();
+
+	        if ( stereoEnabled ) this.setEyeSeparation( panorama.stereo.eyeSep );
 
 	        if ( camera.parent === null ) camera.updateMatrixWorld();
 
@@ -7738,12 +7748,16 @@
 
 	        if ( renderer.autoClear ) renderer.clear();
 
+	        if ( stereoEnabled ) panorama.updateTextureToLeft();
+
 	        _renderTarget.scissor.set( 0, 0, width, height );
 	        _renderTarget.viewport.set( 0, 0, width, height );
 	        renderer.setRenderTarget( _renderTarget );
 	        renderer.render( scene, _stereo.cameraL );
 
 	        renderer.clearDepth();
+
+	        if ( stereoEnabled ) panorama.updateTextureToRight();
 
 	        _renderTarget.scissor.set( width, 0, width, height );
 	        _renderTarget.viewport.set( width, 0, width, height );
