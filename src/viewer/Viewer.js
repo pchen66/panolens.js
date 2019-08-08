@@ -38,6 +38,7 @@ import TWEEN from '@tweenjs/tween.js';
  * @param {boolean} [options.autoRotate=false] - Auto rotate
  * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
  * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
+ * @param {THREE.Vector3} [options.initialLookAt=new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )] - Initial looking at vector
  */
 function Viewer ( options = {} ) {
 
@@ -60,7 +61,8 @@ function Viewer ( options = {} ) {
         output: null,
         autoRotate: false,
         autoRotateSpeed: 2.0,
-        autoRotateActivationDuration: 5000
+        autoRotateActivationDuration: 5000,
+        initialLookAt: new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )
 
     }, options );
 
@@ -173,7 +175,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         const orient = new DeviceOrientationControls( camera, container );
         orient.id = 'device-orientation';
-        orbit.index = CONTROLS.DEVICEORIENTATION;
+        orient.index = CONTROLS.DEVICEORIENTATION;
         orient.enabled = false;
 
         this.controls = [ orbit, orient ];
@@ -273,7 +275,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             if ( !this.panorama ) {
 
+                const { initialLookAt } = this.options;
+
                 this.setPanorama( object );
+                this.setControlCenter( initialLookAt );
 
             }
 
