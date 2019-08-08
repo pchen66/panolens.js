@@ -4,7 +4,7 @@
 	(global = global || self, factory(global.PANOLENS = {}, global.THREE));
 }(this, function (exports, THREE) { 'use strict';
 
-	const version="0.11.0";const devDependencies={"@tweenjs/tween.js":"^17.4.0",ava:"^2.1.0","browser-env":"^3.2.6",concurrently:"^4.1.0",coveralls:"^3.0.4",docdash:"^1.1.1",eslint:"^5.16.0","google-closure-compiler":"^20190528.0.0","http-server":"^0.11.1",jsdoc:"^3.6.2","local-web-server":"^3.0.0",nyc:"^14.1.1",rollup:"^1.15.1","rollup-plugin-commonjs":"^10.0.0","rollup-plugin-inject":"^2.2.0","rollup-plugin-json":"^4.0.0","rollup-plugin-node-resolve":"^5.0.1",three:"^0.105.2",xmlhttprequest:"^1.8.0"};
+	const version="0.11.0";const devDependencies={"@tweenjs/tween.js":"^17.4.0",ava:"^2.1.0","browser-env":"^3.2.6",concurrently:"^4.1.0",coveralls:"^3.0.4",docdash:"^1.1.1",eslint:"^5.16.0","google-closure-compiler":"^20190528.0.0","http-server":"^0.11.1",jsdoc:"^3.6.2",nyc:"^14.1.1",rollup:"^1.15.1","rollup-plugin-commonjs":"^10.0.0","rollup-plugin-inject":"^2.2.0","rollup-plugin-json":"^4.0.0","rollup-plugin-node-resolve":"^5.0.1",three:"^0.105.2",xmlhttprequest:"^1.8.0"};
 
 	/**
 	 * REVISION
@@ -7467,7 +7467,6 @@
 	    const scope = this;
 	    const changeEvent = { type: 'change' };
 
-	    let rotY = 0;
 	    let rotX = 0;
 	    let tempX = 0;
 	    let tempY = 0;
@@ -7478,12 +7477,11 @@
 
 	    this.enabled = true;
 
-	    this.deviceOrientation = {};
+	    this.deviceOrientation = null;
 	    this.screenOrientation = 0;
 
 	    this.alpha = 0;
 	    this.alphaOffsetAngle = 0;
-
 
 	    const onDeviceOrientationChangeEvent = function( event ) {
 
@@ -7512,10 +7510,8 @@
 	        event.preventDefault();
 	        event.stopPropagation();
 
-	        rotY += THREE.Math.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 );
 	        rotX += THREE.Math.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
-
-	        scope.updateAlphaOffsetAngle( rotY );
+	        scope.rotateLeft( -THREE.Math.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 ) );
 
 	        tempX = event.touches[ 0 ].pageX;
 	        tempY = event.touches[ 0 ].pageY;
@@ -7603,7 +7599,7 @@
 
 	    this.update = function( ignoreUpdate ) {
 
-	        if ( scope.enabled === false ) return;
+	        if ( scope.enabled === false || !scope.deviceOrientation ) return;
 
 	        const alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
 	        const beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
@@ -7620,7 +7616,23 @@
 	    this.updateAlphaOffsetAngle = function( angle ) {
 
 	        this.alphaOffsetAngle = angle;
-	        this.update();
+
+	    };
+
+	    this.updateRotX = function( angle ) {
+
+	        rotX = angle;
+
+	    };
+
+	    this.rotateLeft = function( angle ) {
+
+	        this.updateAlphaOffsetAngle( this.alphaOffsetAngle - angle );
+	    };
+
+	    this.rotateUp = function( angle ) {
+
+	        this.updateRotX( rotX + angle );
 
 	    };
 
@@ -7858,6 +7870,7 @@
 	 * @param {boolean} [options.autoRotate=false] - Auto rotate
 	 * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
 	 * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
+	 * @param {THREE.Vector3} [options.initialLookAt=new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )] - Initial looking at vector
 	 */
 	function Viewer ( options = {} ) {
 
@@ -7880,7 +7893,8 @@
 	        output: null,
 	        autoRotate: false,
 	        autoRotateSpeed: 2.0,
-	        autoRotateActivationDuration: 5000
+	        autoRotateActivationDuration: 5000,
+	        initialLookAt: new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )
 
 	    }, options );
 
@@ -7950,7 +7964,6 @@
 
 	    setupCamera: function ( cameraFov, ratio, camera = new THREE.PerspectiveCamera( cameraFov, ratio, 1, 10000 ) ) {
 
-	        camera.position.z = 1;
 	        return camera;
 
 	    },
@@ -7978,6 +7991,7 @@
 
 	        const orbit = new OrbitControls( camera, container );
 	        orbit.id = 'orbit';
+	        orbit.index = CONTROLS.ORBIT;
 	        orbit.minDistance = 1;
 	        orbit.noPan = true;
 	        orbit.autoRotate = autoRotate;
@@ -7992,6 +8006,7 @@
 
 	        const orient = new DeviceOrientationControls( camera, container );
 	        orient.id = 'device-orientation';
+	        orient.index = CONTROLS.DEVICEORIENTATION;
 	        orient.enabled = false;
 
 	        this.controls = [ orbit, orient ];
@@ -8091,7 +8106,10 @@
 
 	            if ( !this.panorama ) {
 
+	                const { initialLookAt } = this.options;
+
 	                this.setPanorama( object );
+	                this.setControlCenter( initialLookAt );
 
 	            }
 
@@ -8763,6 +8781,22 @@
 	    },
 
 	    /**
+	     * Get raycasted point of current panorama
+	     * @memberof Viewer
+	     * @instance
+	     * @returns {THREE.Vector3}
+	     */
+	    getRaycastViewCenter: function () {
+
+	        const raycaster = new THREE.Raycaster();
+	        raycaster.setFromCamera( new THREE.Vector2( 0, 0 ), this.camera );
+	        const intersect = raycaster.intersectObject( this.panorama );
+
+	        return intersect.length > 0 ? intersect[ 0 ].point : new THREE.Vector3( 0, 0, -1 );
+
+	    },
+
+	    /**
 	     * Enable control by index
 	     * @param  {CONTROLS} index - Index of camera control
 	     * @memberOf Viewer
@@ -8773,34 +8807,13 @@
 	        index = ( index >= 0 && index < this.controls.length ) ? index : 0;
 
 	        this.control.enabled = false;
-
 	        this.control = this.controls[ index ];
-
 	        this.control.enabled = true;
-
-	        switch ( index ) {
-
-	        case CONTROLS.ORBIT:
-
-	            this.camera.position.copy( this.panorama.position );
-	            this.camera.position.z += 1;
-
-	            break;
-
-	        case CONTROLS.DEVICEORIENTATION:
-
-	            this.camera.position.copy( this.panorama.position );
-
-	            break;
-
-	        default:
-
-	            break;
-	        }
-
 	        this.control.update();
-
+	        
+	        this.setControlCenter( this.getRaycastViewCenter() );
 	        this.activateWidgetItem( index, undefined );
+	        this.onChange();
 
 	    },
 
@@ -8890,13 +8903,13 @@
 
 	    },
 
-	    rotateOrbitControlLeft: function ( left ) {
+	    rotateControlLeft: function ( left ) {
 
 	        this.control.rotateLeft( left );
 
 	    },
 
-	    rotateOrbitControlUp: function ( up ) {
+	    rotateControlUp: function ( up ) {
 
 	        this.control.rotateUp( up );
 
@@ -8904,18 +8917,12 @@
 
 	    rotateOrbitControl: function ( left, up ) {
 
-	        this.rotateOrbitControlLeft( left );
-	        this.rotateOrbitControlUp( up );
+	        this.rotateControlLeft( left );
+	        this.rotateControlUp( up );
 
 	    },
 
-	    calculateOrbitControlDelta: function ( vector ) {
-
-	        if ( this.control !== this.OrbitControls ) {
-
-	            return;
-
-	        }
+	    calculateCameraDirectionDelta: function ( vector ) {
 
 	        let ha, va, chv, cvv, hv, vv, vptc;
 
@@ -8947,13 +8954,7 @@
 	     */
 	    setControlCenter: function( vector ) {
 
-	        if ( this.control !== this.OrbitControls ) {
-
-	            return;
-
-	        }
-
-	        const { left, up } = this.calculateOrbitControlDelta( vector );
+	        const { left, up } = this.calculateCameraDirectionDelta( vector );
 	        this.rotateOrbitControl( left, up );
 
 	    },
@@ -8968,12 +8969,6 @@
 	     */
 	    tweenControlCenter: function ( vector, duration, easing ) {
 
-	        if ( this.control !== this.OrbitControls ) {
-
-	            return;
-
-	        }
-
 	        if ( vector instanceof Array ) {
 
 	            vector = vector[ 0 ];
@@ -8985,9 +8980,9 @@
 	        duration = duration !== undefined ? duration : 1000;
 	        easing = easing || Tween.Easing.Exponential.Out;
 
-	        const { left, up } = this.calculateOrbitControlDelta( vector );
-	        const rotateOrbitControlLeft = this.rotateOrbitControlLeft.bind( this );
-	        const rotateOrbitControlUp = this.rotateOrbitControlUp.bind( this );
+	        const { left, up } = this.calculateCameraDirectionDelta( vector );
+	        const rotateControlLeft = this.rotateControlLeft.bind( this );
+	        const rotateControlUp = this.rotateControlUp.bind( this );
 
 	        const ov = { left: 0, up: 0 };
 	        const nv = { left: 0, up: 0 };
@@ -8999,7 +8994,7 @@
 	            .to( { left }, duration )
 	            .easing( easing )
 	            .onUpdate(function(ov){
-	                rotateOrbitControlLeft( ov.left - nv.left );
+	                rotateControlLeft( ov.left - nv.left );
 	                nv.left = ov.left;
 	            })
 	            .start();
@@ -9008,7 +9003,7 @@
 	            .to( { up }, duration )
 	            .easing( easing )
 	            .onUpdate(function(ov){
-	                rotateOrbitControlUp( ov.up - nv.up );
+	                rotateControlUp( ov.up - nv.up );
 	                nv.up = ov.up;
 	            })
 	            .start();
