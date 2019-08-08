@@ -158,6 +158,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         const orbit = new OrbitControls( camera, container );
         orbit.id = 'orbit';
+        orbit.index = CONTROLS.ORBIT;
         orbit.minDistance = 1;
         orbit.noPan = true;
         orbit.autoRotate = autoRotate;
@@ -172,6 +173,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         const orient = new DeviceOrientationControls( camera, container );
         orient.id = 'device-orientation';
+        orbit.index = CONTROLS.DEVICEORIENTATION;
         orient.enabled = false;
 
         this.controls = [ orbit, orient ];
