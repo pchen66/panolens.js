@@ -12,7 +12,6 @@ function DeviceOrientationControls ( camera, domElement ) {
     const scope = this;
     const changeEvent = { type: 'change' };
 
-    let rotY = 0;
     let rotX = 0;
     let tempX = 0;
     let tempY = 0;
@@ -23,12 +22,11 @@ function DeviceOrientationControls ( camera, domElement ) {
 
     this.enabled = true;
 
-    this.deviceOrientation = {};
+    this.deviceOrientation = null;
     this.screenOrientation = 0;
 
     this.alpha = 0;
     this.alphaOffsetAngle = 0;
-
 
     const onDeviceOrientationChangeEvent = function( event ) {
 
@@ -57,10 +55,8 @@ function DeviceOrientationControls ( camera, domElement ) {
         event.preventDefault();
         event.stopPropagation();
 
-        rotY += THREE.Math.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 );
         rotX += THREE.Math.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
-
-        scope.updateAlphaOffsetAngle( rotY );
+        scope.rotateLeft( -THREE.Math.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 ) );
 
         tempX = event.touches[ 0 ].pageX;
         tempY = event.touches[ 0 ].pageY;
@@ -148,7 +144,7 @@ function DeviceOrientationControls ( camera, domElement ) {
 
     this.update = function( ignoreUpdate ) {
 
-        if ( scope.enabled === false ) return;
+        if ( scope.enabled === false || !scope.deviceOrientation ) return;
 
         const alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
         const beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
@@ -165,7 +161,23 @@ function DeviceOrientationControls ( camera, domElement ) {
     this.updateAlphaOffsetAngle = function( angle ) {
 
         this.alphaOffsetAngle = angle;
-        this.update();
+
+    };
+
+    this.updateRotX = function( angle ) {
+
+        rotX = angle;
+
+    };
+
+    this.rotateLeft = function( angle ) {
+
+        this.updateAlphaOffsetAngle( this.alphaOffsetAngle - angle );
+    };
+
+    this.rotateUp = function( angle ) {
+
+        this.updateRotX( rotX + angle );
 
     };
 

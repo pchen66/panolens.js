@@ -131,7 +131,6 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     setupCamera: function ( cameraFov, ratio, camera = new THREE.PerspectiveCamera( cameraFov, ratio, 1, 10000 ) ) {
 
-        camera.position.z = 1;
         return camera;
 
     },
@@ -944,6 +943,22 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
+     * Get raycasted point of current panorama
+     * @memberof Viewer
+     * @instance
+     * @returns {THREE.Vector3}
+     */
+    getRaycastViewCenter: function () {
+
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera( new THREE.Vector2( 0, 0 ), this.camera );
+        const intersect = raycaster.intersectObject( this.panorama );
+
+        return intersect.length > 0 ? intersect[ 0 ].point : new THREE.Vector3( 0, 0, -1 );
+
+    },
+
+    /**
      * Enable control by index
      * @param  {CONTROLS} index - Index of camera control
      * @memberOf Viewer
@@ -954,34 +969,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         index = ( index >= 0 && index < this.controls.length ) ? index : 0;
 
         this.control.enabled = false;
-
         this.control = this.controls[ index ];
-
         this.control.enabled = true;
-
-        switch ( index ) {
-
-        case CONTROLS.ORBIT:
-
-            this.camera.position.copy( this.panorama.position );
-            this.camera.position.z += 1;
-
-            break;
-
-        case CONTROLS.DEVICEORIENTATION:
-
-            this.camera.position.copy( this.panorama.position );
-
-            break;
-
-        default:
-
-            break;
-        }
-
         this.control.update();
-
+        
+        this.setControlCenter( this.getRaycastViewCenter() );
         this.activateWidgetItem( index, undefined );
+        this.onChange();
 
     },
 
@@ -1071,13 +1065,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     },
 
-    rotateOrbitControlLeft: function ( left ) {
+    rotateControlLeft: function ( left ) {
 
         this.control.rotateLeft( left );
 
     },
 
-    rotateOrbitControlUp: function ( up ) {
+    rotateControlUp: function ( up ) {
 
         this.control.rotateUp( up );
 
@@ -1085,18 +1079,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     rotateOrbitControl: function ( left, up ) {
 
-        this.rotateOrbitControlLeft( left );
-        this.rotateOrbitControlUp( up );
+        this.rotateControlLeft( left );
+        this.rotateControlUp( up );
 
     },
 
-    calculateOrbitControlDelta: function ( vector ) {
-
-        if ( this.control !== this.OrbitControls ) {
-
-            return;
-
-        }
+    calculateCameraDirectionDelta: function ( vector ) {
 
         let ha, va, chv, cvv, hv, vv, vptc;
 
@@ -1128,13 +1116,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     setControlCenter: function( vector ) {
 
-        if ( this.control !== this.OrbitControls ) {
-
-            return;
-
-        }
-
-        const { left, up } = this.calculateOrbitControlDelta( vector );
+        const { left, up } = this.calculateCameraDirectionDelta( vector );
         this.rotateOrbitControl( left, up );
 
     },
@@ -1149,12 +1131,6 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     tweenControlCenter: function ( vector, duration, easing ) {
 
-        if ( this.control !== this.OrbitControls ) {
-
-            return;
-
-        }
-
         if ( vector instanceof Array ) {
 
             vector = vector[ 0 ];
@@ -1166,9 +1142,9 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         duration = duration !== undefined ? duration : 1000;
         easing = easing || TWEEN.Easing.Exponential.Out;
 
-        const { left, up } = this.calculateOrbitControlDelta( vector );
-        const rotateOrbitControlLeft = this.rotateOrbitControlLeft.bind( this );
-        const rotateOrbitControlUp = this.rotateOrbitControlUp.bind( this );
+        const { left, up } = this.calculateCameraDirectionDelta( vector );
+        const rotateControlLeft = this.rotateControlLeft.bind( this );
+        const rotateControlUp = this.rotateControlUp.bind( this );
 
         const ov = { left: 0, up: 0 };
         const nv = { left: 0, up: 0 };
@@ -1180,7 +1156,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             .to( { left }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                rotateOrbitControlLeft( ov.left - nv.left );
+                rotateControlLeft( ov.left - nv.left );
                 nv.left = ov.left;
             })
             .start();
@@ -1189,7 +1165,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             .to( { up }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                rotateOrbitControlUp( ov.up - nv.up );
+                rotateControlUp( ov.up - nv.up );
                 nv.up = ov.up;
             })
             .start();
