@@ -23,6 +23,8 @@ function Panorama ( geometry, material ) {
     this.ImageQualitySuperHigh = 5;
 
     this.animationDuration = 1000;
+    this.leaveDuration = 200;
+    this.enterDuration = 1000;
 
     this.defaultInfospotSize = 350;
 
@@ -622,7 +624,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      */
     onLeave: function () {
 
-        const duration = this.animationDuration;
+        const duration = this.leaveDuration;
 
         this.enterTransition.stop();
         this.leaveTransition
