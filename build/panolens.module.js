@@ -104,7 +104,7 @@ const ImageLoader = {
         // Enable cache
         Cache.enabled = true;
 
-        let cached, request, arrayBufferView, blob, urlCreator, image, reference;
+        let cached, request, arrayBufferView, blob, urlCreator, image, reference, validatedUrl;
 	
         // Reference key
         for ( let iconName in DataImage ) {
@@ -118,7 +118,8 @@ const ImageLoader = {
         }
 	
         // Cached
-        cached = Cache.get( reference ? reference : url );
+        validatedUrl = url.indexOf('http') != -1 ? url : null;
+        cached = Cache.get( reference ? reference : validatedUrl );
 	
         if ( cached !== undefined ) {
 	
@@ -1927,6 +1928,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     this.cursorStyle = null;
 
     this.mode = MODES.NORMAL;
+    this.loaded = false;
 
     this.scale.set( scale, scale, 1 );
     this.rotation.y = Math.PI;
@@ -1971,6 +1973,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
 
         this.material.map = texture;
         this.material.needsUpdate = true;
+        setTimeout(() => this.loaded = true, duration*3);
 
     }.bind( this );
 
@@ -2089,7 +2092,11 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    onHover: function () {},
+    onHover: function (event) {
+        if (!this.isHovering){
+            this.onHoverStart(event);
+        }
+    },
 
     /**
      * This will be called on a mouse hover start
@@ -2100,6 +2107,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      */
     onHoverStart: function ( event ) {
 
+        if ( !this.loaded ) { return; }
         if ( !this.getContainer() ) { return; }
 
         const cursorStyle = this.cursorStyle || ( this.mode === MODES.NORMAL ? 'pointer' : 'default' );
@@ -3841,6 +3849,8 @@ function Panorama ( geometry, material ) {
     this.ImageQualitySuperHigh = 5;
 
     this.animationDuration = 1000;
+    this.leaveDuration = 200;
+    this.enterDuration = 1000;
 
     this.defaultInfospotSize = 350;
 
@@ -4440,7 +4450,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
      */
     onLeave: function () {
 
-        const duration = this.animationDuration;
+        const duration = this.leaveDuration;
 
         this.enterTransition.stop();
         this.leaveTransition
@@ -7750,6 +7760,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             pano.addEventListener( 'enter-fade-start', afterEnterComplete );
 
             // Assign and enter panorama
+            if ( leavingPanorama ) { leavingPanorama.onLeave(); }
             (this.panorama = pano).onEnter();
 			
         }

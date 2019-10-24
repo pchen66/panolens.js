@@ -108,7 +108,7 @@
 	        // Enable cache
 	        THREE.Cache.enabled = true;
 
-	        let cached, request, arrayBufferView, blob, urlCreator, image, reference;
+	        let cached, request, arrayBufferView, blob, urlCreator, image, reference, validatedUrl;
 		
 	        // Reference key
 	        for ( let iconName in DataImage ) {
@@ -122,7 +122,8 @@
 	        }
 		
 	        // Cached
-	        cached = THREE.Cache.get( reference ? reference : url );
+	        validatedUrl = url.indexOf('http') != -1 ? url : null;
+	        cached = THREE.Cache.get( reference ? reference : validatedUrl );
 		
 	        if ( cached !== undefined ) {
 		
@@ -1931,6 +1932,7 @@
 	    this.cursorStyle = null;
 
 	    this.mode = MODES.NORMAL;
+	    this.loaded = false;
 
 	    this.scale.set( scale, scale, 1 );
 	    this.rotation.y = Math.PI;
@@ -1975,6 +1977,7 @@
 
 	        this.material.map = texture;
 	        this.material.needsUpdate = true;
+	        setTimeout(() => this.loaded = true, duration*3);
 
 	    }.bind( this );
 
@@ -2093,7 +2096,11 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    onHover: function () {},
+	    onHover: function (event) {
+	        if (!this.isHovering){
+	            this.onHoverStart(event);
+	        }
+	    },
 
 	    /**
 	     * This will be called on a mouse hover start
@@ -2104,6 +2111,7 @@
 	     */
 	    onHoverStart: function ( event ) {
 
+	        if ( !this.loaded ) { return; }
 	        if ( !this.getContainer() ) { return; }
 
 	        const cursorStyle = this.cursorStyle || ( this.mode === MODES.NORMAL ? 'pointer' : 'default' );
@@ -3845,6 +3853,8 @@
 	    this.ImageQualitySuperHigh = 5;
 
 	    this.animationDuration = 1000;
+	    this.leaveDuration = 200;
+	    this.enterDuration = 1000;
 
 	    this.defaultInfospotSize = 350;
 
@@ -4444,7 +4454,7 @@
 	     */
 	    onLeave: function () {
 
-	        const duration = this.animationDuration;
+	        const duration = this.leaveDuration;
 
 	        this.enterTransition.stop();
 	        this.leaveTransition
@@ -7754,6 +7764,7 @@
 	            pano.addEventListener( 'enter-fade-start', afterEnterComplete );
 
 	            // Assign and enter panorama
+	            if ( leavingPanorama ) { leavingPanorama.onLeave(); }
 	            (this.panorama = pano).onEnter();
 				
 	        }
