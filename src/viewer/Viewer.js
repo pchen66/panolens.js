@@ -369,6 +369,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             pano.addEventListener( 'enter-fade-start', afterEnterComplete );
 
             // Assign and enter panorama
+            if ( leavingPanorama ) { leavingPanorama.onLeave(); }
             (this.panorama = pano).onEnter();
 			
         }
