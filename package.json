@@ -1,14 +1,42 @@
 {
-  "name": "panolens.js",
-  "version": "0.9.0",
+  "name": "panolens",
+  "version": "0.11.0",
   "description": "Javascript panorama viewer",
-  "main": "index.js",
+  "main": "build/panolens.js",
+  "jsnext:main": "build/panolens.module.js",
+  "module": "build/panolens.module.js",
+  "files": [
+    "build/panolens.js",
+    "build/panolens.min.js",
+    "build/panolens.module.js",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "src"
+  ],
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-closure": "npm run lint && rollup -c && java -jar node_modules/google-closure-compiler-java/compiler.jar --rewrite_polyfills=false --warning_level=VERBOSE --hide_warnings_for='build/panolens.js' --jscomp_off=globalThis --jscomp_off=checkTypes --jscomp_off=checkVars --jscomp_off=suspiciousCode --jscomp_off=misplacedTypeAnnotation --jscomp_off=nonStandardJsDocs --language_in=ECMASCRIPT6 --js build/panolens.js --js_output_file build/panolens.min.js",
+    "build": "npm run lint && rollup -c",
+    "dev": "concurrently --names \"ROLLUP,HTTP\" \"rollup -c -w -m inline\" \"http-server -p 8080\"",
+    "dev-https": "concurrently --names \"ROLLUP,HTTP\" \"rollup -c -w -m inline\" \"ws -p 8080 --https\"",
+    "lint": "eslint src",
+    "lint-fix": "eslint src --fix",
+    "test": "nyc --reporter=html --reporter=text ava",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "start": "npm run dev",
+    "docs": "node_modules/.bin/jsdoc -c jsdoc.json -d ./docs",
+    "travis": "npm run lint && npm test",
+    "prepublishOnly": "npm run test && npm run build-closure",
+    "preversion": "npm run test",
+    "version": "npm run build-closure && git add ./build && git commit -m 'Update build' && npm run docs && git add ./docs && git commit -m 'Update docs'"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pchen66/panolens.js.git"
+    "url": "https://github.com/pchen66/panolens.js.git"
   },
   "keywords": [
     "panorama",
@@ -17,20 +45,97 @@
     "html5",
     "3d"
   ],
-  "author": "Ray Chen",
+  "author": "pchen66",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/pchen66/panolens.js/issues"
   },
-  "homepage": "https://github.com/pchen66/panolens.js#readme",
+  "homepage": "https://pchen66.github.io/Panolens/",
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-unused-expressions": "error",
+      "no-unused-vars": "error",
+      "semi": 2,
+      "indent": [
+        "error",
+        4
+      ],
+      "spaced-comment": [
+        "error",
+        "always"
+      ],
+      "multiline-comment-style": [
+        "error",
+        "starred-block"
+      ],
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "key-spacing": [
+        "error",
+        {
+          "beforeColon": false,
+          "afterColon": true
+        }
+      ],
+      "quotes": [
+        "error",
+        "single",
+        {
+          "allowTemplateLiterals": true
+        }
+      ]
+    }
+  },
+  "ava": {
+    "files": [
+      "./test/**/*.js"
+    ],
+    "sources": [
+      "./src/**/*.js"
+    ],
+    "require": [
+      "esm",
+      "./test/_browserENV.js"
+    ]
+  },
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
-    "gulp-jsdoc3": "^1.0.1",
-    "gulp-strip-debug": "^1.1.0",
-    "gulp-uglify": "^2.1.2",
-    "three": "^0.86.0",
-    "tween.js": "^16.6.0",
-    "iphone-inline-video": "^2.2.2"
+    "@tweenjs/tween.js": "^17.4.0",
+    "ava": "^2.1.0",
+    "browser-env": "^3.2.6",
+    "concurrently": "^4.1.0",
+    "coveralls": "^3.0.4",
+    "docdash": "^1.1.1",
+    "eslint": "^5.16.0",
+    "google-closure-compiler": "^20190528.0.0",
+    "http-server": "^0.11.1",
+    "jsdoc": "^3.6.2",
+    "local-web-server": "^3.0.0",
+    "nyc": "^14.1.1",
+    "rollup": "^1.15.1",
+    "rollup-plugin-commonjs": "^10.0.0",
+    "rollup-plugin-inject": "^2.2.0",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-resolve": "^5.0.1",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "dependencies": {
+    "three": "^0.105.2"
+  },
+  "jspm": {
+    "files": [
+      "build/panolens.js",
+      "build/panolens.min.js",
+      "build/panolens.module.js",
+      "LICENSE",
+      "package.json",
+      "README.md"
+    ],
+    "directories": {}
   }
 }

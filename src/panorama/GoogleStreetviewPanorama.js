@@ -1,131 +1,145 @@
-(function(){
+import { ImagePanorama } from './ImagePanorama';
+import { GoogleStreetviewLoader } from '../loaders/GoogleStreetviewLoader';
+import * as THREE from 'three';
 
-	'use strict';
-	
-	/**
-	 * Google streetview panorama
-	 * 
-	 * [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
-	 * @constructor
-	 * @param {string} panoId - Panorama id from Google Streetview 
-	 * @param {number} [radius=5000] - The minimum radius for this panoram
-	 */
-	PANOLENS.GoogleStreetviewPanorama = function ( panoId, radius ) {
+/**
+ * @classdesc Google streetview panorama
+ * @description [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
+ * @constructor
+ * @param {string} panoId - Panorama id from Google Streetview 
+ * @param {string} [apiKey] - Google Street View API Key
+ */
+function GoogleStreetviewPanorama ( panoId, apiKey ) {
 
-		PANOLENS.ImagePanorama.call( this, undefined, radius );
+    ImagePanorama.call( this );
 
-		this.panoId = panoId;
+    this.panoId = panoId;
 
-		this.gsvLoader = undefined;
+    this.gsvLoader = null;
 
-		this.loadRequested = false;
+    this.loadRequested = false;
 
-		this.setupGoogleMapAPI();
+    this.setupGoogleMapAPI( apiKey );
 
-	}
+}
 
-	PANOLENS.GoogleStreetviewPanorama.prototype = Object.create( PANOLENS.ImagePanorama.prototype );
+GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama.prototype ), {
 
-	PANOLENS.GoogleStreetviewPanorama.constructor = PANOLENS.GoogleStreetviewPanorama;
+    constructor: GoogleStreetviewPanorama,
 
-	/**
-	 * Load Google Street View by panorama id
-	 * @param {string} panoId - Gogogle Street View panorama id
-	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.load = function ( panoId ) {
+    /**
+     * Load Google Street View by panorama id
+     * @param {string} panoId - Gogogle Street View panorama id
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
+    load: function ( panoId ) {
 
-		this.loadRequested = true;
+        this.loadRequested = true;
 
-		panoId = ( panoId || this.panoId ) || {};
+        panoId = ( panoId || this.panoId ) || {};
 
-		if ( panoId && this.gsvLoader ) {
+        if ( panoId && this.gsvLoader ) {
 
-			this.loadGSVLoader( panoId );
+            this.loadGSVLoader( panoId );
 
-		} else {
+        }
 
-			this.gsvLoader = {};
+    },
 
-		}
+    /**
+     * Setup Google Map API
+     * @param {string}  apiKey
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
+    setupGoogleMapAPI: function ( apiKey ) {
 
-	};
+        const script = document.createElement( 'script' );
+        script.src = 'https://maps.googleapis.com/maps/api/js?';
+        script.src += apiKey ? 'key=' + apiKey : '';
+        script.onreadystatechange = this.setGSVLoader.bind( this );
+        script.onload = this.setGSVLoader.bind( this );
 
-	/**
-	 * Setup Google Map API
-	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.setupGoogleMapAPI = function () {
+        document.querySelector( 'head' ).appendChild( script );
 
-		var script = document.createElement( 'script' );
-		script.src = 'https://maps.googleapis.com/maps/api/js';
-		script.onreadystatechange = this.setGSVLoader.bind( this );
-    	script.onload = this.setGSVLoader.bind( this );
+    },
 
-		document.getElementsByTagName('head')[0].appendChild( script );
+    /**
+     * Set GSV Loader
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
+    setGSVLoader: function () {
 
-	};
+        this.gsvLoader = new GoogleStreetviewLoader();
 
-	/**
-	 * Set GSV Loader
-	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.setGSVLoader = function () {
+        if ( this.loadRequested ) {
 
-		this.gsvLoader = new GSVPANO.PanoLoader();
+            this.load();
 
-		if ( this.gsvLoader === {} || this.loadRequested ) {
+        }
 
-			this.load();
+    },
 
-		}
+    /**
+     * Get GSV Loader
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     * @return {GoogleStreetviewLoader} GSV Loader instance
+     */
+    getGSVLoader: function () {
 
-	};
+        return this.gsvLoader;
 
-	/**
-	 * Get GSV Loader
-	 * @return {object} GSV Loader instance
-	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.getGSVLoader = function () {
+    },
 
-		return this.gsvLoader;
+    /**
+     * Load GSV Loader
+     * @param  {string} panoId - Gogogle Street View panorama id
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
+    loadGSVLoader: function ( panoId ) {
 
-	};
+        this.loadRequested = false;
 
-	/**
-	 * Load GSV Loader
-	 * @param  {string} panoId - Gogogle Street View panorama id
-	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.loadGSVLoader = function ( panoId ) {
+        this.gsvLoader.onProgress = this.onProgress.bind( this );
 
-		this.loadRequested = false;
+        this.gsvLoader.onPanoramaLoad = this.onLoad.bind( this );
 
-		this.gsvLoader.onProgress = this.onProgress.bind( this );
+        this.gsvLoader.setZoom( this.getZoomLevel() );
 
-		this.gsvLoader.onPanoramaLoad = this.onLoad.bind( this );
+        this.gsvLoader.load( panoId );
 
-		this.gsvLoader.setZoom( this.getZoomLevel() );
+        this.gsvLoader.loaded = true;
+    },
 
-		this.gsvLoader.load( panoId );
+    /**
+     * This will be called when panorama is loaded
+     * @param  {HTMLCanvasElement} canvas - Canvas where the tiles have been drawn
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
+    onLoad: function ( canvas ) {
 
-		this.gsvLoader.loaded = true;
-	};
+        ImagePanorama.prototype.onLoad.call( this, new THREE.Texture( canvas ) );
 
-	/**
-	 * This will be called when panorama is loaded
-	 * @param  {HTMLCanvasElement} canvas - Canvas where the tiles have been drawn
-	 */
-	PANOLENS.GoogleStreetviewPanorama.prototype.onLoad = function ( canvas ) {
+    },
 
-		if ( !this.gsvLoader ) { return; }
+    /**
+     * Reset
+     * @memberOf GoogleStreetviewPanorama
+     * @instance
+     */
+    reset: function () {
 
-		PANOLENS.ImagePanorama.prototype.onLoad.call( this, new THREE.Texture( canvas ) );
+        this.gsvLoader = undefined;
 
-	};
+        ImagePanorama.prototype.reset.call( this );
 
-	PANOLENS.GoogleStreetviewPanorama.prototype.reset = function () {
+    }
 
-		this.gsvLoader = undefined;
+} );
 
-		PANOLENS.ImagePanorama.prototype.reset.call( this );
-
-	};
-
-})();
+export { GoogleStreetviewPanorama };

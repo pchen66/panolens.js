@@ -1,1286 +1,1436 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-	<title>Documentation Source: viewer/Viewer.js</title>
-
-	<!--[if lt IE 9]>
-	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
-	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
-
-	<link type="text/css" rel="stylesheet" href="styles/site.paper.css">
-
+    
+    <meta charset="utf-8">
+    <title>viewer/Viewer.js - Panolens</title>
+    
+    <meta name="description" content="Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible." />
+    
+        <meta name="keywords" content="panorama, 3d, 360, webgl, threejs" />
+        <meta name="keyword" content="panorama, 3d, 360, webgl, threejs" />
+    
+    
+    
+    <meta property="og:title" content="Panolens"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="https://repository-images.githubusercontent.com/46604802/33c10480-7d64-11e9-97d8-f45a9169911c.png"/>
+    <meta property="og:site_name" content="Panolens"/>
+    <meta property="og:url" content="https://pchen66.github.io/Panolens/"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div class="navbar navbar-default navbar-fixed-top ">
-<div class="container">
-	<div class="navbar-header">
-		<a class="navbar-brand" href="index.html">Documentation</a>
-		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-        </button>
-	</div>
-	<div class="navbar-collapse collapse" id="topNavigation">
-		<ul class="nav navbar-nav">
-			
-			<li class="dropdown">
-				<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
-				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.html">PANOLENS</a></li><li><a href="PANOLENS.Utils.html">PANOLENS.Utils</a></li><li><a href="PANOLENS.Utils.CubeTextureLoader.html">PANOLENS.Utils.CubeTextureLoader</a></li><li><a href="PANOLENS.Utils.ImageLoader.html">PANOLENS.Utils.ImageLoader</a></li><li><a href="PANOLENS.Utils.TextureLoader.html">PANOLENS.Utils.TextureLoader</a></li>
-				</ul>
-			</li>
-			
-			<li class="dropdown">
-				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
-				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.BasicPanorama.html">PANOLENS.BasicPanorama</a></li><li><a href="PANOLENS.CubePanorama.html">PANOLENS.CubePanorama</a></li><li><a href="PANOLENS.EmptyPanorama.html">PANOLENS.EmptyPanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">PANOLENS.GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImageLittlePlanet.html">PANOLENS.ImageLittlePlanet</a></li><li><a href="PANOLENS.ImagePanorama.html">PANOLENS.ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">PANOLENS.Infospot</a></li><li><a href="PANOLENS.LittlePlanet.html">PANOLENS.LittlePlanet</a></li><li><a href="PANOLENS.Panorama.html">PANOLENS.Panorama</a></li><li><a href="PANOLENS.Reticle.html">PANOLENS.Reticle</a></li><li><a href="PANOLENS.SpriteText.html">PANOLENS.SpriteText</a></li><li><a href="PANOLENS.Tile.html">PANOLENS.Tile</a></li><li><a href="PANOLENS.TileGroup.html">PANOLENS.TileGroup</a></li><li><a href="PANOLENS.VideoPanorama.html">PANOLENS.VideoPanorama</a></li><li><a href="PANOLENS.Viewer.html">PANOLENS.Viewer</a></li><li><a href="PANOLENS.Widget.html">PANOLENS.Widget</a></li>
-				</ul>
-			</li>
-			
-			<li class="dropdown">
-				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
-				<ul class="dropdown-menu ">
-					<li><a href="global.html#event:'pause'">event:'pause'</a></li><li><a href="global.html#event:'play'">event:'play'</a></li><li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-dual-eye-effect">PANOLENS.Infospot#event:panolens-dual-eye-effect</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-complete">PANOLENS.Panorama#event:enter-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-fade-complete">PANOLENS.Panorama#event:enter-fade-complete</a></li><li><a href="PANOLENS.Panorama.html#event:enter-fade-start">PANOLENS.Panorama#event:enter-fade-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:leave-animation-start">PANOLENS.Panorama#event:leave-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:leave-complete">PANOLENS.Panorama#event:leave-complete</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
-				</ul>
-			</li>
-			
-		</ul>
-        
-            <div class="col-sm-3 col-md-3">
-                <form class="navbar-form" role="search">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
-                        <div class="input-group-btn">
-                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        
-	</div>
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-</div>
-</div>
+<label for="nav-trigger" class="overlay"></label>
 
-
-<div class="container" id="toc-content">
-<div class="row">
-
-	
-	<div class="col-md-12">
-	
-		<div id="main">
-			
-
-		<h1 class="page-title">Source: viewer/Viewer.js</h1>
+<nav >
     
-<section>
-    <article>
-        <pre
-            class="sunlight-highlight-javascript ">( function () {
-
-	'use strict';
-
-	/**
-	 * Viewer contains pre-defined scene, camera and renderer
-	 * @constructor
-	 * @param {object} [options] - Use custom or default config options
-	 * @param {HTMLElement} [options.container] - A HTMLElement to host the canvas
-	 * @param {THREE.Scene} [options.scene=THREE.Scene] - A THREE.Scene which contains panorama and 3D objects
-	 * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
-	 * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
-	 * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
-	 * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'setting', 'video']
-	 * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
-	 * @param {boolean} [options.autoHideInfospot=true] - Auto hide infospots when click on non-active area
-	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
-	 * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
-	 * @param {number}  [options.cameraFov=60] - Camera field of view value
-	 * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
-	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
-	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection
-	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
-	 * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
-	 * @param {number}  [options.indicatorSize=30] - Size of View Indicator
-	 * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
-	 */
-	PANOLENS.Viewer = function ( options ) {
-
-		THREE.EventDispatcher.call( this );
-
-		if ( !THREE ) {
-
-			console.error('Three.JS not found');
-
-			return;
-		}
-
-		var container;
-
-		options = options || {};
-		options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
-		options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
-		options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
-		options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
-		options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
-		options.clickTolerance = options.clickTolerance || 10;
-		options.cameraFov = options.cameraFov || 60;
-		options.reverseDragging = options.reverseDragging || false;
-		options.enableReticle = options.enableReticle || false;
-		options.dwellTime = options.dwellTime || 1500;
-		options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
-		options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
-		options.indicatorSize = options.indicatorSize || 30;
-		options.output = options.output ? options.output : 'none';
-
-		this.options = options;
-
-		// Container
-		if ( options.container ) {
-
-			container = options.container;
-			container._width = container.clientWidth;
-			container._height = container.clientHeight;
-
-		} else {
-
-			container = document.createElement( 'div' );
-			container.classList.add( 'panolens-container' );
-			container.style.width = '100%';
-			container.style.height = '100%';
-			container._width = window.innerWidth;
-			container._height = window.innerHeight;
-			document.body.appendChild( container );
-
-		}
-
-		this.container = container;
-
-		this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
-		this.scene = options.scene || new THREE.Scene();
-		this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
-
-		this.viewIndicatorSize = options.indicatorSize;
-
-		this.reticle = {};
-		this.tempEnableReticle = this.options.enableReticle;
-
-		this.mode = PANOLENS.Modes.NORMAL;
-
-		this.OrbitControls;
-		this.DeviceOrientationControls;
-
-		this.CardboardEffect;
-		this.StereoEffect;
-
-		this.controls;
-		this.effect;
-		this.panorama;
-		this.widget;
-
-		this.hoverObject;
-		this.infospot;
-		this.pressEntityObject;
-		this.pressObject;
-
-		this.raycaster = new THREE.Raycaster();
-		this.raycasterPoint = new THREE.Vector2();
-		this.userMouse = new THREE.Vector2();
-		this.updateCallbacks = [];
-		this.requestAnimationId;
-
-		this.cameraFrustum = new THREE.Frustum();
-		this.cameraViewProjectionMatrix = new THREE.Matrix4();
-
-		this.outputDivElement;
-
-		// Handler references
-		this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
-		this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
-		this.HANDLER_MOUSE_MOVE = this.onMouseMove.bind( this );
-		this.HANDLER_WINDOW_RESIZE = this.onWindowResize.bind( this );
-		this.HANDLER_KEY_DOWN = this.onKeyDown.bind( this );
-		this.HANDLER_KEY_UP = this.onKeyUp.bind( this );
-		this.HANDLER_TAP = this.onTap.bind( this, {
-			clientX: this.container.clientWidth / 2,
-			clientY: this.container.clientHeight / 2
-		} );
-
-		// Flag for infospot output
-		this.OUTPUT_INFOSPOT = false;
-
-		// Animations
-		this.tweenLeftAnimation = new TWEEN.Tween();
-		this.tweenUpAnimation = new TWEEN.Tween();
-
-		// Renderer
-		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
-		this.renderer.setClearColor( 0x000000, 1 );
-		this.renderer.sortObjects = false;
-
-		// Append Renderer Element to container
-		this.renderer.domElement.classList.add( 'panolens-canvas' );
-		this.renderer.domElement.style.display = 'block';
-		this.container.style.backgroundColor = '#000';
-		this.container.appendChild( this.renderer.domElement );
-
-		// Camera Controls
-		this.OrbitControls = new THREE.OrbitControls( this.camera, this.container );
-		this.OrbitControls.name = 'orbit';
-		this.OrbitControls.minDistance = 1;
-		this.OrbitControls.noPan = true;
-		this.DeviceOrientationControls = new THREE.DeviceOrientationControls( this.camera, this.container );
-		this.DeviceOrientationControls.name = 'device-orientation';
-		this.DeviceOrientationControls.enabled = false;
-		this.camera.position.z = 1;
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/pchen66/panolens.js" target="_blank" class="menu-item" id="repository" >Github</a></h2><h3>Classes</h3><ul><li><a href="BasicPanorama.html">BasicPanorama</a></li><li><a href="CameraPanorama.html">CameraPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="CameraPanorama.html#onPanolensContainer">onPanolensContainer</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#onPanolensScene">onPanolensScene</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#start">start</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#stop">stop</a></li></ul></li><li><a href="CubePanorama.html">CubePanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="CubePanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="CubePanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="CubePanorama.html#onLoad">onLoad</a></li></ul></li><li><a href="EmptyPanorama.html">EmptyPanorama</a></li><li><a href="GoogleStreetviewLoader.html">GoogleStreetviewLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#adaptTextureToZoom">adaptTextureToZoom</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#composeFromTile">composeFromTile</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#composePanorama">composePanorama</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#load">load</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#loadPano">loadPano</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#progress">progress</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#setProgress">setProgress</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#setZoom">setZoom</a></li></ul></li><li><a href="GoogleStreetviewPanorama.html">GoogleStreetviewPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#getGSVLoader">getGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#loadGSVLoader">loadGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#reset">reset</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#setGSVLoader">setGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#setupGoogleMapAPI">setupGoogleMapAPI</a></li></ul></li><li><a href="ImageLittlePlanet.html">ImageLittlePlanet</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#updateTexture">updateTexture</a></li></ul></li><li><a href="ImagePanorama.html">ImagePanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ImagePanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#reset">reset</a></li></ul></li><li><a href="Infospot.html">Infospot</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Infospot.html#addHoverElement">addHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#addHoverText">addHoverText</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#enableRaycast">enableRaycast</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#focus">focus</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#getContainer">getContainer</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#hide">hide</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#lockHoverElement">lockHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onClick">onClick</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onDismiss">onDismiss</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onDualEyeEffect">onDualEyeEffect</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHover">onHover</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHoverEnd">onHoverEnd</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHoverStart">onHoverStart</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#removeHoverElement">removeHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setContainer">setContainer</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setCursorHoverStyle">setCursorHoverStyle</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setElementStyle">setElementStyle</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setFocusMethod">setFocusMethod</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setText">setText</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#show">show</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#translateElement">translateElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#unlockHoverElement">unlockHoverElement</a></li></ul></li><li><a href="LittlePlanet.html">LittlePlanet</a></li><li><a href="Media.html">Media</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Media.html#createVideoElement">createVideoElement</a></li><li data-type='method' style='display: none;'><a href="Media.html#createVideoTexture">createVideoTexture</a></li><li data-type='method' style='display: none;'><a href="Media.html#enumerateDevices">enumerateDevices</a></li><li data-type='method' style='display: none;'><a href="Media.html#getDevices">getDevices</a></li><li data-type='method' style='display: none;'><a href="Media.html#getUserMedia">getUserMedia</a></li><li data-type='method' style='display: none;'><a href="Media.html#onWindowResize">onWindowResize</a></li><li data-type='method' style='display: none;'><a href="Media.html#pauseVideo">pauseVideo</a></li><li data-type='method' style='display: none;'><a href="Media.html#playVideo">playVideo</a></li><li data-type='method' style='display: none;'><a href="Media.html#setMediaStream">setMediaStream</a></li><li data-type='method' style='display: none;'><a href="Media.html#setVideDeviceIndex">setVideDeviceIndex</a></li><li data-type='method' style='display: none;'><a href="Media.html#start">start</a></li><li data-type='method' style='display: none;'><a href="Media.html#stop">stop</a></li><li data-type='method' style='display: none;'><a href="Media.html#switchNextVideoDevice">switchNextVideoDevice</a></li></ul></li><li><a href="Panorama.html">Panorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Panorama.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#fadeIn">fadeIn</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#fadeOut">fadeOut</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#getZoomLevel">getZoomLevel</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#link">link</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onClick">onClick</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onEnter">onEnter</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onError">onError</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onLeave">onLeave</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onProgress">onProgress</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#setContainer">setContainer</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#setLinkingImage">setLinkingImage</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#toggleInfospotVisibility">toggleInfospotVisibility</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#updateTexture">updateTexture</a></li></ul></li><li><a href="Reticle.html">Reticle</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Reticle.html#createCanvas">createCanvas</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#createCanvasTexture">createCanvasTexture</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#end">end</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#hide">hide</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#ripple">ripple</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#setColor">setColor</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#show">show</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#start">start</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#update">update</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#updateCanvasArcByProgress">updateCanvasArcByProgress</a></li></ul></li><li><a href="VideoPanorama.html">VideoPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="VideoPanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#getVideoElement">getVideoElement</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#isVideoMuted">isVideoMuted</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#isVideoPaused">isVideoPaused</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#muteVideo">muteVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#pauseVideo">pauseVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#playVideo">playVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#reset">reset</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#resetVideo">resetVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#resumeVideoProgress">resumeVideoProgress</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#setVideoCurrentTime">setVideoCurrentTime</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#setVideoTexture">setVideoTexture</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#toggleVideo">toggleVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#unmuteVideo">unmuteVideo</a></li></ul></li><li><a href="Viewer.html">Viewer</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Viewer.html#activateWidgetItem">activateWidgetItem</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addDefaultControlBar">addDefaultControlBar</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addOutputElement">addOutputElement</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addPanoramaEventListener">addPanoramaEventListener</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addReticle">addReticle</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addUpdateCallback">addUpdateCallback</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addViewIndicator">addViewIndicator</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#animate">animate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#appendControlItem">appendControlItem</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#checkSpriteInViewport">checkSpriteInViewport</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#clearAllCache">clearAllCache</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#destroy">destroy</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableAutoRate">disableAutoRate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableControl">disableControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableEffect">disableEffect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableReticleControl">disableReticleControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#dispatchEventToChildren">dispatchEventToChildren</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableAutoRate">enableAutoRate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableControl">enableControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableEffect">enableEffect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableReticleControl">enableReticleControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#eventHandler">eventHandler</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getCamera">getCamera</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getContainer">getContainer</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getControl">getControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getControlId">getControlId</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getConvertedIntersect">getConvertedIntersect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getNextControlId">getNextControlId</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getNextControlIndex">getNextControlIndex</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getRenderer">getRenderer</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getScene">getScene</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getScreenVector">getScreenVector</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#hideInfospot">hideInfospot</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#hideVideoWidget">hideVideoWidget</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#loadAsyncRequest">loadAsyncRequest</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onChange">onChange</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onKeyDown">onKeyDown</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onKeyUp">onKeyUp</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseDown">onMouseDown</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseMove">onMouseMove</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseUp">onMouseUp</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onPanoramaDispose">onPanoramaDispose</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onTap">onTap</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onVideoUpdate">onVideoUpdate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onWindowResize">onWindowResize</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#outputPosition">outputPosition</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerEventListeners">registerEventListeners</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerMouseAndTouchEvents">registerMouseAndTouchEvents</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerReticleEvent">registerReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#remove">remove</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#removeUpdateCallback">removeUpdateCallback</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#render">render</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#reverseDraggingDirection">reverseDraggingDirection</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setCameraControl">setCameraControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setCameraFov">setCameraFov</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setPanorama">setPanorama</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setVideoCurrentTime">setVideoCurrentTime</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#showVideoWidget">showVideoWidget</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleControlBar">toggleControlBar</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleNextControl">toggleNextControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleVideoPlay">toggleVideoPlay</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#tweenControlCenter">tweenControlCenter</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#tweenControlCenterByObject">tweenControlCenterByObject</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterEventListeners">unregisterEventListeners</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterMouseAndTouchEvents">unregisterMouseAndTouchEvents</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterReticleEvent">unregisterReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#update">update</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#updateReticleEvent">updateReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#updateVideoPlayButton">updateVideoPlayButton</a></li></ul></li><li><a href="Widget.html">Widget</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Widget.html#addControlBar">addControlBar</a></li><li data-type='method' style='display: none;'><a href="Widget.html#addControlButton">addControlButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createCustomItem">createCustomItem</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createDefaultMenu">createDefaultMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createFullscreenButton">createFullscreenButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMainMenu">createMainMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMask">createMask</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenu">createMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenuItem">createMenuItem</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenuItemHeader">createMenuItemHeader</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createSettingButton">createSettingButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createSubMenu">createSubMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControl">createVideoControl</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControlButton">createVideoControlButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControlSeekbar">createVideoControlSeekbar</a></li><li data-type='method' style='display: none;'><a href="Widget.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Widget.html#mergeStyleOptions">mergeStyleOptions</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-CONTROLS.html">CONTROLS</a></li><li><a href="module-CubeTextureLoader.html">CubeTextureLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-CubeTextureLoader.html#~load">load</a></li></ul></li><li><a href="module-DataImage.html">DataImage</a></li><li><a href="module-ImageLoader.html">ImageLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-ImageLoader.html#~load">load</a></li></ul></li><li><a href="module-MODES.html">MODES</a></li><li><a href="module-REVISION.html">REVISION</a></li><li><a href="module-StereographicShader.html">StereographicShader</a></li><li><a href="module-TextureLoader.html">TextureLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-TextureLoader.html#~load">load</a></li></ul></li><li><a href="module-THREE_REVISION.html">THREE_REVISION</a></li><li><a href="module-THREE_VERSION.html">THREE_VERSION</a></li><li><a href="module-VERSION.html">VERSION</a></li></ul><h3>Externals</h3><ul><li><a href="external-CardboardEffect.html">CardboardEffect</a></li><li><a href="external-DeviceOrientationControls.html">DeviceOrientationControls</a></li><li><a href="external-OrbitControls.html">OrbitControls</a></li><li><a href="external-StereoEffect.html">StereoEffect</a></li></ul><h3>Events</h3><ul><li><a href="Infospot.html#event:dismiss">dismiss</a></li><li><a href="Infospot.html#event:panolens-container">panolens-container</a></li><li><a href="Infospot.html#event:panolens-dual-eye-effect">panolens-dual-eye-effect</a></li><li></li><li><a href="Media.html#event:canplay">canplay</a></li><li><a href="Panorama.html#event:enter">enter</a></li><li><a href="Panorama.html#event:enter-complete">enter-complete</a></li><li><a href="Panorama.html#event:enter-fade-complete">enter-fade-complete</a></li><li><a href="Panorama.html#event:enter-fade-start">enter-fade-start</a></li><li><a href="Panorama.html#event:enter-start">enter-start</a></li><li><a href="Panorama.html#event:error">error</a></li><li><a href="Panorama.html#event:infospot-animation-complete">infospot-animation-complete</a></li><li><a href="Panorama.html#event:leave">leave</a></li><li><a href="Panorama.html#event:leave-complete">leave-complete</a></li><li><a href="Panorama.html#event:leave-start">leave-start</a></li><li><a href="Panorama.html#event:load">load</a></li><li><a href="Panorama.html#event:panolens-viewer-handler">panolens-viewer-handler</a></li><li></li><li></li><li><a href="Panorama.html#event:progress">progress</a></li><li><a href="Reticle.html#event:reticle-end">reticle-end</a></li><li><a href="Reticle.html#event:reticle-ripple-end">reticle-ripple-end</a></li><li><a href="Reticle.html#event:reticle-ripple-start">reticle-ripple-start</a></li><li><a href="Reticle.html#event:reticle-start">reticle-start</a></li><li><a href="Reticle.html#event:reticle-update">reticle-update</a></li><li><a href="VideoPanorama.html#event:pause">pause</a></li><li><a href="VideoPanorama.html#event:play">play</a></li><li><a href="VideoPanorama.html#event:play-error">play-error</a></li><li><a href="Viewer.html#event:control-bar-toggle">control-bar-toggle</a></li><li><a href="Viewer.html#event:mode-change">mode-change</a></li><li></li><li><a href="Viewer.html#event:video-control-hide">video-control-hide</a></li><li><a href="Viewer.html#event:video-control-show">video-control-show</a></li><li><a href="Viewer.html#event:video-time">video-time</a></li><li><a href="Viewer.html#event:video-toggle">video-toggle</a></li><li><a href="Viewer.html#event:video-update">video-update</a></li><li><a href="Viewer.html#event:window-resize">window-resize</a></li><li><a href="Widget.html#event:panolens-viewer-handler">panolens-viewer-handler</a></li><li></li><li></li></ul><h3>Namespaces</h3><ul><li><a href="PANOLENS.html">PANOLENS</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">viewer/Viewer.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { MODES, CONTROLS } from '../Constants';
+import { OrbitControls } from '../lib/controls/OrbitControls';
+import { DeviceOrientationControls } from '../lib/controls/DeviceOrientationControls';
+import { CardboardEffect } from '../lib/effects/CardboardEffect';
+import { StereoEffect } from '../lib/effects/StereoEffect';
+import { Widget } from '../widget/Widget';
+import { Reticle } from '../interface/Reticle';
+import { Infospot } from '../infospot/Infospot';
+import { DataImage } from '../DataImage';
+import { Panorama } from '../panorama/Panorama';
+import { VideoPanorama } from '../panorama/VideoPanorama';
+import { CameraPanorama } from '../panorama/CameraPanorama';
+import * as THREE from 'three';
+import TWEEN from '@tweenjs/tween.js';
+
+/**
+ * @classdesc Viewer contains pre-defined scene, camera and renderer
+ * @constructor
+ * @param {object} [options] - Use custom or default config options
+ * @param {HTMLElement} [options.container] - A HTMLElement to host the canvas
+ * @param {THREE.Scene} [options.scene=THREE.Scene] - A THREE.Scene which contains panorama and 3D objects
+ * @param {THREE.Camera} [options.camera=THREE.PerspectiveCamera] - A THREE.Camera to view the scene
+ * @param {THREE.WebGLRenderer} [options.renderer=THREE.WebGLRenderer] - A THREE.WebGLRenderer to render canvas
+ * @param {boolean} [options.controlBar=true] - Show/hide control bar on the bottom of the container
+ * @param {array}   [options.controlButtons=[]] - Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'setting', 'video']
+ * @param {boolean} [options.autoHideControlBar=false] - Auto hide control bar when click on non-active area
+ * @param {boolean} [options.autoHideInfospot=true] - Auto hide infospots when click on non-active area
+ * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
+ * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
+ * @param {number}  [options.cameraFov=60] - Camera field of view value
+ * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
+ * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
+ * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection in ms
+ * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
+ * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
+ * @param {number}  [options.indicatorSize=30] - Size of View Indicator
+ * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
+ * @param {boolean} [options.autoRotate=false] - Auto rotate
+ * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
+ * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
+ */
+function Viewer ( options ) {
+
+    let container;
+
+    options = options || {};
+    options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
+    options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
+    options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
+    options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
+    options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
+    options.clickTolerance = options.clickTolerance || 10;
+    options.cameraFov = options.cameraFov || 60;
+    options.reverseDragging = options.reverseDragging || false;
+    options.enableReticle = options.enableReticle || false;
+    options.dwellTime = options.dwellTime || 1500;
+    options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
+    options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
+    options.indicatorSize = options.indicatorSize || 30;
+    options.output = options.output ? options.output : 'none';
+    options.autoRotate = options.autoRotate || false;
+    options.autoRotateSpeed = options.autoRotateSpeed || 2.0;
+    options.autoRotateActivationDuration = options.autoRotateActivationDuration || 5000;
+
+    this.options = options;
+
+    /*
+     * CSS Icon
+     * const styleLoader = new StyleLoader();
+     * styleLoader.inject( 'icono' );
+     */
+
+    // Container
+    if ( options.container ) {
+
+        container = options.container;
+        container._width = container.clientWidth;
+        container._height = container.clientHeight;
+
+    } else {
+
+        container = document.createElement( 'div' );
+        container.classList.add( 'panolens-container' );
+        container.style.width = '100%';
+        container.style.height = '100%';
+        container._width = window.innerWidth;
+        container._height = window.innerHeight;
+        document.body.appendChild( container );
+
+    }
+
+    this.container = container;
+
+    this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
+    this.scene = options.scene || new THREE.Scene();
+    this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
+    this.sceneReticle = new THREE.Scene();
 
-		// Register change event if passiveRenering
-		if ( this.options.passiveRendering ) {
+    this.viewIndicatorSize = this.options.indicatorSize;
 
-			console.warn( 'passiveRendering is now deprecated' );
+    this.reticle = {};
+    this.tempEnableReticle = this.options.enableReticle;
 
-		}
+    this.mode = MODES.NORMAL;
+
+    this.panorama = null;
+    this.widget = null;
 
-		// Controls
-		this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
-		this.control = this.OrbitControls;
+    this.hoverObject = null;
+    this.infospot = null;
+    this.pressEntityObject = null;
+    this.pressObject = null;
+
+    this.raycaster = new THREE.Raycaster();
+    this.raycasterPoint = new THREE.Vector2();
+    this.userMouse = new THREE.Vector2();
+    this.updateCallbacks = [];
+    this.requestAnimationId = null;
+
+    this.cameraFrustum = new THREE.Frustum();
+    this.cameraViewProjectionMatrix = new THREE.Matrix4();
+
+    this.autoRotateRequestId = null;
+
+    this.outputDivElement = null;
+
+    this.touchSupported = 'ontouchstart' in window || window.DocumentTouch &amp;&amp; document instanceof DocumentTouch;
+
+    // Handler references
+    this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
+    this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
+    this.HANDLER_MOUSE_MOVE = this.onMouseMove.bind( this );
+    this.HANDLER_WINDOW_RESIZE = this.onWindowResize.bind( this );
+    this.HANDLER_KEY_DOWN = this.onKeyDown.bind( this );
+    this.HANDLER_KEY_UP = this.onKeyUp.bind( this );
+    this.HANDLER_TAP = this.onTap.bind( this, {
+        clientX: this.container.clientWidth / 2,
+        clientY: this.container.clientHeight / 2
+    } );
 
-		// Cardboard effect
-		this.CardboardEffect = new THREE.CardboardEffect( this.renderer );
-		this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+    // Flag for infospot output
+    this.OUTPUT_INFOSPOT = false;
 
-		// Stereo effect
-		this.StereoEffect = new THREE.StereoEffect( this.renderer );
-		this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+    // Animations
+    this.tweenLeftAnimation = new TWEEN.Tween();
+    this.tweenUpAnimation = new TWEEN.Tween();
+
+    // Renderer
+    this.renderer.setPixelRatio( window.devicePixelRatio );
+    this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+    this.renderer.setClearColor( 0x000000, 0 );
+    this.renderer.autoClear = false;
+
+    // Append Renderer Element to container
+    this.renderer.domElement.classList.add( 'panolens-canvas' );
+    this.renderer.domElement.style.display = 'block';
+    this.container.style.backgroundColor = '#000';
+    this.container.appendChild( this.renderer.domElement );
 
-		this.effect = this.CardboardEffect;
+    // Camera Controls
+    this.OrbitControls = new OrbitControls( this.camera, this.container );
+    this.OrbitControls.id = 'orbit';
+    this.OrbitControls.minDistance = 1;
+    this.OrbitControls.noPan = true;
+    this.OrbitControls.autoRotate = this.options.autoRotate;
+    this.OrbitControls.autoRotateSpeed = this.options.autoRotateSpeed;
 
-		// Add default hidden reticle
-		this.addReticle();
+    this.DeviceOrientationControls = new DeviceOrientationControls( this.camera, this.container );
+    this.DeviceOrientationControls.id = 'device-orientation';
+    this.DeviceOrientationControls.enabled = false;
+    this.camera.position.z = 1;
 
-		// Lock horizontal view
-		if ( this.options.horizontalView ) {
-			this.OrbitControls.minPolarAngle = Math.PI / 2;
-			this.OrbitControls.maxPolarAngle = Math.PI / 2;
-		}
+    // Register change event if passiveRenering
+    if ( this.options.passiveRendering ) {
 
-		// Add Control UI
-		if ( this.options.controlBar !== false ) {
-			this.addDefaultControlBar( this.options.controlButtons );
-		}
+        console.warn( 'passiveRendering is now deprecated' );
 
-		// Add View Indicator
-		if ( this.options.viewIndicator ) {
-			this.addViewIndicator();
-		}
+    }
 
-		// Reverse dragging direction
-		if ( this.options.reverseDragging ) {
-			this.reverseDraggingDirection();
-		}
+    // Controls
+    this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
+    this.control = this.OrbitControls;
 
-		// Register event if reticle is enabled, otherwise defaults to mouse
-		if ( this.options.enableReticle ) {
-			this.enableReticleControl();
-		} else {
-			this.registerMouseAndTouchEvents();
-		}
+    // Cardboard effect
+    this.CardboardEffect = new CardboardEffect( this.renderer );
+    this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
 
-		if ( this.options.output === 'overlay' ) {
-			this.addOutputElement();
-		}
+    // Stereo effect
+    this.StereoEffect = new StereoEffect( this.renderer );
+    this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
 
-		// Register dom event listeners
-		this.registerEventListeners();
+    this.effect = this.CardboardEffect;
 
-		// Animate
-		this.animate.call( this );
+    // Add default hidden reticle
+    this.addReticle();
 
-	};
+    // Lock horizontal view
+    if ( this.options.horizontalView ) {
+        this.OrbitControls.minPolarAngle = Math.PI / 2;
+        this.OrbitControls.maxPolarAngle = Math.PI / 2;
+    }
 
-	PANOLENS.Viewer.prototype = Object.create( THREE.EventDispatcher.prototype );
+    // Add Control UI
+    if ( this.options.controlBar !== false ) {
+        this.addDefaultControlBar( this.options.controlButtons );
+    }
 
-	PANOLENS.Viewer.prototype.constructor = PANOLENS.Viewer;
+    // Add View Indicator
+    if ( this.options.viewIndicator ) {
+        this.addViewIndicator();
+    }
 
-	/**
-	 * Add an object to the scene
-	 * Automatically hookup with panolens-viewer-handler listener
-	 * to communicate with viewer method
-	 * @param {THREE.Object3D} object - The object to be added
-	 */
-	PANOLENS.Viewer.prototype.add = function ( object ) {
+    // Reverse dragging direction
+    if ( this.options.reverseDragging ) {
+        this.reverseDraggingDirection();
+    }
 
-		if ( arguments.length > 1 ) {
+    // Register event if reticle is enabled, otherwise defaults to mouse
+    if ( this.options.enableReticle ) {
+        this.enableReticleControl();
+    } else {
+        this.registerMouseAndTouchEvents();
+    }
 
-			for ( var i = 0; i &lt; arguments.length; i ++ ) {
+    // Output infospot position to an overlay container if specified
+    if ( this.options.output === 'overlay' ) {
+        this.addOutputElement();
+    }
 
-				this.add( arguments[ i ] );
+    // Register dom event listeners
+    this.registerEventListeners();
 
-			}
+    // Animate
+    this.animate.call( this );
 
-			return this;
+};
 
-		}
+Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
 
-		this.scene.add( object );
+    constructor: Viewer,
 
-		// All object added to scene has 'panolens-viewer-handler' event to handle viewer communication
-		if ( object.addEventListener ) {
+    /**
+     * Add an object to the scene
+     * Automatically hookup with panolens-viewer-handler listener
+     * to communicate with viewer method
+     * @param {THREE.Object3D} object - The object to be added
+     * @memberOf Viewer
+     * @instance
+     */
+    add: function ( object ) {
 
-			object.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+        if ( arguments.length > 1 ) {
 
-		}
+            for ( let i = 0; i &lt; arguments.length; i ++ ) {
 
-		// All object added to scene being passed with container
-		if ( object instanceof PANOLENS.Panorama &amp;&amp; object.dispatchEvent ) {
+                this.add( arguments[ i ] );
 
-			object.dispatchEvent( { type: 'panolens-container', container: this.container } );
+            }
 
-		}
+            return this;
 
-		// Hookup default panorama event listeners
-		if ( object.type === 'panorama' ) {
+        }
 
-			this.addPanoramaEventListener( object );
+        this.scene.add( object );
 
-			if ( !this.panorama ) {
+        // All object added to scene has 'panolens-viewer-handler' event to handle viewer communication
+        if ( object.addEventListener ) {
 
-				this.setPanorama( object );
+            object.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
 
-			}
+        }
 
-		}
+        // All object added to scene being passed with container
+        if ( object instanceof Panorama &amp;&amp; object.dispatchEvent ) {
 
-	};
+            object.dispatchEvent( { type: 'panolens-container', container: this.container } );
 
-	/**
-	 * Remove an object from the scene
-	 * @param  {THREE.Object3D} object - Object to be removed
-	 */
-	PANOLENS.Viewer.prototype.remove = function ( object ) {
+        }
 
-		if ( object.removeEventListener ) {
+        if ( object instanceof CameraPanorama ) {
 
-			object.removeEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+            object.dispatchEvent( { type: 'panolens-scene', scene: this.scene } );
 
-		}
+        }
 
-		this.scene.remove( object );
+        // Hookup default panorama event listeners
+        if ( object.type === 'panorama' ) {
 
-	};
+            this.addPanoramaEventListener( object );
 
-	/**
-	 * Add default control bar
-	 * @param {array} array - The control buttons array
-	 */
-	PANOLENS.Viewer.prototype.addDefaultControlBar = function ( array ) {
+            if ( !this.panorama ) {
 
-		var scope = this;
+                this.setPanorama( object );
 
-		if ( this.widget ) {
+            }
 
-			console.warn( 'Default control bar exists' );
-			return;
+        }
 
-		}
+    },
 
-		this.widget = new PANOLENS.Widget( this.container );
-		this.widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
-		this.widget.addControlBar();
-		array.forEach( function( buttonName ){
+    /**
+     * Remove an object from the scene
+     * @param  {THREE.Object3D} object - Object to be removed
+     * @memberOf Viewer
+     * @instance
+     */
+    remove: function ( object ) {
 
-			scope.widget.addControlButton( buttonName );
+        if ( object.removeEventListener ) {
 
-		} );
+            object.removeEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
 
-	};
+        }
 
-	/**
-	 * Set a panorama to be the current one
-	 * @param {PANOLENS.Panorama} pano - Panorama to be set
-	 */
-	PANOLENS.Viewer.prototype.setPanorama = function ( pano ) {
+        this.scene.remove( object );
 
-		var scope = this, leavingPanorama = this.panorama;
+    },
 
-		if ( pano.type === 'panorama' &amp;&amp; leavingPanorama !== pano ) {
+    /**
+     * Add default control bar
+     * @param {array} array - The control buttons array
+     * @memberOf Viewer
+     * @instance
+     */
+    addDefaultControlBar: function ( array ) {
 
-			// Clear exisiting infospot
-			this.hideInfospot();
+        if ( this.widget ) {
 
-			var afterEnterComplete = function () {
+            console.warn( 'Default control bar exists' );
+            return;
 
-				leavingPanorama &amp;&amp; leavingPanorama.onLeave();
-				pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
+        }
 
-			};
+        const widget = new Widget( this.container );
+        widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+        widget.addControlBar();
+        array.forEach( buttonName => {
 
-			pano.addEventListener( 'enter-fade-start', afterEnterComplete );
+            widget.addControlButton( buttonName );
 
-			// Assign and enter panorama
-			(this.panorama = pano).onEnter();
+        } );
+
+        this.widget = widget;
+
+    },
+
+    /**
+     * Set a panorama to be the current one
+     * @param {Panorama} pano - Panorama to be set
+     * @memberOf Viewer
+     * @instance
+     */
+    setPanorama: function ( pano ) {
+
+        const leavingPanorama = this.panorama;
+
+        if ( pano.type === 'panorama' &amp;&amp; leavingPanorama !== pano ) {
+
+            // Clear exisiting infospot
+            this.hideInfospot();
+
+            const afterEnterComplete = function () {
+
+                if ( leavingPanorama ) { leavingPanorama.onLeave(); }
+                pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
+
+            };
+
+            pano.addEventListener( 'enter-fade-start', afterEnterComplete );
+
+            // Assign and enter panorama
+            (this.panorama = pano).onEnter();
 			
-		}
+        }
 
-	};
+    },
 
-	/**
-	 * Event handler to execute commands from child objects
-	 * @param {object} event - The dispatched event with method as function name and data as an argument
-	 */
-	PANOLENS.Viewer.prototype.eventHandler = function ( event ) {
+    /**
+     * Event handler to execute commands from child objects
+     * @param {object} event - The dispatched event with method as function name and data as an argument
+     * @memberOf Viewer
+     * @instance
+     */
+    eventHandler: function ( event ) {
 
-		if ( event.method &amp;&amp; this[ event.method ] ) {
+        if ( event.method &amp;&amp; this[ event.method ] ) {
 
-			this[ event.method ]( event.data );
+            this[ event.method ]( event.data );
 
-		}
+        }
 
-	};
+    },
 
-	/**
-	 * Dispatch event to all descendants
-	 * @param  {object} event - Event to be passed along
-	 */
-	PANOLENS.Viewer.prototype.dispatchEventToChildren = function ( event ) {
+    /**
+     * Dispatch event to all descendants
+     * @param  {object} event - Event to be passed along
+     * @memberOf Viewer
+     * @instance
+     */
+    dispatchEventToChildren: function ( event ) {
 
-		this.scene.traverse( function ( object ) {
+        this.scene.traverse( function ( object ) {
 
-			if ( object.dispatchEvent ) {
+            if ( object.dispatchEvent ) {
 
-				object.dispatchEvent( event );
+                object.dispatchEvent( event );
 
-			}
+            }
 
-		});
+        });
 
-	};
+    },
 
-	/**
-	 * Set widget content
-	 * @param  {integer} controlIndex - Control index
-	 * @param  {PANOLENS.Modes} mode - Modes for effects
-	 */
-	PANOLENS.Viewer.prototype.activateWidgetItem = function ( controlIndex, mode ) {
+    /**
+     * Set widget content
+     * @method activateWidgetItem
+     * @param  {integer} controlIndex - Control index
+     * @param  {integer} mode - Modes for effects
+     * @memberOf Viewer
+     * @instance
+     */
+    activateWidgetItem: function ( controlIndex, mode ) {
 
-		var mainMenu = this.widget.mainMenu;
-		var ControlMenuItem = mainMenu.children[ 0 ];
-		var ModeMenuItem = mainMenu.children[ 1 ];
+        const mainMenu = this.widget.mainMenu;
+        const ControlMenuItem = mainMenu.children[ 0 ];
+        const ModeMenuItem = mainMenu.children[ 1 ];
 
-		var item;
+        let item;
 
-		if ( controlIndex !== undefined ) {
+        if ( controlIndex !== undefined ) {
 
-			switch ( controlIndex ) {
+            switch ( controlIndex ) {
 
-				case 0:
+            case 0:
 
-					item = ControlMenuItem.subMenu.children[ 1 ];
+                item = ControlMenuItem.subMenu.children[ 1 ];
 
-					break;
+                break;
 
-				case 1:
+            case 1:
 
-					item = ControlMenuItem.subMenu.children[ 2 ];
+                item = ControlMenuItem.subMenu.children[ 2 ];
 
-					break;
+                break;
 					
-				default:
+            default:
 
-					item = ControlMenuItem.subMenu.children[ 1 ];
+                item = ControlMenuItem.subMenu.children[ 1 ];
 
-					break;	
+                break;	
 
-			}
+            }
 
-			ControlMenuItem.subMenu.setActiveItem( item )
-			ControlMenuItem.setSelectionTitle( item.textContent );
+            ControlMenuItem.subMenu.setActiveItem( item );
+            ControlMenuItem.setSelectionTitle( item.textContent );
 
-		}
+        }
 
-		if ( mode !== undefined ) {
+        if ( mode !== undefined ) {
 
-			switch( mode ) {
+            switch( mode ) {
 
-				case PANOLENS.Modes.CARDBOARD:
+            case MODES.CARDBOARD:
 
-					item = ModeMenuItem.subMenu.children[ 2 ];
+                item = ModeMenuItem.subMenu.children[ 2 ];
 
-					break;
+                break;
 
-				case PANOLENS.Modes.STEREO:
+            case MODES.STEREO:
 
-					item = ModeMenuItem.subMenu.children[ 3 ];
+                item = ModeMenuItem.subMenu.children[ 3 ];
 					
-					break;
+                break;
 
-				default:
+            default:
 
-					item = ModeMenuItem.subMenu.children[ 1 ];
+                item = ModeMenuItem.subMenu.children[ 1 ];
 
-					break;
-			}
+                break;
+            }
 
-			ModeMenuItem.subMenu.setActiveItem( item )
-			ModeMenuItem.setSelectionTitle( item.textContent );
+            ModeMenuItem.subMenu.setActiveItem( item );
+            ModeMenuItem.setSelectionTitle( item.textContent );
 
-		}
+        }
 
-	};
+    },
 
-	/**
-	 * Enable rendering effect
-	 * @param  {PANOLENS.Modes} mode - Modes for effects
-	 */
-	PANOLENS.Viewer.prototype.enableEffect = function ( mode ) {
+    /**
+     * Enable rendering effect
+     * @param  {MODES} mode - Modes for effects
+     * @memberOf Viewer
+     * @instance
+     */
+    enableEffect: function ( mode ) {
 
-		if ( this.mode === mode ) { return; }
-		if ( mode === PANOLENS.Modes.NORMAL ) { this.disableEffect(); return; }
-		else { this.mode = mode; }
+        if ( this.mode === mode ) { return; }
+        if ( mode === MODES.NORMAL ) { this.disableEffect(); return; }
+        else { this.mode = mode; }
 
-		var fov = this.camera.fov;
+        const fov = this.camera.fov;
 
-		switch( mode ) {
+        switch( mode ) {
 
-			case PANOLENS.Modes.CARDBOARD:
+        case MODES.CARDBOARD:
 
-				this.effect = this.CardboardEffect;
-				this.enableReticleControl();
+            this.effect = this.CardboardEffect;
+            this.enableReticleControl();
 
-				break;
+            break;
 
-			case PANOLENS.Modes.STEREO:
+        case MODES.STEREO:
 
-				this.effect = this.StereoEffect;
-				this.enableReticleControl();
+            this.effect = this.StereoEffect;
+            this.enableReticleControl();
 				
-				break;
+            break;
+
+        default:
+
+            this.effect = null;
+            this.disableReticleControl();
+
+            break;
 
-			default:
+        }
 
-				this.effect = null;
-				this.disableReticleControl();
+        this.activateWidgetItem( undefined, this.mode );
 
-				break;
+        /**
+         * Dual eye effect event
+         * @type {object}
+         * @event Infospot#panolens-dual-eye-effect
+         * @property {MODES} mode - Current display mode
+         */
+        this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
 
-		}
+        // Force effect stereo camera to update by refreshing fov
+        this.camera.fov = fov + 10e-3;
+        this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
+        this.render();
+        this.camera.fov = fov;
 
-		this.activateWidgetItem( undefined, this.mode );
+        /**
+         * Dispatch mode change event
+         * @type {object}
+         * @event Viewer#mode-change
+         * @property {MODES} mode - Current display mode
+         */
+        this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
 
-		/**
-		 * Dual eye effect event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
-		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
-		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
+    },
 
-		// Force effect stereo camera to update by refreshing fov
-		this.camera.fov = fov + 10e-3;
-		this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
-		this.render();
-		this.camera.fov = fov;
+    /**
+     * Disable additional rendering effect
+     * @memberOf Viewer
+     * @instance
+     */
+    disableEffect: function () {
 
-	};
+        if ( this.mode === MODES.NORMAL ) { return; }
+
+        this.mode = MODES.NORMAL;
+        this.disableReticleControl();
 
-	/**
-	 * Disable additional rendering effect
-	 */
-	PANOLENS.Viewer.prototype.disableEffect = function () {
+        this.activateWidgetItem( undefined, this.mode );
 
-		if ( this.mode === PANOLENS.Modes.NORMAL ) { return; }
+        /**
+         * Dual eye effect event
+         * @type {object}
+         * @event Infospot#panolens-dual-eye-effect
+         * @property {MODES} mode - Current display mode
+         */
+        this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
+
+        this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+        this.render();
 
-		this.mode = PANOLENS.Modes.NORMAL;
-		this.disableReticleControl();
+        /**
+         * Dispatch mode change event
+         * @type {object}
+         * @event Viewer#mode-change
+         * @property {MODES} mode - Current display mode
+         */
+        this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
+    },
+
+    /**
+     * Enable reticle control
+     * @memberOf Viewer
+     * @instance
+     */
+    enableReticleControl: function () {
+
+        if ( this.reticle.visible ) { return; }
+
+        this.tempEnableReticle = true;
+
+        // Register reticle event and unregister mouse event
+        this.unregisterMouseAndTouchEvents();
+        this.reticle.show();
+        this.registerReticleEvent();
+        this.updateReticleEvent();
+
+    },
+
+    /**
+     * Disable reticle control
+     * @memberOf Viewer
+     * @instance
+     */
+    disableReticleControl: function () {
+
+        this.tempEnableReticle = false;
+
+        // Register mouse event and unregister reticle event
+        if ( !this.options.enableReticle ) {
+
+            this.reticle.hide();
+            this.unregisterReticleEvent();
+            this.registerMouseAndTouchEvents();
+
+        } else {
+
+            this.updateReticleEvent();
+
+        }
+
+    },
+
+    /**
+     * Enable auto rotation
+     * @memberOf Viewer
+     * @instance
+     */
+    enableAutoRate: function () {
 
-		this.activateWidgetItem( undefined, this.mode );
+        this.options.autoRotate = true;
+        this.OrbitControls.autoRotate = true;
 
-		/**
-		 * Dual eye effect event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#panolens-dual-eye-effect
-		 * @event PANOLENS.Infospot#panolens-dual-eye-effect
-		 * @property {PANOLENS.Modes} mode - Current display mode
-		 */
-		this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
+    },
+
+    /**
+     * Disable auto rotation
+     * @memberOf Viewer
+     * @instance
+     */
+    disableAutoRate: function () {
 
-		this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
-		this.render();
-	};
+        clearTimeout( this.autoRotateRequestId );
+        this.options.autoRotate = false;
+        this.OrbitControls.autoRotate = false;
 
-	/**
-	 * Enable reticle control
-	 */
-	PANOLENS.Viewer.prototype.enableReticleControl = function () {
+    },
 
-		if ( this.reticle.visible ) { return; }
-		if ( !this.reticle.textureLoaded ) { this.reticle.loadTextures(); }
+    /**
+     * Toggle video play or stop
+     * @param {boolean} pause
+     * @memberOf Viewer
+     * @instance
+     * @fires Viewer#video-toggle
+     */
+    toggleVideoPlay: function ( pause ) {
 
-		this.tempEnableReticle = true;
+        if ( this.panorama instanceof VideoPanorama ) {
 
-		// Register reticle event and unregister mouse event
-		this.unregisterMouseAndTouchEvents();
-		this.reticle.show();
-		this.registerReticleEvent();
-		this.updateReticleEvent();
+            /**
+             * Toggle video event
+             * @type {object}
+             * @event Viewer#video-toggle
+             */
+            this.panorama.dispatchEvent( { type: 'video-toggle', pause: pause } );
 
-	};
+        }
 
-	/**
-	 * Disable reticle control
-	 */
-	PANOLENS.Viewer.prototype.disableReticleControl = function () {
+    },
 
-		this.tempEnableReticle = false;
+    /**
+     * Set currentTime in a video
+     * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+     * @memberOf Viewer
+     * @instance
+     * @fires Viewer#video-time
+     */
+    setVideoCurrentTime: function ( percentage ) {
 
-		// Register mouse event and unregister reticle event
-		if ( !this.options.enableReticle ) {
+        if ( this.panorama instanceof VideoPanorama ) {
 
-			this.reticle.hide();
-			this.unregisterReticleEvent();
-			this.registerMouseAndTouchEvents();
+            /**
+             * Setting video time event
+             * @type {object}
+             * @event Viewer#video-time
+             * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+             */
+            this.panorama.dispatchEvent( { type: 'video-time', percentage: percentage } );
 
-		} else {
+        }
+
+    },
 
-			this.updateReticleEvent();
+    /**
+     * This will be called when video updates if an widget is present
+     * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+     * @memberOf Viewer
+     * @instance
+     * @fires Viewer#video-update
+     */
+    onVideoUpdate: function ( percentage ) {
 
-		}
+        const { widget } = this;
 
-	};
+        /**
+         * Video update event
+         * @type {object}
+         * @event Viewer#video-update
+         * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
+         */
+        if( widget ) { widget.dispatchEvent( { type: 'video-update', percentage: percentage } ); }
 
-	/**
-	 * Toggle video play or stop
-	 * @fires PANOLENS.Viewer#video-toggle
-	 */
-	PANOLENS.Viewer.prototype.toggleVideoPlay = function ( pause ) {
+    },
 
-		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
+    /**
+     * Add update callback to be called every animation frame
+     * @param {function} callback
+     * @memberOf Viewer
+     * @instance
+     */
+    addUpdateCallback: function ( fn ) {
 
-			/**
-			 * Toggle video event
-			 * @type {object}
-			 * @event PANOLENS.Viewer#video-toggle
-			 */
-			this.panorama.dispatchEvent( { type: 'video-toggle', pause: pause } );
+        if ( fn ) {
 
-		}
+            this.updateCallbacks.push( fn );
 
-	};
+        }
 
-	/**
-	 * Set currentTime in a video
-	 * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
-	 * @fires PANOLENS.Viewer#video-time
-	 */
-	PANOLENS.Viewer.prototype.setVideoCurrentTime = function ( percentage ) {
+    },
 
-		if ( this.panorama instanceof PANOLENS.VideoPanorama ) {
+    /**
+     * Remove update callback
+     * @param  {function} fn - The function to be removed
+     * @memberOf Viewer
+     * @instance
+     */
+    removeUpdateCallback: function ( fn ) {
 
-			/**
-			 * Setting video time event
-			 * @type {object}
-			 * @event PANOLENS.Viewer#video-time
-			 * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
-			 */
-			this.panorama.dispatchEvent( { type: 'video-time', percentage: percentage } );
+        const index = this.updateCallbacks.indexOf( fn );
 
-		}
+        if ( fn &amp;&amp; index >= 0 ) {
 
-	};
+            this.updateCallbacks.splice( index, 1 );
 
-	/**
-	 * This will be called when video updates if an widget is present
-	 * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
-	 * @fires PANOLENS.Viewer#video-update
-	 */
-	PANOLENS.Viewer.prototype.onVideoUpdate = function ( percentage ) {
+        }
 
-		/**
-		 * Video update event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#video-update
-		 * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
-		 */
-		this.widget &amp;&amp; this.widget.dispatchEvent( { type: 'video-update', percentage: percentage } );
+    },
 
-	};
+    /**
+     * Show video widget
+     * @memberOf Viewer
+     * @instance
+     */
+    showVideoWidget: function () {
 
-	/**
-	 * Add update callback to be called every animation frame
-	 */
-	PANOLENS.Viewer.prototype.addUpdateCallback = function ( fn ) {
+        const { widget } = this;
 
-		if ( fn ) {
+        /**
+         * Show video widget event
+         * @type {object}
+         * @event Viewer#video-control-show
+         */
+        if( widget ) { widget.dispatchEvent( { type: 'video-control-show' } ); }
 
-			this.updateCallbacks.push( fn );
+    },
 
-		}
+    /**
+     * Hide video widget
+     * @memberOf Viewer
+     * @instance
+     */
+    hideVideoWidget: function () {
 
-	};
+        const { widget } = this;
 
-	/**
-	 * Remove update callback
-	 * @param  {Function} fn - The function to be removed
-	 */
-	PANOLENS.Viewer.prototype.removeUpdateCallback = function ( fn ) {
+        /**
+         * Hide video widget
+         * @type {object}
+         * @event Viewer#video-control-hide
+         */
+        if( widget ) { widget.dispatchEvent( { type: 'video-control-hide' } ); }
 
-		var index = this.updateCallbacks.indexOf( fn );
+    },
 
-		if ( fn &amp;&amp; index >= 0 ) {
+    /**
+     * Update video play button
+     * @param {boolean} paused 
+     * @memberOf Viewer
+     * @instance
+     */
+    updateVideoPlayButton: function ( paused ) {
 
-			this.updateCallbacks.splice( index, 1 );
+        const { widget } = this;
 
-		}
+        if ( widget &amp;&amp; widget.videoElement &amp;&amp; widget.videoElement.controlButton ) {
 
-	};
+            widget.videoElement.controlButton.update( paused );
 
-	/**
-	 * Show video widget
-	 */
-	PANOLENS.Viewer.prototype.showVideoWidget = function () {
+        }
 
-		/**
-		 * Show video widget event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#video-control-show
-		 */
-		this.widget &amp;&amp; this.widget.dispatchEvent( { type: 'video-control-show' } );
+    },
 
-	};
+    /**
+     * Add default panorama event listeners
+     * @param {Panorama} pano - The panorama to be added with event listener
+     * @memberOf Viewer
+     * @instance
+     */
+    addPanoramaEventListener: function ( pano ) {
 
-	/**
-	 * Hide video widget
-	 */
-	PANOLENS.Viewer.prototype.hideVideoWidget = function () {
+        // Set camera control on every panorama
+        pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
 
-		/**
-		 * Hide video widget
-		 * @type {object}
-		 * @event PANOLENS.Viewer#video-control-hide
-		 */
-		this.widget &amp;&amp; this.widget.dispatchEvent( { type: 'video-control-hide' } );
+        // Show and hide widget event only when it's VideoPanorama
+        if ( pano instanceof VideoPanorama ) {
 
-	};
+            pano.addEventListener( 'enter-fade-start', this.showVideoWidget.bind( this ) );
+            pano.addEventListener( 'leave', function () {
 
-	PANOLENS.Viewer.prototype.updateVideoPlayButton = function ( paused ) {
+                if ( !(this.panorama instanceof VideoPanorama) ) {
 
-		if ( this.widget &amp;&amp; 
-			 this.widget.videoElement &amp;&amp; 
-			 this.widget.videoElement.controlButton ) {
+                    this.hideVideoWidget.call( this );
 
-			this.widget.videoElement.controlButton.update( paused );
-
-		}
-
-	};
-
-	/**
-	 * Add default panorama event listeners
-	 * @param {PANOLENS.Panorama} pano - The panorama to be added with event listener
-	 */
-	PANOLENS.Viewer.prototype.addPanoramaEventListener = function ( pano ) {
-
-		var scope = this;
-
-		// Set camera control on every panorama
-		pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
-
-		// Show and hide widget event only when it's PANOLENS.VideoPanorama
-		if ( pano instanceof PANOLENS.VideoPanorama ) {
-
-			pano.addEventListener( 'enter-fade-start', this.showVideoWidget.bind( this ) );
-			pano.addEventListener( 'leave', function () {
-
-				if ( !(this.panorama instanceof PANOLENS.VideoPanorama) ) {
-
-					this.hideVideoWidget.call( this );
-
-				}
+                }
 				
-			}.bind( this ) );
+            }.bind( this ) );
 
-		}
+        }
 
-	};
+    },
 
-	/**
-	 * Set camera control
-	 */
-	PANOLENS.Viewer.prototype.setCameraControl = function () {
+    /**
+     * Set camera control
+     * @memberOf Viewer
+     * @instance
+     */
+    setCameraControl: function () {
 
-		this.OrbitControls.target.copy( this.panorama.position );
+        this.OrbitControls.target.copy( this.panorama.position );
 
-	};
+    },
 
-	/**
-	 * Get current camera control
-	 * @return {object} - Current navigation control. THREE.OrbitControls or THREE.DeviceOrientationControls
-	 */
-	PANOLENS.Viewer.prototype.getControl = function () {
+    /**
+     * Get current camera control
+     * @return {object} - Current navigation control
+     * @memberOf Viewer
+     * @instance
+     * @returns {THREE.OrbitControls|THREE.DeviceOrientationControls}
+     */
+    getControl: function () {
+
+        return this.control;
 
-		return this.control;
+    },
 
-	},
+    /**
+     * Get scene
+     * @memberOf Viewer
+     * @instance
+     * @return {THREE.Scene} - Current scene which the viewer is built on
+     */
+    getScene: function () {
+
+        return this.scene;
 
-	/**
-	 * Get scene
-	 * @return {THREE.Scene} - Current scene which the viewer is built on
-	 */
-	PANOLENS.Viewer.prototype.getScene = function () {
+    },
 
-		return this.scene;
+    /**
+     * Get camera
+     * @memberOf Viewer
+     * @instance
+     * @return {THREE.Camera} - The scene camera
+     */
+    getCamera: function () {
 
-	};
+        return this.camera;
 
-	/**
-	 * Get camera
-	 * @return {THREE.Camera} - The scene camera
-	 */
-	PANOLENS.Viewer.prototype.getCamera = function () {
+    },
 
-		return this.camera;
+    /**
+     * Get renderer
+     * @memberOf Viewer
+     * @instance
+     * @return {THREE.WebGLRenderer} - The renderer using webgl
+     */
+    getRenderer: function () {
 
-	},
+        return this.renderer;
 
-	/**
-	 * Get renderer
-	 * @return {THREE.WebGLRenderer} - The renderer using webgl
-	 */
-	PANOLENS.Viewer.prototype.getRenderer = function () {
+    },
 
-		return this.renderer;
+    /**
+     * Get container
+     * @memberOf Viewer
+     * @instance
+     * @return {HTMLElement} - The container holds rendererd canvas
+     */
+    getContainer: function () {
 
-	};
+        return this.container;
 
-	/**
-	 * Get container
-	 * @return {HTMLDOMElement} - The container holds rendererd canvas
-	 */
-	PANOLENS.Viewer.prototype.getContainer = function () {
+    },
 
-		return this.container;
+    /**
+     * Get control id
+     * @memberOf Viewer
+     * @instance
+     * @return {string} - Control id. 'orbit' or 'device-orientation'
+     */
+    getControlId: function () {
 
-	};
+        return this.control.id;
 
-	/**
-	 * Get control name
-	 * @return {string} - Control name. 'orbit' or 'device-orientation'
-	 */
-	PANOLENS.Viewer.prototype.getControlName = function () {
+    },
 
-		return this.control.name;
+    /**
+     * Get next navigation control id
+     * @memberOf Viewer
+     * @instance
+     * @return {string} - Next control id
+     */
+    getNextControlId: function () {
 
-	};
+        return this.controls[ this.getNextControlIndex() ].id;
 
-	/**
-	 * Get next navigation control name
-	 * @return {string} - Next control name
-	 */
-	PANOLENS.Viewer.prototype.getNextControlName = function () {
+    },
 
-		return this.controls[ this.getNextControlIndex() ].name;
+    /**
+     * Get next navigation control index
+     * @memberOf Viewer
+     * @instance
+     * @return {number} - Next control index
+     */
+    getNextControlIndex: function () {
 
-	};
+        const controls = this.controls;
+        const control = this.control;
+        const nextIndex = controls.indexOf( control ) + 1;
 
-	/**
-	 * Get next navigation control index
-	 * @return {number} - Next control index
-	 */
-	PANOLENS.Viewer.prototype.getNextControlIndex = function () {
+        return ( nextIndex >= controls.length ) ? 0 : nextIndex;
 
-		var controls, control, nextIndex;
+    },
 
-		controls = this.controls;
-		control = this.control;
-		nextIndex = controls.indexOf( control ) + 1;
+    /**
+     * Set field of view of camera
+     * @param {number} fov
+     * @memberOf Viewer
+     * @instance
+     */
+    setCameraFov: function ( fov ) {
 
-		return ( nextIndex >= controls.length ) ? 0 : nextIndex;
+        this.camera.fov = fov;
+        this.camera.updateProjectionMatrix();
 
-	};
+    },
 
-	/**
-	 * Set field of view of camera
-	 */
-	PANOLENS.Viewer.prototype.setCameraFov = function ( fov ) {
+    /**
+     * Enable control by index
+     * @param  {CONTROLS} index - Index of camera control
+     * @memberOf Viewer
+     * @instance
+     */
+    enableControl: function ( index ) {
 
-		this.camera.fov = fov;
-		this.camera.updateProjectionMatrix();
+        index = ( index >= 0 &amp;&amp; index &lt; this.controls.length ) ? index : 0;
 
-	};
+        this.control.enabled = false;
 
-	/**
-	 * Enable control by index
-	 * @param  {PANOLENS.Controls} index - Index of camera control
-	 */
-	PANOLENS.Viewer.prototype.enableControl = function ( index ) {
+        this.control = this.controls[ index ];
 
-		index = ( index >= 0 &amp;&amp; index &lt; this.controls.length ) ? index : 0;
+        this.control.enabled = true;
 
-		this.control.enabled = false;
+        switch ( index ) {
 
-		this.control = this.controls[ index ];
+        case CONTROLS.ORBIT:
 
-		this.control.enabled = true;
+            this.camera.position.copy( this.panorama.position );
+            this.camera.position.z += 1;
 
-		switch ( index ) {
+            break;
 
-			case PANOLENS.Controls.ORBIT:
+        case CONTROLS.DEVICEORIENTATION:
 
-				this.camera.position.copy( this.panorama.position );
-				this.camera.position.z += 1;
+            this.camera.position.copy( this.panorama.position );
 
-				break;
+            break;
 
-			case PANOLENS.Controls.DEVICEORIENTATION:
+        default:
 
-				this.camera.position.copy( this.panorama.position );
+            break;
+        }
 
-				break;
+        this.control.update();
 
-			default:
+        this.activateWidgetItem( index, undefined );
 
-				break;
-		}
+    },
 
-		this.control.update();
+    /**
+     * Disable current control
+     * @memberOf Viewer
+     * @instance
+     */
+    disableControl: function () {
 
-		this.activateWidgetItem( index, undefined );
+        this.control.enabled = false;
 
-	};
+    },
 
-	/**
-	 * Disable current control
-	 */
-	PANOLENS.Viewer.prototype.disableControl = function () {
+    /**
+     * Toggle next control
+     * @memberOf Viewer
+     * @instance
+     */
+    toggleNextControl: function () {
 
-		this.control.enabled = false;
+        this.enableControl( this.getNextControlIndex() );
 
-	};
+    },
 
-	/**
-	 * Toggle next control
-	 */
-	PANOLENS.Viewer.prototype.toggleNextControl = function () {
+    /**
+     * Screen Space Projection
+     * @memberOf Viewer
+     * @instance
+     */
+    getScreenVector: function ( worldVector ) {
 
-		this.enableControl( this.getNextControlIndex() );
+        const vector = worldVector.clone();
+        const widthHalf = ( this.container.clientWidth ) / 2;
+        const heightHalf = this.container.clientHeight / 2;
 
-	};
+        vector.project( this.camera );
 
-	/**
-	 * Screen Space Projection
-	 */
-	PANOLENS.Viewer.prototype.getScreenVector = function ( worldVector ) {
+        vector.x = ( vector.x * widthHalf ) + widthHalf;
+        vector.y = - ( vector.y * heightHalf ) + heightHalf;
+        vector.z = 0;
 
-		var vector = worldVector.clone();
-		var widthHalf = ( this.container.clientWidth ) / 2;
-		var heightHalf = this.container.clientHeight / 2;
+        return vector;
 
-		vector.project( this.camera );
+    },
 
-		vector.x = ( vector.x * widthHalf ) + widthHalf;
-		vector.y = - ( vector.y * heightHalf ) + heightHalf;
-		vector.z = 0;
+    /**
+     * Check Sprite in Viewport
+     * @memberOf Viewer
+     * @instance
+     */
+    checkSpriteInViewport: function ( sprite ) {
 
-		return vector;
+        this.camera.matrixWorldInverse.getInverse( this.camera.matrixWorld );
+        this.cameraViewProjectionMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse );
+        this.cameraFrustum.setFromMatrix( this.cameraViewProjectionMatrix );
 
-	};
+        return sprite.visible &amp;&amp; this.cameraFrustum.intersectsSprite( sprite );
 
-	/**
-	 * Check Sprite in Viewport
-	 */
-	PANOLENS.Viewer.prototype.checkSpriteInViewport = function ( sprite ) {
+    },
 
-		this.camera.matrixWorldInverse.getInverse( this.camera.matrixWorld );
-		this.cameraViewProjectionMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse );
-		this.cameraFrustum.setFromMatrix( this.cameraViewProjectionMatrix );
+    /**
+     * Reverse dragging direction
+     * @memberOf Viewer
+     * @instance
+     */
+    reverseDraggingDirection: function () {
 
-		return sprite.visible &amp;&amp; this.cameraFrustum.intersectsSprite( sprite );
+        this.OrbitControls.rotateSpeed *= -1;
+        this.OrbitControls.momentumScalingFactor *= -1;
 
-	};
+    },
 
-	/**
-	 * Reverse dragging direction
-	 */
-	PANOLENS.Viewer.prototype.reverseDraggingDirection = function () {
+    /**
+     * Add reticle 
+     * @memberOf Viewer
+     * @instance
+     */
+    addReticle: function () {
 
-		this.OrbitControls.rotateSpeed *= -1;
-		this.OrbitControls.momentumScalingFactor *= -1;
+        this.reticle = new Reticle( 0xffffff, true, this.options.dwellTime );
+        this.reticle.hide();
+        this.camera.add( this.reticle );
+        this.sceneReticle.add( this.camera );
 
-	};
+    },
 
-	/**
-	 * Add reticle 
-	 */
-	PANOLENS.Viewer.prototype.addReticle = function () {
+    /**
+     * Tween control looking center
+     * @param {THREE.Vector3} vector - Vector to be looked at the center
+     * @param {number} [duration=1000] - Duration to tween
+     * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+     * @memberOf Viewer
+     * @instance
+     */
+    tweenControlCenter: function ( vector, duration, easing ) {
 
-		this.reticle = new PANOLENS.Reticle( 0xffffff, 
-			this.options.autoReticleSelect,
-			PANOLENS.DataImage.ReticleIdle, 
-			PANOLENS.DataImage.ReticleDwell, 
-			this.options.dwellTime,
-			45 );
-		this.reticle.position.z = -10;
-		this.camera.add( this.reticle );
-		this.scene.add( this.camera );
+        if ( this.control !== this.OrbitControls ) {
 
-	};
+            return;
 
-	/**
-	 * Tween control looking center
-	 * @param {THREE.Vector3} vector - Vector to be looked at the center
-	 * @param {number} [duration=1000] - Duration to tween
-	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
-	 */
-	PANOLENS.Viewer.prototype.tweenControlCenter = function ( vector, duration, easing ) {
+        }
 
-		if ( this.control !== this.OrbitControls ) {
+        // Pass in arguments as array
+        if ( vector instanceof Array ) {
 
-			return;
+            duration = vector[ 1 ];
+            easing = vector[ 2 ];
+            vector = vector[ 0 ];
 
-		}
+        }
 
-		// Pass in arguments as array
-		if ( vector instanceof Array ) {
+        duration = duration !== undefined ? duration : 1000;
+        easing = easing || TWEEN.Easing.Exponential.Out;
 
-			duration = vector[ 1 ];
-			easing = vector[ 2 ];
-			vector = vector[ 0 ];
+        let scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
 
-		}
+        scope = this;
 
-		duration = duration !== undefined ? duration : 1000;
-		easing = easing || TWEEN.Easing.Exponential.Out;
+        chv = this.camera.getWorldDirection( new THREE.Vector3() );
+        cvv = chv.clone();
 
-		var scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
+        vptc = this.panorama.getWorldPosition( new THREE.Vector3() ).sub( this.camera.getWorldPosition( new THREE.Vector3() ) );
 
-		scope = this;
+        hv = vector.clone();
+        // Scale effect
+        hv.x *= -1;
+        hv.add( vptc ).normalize();
+        vv = hv.clone();
 
-		chv = this.camera.getWorldDirection();
-		cvv = chv.clone();
+        chv.y = 0;
+        hv.y = 0;
 
-		vptc = this.panorama.getWorldPosition().sub( this.camera.getWorldPosition() );
+        ha = Math.atan2( hv.z, hv.x ) - Math.atan2( chv.z, chv.x );
+        ha = ha > Math.PI ? ha - 2 * Math.PI : ha;
+        ha = ha &lt; -Math.PI ? ha + 2 * Math.PI : ha;
+        va = Math.abs( cvv.angleTo( chv ) + ( cvv.y * vv.y &lt;= 0 ? vv.angleTo( hv ) : -vv.angleTo( hv ) ) );
+        va *= vv.y &lt; cvv.y ? 1 : -1;
 
-		hv = vector.clone();
-		// Scale effect
-		hv.x *= -1;
-		hv.add( vptc ).normalize();
-		vv = hv.clone();
+        ov = { left: 0, up: 0 };
+        nv = { left: 0, up: 0 };
 
-		chv.y = 0;
-		hv.y = 0;
+        this.tweenLeftAnimation.stop();
+        this.tweenUpAnimation.stop();
 
-		ha = Math.atan2( hv.z, hv.x ) - Math.atan2( chv.z, chv.x );
-		ha = ha > Math.PI ? ha - 2 * Math.PI : ha;
-		ha = ha &lt; -Math.PI ? ha + 2 * Math.PI : ha;
-		va = Math.abs( cvv.angleTo( chv ) + ( cvv.y * vv.y &lt;= 0 ? vv.angleTo( hv ) : -vv.angleTo( hv ) ) );
-		va *= vv.y &lt; cvv.y ? 1 : -1;
+        this.tweenLeftAnimation = new TWEEN.Tween( ov )
+            .to( { left: ha }, duration )
+            .easing( easing )
+            .onUpdate(function(ov){
+                scope.control.rotateLeft( ov.left - nv.left );
+                nv.left = ov.left;
+            })
+            .start();
 
-		ov = { left: 0, up: 0 };
-		nv = { left: 0, up: 0 };
+        this.tweenUpAnimation = new TWEEN.Tween( ov )
+            .to( { up: va }, duration )
+            .easing( easing )
+            .onUpdate(function(ov){
+                scope.control.rotateUp( ov.up - nv.up );
+                nv.up = ov.up;
+            })
+            .start();
 
-		this.tweenLeftAnimation.stop();
-		this.tweenUpAnimation.stop();
+    },
 
-		this.tweenLeftAnimation = new TWEEN.Tween( ov )
-			.to( { left: ha }, duration )
-			.easing( easing )
-			.onUpdate(function(){
-				scope.control.rotateLeft( this.left - nv.left );
-				nv.left = this.left;
-			})
-			.start();
+    /**
+     * Tween control looking center by object
+     * @param {THREE.Object3D} object - Object to be looked at the center
+     * @param {number} [duration=1000] - Duration to tween
+     * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
+     * @memberOf Viewer
+     * @instance
+     */
+    tweenControlCenterByObject: function ( object, duration, easing ) {
 
-		this.tweenUpAnimation = new TWEEN.Tween( ov )
-			.to( { up: va }, duration )
-			.easing( easing )
-			.onUpdate(function(){
-				scope.control.rotateUp( this.up - nv.up );
-				nv.up = this.up;
-			})
-			.start();
+        let isUnderScalePlaceHolder = false;
 
-	};
+        object.traverseAncestors( function ( ancestor ) {
 
-	/**
-	 * Tween control looking center by object
-	 * @param {THREE.Object3D} object - Object to be looked at the center
-	 * @param {number} [duration=1000] - Duration to tween
-	 * @param {function} [easing=TWEEN.Easing.Exponential.Out] - Easing function
-	 */
-	PANOLENS.Viewer.prototype.tweenControlCenterByObject = function ( object, duration, easing ) {
+            if ( ancestor.scalePlaceHolder ) {
 
-		var isUnderScalePlaceHolder = false;
+                isUnderScalePlaceHolder = true;
 
-		object.traverseAncestors( function ( ancestor ) {
+            }
+        } );
 
-			if ( ancestor.scalePlaceHolder ) {
+        if ( isUnderScalePlaceHolder ) {
 
-				isUnderScalePlaceHolder = true;
+            const invertXVector = new THREE.Vector3( -1, 1, 1 );
 
-			}
-		} );
+            this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ).multiply( invertXVector ), duration, easing );
 
-		if ( isUnderScalePlaceHolder ) {
+        } else {
 
-			var invertXVector = new THREE.Vector3( -1, 1, 1 );
+            this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ), duration, easing );
 
-			this.tweenControlCenter( object.getWorldPosition().multiply( invertXVector ), duration, easing );
+        }
 
-		} else {
+    },
 
-			this.tweenControlCenter( object.getWorldPosition(), duration, easing );
+    /**
+     * This is called when window size is changed
+     * @fires Viewer#window-resize
+     * @param {number} [windowWidth] - Specify if custom element has changed width
+     * @param {number} [windowHeight] - Specify if custom element has changed height
+     * @memberOf Viewer
+     * @instance
+     */
+    onWindowResize: function ( windowWidth, windowHeight ) {
 
-		}
+        let width, height;
 
-	};
+        const expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
 
-	/**
-	 * This is called when window size is changed
-	 * @fires PANOLENS.Viewer#window-resize
-	 * @param {number} [windowWidth] - Specify if custom element has changed width
-	 * @param {number} [windowHeight] - Specify if custom element has changed height
-	 */
-	PANOLENS.Viewer.prototype.onWindowResize = function ( windowWidth, windowHeight ) {
+        if ( windowWidth !== undefined &amp;&amp; windowHeight !== undefined ) {
 
-		var width, height, expand;
+            width = windowWidth;
+            height = windowHeight;
+            this.container._width = windowWidth;
+            this.container._height = windowHeight;
 
-		expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
+        } else {
 
-		if ( windowWidth !== undefined &amp;&amp; windowHeight !== undefined ) {
+            const isAndroid = /(android)/i.test(window.navigator.userAgent);
 
-			width = windowWidth;
-			height = windowHeight;
-			this.container._width = windowWidth;
-			this.container._height = windowHeight;
+            const adjustWidth = isAndroid 
+                ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 
+                : Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 
-		} else {
+            const adjustHeight = isAndroid 
+                ? Math.min(document.documentElement.clientHeight, window.innerHeight || 0) 
+                : Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 
-			width = expand ? Math.max(document.documentElement.clientWidth, window.innerWidth || 0) : this.container.clientWidth;
-			height = expand ? Math.max(document.documentElement.clientHeight, window.innerHeight || 0) : this.container.clientHeight;
-			this.container._width = width;
-			this.container._height = height;
+            width = expand ? adjustWidth : this.container.clientWidth;
+            height = expand ? adjustHeight : this.container.clientHeight;
 
-		}
+            this.container._width = width;
+            this.container._height = height;
 
-		this.camera.aspect = width / height;
-		this.camera.updateProjectionMatrix();
+        }
 
-		this.renderer.setSize( width, height );
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
 
-		// Update reticle
-		if ( this.options.enableReticle || this.tempEnableReticle ) {
+        this.renderer.setSize( width, height );
 
-			this.updateReticleEvent();
+        // Update reticle
+        if ( this.options.enableReticle || this.tempEnableReticle ) {
 
-		}
+            this.updateReticleEvent();
 
-		/**
-		 * Window resizing event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#window-resize
-		 * @property {number} width  - Width of the window
-		 * @property {number} height - Height of the window
-		 */
-		this.dispatchEvent( { type: 'window-resize', width: width, height: height });
-		this.scene.traverse( function ( object ) {
+        }
 
-			if ( object.dispatchEvent ) {
+        /**
+         * Window resizing event
+         * @type {object}
+         * @event Viewer#window-resize
+         * @property {number} width  - Width of the window
+         * @property {number} height - Height of the window
+         */
+        this.dispatchEvent( { type: 'window-resize', width: width, height: height });
+        this.scene.traverse( function ( object ) {
 
-				object.dispatchEvent( { type: 'window-resize', width: width, height: height });
+            if ( object.dispatchEvent ) {
 
-			}
+                object.dispatchEvent( { type: 'window-resize', width: width, height: height });
 
-		} );
+            }
 
-	};
+        } );
 
-	PANOLENS.Viewer.prototype.addOutputElement = function () {
+    },
 
-		var element = document.createElement( 'div' );
-		element.style.position = 'absolute';
-		element.style.right = '10px';
-		element.style.top = '10px';
-		element.style.color = "#fff";
-		this.container.appendChild( element );
-		this.outputDivElement = element;
+    /**
+     * Add output element
+     * @memberOf Viewer
+     * @instance
+     */
+    addOutputElement: function () {
 
-	};
+        const element = document.createElement( 'div' );
+        element.style.position = 'absolute';
+        element.style.right = '10px';
+        element.style.top = '10px';
+        element.style.color = '#fff';
+        this.container.appendChild( element );
+        this.outputDivElement = element;
 
-	/**
-	 * Output infospot attach position in developer console by holding down Ctrl button
-	 */
-	PANOLENS.Viewer.prototype.outputInfospotPosition = function () {
+    },
 
-		var intersects, point, panoramaWorldPosition, outputPosition;
+    /**
+     * Output position in developer console by holding down Ctrl button
+     * @memberOf Viewer
+     * @instance
+     */
+    outputPosition: function () {
 
-		intersects = this.raycaster.intersectObject( this.panorama, true );
+        const intersects = this.raycaster.intersectObject( this.panorama, true );
 
-		if ( intersects.length > 0 ) {
+        if ( intersects.length > 0 ) {
 
-			point = intersects[0].point;
-			panoramaWorldPosition = this.panorama.getWorldPosition();
+            const point = intersects[ 0 ].point.clone();
+            const converter = new THREE.Vector3( -1, 1, 1 );
+            const world = this.panorama.getWorldPosition( new THREE.Vector3() );
+            point.sub( world ).multiply( converter );
 
-			// Panorama is scaled -1 on X axis
-			outputPosition = new THREE.Vector3(
-				-(point.x - panoramaWorldPosition.x).toFixed(2),
-				(point.y - panoramaWorldPosition.y).toFixed(2),
-				(point.z - panoramaWorldPosition.z).toFixed(2)
-			);
+            const message = `${point.x.toFixed(2)}, ${point.y.toFixed(2)}, ${point.z.toFixed(2)}`;
 
-			switch ( this.options.output ) {
+            if ( point.length() === 0 ) { return; }
 
-				case 'console':
-					console.info( outputPosition.x + ', ' + outputPosition.y + ', ' + outputPosition.z );
-					break;
+            switch ( this.options.output ) {
 
-				case 'overlay':
-					this.outputDivElement.textContent = outputPosition.x + ', ' + outputPosition.y + ', ' + outputPosition.z;
-					break;
+            case 'console':
+                console.info( message );
+                break;
 
-				default:
-					break;
+            case 'overlay':
+                this.outputDivElement.textContent = message;
+                break;
 
-			}
+            default:
+                break;
 
-		}
+            }
 
-	};
+        }
 
-	PANOLENS.Viewer.prototype.onMouseDown = function ( event ) {
+    },
 
-		event.preventDefault();
+    /**
+     * On mouse down
+     * @param {MouseEvent} event 
+     * @memberOf Viewer
+     * @instance
+     */
+    onMouseDown: function ( event ) {
 
-		this.userMouse.x = ( event.clientX >= 0 ) ? event.clientX : event.touches[0].clientX;
-		this.userMouse.y = ( event.clientY >= 0 ) ? event.clientY : event.touches[0].clientY;
-		this.userMouse.type = 'mousedown';
-		this.onTap( event );
+        event.preventDefault();
 
-	};
+        this.userMouse.x = ( event.clientX >= 0 ) ? event.clientX : event.touches[0].clientX;
+        this.userMouse.y = ( event.clientY >= 0 ) ? event.clientY : event.touches[0].clientY;
+        this.userMouse.type = 'mousedown';
+        this.onTap( event );
 
-	PANOLENS.Viewer.prototype.onMouseMove = function ( event ) {
+    },
 
-		event.preventDefault();
-		this.userMouse.type = 'mousemove';
-		this.onTap( event );
+    /**
+     * On mouse move
+     * @param {MouseEvent} event 
+     * @memberOf Viewer
+     * @instance
+     */
+    onMouseMove: function ( event ) {
 
-	};
+        event.preventDefault();
+        this.userMouse.type = 'mousemove';
+        this.onTap( event );
 
-	PANOLENS.Viewer.prototype.onMouseUp = function ( event ) {
+    },
 
-		var onTarget = false, type;
+    /**
+     * On mouse up
+     * @param {MouseEvent} event 
+     * @memberOf Viewer
+     * @instance
+     */
+    onMouseUp: function ( event ) {
 
-		this.userMouse.type = 'mouseup';
+        let onTarget = false;
 
-		type = ( this.userMouse.x >= event.clientX - this.options.clickTolerance 
+        this.userMouse.type = 'mouseup';
+
+        const type = ( this.userMouse.x >= event.clientX - this.options.clickTolerance 
 				&amp;&amp; this.userMouse.x &lt;= event.clientX + this.options.clickTolerance
 				&amp;&amp; this.userMouse.y >= event.clientY - this.options.clickTolerance
 				&amp;&amp; this.userMouse.y &lt;= event.clientY + this.options.clickTolerance ) 
@@ -1289,764 +1439,788 @@
 				&amp;&amp; this.userMouse.x &lt;= event.changedTouches[0].clientX + this.options.clickTolerance 
 				&amp;&amp; this.userMouse.y >= event.changedTouches[0].clientY - this.options.clickTolerance
 				&amp;&amp; this.userMouse.y &lt;= event.changedTouches[0].clientY + this.options.clickTolerance ) 
-		? 'click' : undefined;
+            ? 'click' : undefined;
 
-		// Event should happen on canvas
-		if ( event &amp;&amp; event.target &amp;&amp; !event.target.classList.contains( 'panolens-canvas' ) ) { return; }
+        // Event should happen on canvas
+        if ( event &amp;&amp; event.target &amp;&amp; !event.target.classList.contains( 'panolens-canvas' ) ) { return; }
 
-		event.preventDefault();
+        event.preventDefault();
 
-		if ( event.changedTouches &amp;&amp; event.changedTouches.length === 1 ) {
+        if ( event.changedTouches &amp;&amp; event.changedTouches.length === 1 ) {
 
-			onTarget = this.onTap( { clientX : event.changedTouches[0].clientX, clientY : event.changedTouches[0].clientY }, type );
+            onTarget = this.onTap( { clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY }, type );
 		
-		} else {
+        } else {
 
-			onTarget = this.onTap( event, type );
+            onTarget = this.onTap( event, type );
 
-		}
+        }
 
-		this.userMouse.type = 'none';
+        this.userMouse.type = 'none';
 
-		if ( onTarget ) { 
+        if ( onTarget ) { 
 
-			return; 
+            return; 
 
-		}
+        }
 
-		if ( type === 'click' ) {
+        if ( type === 'click' ) {
 
-			this.options.autoHideInfospot &amp;&amp; this.panorama &amp;&amp; this.panorama.toggleInfospotVisibility();
-			this.options.autoHideControlBar &amp;&amp; this.toggleControlBar();
+            const { options: { autoHideInfospot, autoHideControlBar }, panorama, toggleControlBar } = this;
 
-		}
+            if ( autoHideInfospot &amp;&amp; panorama ) {
 
-	};
+                panorama.toggleInfospotVisibility();
 
-	PANOLENS.Viewer.prototype.onTap = function ( event, type ) {
+            }
 
-		var intersects, intersect_entity, intersect;
+            if ( autoHideControlBar ) {
 
-		this.raycasterPoint.x = ( ( event.clientX - this.container.offsetLeft ) / this.container.clientWidth ) * 2 - 1;
-		this.raycasterPoint.y = - ( ( event.clientY - this.container.offsetTop ) / this.container.clientHeight ) * 2 + 1;
+                toggleControlBar();
 
-		this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
+            }
 
-		// Return if no panorama 
-		if ( !this.panorama ) { 
+        }
 
-			return; 
+    },
 
-		}
+    /**
+     * On tap eveny frame
+     * @param {MouseEvent} event 
+     * @param {string} type 
+     * @memberOf Viewer
+     * @instance
+     */
+    onTap: function ( event, type ) {
 
-		// output infospot information
-		if ( event.type !== 'mousedown' &amp;&amp; PANOLENS.Utils.checkTouchSupported() || this.OUTPUT_INFOSPOT ) { 
+        const { left, top } = this.container.getBoundingClientRect();
+        const { clientWidth, clientHeight } = this.container;
 
-			this.outputInfospotPosition(); 
+        this.raycasterPoint.x = ( ( event.clientX - left ) / clientWidth ) * 2 - 1;
+        this.raycasterPoint.y = - ( ( event.clientY - top ) / clientHeight ) * 2 + 1;
 
-		}
+        this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
-		intersects = this.raycaster.intersectObjects( this.panorama.children, true );
+        // Return if no panorama 
+        if ( !this.panorama ) { 
 
-		intersect_entity = this.getConvertedIntersect( intersects );
+            return; 
 
-		intersect = ( intersects.length > 0 ) ? intersects[0].object : intersect;
+        }
 
-		if ( this.userMouse.type === 'mouseup'  ) {
+        // output infospot information
+        if ( event.type !== 'mousedown' &amp;&amp; this.touchSupported || this.OUTPUT_INFOSPOT ) { 
 
-			if ( intersect_entity &amp;&amp; this.pressEntityObject === intersect_entity &amp;&amp; this.pressEntityObject.dispatchEvent ) {
+            this.outputPosition(); 
 
-				this.pressEntityObject.dispatchEvent( { type: 'pressstop-entity', mouseEvent: event } );
+        }
 
-			}
+        const intersects = this.raycaster.intersectObjects( this.panorama.children, true );
+        const intersect_entity = this.getConvertedIntersect( intersects );
+        const intersect = ( intersects.length > 0 ) ? intersects[0].object : undefined;
 
-			this.pressEntityObject = undefined;
+        if ( this.userMouse.type === 'mouseup'  ) {
 
-		}
+            if ( intersect_entity &amp;&amp; this.pressEntityObject === intersect_entity &amp;&amp; this.pressEntityObject.dispatchEvent ) {
 
-		if ( this.userMouse.type === 'mouseup'  ) {
+                this.pressEntityObject.dispatchEvent( { type: 'pressstop-entity', mouseEvent: event } );
 
-			if ( intersect &amp;&amp; this.pressObject === intersect &amp;&amp; this.pressObject.dispatchEvent ) {
+            }
 
-				this.pressObject.dispatchEvent( { type: 'pressstop', mouseEvent: event } );
+            this.pressEntityObject = undefined;
 
-			}
+        }
 
-			this.pressObject = undefined;
+        if ( this.userMouse.type === 'mouseup'  ) {
 
-		}
+            if ( intersect &amp;&amp; this.pressObject === intersect &amp;&amp; this.pressObject.dispatchEvent ) {
 
-		if ( type === 'click' ) {
+                this.pressObject.dispatchEvent( { type: 'pressstop', mouseEvent: event } );
 
-			this.panorama.dispatchEvent( { type: 'click', intersects: intersects, mouseEvent: event } );
+            }
 
-			if ( intersect_entity &amp;&amp; intersect_entity.dispatchEvent ) {
+            this.pressObject = undefined;
 
-				intersect_entity.dispatchEvent( { type: 'click-entity', mouseEvent: event } );
+        }
 
-			}
+        if ( type === 'click' ) {
 
-			if ( intersect &amp;&amp; intersect.dispatchEvent ) {
+            this.panorama.dispatchEvent( { type: 'click', intersects: intersects, mouseEvent: event } );
 
-				intersect.dispatchEvent( { type: 'click', mouseEvent: event } );
+            if ( intersect_entity &amp;&amp; intersect_entity.dispatchEvent ) {
 
-			}
+                intersect_entity.dispatchEvent( { type: 'click-entity', mouseEvent: event } );
 
-		} else {
+            }
 
-			this.panorama.dispatchEvent( { type: 'hover', intersects: intersects, mouseEvent: event } );
+            if ( intersect &amp;&amp; intersect.dispatchEvent ) {
 
-			if ( ( this.hoverObject &amp;&amp; intersects.length > 0 &amp;&amp; this.hoverObject !== intersect_entity )
+                intersect.dispatchEvent( { type: 'click', mouseEvent: event } );
+
+            }
+
+        } else {
+
+            this.panorama.dispatchEvent( { type: 'hover', intersects: intersects, mouseEvent: event } );
+
+            if ( ( this.hoverObject &amp;&amp; intersects.length > 0 &amp;&amp; this.hoverObject !== intersect_entity )
 				|| ( this.hoverObject &amp;&amp; intersects.length === 0 ) ){
 
-				if ( this.hoverObject.dispatchEvent ) {
+                if ( this.hoverObject.dispatchEvent ) {
 
-					this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
+                    this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
 
-					// Cancel dwelling
-					this.reticle.cancelDwelling();
+                    this.reticle.end();
 
-				}
+                }
 
-				this.hoverObject = undefined;
+                this.hoverObject = undefined;
 
-			}
+            }
 
-			if ( intersect_entity &amp;&amp; intersects.length > 0 ) {
+            if ( intersect_entity &amp;&amp; intersects.length > 0 ) {
 
-				if ( this.hoverObject !== intersect_entity ) {
+                if ( this.hoverObject !== intersect_entity ) {
 
-					this.hoverObject = intersect_entity;
+                    this.hoverObject = intersect_entity;
 
-					if ( this.hoverObject.dispatchEvent ) {
+                    if ( this.hoverObject.dispatchEvent ) {
 
-						this.hoverObject.dispatchEvent( { type: 'hoverenter', mouseEvent: event } );
+                        this.hoverObject.dispatchEvent( { type: 'hoverenter', mouseEvent: event } );
 
-						// Start reticle timer
-						if ( this.options.autoReticleSelect &amp;&amp; this.options.enableReticle || this.tempEnableReticle ) {
-							this.reticle.startDwelling( this.onTap.bind( this, event, 'click' ) );
-						}
+                        // Start reticle timer
+                        if ( this.options.autoReticleSelect &amp;&amp; this.options.enableReticle || this.tempEnableReticle ) {
+                            this.reticle.start( this.onTap.bind( this, event, 'click' ) );
+                        }
 
-					}
+                    }
 
-				}
+                }
 
-				if ( this.userMouse.type === 'mousedown' &amp;&amp; this.pressEntityObject != intersect_entity ) {
+                if ( this.userMouse.type === 'mousedown' &amp;&amp; this.pressEntityObject != intersect_entity ) {
 
-					this.pressEntityObject = intersect_entity;
+                    this.pressEntityObject = intersect_entity;
 
-					if ( this.pressEntityObject.dispatchEvent ) {
+                    if ( this.pressEntityObject.dispatchEvent ) {
 
-						this.pressEntityObject.dispatchEvent( { type: 'pressstart-entity', mouseEvent: event } );
+                        this.pressEntityObject.dispatchEvent( { type: 'pressstart-entity', mouseEvent: event } );
 
-					}
+                    }
 
-				}
+                }
 
-				if ( this.userMouse.type === 'mousedown' &amp;&amp; this.pressObject != intersect ) {
+                if ( this.userMouse.type === 'mousedown' &amp;&amp; this.pressObject != intersect ) {
 
-					this.pressObject = intersect;
+                    this.pressObject = intersect;
 
-					if ( this.pressObject.dispatchEvent ) {
+                    if ( this.pressObject.dispatchEvent ) {
 
-						this.pressObject.dispatchEvent( { type: 'pressstart', mouseEvent: event } );
+                        this.pressObject.dispatchEvent( { type: 'pressstart', mouseEvent: event } );
 
-					}
+                    }
 
-				}
+                }
 
-				if ( this.userMouse.type === 'mousemove' || this.options.enableReticle ) {
+                if ( this.userMouse.type === 'mousemove' || this.options.enableReticle ) {
 
-					if ( intersect &amp;&amp; intersect.dispatchEvent ) {
+                    if ( intersect &amp;&amp; intersect.dispatchEvent ) {
 
-						intersect.dispatchEvent( { type: 'hover', mouseEvent: event } );
+                        intersect.dispatchEvent( { type: 'hover', mouseEvent: event } );
 
-					}
+                    }
 
-					if ( this.pressEntityObject &amp;&amp; this.pressEntityObject.dispatchEvent ) {
+                    if ( this.pressEntityObject &amp;&amp; this.pressEntityObject.dispatchEvent ) {
 
-						this.pressEntityObject.dispatchEvent( { type: 'pressmove-entity', mouseEvent: event } );
+                        this.pressEntityObject.dispatchEvent( { type: 'pressmove-entity', mouseEvent: event } );
 
-					}
+                    }
 
-					if ( this.pressObject &amp;&amp; this.pressObject.dispatchEvent ) {
+                    if ( this.pressObject &amp;&amp; this.pressObject.dispatchEvent ) {
 
-						this.pressObject.dispatchEvent( { type: 'pressmove', mouseEvent: event } );
+                        this.pressObject.dispatchEvent( { type: 'pressmove', mouseEvent: event } );
 
-					}
+                    }
 
-				}
+                }
 
-			}
+            }
 
-			if ( !intersect_entity &amp;&amp; this.pressEntityObject &amp;&amp; this.pressEntityObject.dispatchEvent ) {
+            if ( !intersect_entity &amp;&amp; this.pressEntityObject &amp;&amp; this.pressEntityObject.dispatchEvent ) {
 
-				this.pressEntityObject.dispatchEvent( { type: 'pressstop-entity', mouseEvent: event } );
+                this.pressEntityObject.dispatchEvent( { type: 'pressstop-entity', mouseEvent: event } );
 
-				this.pressEntityObject = undefined;
+                this.pressEntityObject = undefined;
 
-			}
+            }
 
-			if ( !intersect &amp;&amp; this.pressObject &amp;&amp; this.pressObject.dispatchEvent ) {
+            if ( !intersect &amp;&amp; this.pressObject &amp;&amp; this.pressObject.dispatchEvent ) {
 
-				this.pressObject.dispatchEvent( { type: 'pressstop', mouseEvent: event } );
+                this.pressObject.dispatchEvent( { type: 'pressstop', mouseEvent: event } );
 
-				this.pressObject = undefined;
+                this.pressObject = undefined;
 
-			}
+            }
 
-		}
+        }
 
-		// Infospot handler
-		if ( intersect &amp;&amp; intersect instanceof PANOLENS.Infospot ) {
+        // Infospot handler
+        if ( intersect &amp;&amp; intersect instanceof Infospot ) {
 
-			this.infospot = intersect;
+            this.infospot = intersect;
 			
-			if ( type === 'click' ) {
+            if ( type === 'click' ) {
 
-				return true;
+                return true;
 
-			}
+            }
 			
 
-		} else if ( this.infospot ) {
+        } else if ( this.infospot ) {
 
-			this.hideInfospot();
+            this.hideInfospot();
 
-		}
+        }
 
-	};
+        // Auto rotate
+        if ( this.options.autoRotate &amp;&amp; this.userMouse.type !== 'mousemove' ) {
 
-	PANOLENS.Viewer.prototype.getConvertedIntersect = function ( intersects ) {
+            // Auto-rotate idle timer
+            clearTimeout( this.autoRotateRequestId );
 
-		var intersect;
+            if ( this.control === this.OrbitControls ) {
 
-		for ( var i = 0; i &lt; intersects.length; i++ ) {
+                this.OrbitControls.autoRotate = false;
+                this.autoRotateRequestId = window.setTimeout( this.enableAutoRate.bind( this ), this.options.autoRotateActivationDuration );
 
-			if ( intersects[i].distance >= 0 &amp;&amp; intersects[i].object &amp;&amp; !intersects[i].object.passThrough ) {
+            }
 
-				if ( intersects[i].object.entity &amp;&amp; intersects[i].object.entity.passThrough ) {
-					continue;
-				} else if ( intersects[i].object.entity &amp;&amp; !intersects[i].object.entity.passThrough ) {
-					intersect = intersects[i].object.entity;
-					break;
-				} else {
-					intersect = intersects[i].object;
-					break;
-				}
+        }		
 
-			}
+    },
 
-		}
+    /**
+     * Get converted intersect
+     * @param {array} intersects 
+     * @memberOf Viewer
+     * @instance
+     */
+    getConvertedIntersect: function ( intersects ) {
 
-		return intersect;
+        let intersect;
 
-	};
+        for ( let i = 0; i &lt; intersects.length; i++ ) {
 
-	PANOLENS.Viewer.prototype.hideInfospot = function ( intersects ) {
+            if ( intersects[i].distance >= 0 &amp;&amp; intersects[i].object &amp;&amp; !intersects[i].object.passThrough ) {
 
-		if ( this.infospot ) {
+                if ( intersects[i].object.entity &amp;&amp; intersects[i].object.entity.passThrough ) {
+                    continue;
+                } else if ( intersects[i].object.entity &amp;&amp; !intersects[i].object.entity.passThrough ) {
+                    intersect = intersects[i].object.entity;
+                    break;
+                } else {
+                    intersect = intersects[i].object;
+                    break;
+                }
 
-			this.infospot.onHoverEnd();
+            }
 
-			this.infospot = undefined;
+        }
 
-		}
+        return intersect;
 
-	};
+    },
 
-	/**
-	 * Toggle control bar
-	 * @fires [PANOLENS.Viewer#control-bar-toggle]
-	 */
-	PANOLENS.Viewer.prototype.toggleControlBar = function () {
+    /**
+     * Hide infospot
+     * @memberOf Viewer
+     * @instance
+     */
+    hideInfospot: function () {
 
-		/**
-		 * Toggle control bar event
-		 * @type {object}
-		 * @event PANOLENS.Viewer#control-bar-toggle
-		 */
-		this.widget &amp;&amp; this.widget.dispatchEvent( { type: 'control-bar-toggle' } );
+        if ( this.infospot ) {
 
-	};
+            this.infospot.onHoverEnd();
 
-	PANOLENS.Viewer.prototype.onKeyDown = function ( event ) {
+            this.infospot = undefined;
 
-		if ( this.options.output &amp;&amp; this.options.output !== 'none' &amp;&amp; event.key === 'Control' ) {
+        }
 
-			this.OUTPUT_INFOSPOT = true;
+    },
 
-		}
+    /**
+     * Toggle control bar
+     * @memberOf Viewer
+     * @instance
+     * @fires Viewer#control-bar-toggle
+     */
+    toggleControlBar: function () {
 
-	};
+        const { widget } = this;
 
-	PANOLENS.Viewer.prototype.onKeyUp = function ( event ) {
+        /**
+         * Toggle control bar event
+         * @type {object}
+         * @event Viewer#control-bar-toggle
+         */
+        if ( widget ) {
 
-		this.OUTPUT_INFOSPOT = false;
+            widget.dispatchEvent( { type: 'control-bar-toggle' } );
 
-	};
+        }
 
-	/**
-	 * Update control and callbacks
-	 */
-	PANOLENS.Viewer.prototype.update = function () {
+    },
 
-		TWEEN.update();
+    /**
+     * On key down
+     * @param {KeyboardEvent} event 
+     * @memberOf Viewer
+     * @instance
+     */
+    onKeyDown: function ( event ) {
 
-		this.updateCallbacks.forEach( function( callback ){ callback(); } );
+        if ( this.options.output &amp;&amp; this.options.output !== 'none' &amp;&amp; event.key === 'Control' ) {
 
-		this.control.update();
+            this.OUTPUT_INFOSPOT = true;
 
-		this.scene.traverse( function( child ){
-			if ( child instanceof PANOLENS.Infospot 
+        }
+
+    },
+
+    /**
+     * On key up
+     * @param {KeyboardEvent} event 
+     * @memberOf Viewer
+     * @instance
+     */
+    onKeyUp: function () {
+
+        this.OUTPUT_INFOSPOT = false;
+
+    },
+
+    /**
+     * Update control and callbacks
+     * @memberOf Viewer
+     * @instance
+     */
+    update: function () {
+
+        TWEEN.update();
+
+        this.updateCallbacks.forEach( function( callback ){ callback(); } );
+
+        this.control.update();
+
+        this.scene.traverse( function( child ){
+            if ( child instanceof Infospot 
 				&amp;&amp; child.element 
 				&amp;&amp; ( this.hoverObject === child 
 					|| child.element.style.display !== 'none' 
 					|| (child.element.left &amp;&amp; child.element.left.style.display !== 'none')
 					|| (child.element.right &amp;&amp; child.element.right.style.display !== 'none') ) ) {
-				if ( this.checkSpriteInViewport( child ) ) {
-					var vector = this.getScreenVector( child.getWorldPosition() );
-					child.translateElement( vector.x, vector.y );
-				} else {
-					child.onDismiss();
-				}
+                if ( this.checkSpriteInViewport( child ) ) {
+                    const { x, y } = this.getScreenVector( child.getWorldPosition( new THREE.Vector3() ) );
+                    child.translateElement( x, y );
+                } else {
+                    child.onDismiss();
+                }
 				
-			}
-		}.bind(this) );
+            }
+        }.bind( this ) );
 
-	};
+    },
 
-	/**
-	 * Rendering function to be called on every animation frame
-	 */
-	PANOLENS.Viewer.prototype.render = function () {
+    /**
+     * Rendering function to be called on every animation frame
+     * Render reticle last
+     * @memberOf Viewer
+     * @instance
+     */
+    render: function () {
 
-		if ( this.mode === PANOLENS.Modes.CARDBOARD || this.mode === PANOLENS.Modes.STEREO ) {
+        if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
 
-			this.effect.render( this.scene, this.camera );
+            this.renderer.clear();
+            this.effect.render( this.scene, this.camera );
+            this.effect.render( this.sceneReticle, this.camera );
+			
 
-		} else {
+        } else {
 
-			this.renderer.render( this.scene, this.camera );
+            this.renderer.clear();
+            this.renderer.render( this.scene, this.camera );
+            this.renderer.clearDepth();
+            this.renderer.render( this.sceneReticle, this.camera );
 
-		}
+        }
 
-	};
+    },
 
-	PANOLENS.Viewer.prototype.animate = function () {
+    /**
+     * Animate
+     * @memberOf Viewer
+     * @instance
+     */
+    animate: function () {
 
-		this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
+        this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
 
-		this.onChange();
+        this.onChange();
 
-	};
+    },
 
-	PANOLENS.Viewer.prototype.onChange = function () {
+    /**
+     * On change
+     * @memberOf Viewer
+     * @instance
+     */
+    onChange: function () {
 
-		this.update();
-		this.render();
+        this.update();
+        this.render();
 
-	};
+    },
 
-	/**
-	 * Register mouse and touch event on container
-	 */
-	PANOLENS.Viewer.prototype.registerMouseAndTouchEvents = function () {
+    /**
+     * Register mouse and touch event on container
+     * @memberOf Viewer
+     * @instance
+     */
+    registerMouseAndTouchEvents: function () {
 
-		this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, false );
-		this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, false );
-		this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , false );
-		this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, false );
-		this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , false );
+        const options = { passive: false };
 
-	};
+        this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, options );
+        this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, options );
+        this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , options );
+        this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, options );
+        this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , options );
 
-	/**
-	 * Unregister mouse and touch event on container
-	 */
-	PANOLENS.Viewer.prototype.unregisterMouseAndTouchEvents = function () {
+    },
 
-		this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, false );
-		this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, false );
-		this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , false );
-		this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, false );
-		this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , false );
-	};
+    /**
+     * Unregister mouse and touch event on container
+     * @memberOf Viewer
+     * @instance
+     */
+    unregisterMouseAndTouchEvents: function () {
 
-	/**
-	 * Register reticle event
-	 */
-	PANOLENS.Viewer.prototype.registerReticleEvent = function () {
+        this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, false );
+        this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, false );
+        this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , false );
+        this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, false );
+        this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , false );
 
-		this.addUpdateCallback( this.HANDLER_TAP );
+    },
 
-	};
+    /**
+     * Register reticle event
+     * @memberOf Viewer
+     * @instance
+     */
+    registerReticleEvent: function () {
 
-	/**
-	 * Unregister reticle event
-	 */
-	PANOLENS.Viewer.prototype.unregisterReticleEvent = function () {
+        this.addUpdateCallback( this.HANDLER_TAP );
 
-		this.removeUpdateCallback( this.HANDLER_TAP );
+    },
 
-	};
+    /**
+     * Unregister reticle event
+     * @memberOf Viewer
+     * @instance
+     */
+    unregisterReticleEvent: function () {
 
-	/**
-	 * Update reticle event
-	 */
-	PANOLENS.Viewer.prototype.updateReticleEvent = function () {
+        this.removeUpdateCallback( this.HANDLER_TAP );
 
-		var centerX, centerY;
+    },
 
-		centerX = this.container.clientWidth / 2 + this.container.offsetLeft;
-		centerY = this.container.clientHeight / 2;
+    /**
+     * Update reticle event
+     * @memberOf Viewer
+     * @instance
+     */
+    updateReticleEvent: function () {
 
-		this.removeUpdateCallback( this.HANDLER_TAP );
-		this.HANDLER_TAP = this.onTap.bind( this, { clientX: centerX, clientY: centerY } );
-		this.addUpdateCallback( this.HANDLER_TAP );
+        const clientX = this.container.clientWidth / 2 + this.container.offsetLeft;
+        const clientY = this.container.clientHeight / 2;
 
-	};
+        this.removeUpdateCallback( this.HANDLER_TAP );
+        this.HANDLER_TAP = this.onTap.bind( this, { clientX, clientY } );
+        this.addUpdateCallback( this.HANDLER_TAP );
 
-	/**
-	 * Register container and window listeners
-	 */
-	PANOLENS.Viewer.prototype.registerEventListeners = function () {
+    },
 
-		// Resize Event
-		window.addEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
+    /**
+     * Register container and window listeners
+     * @memberOf Viewer
+     * @instance
+     */
+    registerEventListeners: function () {
 
-		// Keyboard Event
-		window.addEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
-		window.addEventListener( 'keyup'  , this.HANDLER_KEY_UP	 , true );
+        // Resize Event
+        window.addEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
 
-	};
+        // Keyboard Event
+        window.addEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
+        window.addEventListener( 'keyup'  , this.HANDLER_KEY_UP	 , true );
 
-	/**
-	 * Unregister container and window listeners
-	 */
-	PANOLENS.Viewer.prototype.unregisterEventListeners = function () {
+    },
 
-		// Resize Event
-		window.removeEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
+    /**
+     * Unregister container and window listeners
+     * @memberOf Viewer
+     * @instance
+     */
+    unregisterEventListeners: function () {
 
-		// Keyboard Event
-		window.removeEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
-		window.removeEventListener( 'keyup'  , this.HANDLER_KEY_UP  , true );
+        // Resize Event
+        window.removeEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
 
-	};
+        // Keyboard Event
+        window.removeEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
+        window.removeEventListener( 'keyup'  , this.HANDLER_KEY_UP  , true );
 
-	/**
-	 * Dispose all scene objects and clear cache
-	 */
-	PANOLENS.Viewer.prototype.dispose = function () {
+    },
 
-		// Unregister dom event listeners
-		this.unregisterEventListeners();
+    /**
+     * Dispose all scene objects and clear cache
+     * @memberOf Viewer
+     * @instance
+     */
+    dispose: function () {
 
-		// recursive disposal on 3d objects
-		function recursiveDispose ( object ) {
+        this.tweenLeftAnimation.stop();
+        this.tweenUpAnimation.stop();
 
-			for ( var i = object.children.length - 1; i >= 0; i-- ) {
+        // Unregister dom event listeners
+        this.unregisterEventListeners();
 
-				recursiveDispose( object.children[i] );
-				object.remove( object.children[i] );
+        // recursive disposal on 3d objects
+        function recursiveDispose ( object ) {
 
-			}
+            for ( let i = object.children.length - 1; i >= 0; i-- ) {
 
-			if ( object instanceof PANOLENS.Infospot ) {
+                recursiveDispose( object.children[i] );
+                object.remove( object.children[i] );
 
-				object.dispose();
+            }
 
-			}
+            if ( object instanceof Panorama || object instanceof Infospot ) {
 
-			object.geometry &amp;&amp; object.geometry.dispose();
-			object.material &amp;&amp; object.material.dispose();
-		}
+                object.dispose();
+                object = null;
 
-		recursiveDispose( this.scene );
+            } else if ( object.dispatchEvent ){
 
-		// dispose widget
-		if ( this.widget ) {
+                object.dispatchEvent( 'dispose' );
 
-			this.widget.dispose();
-			this.widget = null;
+            }
 
-		}
+        }
 
-		// clear cache
-		if ( THREE.Cache &amp;&amp; THREE.Cache.enabled ) {
+        recursiveDispose( this.scene );
 
-			THREE.Cache.clear();
+        // dispose widget
+        if ( this.widget ) {
 
-		}
+            this.widget.dispose();
+            this.widget = null;
 
-	};
+        }
 
-	/**
-	 * Destory viewer by disposing and stopping requestAnimationFrame
-	 */
-	PANOLENS.Viewer.prototype.destory = function () {
+        // clear cache
+        if ( THREE.Cache &amp;&amp; THREE.Cache.enabled ) {
 
-		this.dispose();
-		this.render();
-		window.cancelAnimationFrame( this.requestAnimationId );		
+            THREE.Cache.clear();
 
-	};
+        }
 
-	/**
-	 * On panorama dispose
-	 */
-	PANOLENS.Viewer.prototype.onPanoramaDispose = function ( panorama ) {
+    },
 
-		if ( panorama instanceof PANOLENS.VideoPanorama ) {
+    /**
+     * Destroy viewer by disposing and stopping requestAnimationFrame
+     * @memberOf Viewer
+     * @instance
+     */
+    destroy: function () {
 
-			this.hideVideoWidget();
+        this.dispose();
+        this.render();
+        window.cancelAnimationFrame( this.requestAnimationId );		
 
-		}
+    },
 
-		if ( panorama === this.panorama ) {
+    /**
+     * On panorama dispose
+     * @memberOf Viewer
+     * @instance
+     */
+    onPanoramaDispose: function ( panorama ) {
 
-			this.panorama = null;
+        if ( panorama instanceof VideoPanorama ) {
 
-		}
+            this.hideVideoWidget();
 
-	};
+        }
 
-	/**
-	 * Load ajax call
-	 * @param {string} url - URL to be requested
-	 * @param {function} [callback] - Callback after request completes
-	 */
-	PANOLENS.Viewer.prototype.loadAsyncRequest = function ( url, callback ) {
+        if ( panorama === this.panorama ) {
 
-		var request = new XMLHttpRequest();
-		request.onloadend = function ( event ) {
-			callback &amp;&amp; callback( event );
-		};
-		request.open( "GET", url, true );
-		request.send( null );
+            this.panorama = null;
 
-	};
+        }
 
-	/**
-	 * View indicator in upper left
-	 * */
-	PANOLENS.Viewer.prototype.addViewIndicator = function () {
+    },
 
-		var scope = this;
+    /**
+     * Load ajax call
+     * @param {string} url - URL to be requested
+     * @param {function} [callback] - Callback after request completes
+     * @memberOf Viewer
+     * @instance
+     */
+    loadAsyncRequest: function ( url, callback = () => {} ) {
 
-		function loadViewIndicator ( asyncEvent ) {
+        const request = new window.XMLHttpRequest();
+        request.onloadend = function ( event ) {
+            callback( event );
+        };
+        request.open( 'GET', url, true );
+        request.send( null );
 
-			if ( asyncEvent.loaded === 0 ) return;
+    },
 
-			var viewIndicatorDiv = asyncEvent.target.responseXML.documentElement;
-			viewIndicatorDiv.style.width = scope.viewIndicatorSize + "px";
-			viewIndicatorDiv.style.height = scope.viewIndicatorSize + "px";
-			viewIndicatorDiv.style.position = "absolute";
-			viewIndicatorDiv.style.top = "10px";
-			viewIndicatorDiv.style.left = "10px";
-			viewIndicatorDiv.style.opacity = "0.5";
-			viewIndicatorDiv.style.cursor = "pointer";
-			viewIndicatorDiv.id = "panolens-view-indicator-container";
+    /**
+     * View indicator in upper left
+     * @memberOf Viewer
+     * @instance
+     */
+    addViewIndicator: function () {
 
-			scope.container.appendChild( viewIndicatorDiv );
+        const scope = this;
 
-			var indicator = viewIndicatorDiv.querySelector( "#indicator" );
-			var setIndicatorD = function () {
+        function loadViewIndicator ( asyncEvent ) {
 
-				scope.radius = scope.viewIndicatorSize * 0.225;
-				scope.currentPanoAngle = scope.camera.rotation.y - THREE.Math.degToRad( 90 );
-				scope.fovAngle = THREE.Math.degToRad( scope.camera.fov ) ;
-				scope.leftAngle = -scope.currentPanoAngle - scope.fovAngle / 2;
-				scope.rightAngle = -scope.currentPanoAngle + scope.fovAngle / 2;
-				scope.leftX = scope.radius * Math.cos( scope.leftAngle );
-				scope.leftY = scope.radius * Math.sin( scope.leftAngle );
-				scope.rightX = scope.radius * Math.cos( scope.rightAngle );
-				scope.rightY = scope.radius * Math.sin( scope.rightAngle );
-				scope.indicatorD = "M " + scope.leftX + " " + scope.leftY + " A " + scope.radius + " " + scope.radius + " 0 0 1 " + scope.rightX + " " + scope.rightY;
+            if ( asyncEvent.loaded === 0 ) return;
 
-				if ( scope.leftX &amp;&amp; scope.leftY &amp;&amp; scope.rightX &amp;&amp; scope.rightY &amp;&amp; scope.radius ) {
+            const viewIndicatorDiv = asyncEvent.target.responseXML.documentElement;
+            viewIndicatorDiv.style.width = scope.viewIndicatorSize + 'px';
+            viewIndicatorDiv.style.height = scope.viewIndicatorSize + 'px';
+            viewIndicatorDiv.style.position = 'absolute';
+            viewIndicatorDiv.style.top = '10px';
+            viewIndicatorDiv.style.left = '10px';
+            viewIndicatorDiv.style.opacity = '0.5';
+            viewIndicatorDiv.style.cursor = 'pointer';
+            viewIndicatorDiv.id = 'panolens-view-indicator-container';
 
-					indicator.setAttribute( "d", scope.indicatorD );
+            scope.container.appendChild( viewIndicatorDiv );
 
-				}
+            const indicator = viewIndicatorDiv.querySelector( '#indicator' );
+            const setIndicatorD = function () {
 
-			};
+                scope.radius = scope.viewIndicatorSize * 0.225;
+                scope.currentPanoAngle = scope.camera.rotation.y - THREE.Math.degToRad( 90 );
+                scope.fovAngle = THREE.Math.degToRad( scope.camera.fov ) ;
+                scope.leftAngle = -scope.currentPanoAngle - scope.fovAngle / 2;
+                scope.rightAngle = -scope.currentPanoAngle + scope.fovAngle / 2;
+                scope.leftX = scope.radius * Math.cos( scope.leftAngle );
+                scope.leftY = scope.radius * Math.sin( scope.leftAngle );
+                scope.rightX = scope.radius * Math.cos( scope.rightAngle );
+                scope.rightY = scope.radius * Math.sin( scope.rightAngle );
+                scope.indicatorD = 'M ' + scope.leftX + ' ' + scope.leftY + ' A ' + scope.radius + ' ' + scope.radius + ' 0 0 1 ' + scope.rightX + ' ' + scope.rightY;
 
-			scope.addUpdateCallback( setIndicatorD );
+                if ( scope.leftX &amp;&amp; scope.leftY &amp;&amp; scope.rightX &amp;&amp; scope.rightY &amp;&amp; scope.radius ) {
 
-			var indicatorOnMouseEnter = function () {
+                    indicator.setAttribute( 'd', scope.indicatorD );
 
-				this.style.opacity = "1";
+                }
 
-			};
+            };
 
-			var indicatorOnMouseLeave = function () {
+            scope.addUpdateCallback( setIndicatorD );
 
-				this.style.opacity = "0.5";
+            const indicatorOnMouseEnter = function () {
 
-			};
+                this.style.opacity = '1';
 
-			viewIndicatorDiv.addEventListener( "mouseenter", indicatorOnMouseEnter );
-			viewIndicatorDiv.addEventListener( "mouseleave", indicatorOnMouseLeave );
-		}
+            };
 
-		this.loadAsyncRequest( PANOLENS.DataImage.ViewIndicator, loadViewIndicator );
+            const indicatorOnMouseLeave = function () {
 
-	};
+                this.style.opacity = '0.5';
 
-	/**
-	 * Append custom control item to existing control bar
-	 * @param {object} [option={}] - Style object to overwirte default element style. It takes 'style', 'onTap' and 'group' properties.
-	 */
-	PANOLENS.Viewer.prototype.appendControlItem = function ( option ) {
+            };
 
-		var item = this.widget.createCustomItem( option );		
+            viewIndicatorDiv.addEventListener( 'mouseenter', indicatorOnMouseEnter );
+            viewIndicatorDiv.addEventListener( 'mouseleave', indicatorOnMouseLeave );
+        }
 
-		if ( option.group === 'video' ) {
+        this.loadAsyncRequest( DataImage.ViewIndicator, loadViewIndicator );
 
-			this.widget.videoElement.appendChild( item );
+    },
 
-		} else {
+    /**
+     * Append custom control item to existing control bar
+     * @param {object} [option={}] - Style object to overwirte default element style. It takes 'style', 'onTap' and 'group' properties.
+     * @memberOf Viewer
+     * @instance
+     */
+    appendControlItem: function ( option ) {
 
-			this.widget.barElement.appendChild( item );
+        const item = this.widget.createCustomItem( option );		
 
-		}
+        if ( option.group === 'video' ) {
 
-		return item;
+            this.widget.videoElement.appendChild( item );
 
-	};
+        } else {
 
-} )();
-</pre>
-    </article>
-</section>
+            this.widget.barElement.appendChild( item );
 
+        }
 
+        return item;
 
+    },
 
+    /**
+     * Clear all cached files
+     * @memberOf Viewer
+     * @instance
+     */
+    clearAllCache: function () {
 
-		</div>
-	</div>
+        THREE.Cache.clear();
 
-	<div class="clearfix"></div>
-
-	
-
-</div>
-</div>
-
-
-    <div class="modal fade" id="searchResults">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Search results</h4>
-          </div>
-          <div class="modal-body"></div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div>
-
-
-<footer>
-
-
-<span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
-	
-		on 2017-07-08T00:16:25-07:00
-	
-	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
-</span>
-</footer>
-
-<script src="scripts/docstrap.lib.js"></script>
-<script src="scripts/toc.js"></script>
-
-    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
-
-
-<script>
-$( function () {
-	$( "[id*='$']" ).each( function () {
-		var $this = $( this );
-
-		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
-	} );
-
-	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
-		var $this = $( this );
-
-		var example = $this.find( "code" );
-		exampleText = example.html();
-		var lang = /{@lang (.*?)}/.exec( exampleText );
-		if ( lang && lang[1] ) {
-			exampleText = exampleText.replace( lang[0], "" );
-			example.html( exampleText );
-			lang = lang[1];
-		} else {
-			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
-			lang = langClassMatch ? langClassMatch[1] : "javascript";
-		}
-
-		if ( lang ) {
-
-			$this
-			.addClass( "sunlight-highlight-" + lang )
-			.addClass( "linenums" )
-			.html( example.html() );
-
-		}
-	} );
-
-	Sunlight.highlightAll( {
-		lineNumbers : false,
-		showMenu : true,
-		enableDoclinks : true
-	} );
-
-	$.catchAnchorLinks( {
-        navbarOffset: 10
-	} );
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
-		showAndHide : false,
-		smoothScrolling: true
-	} );
-
-	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-	$( '.dropdown-toggle' ).dropdown();
-
-    $( "table" ).each( function () {
-      var $this = $( this );
-      $this.addClass('table');
-    } );
+    }
 
 } );
-</script>
+
+export { Viewer };</code></pre>
+        </article>
+    </section>
 
 
 
-<!--Navigation and Symbol Display-->
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a> on Wed Jun 12 2019 12:14:50 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
 
 
-<!--Google Analytics-->
-
-
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            SearcherDisplay.init();
-        });
-    </script>
+<script src="scripts/collapse.js" defer></script>
 
 
 </body>

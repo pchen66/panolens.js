@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>loaders/ImageLoader.js - Panolens</title>
+    
+    <meta name="description" content="Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible." />
+    
+        <meta name="keywords" content="panorama, 3d, 360, webgl, threejs" />
+        <meta name="keyword" content="panorama, 3d, 360, webgl, threejs" />
+    
+    
+    
+    <meta property="og:title" content="Panolens"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="https://repository-images.githubusercontent.com/46604802/33c10480-7d64-11e9-97d8-f45a9169911c.png"/>
+    <meta property="og:site_name" content="Panolens"/>
+    <meta property="og:url" content="https://pchen66.github.io/Panolens/"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/pchen66/panolens.js" target="_blank" class="menu-item" id="repository" >Github</a></h2><h3>Classes</h3><ul><li><a href="BasicPanorama.html">BasicPanorama</a></li><li><a href="CameraPanorama.html">CameraPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="CameraPanorama.html#onPanolensContainer">onPanolensContainer</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#onPanolensScene">onPanolensScene</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#start">start</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#stop">stop</a></li></ul></li><li><a href="CubePanorama.html">CubePanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="CubePanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="CubePanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="CubePanorama.html#onLoad">onLoad</a></li></ul></li><li><a href="EmptyPanorama.html">EmptyPanorama</a></li><li><a href="GoogleStreetviewLoader.html">GoogleStreetviewLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#adaptTextureToZoom">adaptTextureToZoom</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#composeFromTile">composeFromTile</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#composePanorama">composePanorama</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#load">load</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#loadPano">loadPano</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#progress">progress</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#setProgress">setProgress</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#setZoom">setZoom</a></li></ul></li><li><a href="GoogleStreetviewPanorama.html">GoogleStreetviewPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#getGSVLoader">getGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#loadGSVLoader">loadGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#reset">reset</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#setGSVLoader">setGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#setupGoogleMapAPI">setupGoogleMapAPI</a></li></ul></li><li><a href="ImageLittlePlanet.html">ImageLittlePlanet</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#updateTexture">updateTexture</a></li></ul></li><li><a href="ImagePanorama.html">ImagePanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ImagePanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#reset">reset</a></li></ul></li><li><a href="Infospot.html">Infospot</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Infospot.html#addHoverElement">addHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#addHoverText">addHoverText</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#enableRaycast">enableRaycast</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#focus">focus</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#getContainer">getContainer</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#hide">hide</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#lockHoverElement">lockHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onClick">onClick</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onDismiss">onDismiss</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onDualEyeEffect">onDualEyeEffect</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHover">onHover</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHoverEnd">onHoverEnd</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHoverStart">onHoverStart</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#removeHoverElement">removeHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setContainer">setContainer</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setCursorHoverStyle">setCursorHoverStyle</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setElementStyle">setElementStyle</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setFocusMethod">setFocusMethod</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setText">setText</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#show">show</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#translateElement">translateElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#unlockHoverElement">unlockHoverElement</a></li></ul></li><li><a href="LittlePlanet.html">LittlePlanet</a></li><li><a href="Media.html">Media</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Media.html#createVideoElement">createVideoElement</a></li><li data-type='method' style='display: none;'><a href="Media.html#createVideoTexture">createVideoTexture</a></li><li data-type='method' style='display: none;'><a href="Media.html#enumerateDevices">enumerateDevices</a></li><li data-type='method' style='display: none;'><a href="Media.html#getDevices">getDevices</a></li><li data-type='method' style='display: none;'><a href="Media.html#getUserMedia">getUserMedia</a></li><li data-type='method' style='display: none;'><a href="Media.html#onWindowResize">onWindowResize</a></li><li data-type='method' style='display: none;'><a href="Media.html#pauseVideo">pauseVideo</a></li><li data-type='method' style='display: none;'><a href="Media.html#playVideo">playVideo</a></li><li data-type='method' style='display: none;'><a href="Media.html#setMediaStream">setMediaStream</a></li><li data-type='method' style='display: none;'><a href="Media.html#setVideDeviceIndex">setVideDeviceIndex</a></li><li data-type='method' style='display: none;'><a href="Media.html#start">start</a></li><li data-type='method' style='display: none;'><a href="Media.html#stop">stop</a></li><li data-type='method' style='display: none;'><a href="Media.html#switchNextVideoDevice">switchNextVideoDevice</a></li></ul></li><li><a href="Panorama.html">Panorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Panorama.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#fadeIn">fadeIn</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#fadeOut">fadeOut</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#getZoomLevel">getZoomLevel</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#link">link</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onClick">onClick</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onEnter">onEnter</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onError">onError</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onLeave">onLeave</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onProgress">onProgress</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#setContainer">setContainer</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#setLinkingImage">setLinkingImage</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#toggleInfospotVisibility">toggleInfospotVisibility</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#updateTexture">updateTexture</a></li></ul></li><li><a href="Reticle.html">Reticle</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Reticle.html#createCanvas">createCanvas</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#createCanvasTexture">createCanvasTexture</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#end">end</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#hide">hide</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#ripple">ripple</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#setColor">setColor</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#show">show</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#start">start</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#update">update</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#updateCanvasArcByProgress">updateCanvasArcByProgress</a></li></ul></li><li><a href="VideoPanorama.html">VideoPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="VideoPanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#getVideoElement">getVideoElement</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#isVideoMuted">isVideoMuted</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#isVideoPaused">isVideoPaused</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#muteVideo">muteVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#pauseVideo">pauseVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#playVideo">playVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#reset">reset</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#resetVideo">resetVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#resumeVideoProgress">resumeVideoProgress</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#setVideoCurrentTime">setVideoCurrentTime</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#setVideoTexture">setVideoTexture</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#toggleVideo">toggleVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#unmuteVideo">unmuteVideo</a></li></ul></li><li><a href="Viewer.html">Viewer</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Viewer.html#activateWidgetItem">activateWidgetItem</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addDefaultControlBar">addDefaultControlBar</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addOutputElement">addOutputElement</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addPanoramaEventListener">addPanoramaEventListener</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addReticle">addReticle</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addUpdateCallback">addUpdateCallback</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addViewIndicator">addViewIndicator</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#animate">animate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#appendControlItem">appendControlItem</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#checkSpriteInViewport">checkSpriteInViewport</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#clearAllCache">clearAllCache</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#destroy">destroy</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableAutoRate">disableAutoRate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableControl">disableControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableEffect">disableEffect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableReticleControl">disableReticleControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#dispatchEventToChildren">dispatchEventToChildren</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableAutoRate">enableAutoRate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableControl">enableControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableEffect">enableEffect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableReticleControl">enableReticleControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#eventHandler">eventHandler</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getCamera">getCamera</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getContainer">getContainer</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getControl">getControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getControlId">getControlId</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getConvertedIntersect">getConvertedIntersect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getNextControlId">getNextControlId</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getNextControlIndex">getNextControlIndex</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getRenderer">getRenderer</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getScene">getScene</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getScreenVector">getScreenVector</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#hideInfospot">hideInfospot</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#hideVideoWidget">hideVideoWidget</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#loadAsyncRequest">loadAsyncRequest</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onChange">onChange</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onKeyDown">onKeyDown</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onKeyUp">onKeyUp</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseDown">onMouseDown</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseMove">onMouseMove</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseUp">onMouseUp</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onPanoramaDispose">onPanoramaDispose</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onTap">onTap</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onVideoUpdate">onVideoUpdate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onWindowResize">onWindowResize</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#outputPosition">outputPosition</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerEventListeners">registerEventListeners</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerMouseAndTouchEvents">registerMouseAndTouchEvents</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerReticleEvent">registerReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#remove">remove</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#removeUpdateCallback">removeUpdateCallback</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#render">render</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#reverseDraggingDirection">reverseDraggingDirection</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setCameraControl">setCameraControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setCameraFov">setCameraFov</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setPanorama">setPanorama</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setVideoCurrentTime">setVideoCurrentTime</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#showVideoWidget">showVideoWidget</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleControlBar">toggleControlBar</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleNextControl">toggleNextControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleVideoPlay">toggleVideoPlay</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#tweenControlCenter">tweenControlCenter</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#tweenControlCenterByObject">tweenControlCenterByObject</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterEventListeners">unregisterEventListeners</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterMouseAndTouchEvents">unregisterMouseAndTouchEvents</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterReticleEvent">unregisterReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#update">update</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#updateReticleEvent">updateReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#updateVideoPlayButton">updateVideoPlayButton</a></li></ul></li><li><a href="Widget.html">Widget</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Widget.html#addControlBar">addControlBar</a></li><li data-type='method' style='display: none;'><a href="Widget.html#addControlButton">addControlButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createCustomItem">createCustomItem</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createDefaultMenu">createDefaultMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createFullscreenButton">createFullscreenButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMainMenu">createMainMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMask">createMask</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenu">createMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenuItem">createMenuItem</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenuItemHeader">createMenuItemHeader</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createSettingButton">createSettingButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createSubMenu">createSubMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControl">createVideoControl</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControlButton">createVideoControlButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControlSeekbar">createVideoControlSeekbar</a></li><li data-type='method' style='display: none;'><a href="Widget.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Widget.html#mergeStyleOptions">mergeStyleOptions</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-CONTROLS.html">CONTROLS</a></li><li><a href="module-CubeTextureLoader.html">CubeTextureLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-CubeTextureLoader.html#~load">load</a></li></ul></li><li><a href="module-DataImage.html">DataImage</a></li><li><a href="module-ImageLoader.html">ImageLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-ImageLoader.html#~load">load</a></li></ul></li><li><a href="module-MODES.html">MODES</a></li><li><a href="module-REVISION.html">REVISION</a></li><li><a href="module-StereographicShader.html">StereographicShader</a></li><li><a href="module-TextureLoader.html">TextureLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-TextureLoader.html#~load">load</a></li></ul></li><li><a href="module-THREE_REVISION.html">THREE_REVISION</a></li><li><a href="module-THREE_VERSION.html">THREE_VERSION</a></li><li><a href="module-VERSION.html">VERSION</a></li></ul><h3>Externals</h3><ul><li><a href="external-CardboardEffect.html">CardboardEffect</a></li><li><a href="external-DeviceOrientationControls.html">DeviceOrientationControls</a></li><li><a href="external-OrbitControls.html">OrbitControls</a></li><li><a href="external-StereoEffect.html">StereoEffect</a></li></ul><h3>Events</h3><ul><li><a href="Infospot.html#event:dismiss">dismiss</a></li><li><a href="Infospot.html#event:panolens-container">panolens-container</a></li><li><a href="Infospot.html#event:panolens-dual-eye-effect">panolens-dual-eye-effect</a></li><li></li><li><a href="Media.html#event:canplay">canplay</a></li><li><a href="Panorama.html#event:enter">enter</a></li><li><a href="Panorama.html#event:enter-complete">enter-complete</a></li><li><a href="Panorama.html#event:enter-fade-complete">enter-fade-complete</a></li><li><a href="Panorama.html#event:enter-fade-start">enter-fade-start</a></li><li><a href="Panorama.html#event:enter-start">enter-start</a></li><li><a href="Panorama.html#event:error">error</a></li><li><a href="Panorama.html#event:infospot-animation-complete">infospot-animation-complete</a></li><li><a href="Panorama.html#event:leave">leave</a></li><li><a href="Panorama.html#event:leave-complete">leave-complete</a></li><li><a href="Panorama.html#event:leave-start">leave-start</a></li><li><a href="Panorama.html#event:load">load</a></li><li><a href="Panorama.html#event:panolens-viewer-handler">panolens-viewer-handler</a></li><li></li><li></li><li><a href="Panorama.html#event:progress">progress</a></li><li><a href="Reticle.html#event:reticle-end">reticle-end</a></li><li><a href="Reticle.html#event:reticle-ripple-end">reticle-ripple-end</a></li><li><a href="Reticle.html#event:reticle-ripple-start">reticle-ripple-start</a></li><li><a href="Reticle.html#event:reticle-start">reticle-start</a></li><li><a href="Reticle.html#event:reticle-update">reticle-update</a></li><li><a href="VideoPanorama.html#event:pause">pause</a></li><li><a href="VideoPanorama.html#event:play">play</a></li><li><a href="VideoPanorama.html#event:play-error">play-error</a></li><li><a href="Viewer.html#event:control-bar-toggle">control-bar-toggle</a></li><li><a href="Viewer.html#event:mode-change">mode-change</a></li><li></li><li><a href="Viewer.html#event:video-control-hide">video-control-hide</a></li><li><a href="Viewer.html#event:video-control-show">video-control-show</a></li><li><a href="Viewer.html#event:video-time">video-time</a></li><li><a href="Viewer.html#event:video-toggle">video-toggle</a></li><li><a href="Viewer.html#event:video-update">video-update</a></li><li><a href="Viewer.html#event:window-resize">window-resize</a></li><li><a href="Widget.html#event:panolens-viewer-handler">panolens-viewer-handler</a></li><li></li><li></li></ul><h3>Namespaces</h3><ul><li><a href="PANOLENS.html">PANOLENS</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">loaders/ImageLoader.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { DataImage } from '../DataImage.js';
+import * as THREE from 'three';
+
+/**
+ * @module ImageLoader
+ * @description Image loader with progress based on {@link https://github.com/mrdoob/three.js/blob/master/src/loaders/ImageLoader.js}
+ */
+const ImageLoader = {
+
+    /**
+     * Load image
+     * @example PANOLENS.ImageLoader.load( IMAGE_URL )
+     * @method load
+     * @param  {string}   url        - An image url
+     * @param  {function} onLoad     - On load callback
+     * @param  {function} onProgress - In progress callback
+     * @param  {function} onError    - On error callback
+     */
+    load: function ( url, onLoad = () => {}, onProgress = () => {}, onError = () => {} ) {
+
+        // Enable cache
+        THREE.Cache.enabled = true;
+
+        let cached, request, arrayBufferView, blob, urlCreator, image, reference;
+	
+        // Reference key
+        for ( let iconName in DataImage ) {
+	
+            if ( DataImage.hasOwnProperty( iconName ) &amp;&amp; url === DataImage[ iconName ] ) {
+	
+                reference = iconName;
+	
+            }
+	
+        }
+	
+        // Cached
+        cached = THREE.Cache.get( reference ? reference : url );
+	
+        if ( cached !== undefined ) {
+	
+            if ( onLoad ) {
+	
+                setTimeout( function () {
+	
+                    onProgress( { loaded: 1, total: 1 } );
+                    onLoad( cached );
+	
+                }, 0 );
+	
+            }
+	
+            return cached;
+	
+        }
+		
+        // Construct a new XMLHttpRequest
+        urlCreator = window.URL || window.webkitURL;
+        image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
+	
+        // Add to cache
+        THREE.Cache.add( reference ? reference : url, image );
+	
+        const onImageLoaded = () => {
+	
+            urlCreator.revokeObjectURL( image.src );
+            onLoad( image );
+	
+        };
+
+        if ( url.indexOf( 'data:' ) === 0 ) {
+
+            image.addEventListener( 'load', onImageLoaded, false );
+            image.src = url;
+            return image;
+        }
+	
+        image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
+	
+        request = new window.XMLHttpRequest();
+        request.open( 'GET', url, true );
+        request.responseType = 'arraybuffer';
+        request.addEventListener( 'error', onError );
+        request.addEventListener( 'progress', event => {
+
+            if  ( !event ) return;
+
+            const { loaded, total, lengthComputable } = event;
+            
+            if ( lengthComputable ) {
+	
+                onProgress( { loaded, total } );
+	
+            }
+	
+        } );
+        
+        request.addEventListener( 'loadend', event => {
+
+            if  ( !event ) return;
+            const { currentTarget: { response } } = event;
+
+            arrayBufferView = new Uint8Array( response );
+            blob = new window.Blob( [ arrayBufferView ] );
+				
+            image.addEventListener( 'load', onImageLoaded, false );
+            image.src = urlCreator.createObjectURL( blob );
+	
+        } );
+	
+        request.send(null);
+	
+    }
+
+};
+
+export { ImageLoader };</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a> on Wed Jun 12 2019 12:14:50 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

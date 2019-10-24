@@ -1,67 +1,93 @@
-(function(){
-	
-	'use strict';
-	
-	/**
-	 * Cubemap-based panorama
-	 * @constructor
-	 * @param {array} images - An array of cubetexture containing six images
-	 * @param {number} [edgeLength=10000] - The length of cube's edge
-	 */
-	PANOLENS.CubePanorama = function ( images, edgeLength ){
+import { Panorama } from './Panorama';
+import { CubeTextureLoader } from '../loaders/CubeTextureLoader';
+import * as THREE from 'three';
 
-		var shader, geometry, material;
+/**
+ * @classdesc Cubemap-based panorama
+ * @constructor
+ * @param {array} images - Array of 6 urls to images, one for each side of the CubeTexture. The urls should be specified in the following order: pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
+ */
+function CubePanorama ( images = [] ){
 
-		this.images = images || [];
+    const edgeLength = 10000;
+    const shader = Object.assign( {}, THREE.ShaderLib[ 'cube' ] );
+    const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+    const material = new THREE.ShaderMaterial( {
 
-		edgeLength = edgeLength || 10000;
-		shader = JSON.parse( JSON.stringify( THREE.ShaderLib[ 'cube' ] ) );
+        fragmentShader: shader.fragmentShader,
+        vertexShader: shader.vertexShader,
+        uniforms: shader.uniforms,
+        side: THREE.BackSide,
+        transparent: true
 
-		geometry = new THREE.BoxGeometry( edgeLength, edgeLength, edgeLength );
-		material = new THREE.ShaderMaterial( {
+    } );
 
-			fragmentShader: shader.fragmentShader,
-			vertexShader: shader.vertexShader,
-			uniforms: shader.uniforms,
-			side: THREE.BackSide
+    Panorama.call( this, geometry, material );
 
-		} );
+    this.images = images;
+    this.edgeLength = edgeLength;
+    this.material.uniforms.opacity.value = 0;
 
-		PANOLENS.Panorama.call( this, geometry, material );
+}
 
-	}
+CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
-	PANOLENS.CubePanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
+    constructor: CubePanorama,
 
-	PANOLENS.CubePanorama.prototype.constructor = PANOLENS.CubePanorama;
+    /**
+     * Load 6 images and bind listeners
+     * @memberOf CubePanorama
+     * @instance
+     */
+    load: function () {
 
-	/**
-	 * Load 6 images and bind listeners
-	 */
-	PANOLENS.CubePanorama.prototype.load = function () {
+        CubeTextureLoader.load( 	
 
-		PANOLENS.Utils.CubeTextureLoader.load( 	
+            this.images, 
 
-			this.images, 
+            this.onLoad.bind( this ), 
+            this.onProgress.bind( this ), 
+            this.onError.bind( this ) 
 
-			this.onLoad.bind( this ), 
-			this.onProgress.bind( this ), 
-			this.onError.bind( this ) 
+        );
 
-		);
+    },
 
-	};
-
-	/**
-	 * This will be called when 6 textures are ready
-	 * @param  {THREE.CubeTexture} texture - Cube texture
-	 */
-	PANOLENS.CubePanorama.prototype.onLoad = function ( texture ) {
+    /**
+     * This will be called when 6 textures are ready
+     * @param  {THREE.CubeTexture} texture - Cube texture
+     * @memberOf CubePanorama
+     * @instance
+     */
+    onLoad: function ( texture ) {
 		
-		this.material.uniforms[ 'tCube' ].value = texture;
+        this.material.uniforms[ 'tCube' ].value = texture;
 
-		PANOLENS.Panorama.prototype.onLoad.call( this );
+        Panorama.prototype.onLoad.call( this );
 
-	};
+    },
 
-})();
+    /**
+     * Dispose
+     * @memberOf CubePanorama
+     * @instance
+     */
+    dispose: function () {	
+
+        const { value } = this.material.uniforms.tCube;
+
+        this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
+
+        if ( value instanceof THREE.CubeTexture ) {
+
+            value.dispose();
+
+        }
+
+        Panorama.prototype.dispose.call( this );
+
+    }
+
+} );
+
+export { CubePanorama };

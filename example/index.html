@@ -41,43 +41,11 @@
   </head>
 
   <body>
-
+  
   <script src="../node_modules/three/build/three.min.js"></script>
+  <script src="../build/panolens.js"></script>
 
-  <script src="../node_modules/iphone-inline-video/dist/iphone-inline-video.min.js"></script>
-  <script src="../node_modules/tween.js/src/Tween.js"></script>
-  <script src="../src/lib/controls/OrbitControls.js"></script>
-  <script src="../src/lib/controls/DeviceOrientationControls.js"></script>
-  <script src="../src/lib/modifier/BendModifier.js"></script>
-  <script src="../src/lib/effects/CardboardEffect.js"></script>
-  <script src="../node_modules/three/examples/js/effects/StereoEffect.js"></script>
-  <script src="../src/lib/GSVPano.js"></script>
 
-  <script src="../src/Panolens.js"></script>
-  <script src="../src/DataImage.js"></script>
-  <script src="../src/Constants.js"></script>
-  <script src="../src/util/Utils.js"></script>
-  <script src="../src/util/ImageLoader.js"></script>
-  <script src="../src/util/TextureLoader.js"></script>
-  <script src="../src/util/CubeTextureLoader.js"></script>
-  <script src="../src/shaders/StereographicShader.js"></script>
-  <script src="../src/panorama/Panorama.js"></script>
-  <script src="../src/panorama/ImagePanorama.js"></script>
-  <script src="../src/panorama/GoogleStreetviewPanorama.js"></script>
-  <script src="../src/panorama/CubePanorama.js"></script>
-  <script src="../src/panorama/BasicPanorama.js"></script>
-  <script src="../src/panorama/VideoPanorama.js"></script>
-  <script src="../src/panorama/EmptyPanorama.js"></script>
-  <script src="../src/panorama/LittlePlanet.js"></script>
-  <script src="../src/panorama/ImageLittlePlanet.js"></script>
-  <script src="../src/interface/Reticle.js"></script>
-  <script src="../src/interface/Tile.js"></script>
-  <script src="../src/interface/TileGroup.js"></script>
-  <script src="../src/interface/SpriteText.js"></script>
-  <script src="../src/widget/Widget.js"></script>
-  <script src="../src/infospot/Infospot.js"></script>
-  <script src="../src/viewer/Viewer.js"></script>
-  <script src="../src/util/font/Bmfont.js"></script>
 
   <div id="panolens-separate-container"></div>
 
@@ -88,9 +56,16 @@
       var infospot1, infospot2, infospot3;
 
       // Main panorama
-      viewer_main = new PANOLENS.Viewer({ output: 'console', viewIndicator: true });
+      viewer_main = new PANOLENS.Viewer({ enableReticle: false, output: 'console', viewIndicator: true, autoRotate: false, autoRotateSpeed: 2, autoRotateActivationDuration: 5000, dwellTime: 1000 });
 
-      panorama_main_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: true });
+      const logEvent = ( { type } ) => console.log( type );
+      viewer_main.reticle.addEventListener('reticle-start', logEvent );
+      viewer_main.reticle.addEventListener('reticle-update', logEvent );
+      viewer_main.reticle.addEventListener('reticle-end', logEvent );
+      viewer_main.reticle.addEventListener('reticle-ripple-start', logEvent );
+      viewer_main.reticle.addEventListener('reticle-ripple-end', logEvent );
+
+      panorama_main_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: false });
 
       var cube = new THREE.Mesh( new THREE.BoxGeometry(50, 50, 50), new THREE.MeshNormalMaterial() );
       cube.position.set(1000, 0, 0);
@@ -100,7 +75,7 @@
       });
       
       panorama_main_video2 = new PANOLENS.VideoPanorama( 'asset/textures/video/1941-battle-low.mp4', { autoplay: false, muted: true });
-      panorama_main_video2.setLinkingImage( 'asset/textures/1941-battle-thumb.jpg' );
+      panorama_main_video2.setLinkingImage( 'asset/textures/1941-battle-thumb.png' );
       panorama_main_video2.addEventListener( 'progress',function(e){
         console.log(e.progress);
       });
@@ -110,40 +85,42 @@
         console.log(e.progress);
       });
 
-      panorama_main_video.link( panorama_main_video2, new THREE.Vector3( -3501.84, -764.55, -3475.54 ) );
-      panorama_main_video2.link( panorama_main_video, new THREE.Vector3( -2615.55, 1357.43, -4026.71 ) );
+      panorama_main_video.link( panorama_main_video2, new THREE.Vector3( -3260.34, -700.96, -3017.16 ) );
+      panorama_main_video2.link( panorama_main_video, new THREE.Vector3( -2358.58, 1205.94, -3626.21 ) );
 
-      panorama_main_video.link( panorama_main_image, new THREE.Vector3( 4964.41, 366.98, 404.06 ) );
-      panorama_main_image.link( panorama_main_video, new THREE.Vector3( -4588.72, 1419.24, -1359.43 ) );
+      panorama_main_video.link( panorama_main_image, new THREE.Vector3( 4464.14, 364.49, 393.76 ) );
+      panorama_main_image.link( panorama_main_video, new THREE.Vector3( 2630.30, 132.81, 3643.93 ) );
 
       infospot2 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
-      infospot2.position.set(  3841.27, 2625.37, 1819.79 );
+      infospot2.position.set( -1294.60, 181.52, -4298.10 );
       infospot2.addHoverText( 'Hovering Infospot' );
       panorama_main_image.add( infospot2 );
 
       infospot1 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
-      infospot1.position.set( 3535.63, 1148.16, -3336.00 );
+      infospot1.position.set( 3187.12, 1036.61, -2996.43 );
       infospot1.addHoverText( 'Mountain Tip' );
       infospot1.addEventListener( 'click', function(){
         viewer_main.tweenControlCenterByObject( cube );
       } );
       panorama_main_video.add( infospot1 );
       
-      viewer_main.add( panorama_main_video, panorama_main_image, panorama_main_video2 );
+      viewer_main.add( panorama_main_video, panorama_main_image, panorama_main_video2  );
 
       // Test repeated scenario
-      viewer_main.enableControl( PANOLENS.Controls.DEVICEORIENTATION );
-      viewer_main.enableEffect( PANOLENS.Modes.CARDBOARD );
-      viewer_main.enableControl( PANOLENS.Controls.ORBIT );
-      viewer_main.enableEffect( PANOLENS.Modes.NORMAL );
+      viewer_main.enableControl( PANOLENS.CONTROLS.DEVICEORIENTATION );
+      viewer_main.enableEffect( PANOLENS.MODES.CARDBOARD );
+      viewer_main.enableControl( PANOLENS.CONTROLS.ORBIT );
+      viewer_main.enableEffect( PANOLENS.MODES.NORMAL );
 
       // Side panorama
       viewer_side = new PANOLENS.Viewer({ output: 'overlay', container: document.querySelector( '#panolens-separate-container' ) });
 
-      panorama_side_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/sunset.jpg' );
+      //panorama_side_image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/sunset.jpg' );
+      panorama_side_image = new PANOLENS.ImageLittlePlanet( 'asset/textures/equirectangular/field.jpg' );
+      //panorama_side_image = new PANOLENS.GoogleStreetviewPanorama( 'JmSoPsBPhqWvaBmOqfFzgA' );
 
       infospot3 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
-      infospot3.position.set(  0, 0, -1819.79 );
+      infospot3.position.set(  100.92, -37.84, -1637.81 );
       infospot3.addHoverText( 'Hovering Infospot', -20 );
       panorama_side_image.add( infospot3 );
 

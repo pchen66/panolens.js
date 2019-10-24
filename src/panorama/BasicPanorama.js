@@ -1,22 +1,28 @@
-(function(){
+import { CubePanorama } from './CubePanorama';
+import { DataImage } from '../DataImage';
 
-	'use strict';
+/**
+ * @classdesc Basic panorama with 6 pre-defined grid images
+ * @constructor
+ */
+function BasicPanorama () {
 
-	/**
-	 * Basic panorama with 6 faces tile images
-	 * @constructor
-	 * @param {number} [edgeLength=10000] - The length of cube's edge
-	 */
-	PANOLENS.BasicPanorama = function ( edgeLength ) {
-		
-		var tile = PANOLENS.DataImage.WhiteTile;
+    const images = [];
 
-		PANOLENS.CubePanorama.call( this, [ tile, tile, tile, tile, tile, tile ], edgeLength );
+    for ( let i = 0; i < 6; i++ ) {
 
-	}
+        images.push( DataImage.WhiteTile );
 
-	PANOLENS.BasicPanorama.prototype = Object.create( PANOLENS.CubePanorama.prototype );
+    }
 
-	PANOLENS.BasicPanorama.prototype.constructor = PANOLENS.BasicPanorama;
+    CubePanorama.call( this, images );
 
-})();
+}
+
+BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype ), {
+
+    constructor: BasicPanorama
+
+} );
+
+export { BasicPanorama };

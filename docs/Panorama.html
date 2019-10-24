@@ -1,0 +1,4005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Panorama - Panolens</title>
+    
+    <meta name="description" content="Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible." />
+    
+        <meta name="keywords" content="panorama, 3d, 360, webgl, threejs" />
+        <meta name="keyword" content="panorama, 3d, 360, webgl, threejs" />
+    
+    
+    
+    <meta property="og:title" content="Panolens"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="https://repository-images.githubusercontent.com/46604802/33c10480-7d64-11e9-97d8-f45a9169911c.png"/>
+    <meta property="og:site_name" content="Panolens"/>
+    <meta property="og:url" content="https://pchen66.github.io/Panolens/"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/pchen66/panolens.js" target="_blank" class="menu-item" id="repository" >Github</a></h2><h3>Classes</h3><ul><li><a href="BasicPanorama.html">BasicPanorama</a></li><li><a href="CameraPanorama.html">CameraPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="CameraPanorama.html#onPanolensContainer">onPanolensContainer</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#onPanolensScene">onPanolensScene</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#start">start</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#stop">stop</a></li></ul></li><li><a href="CubePanorama.html">CubePanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="CubePanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="CubePanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="CubePanorama.html#onLoad">onLoad</a></li></ul></li><li><a href="EmptyPanorama.html">EmptyPanorama</a></li><li><a href="GoogleStreetviewLoader.html">GoogleStreetviewLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#adaptTextureToZoom">adaptTextureToZoom</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#composeFromTile">composeFromTile</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#composePanorama">composePanorama</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#load">load</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#loadPano">loadPano</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#progress">progress</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#setProgress">setProgress</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#setZoom">setZoom</a></li></ul></li><li><a href="GoogleStreetviewPanorama.html">GoogleStreetviewPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#getGSVLoader">getGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#loadGSVLoader">loadGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#reset">reset</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#setGSVLoader">setGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#setupGoogleMapAPI">setupGoogleMapAPI</a></li></ul></li><li><a href="ImageLittlePlanet.html">ImageLittlePlanet</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#updateTexture">updateTexture</a></li></ul></li><li><a href="ImagePanorama.html">ImagePanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ImagePanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#reset">reset</a></li></ul></li><li><a href="Infospot.html">Infospot</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Infospot.html#addHoverElement">addHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#addHoverText">addHoverText</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#enableRaycast">enableRaycast</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#focus">focus</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#getContainer">getContainer</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#hide">hide</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#lockHoverElement">lockHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onClick">onClick</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onDismiss">onDismiss</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onDualEyeEffect">onDualEyeEffect</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHover">onHover</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHoverEnd">onHoverEnd</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHoverStart">onHoverStart</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#removeHoverElement">removeHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setContainer">setContainer</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setCursorHoverStyle">setCursorHoverStyle</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setElementStyle">setElementStyle</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setFocusMethod">setFocusMethod</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setText">setText</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#show">show</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#translateElement">translateElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#unlockHoverElement">unlockHoverElement</a></li></ul></li><li><a href="LittlePlanet.html">LittlePlanet</a></li><li><a href="Media.html">Media</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Media.html#createVideoElement">createVideoElement</a></li><li data-type='method' style='display: none;'><a href="Media.html#createVideoTexture">createVideoTexture</a></li><li data-type='method' style='display: none;'><a href="Media.html#enumerateDevices">enumerateDevices</a></li><li data-type='method' style='display: none;'><a href="Media.html#getDevices">getDevices</a></li><li data-type='method' style='display: none;'><a href="Media.html#getUserMedia">getUserMedia</a></li><li data-type='method' style='display: none;'><a href="Media.html#onWindowResize">onWindowResize</a></li><li data-type='method' style='display: none;'><a href="Media.html#pauseVideo">pauseVideo</a></li><li data-type='method' style='display: none;'><a href="Media.html#playVideo">playVideo</a></li><li data-type='method' style='display: none;'><a href="Media.html#setMediaStream">setMediaStream</a></li><li data-type='method' style='display: none;'><a href="Media.html#setVideDeviceIndex">setVideDeviceIndex</a></li><li data-type='method' style='display: none;'><a href="Media.html#start">start</a></li><li data-type='method' style='display: none;'><a href="Media.html#stop">stop</a></li><li data-type='method' style='display: none;'><a href="Media.html#switchNextVideoDevice">switchNextVideoDevice</a></li></ul></li><li><a href="Panorama.html">Panorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Panorama.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#fadeIn">fadeIn</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#fadeOut">fadeOut</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#getZoomLevel">getZoomLevel</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#link">link</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onClick">onClick</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onEnter">onEnter</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onError">onError</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onLeave">onLeave</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onProgress">onProgress</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#setContainer">setContainer</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#setLinkingImage">setLinkingImage</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#toggleInfospotVisibility">toggleInfospotVisibility</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#updateTexture">updateTexture</a></li></ul></li><li><a href="Reticle.html">Reticle</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Reticle.html#createCanvas">createCanvas</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#createCanvasTexture">createCanvasTexture</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#end">end</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#hide">hide</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#ripple">ripple</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#setColor">setColor</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#show">show</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#start">start</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#update">update</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#updateCanvasArcByProgress">updateCanvasArcByProgress</a></li></ul></li><li><a href="VideoPanorama.html">VideoPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="VideoPanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#getVideoElement">getVideoElement</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#isVideoMuted">isVideoMuted</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#isVideoPaused">isVideoPaused</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#muteVideo">muteVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#pauseVideo">pauseVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#playVideo">playVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#reset">reset</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#resetVideo">resetVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#resumeVideoProgress">resumeVideoProgress</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#setVideoCurrentTime">setVideoCurrentTime</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#setVideoTexture">setVideoTexture</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#toggleVideo">toggleVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#unmuteVideo">unmuteVideo</a></li></ul></li><li><a href="Viewer.html">Viewer</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Viewer.html#activateWidgetItem">activateWidgetItem</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addDefaultControlBar">addDefaultControlBar</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addOutputElement">addOutputElement</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addPanoramaEventListener">addPanoramaEventListener</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addReticle">addReticle</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addUpdateCallback">addUpdateCallback</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addViewIndicator">addViewIndicator</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#animate">animate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#appendControlItem">appendControlItem</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#checkSpriteInViewport">checkSpriteInViewport</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#clearAllCache">clearAllCache</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#destroy">destroy</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableAutoRate">disableAutoRate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableControl">disableControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableEffect">disableEffect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableReticleControl">disableReticleControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#dispatchEventToChildren">dispatchEventToChildren</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableAutoRate">enableAutoRate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableControl">enableControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableEffect">enableEffect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableReticleControl">enableReticleControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#eventHandler">eventHandler</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getCamera">getCamera</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getContainer">getContainer</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getControl">getControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getControlId">getControlId</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getConvertedIntersect">getConvertedIntersect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getNextControlId">getNextControlId</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getNextControlIndex">getNextControlIndex</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getRenderer">getRenderer</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getScene">getScene</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getScreenVector">getScreenVector</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#hideInfospot">hideInfospot</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#hideVideoWidget">hideVideoWidget</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#loadAsyncRequest">loadAsyncRequest</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onChange">onChange</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onKeyDown">onKeyDown</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onKeyUp">onKeyUp</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseDown">onMouseDown</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseMove">onMouseMove</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseUp">onMouseUp</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onPanoramaDispose">onPanoramaDispose</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onTap">onTap</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onVideoUpdate">onVideoUpdate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onWindowResize">onWindowResize</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#outputPosition">outputPosition</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerEventListeners">registerEventListeners</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerMouseAndTouchEvents">registerMouseAndTouchEvents</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerReticleEvent">registerReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#remove">remove</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#removeUpdateCallback">removeUpdateCallback</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#render">render</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#reverseDraggingDirection">reverseDraggingDirection</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setCameraControl">setCameraControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setCameraFov">setCameraFov</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setPanorama">setPanorama</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setVideoCurrentTime">setVideoCurrentTime</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#showVideoWidget">showVideoWidget</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleControlBar">toggleControlBar</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleNextControl">toggleNextControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleVideoPlay">toggleVideoPlay</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#tweenControlCenter">tweenControlCenter</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#tweenControlCenterByObject">tweenControlCenterByObject</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterEventListeners">unregisterEventListeners</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterMouseAndTouchEvents">unregisterMouseAndTouchEvents</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterReticleEvent">unregisterReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#update">update</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#updateReticleEvent">updateReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#updateVideoPlayButton">updateVideoPlayButton</a></li></ul></li><li><a href="Widget.html">Widget</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Widget.html#addControlBar">addControlBar</a></li><li data-type='method' style='display: none;'><a href="Widget.html#addControlButton">addControlButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createCustomItem">createCustomItem</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createDefaultMenu">createDefaultMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createFullscreenButton">createFullscreenButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMainMenu">createMainMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMask">createMask</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenu">createMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenuItem">createMenuItem</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenuItemHeader">createMenuItemHeader</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createSettingButton">createSettingButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createSubMenu">createSubMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControl">createVideoControl</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControlButton">createVideoControlButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControlSeekbar">createVideoControlSeekbar</a></li><li data-type='method' style='display: none;'><a href="Widget.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Widget.html#mergeStyleOptions">mergeStyleOptions</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-CONTROLS.html">CONTROLS</a></li><li><a href="module-CubeTextureLoader.html">CubeTextureLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-CubeTextureLoader.html#~load">load</a></li></ul></li><li><a href="module-DataImage.html">DataImage</a></li><li><a href="module-ImageLoader.html">ImageLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-ImageLoader.html#~load">load</a></li></ul></li><li><a href="module-MODES.html">MODES</a></li><li><a href="module-REVISION.html">REVISION</a></li><li><a href="module-StereographicShader.html">StereographicShader</a></li><li><a href="module-TextureLoader.html">TextureLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-TextureLoader.html#~load">load</a></li></ul></li><li><a href="module-THREE_REVISION.html">THREE_REVISION</a></li><li><a href="module-THREE_VERSION.html">THREE_VERSION</a></li><li><a href="module-VERSION.html">VERSION</a></li></ul><h3>Externals</h3><ul><li><a href="external-CardboardEffect.html">CardboardEffect</a></li><li><a href="external-DeviceOrientationControls.html">DeviceOrientationControls</a></li><li><a href="external-OrbitControls.html">OrbitControls</a></li><li><a href="external-StereoEffect.html">StereoEffect</a></li></ul><h3>Events</h3><ul><li><a href="Infospot.html#event:dismiss">dismiss</a></li><li><a href="Infospot.html#event:panolens-container">panolens-container</a></li><li><a href="Infospot.html#event:panolens-dual-eye-effect">panolens-dual-eye-effect</a></li><li></li><li><a href="Media.html#event:canplay">canplay</a></li><li><a href="Panorama.html#event:enter">enter</a></li><li><a href="Panorama.html#event:enter-complete">enter-complete</a></li><li><a href="Panorama.html#event:enter-fade-complete">enter-fade-complete</a></li><li><a href="Panorama.html#event:enter-fade-start">enter-fade-start</a></li><li><a href="Panorama.html#event:enter-start">enter-start</a></li><li><a href="Panorama.html#event:error">error</a></li><li><a href="Panorama.html#event:infospot-animation-complete">infospot-animation-complete</a></li><li><a href="Panorama.html#event:leave">leave</a></li><li><a href="Panorama.html#event:leave-complete">leave-complete</a></li><li><a href="Panorama.html#event:leave-start">leave-start</a></li><li><a href="Panorama.html#event:load">load</a></li><li><a href="Panorama.html#event:panolens-viewer-handler">panolens-viewer-handler</a></li><li></li><li></li><li><a href="Panorama.html#event:progress">progress</a></li><li><a href="Reticle.html#event:reticle-end">reticle-end</a></li><li><a href="Reticle.html#event:reticle-ripple-end">reticle-ripple-end</a></li><li><a href="Reticle.html#event:reticle-ripple-start">reticle-ripple-start</a></li><li><a href="Reticle.html#event:reticle-start">reticle-start</a></li><li><a href="Reticle.html#event:reticle-update">reticle-update</a></li><li><a href="VideoPanorama.html#event:pause">pause</a></li><li><a href="VideoPanorama.html#event:play">play</a></li><li><a href="VideoPanorama.html#event:play-error">play-error</a></li><li><a href="Viewer.html#event:control-bar-toggle">control-bar-toggle</a></li><li><a href="Viewer.html#event:mode-change">mode-change</a></li><li></li><li><a href="Viewer.html#event:video-control-hide">video-control-hide</a></li><li><a href="Viewer.html#event:video-control-show">video-control-show</a></li><li><a href="Viewer.html#event:video-time">video-time</a></li><li><a href="Viewer.html#event:video-toggle">video-toggle</a></li><li><a href="Viewer.html#event:video-update">video-update</a></li><li><a href="Viewer.html#event:window-resize">window-resize</a></li><li><a href="Widget.html#event:panolens-viewer-handler">panolens-viewer-handler</a></li><li></li><li></li></ul><h3>Namespaces</h3><ul><li><a href="PANOLENS.html">PANOLENS</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Panorama</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        Panorama
+        </h2>
+        
+            <div class="class-description"><p>Base Panorama</p></div>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="Panorama"><span class="type-signature"></span>new Panorama<span class="signature">(geometry, material)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line13">line 13</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>geometry</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Geometry</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The geometry for this panorama</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>material</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Material</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The material for this panorama</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(object)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line70">line 70</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Adding an object
+To counter the scale.x = -1, it will automatically add an
+empty object with inverted scale on x</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>object</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Object3D</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The object to be added</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="dispose"><span class="type-signature"></span>dispose<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line667">line 667</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Dispose panorama</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="fadeIn"><span class="type-signature"></span>fadeIn<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line523">line 523</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Start fading in animation</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Panorama.html#event:enter-fade-complete">Panorama#event:enter-fade-complete</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="fadeOut"><span class="type-signature"></span>fadeOut<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line552">line 552</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Start fading out animation</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getZoomLevel"><span class="type-signature"></span>getZoomLevel<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line263">line 263</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get zoom level based on window width</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>zoom level indicating image quality</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="link"><span class="type-signature"></span>link<span class="signature">(pano, position, imageScale<span class="signature-attributes">opt</span>, imageSrc<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line377">line 377</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Link one-way panorama</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pano</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Panorama.html">Panorama</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The panorama to be linked to</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>position</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Vector3</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The position of infospot which navigates to the pano</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>imageScale</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>300</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Image scale of linked infospot</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>imageSrc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>DataImage.Arrow</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>The image source of linked infospot</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onClick"><span class="type-signature"></span>onClick<span class="signature">(event)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line139">line 139</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Click event handler</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Click event</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Infospot.html#event:dismiss">Infospot#event:dismiss</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onEnter"><span class="type-signature"></span>onEnter<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line571">line 571</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This will be called when entering a panorama</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Panorama.html#event:enter">Panorama#event:enter</a></li>
+
+    <li><a href="Panorama.html#event:enter-start">Panorama#event:enter-start</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onError"><span class="type-signature"></span>onError<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line246">line 246</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This will be called when panorama loading has error</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Panorama.html#event:error">Panorama#event:error</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onLeave"><span class="type-signature"></span>onLeave<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line623">line 623</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This will be called when leaving a panorama</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Panorama.html#event:leave">Panorama#event:leave</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onLoad"><span class="type-signature"></span>onLoad<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line209">line 209</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This will be called when panorama is loaded</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Panorama.html#event:load">Panorama#event:load</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onProgress"><span class="type-signature"></span>onProgress<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line228">line 228</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This will be called when panorama is in progress</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Panorama.html#event:progress">Panorama#event:progress</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setContainer"><span class="type-signature"></span>setContainer<span class="signature">(data)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line165">line 165</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Set container of this panorama</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">HTMLElement</span>
+|
+
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data with container information</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Infospot.html#event:panolens-container">Infospot#event:panolens-container</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setLinkingImage"><span class="type-signature"></span>setLinkingImage<span class="signature">(url, scale)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line361">line 361</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Set image of this panorama's linking infospot</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Url to the image asset</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scale</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Scale factor of the infospot</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="toggleInfospotVisibility"><span class="type-signature"></span>toggleInfospotVisibility<span class="signature">(isVisible, delay)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line314">line 314</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Toggle visibility of infospots in this panorama</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>isVisible</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Visibility of infospots</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>delay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Delay in milliseconds to change visibility</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Panorama.html#event:infospot-animation-complete">Panorama#event:infospot-animation-complete</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="updateTexture"><span class="type-signature"></span>updateTexture<span class="signature">(texture)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line299">line 299</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Update texture of a panorama</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>texture</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Texture</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Texture to be updated</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+        <h3 class="subsection-title">Events</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:enter">enter</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line600">line 600</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Enter panorama event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:enter-complete">enter-complete</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line491">line 491</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Enter panorama and animation complete event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:enter-fade-complete">enter-fade-complete</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line535">line 535</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Enter panorama fade complete event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:enter-fade-start">enter-fade-start</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line462">line 462</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Enter panorama fade in start event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:enter-start">enter-start</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line580">line 580</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Enter panorama and animation starting event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:error">error</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line248">line 248</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Loading panorama error event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:infospot-animation-complete">infospot-animation-complete</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line343">line 343</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Complete toggling infospot visibility</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:leave">leave</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line645">line 645</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Leave panorama event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:leave-complete">leave-complete</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line478">line 478</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Leave panorama complete event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:leave-start">leave-start</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line632">line 632</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Leave panorama and animation starting event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:load">load</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line213">line 213</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Load panorama event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:panolens-viewer-handler">panolens-viewer-handler</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line675">line 675</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>method</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Viewer function name</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The argument to be passed into the method</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>On panorama dispose handler</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:panolens-viewer-handler">panolens-viewer-handler</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line428">line 428</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>method</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Viewer function name</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The argument to be passed into the method</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Viewer handler event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:panolens-viewer-handler">panolens-viewer-handler</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line99">line 99</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>method</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Viewer function name</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The argument to be passed into the method</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Infospot focus handler event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:progress">progress</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="panorama_Panorama.js.html">panorama/Panorama.js</a>, <a href="panorama_Panorama.js.html#line230">line 230</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>progress</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The progress object containing loaded and total amount</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Loading panorama progress event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+</article>
+
+</section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a> on Wed Jun 12 2019 12:14:50 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

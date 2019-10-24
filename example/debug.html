@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js Development Example</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      #panolens-separate-container {
+        position: absolute;
+        width: 300px;
+        height: 150px;
+        right: 0;
+        top: 100px;
+      }
+
+      #panolens-separate-container:-webkit-full-screen{
+        left: 0;
+        top: 0;
+      }
+      #panolens-separate-container:-moz-full-screen{
+        left: 0;
+        top: 0;
+      }
+      #panolens-separate-container:-ms-fullscreen{
+        left: 0;
+        top: 0;
+      }
+      #panolens-separate-container:fullscreen {
+        left: 0;
+        top: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+
+  <script src="../node_modules/three/build/three.min.js"></script>
+  <script src="../build/panolens.js"></script>
+
+
+  <div id="panolens-separate-container"></div>
+
+    <script>
+
+      const empty = new PANOLENS.EmptyPanorama();
+      const image = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/road.jpg' );
+      const video = new PANOLENS.VideoPanorama( 'asset/textures/video/1941-battle-low.mp4', { autoplay: true, muted: true });
+      const image_littleplanet = new PANOLENS.ImageLittlePlanet( 'asset/textures/equirectangular/field.jpg' );
+
+      const infospot3 = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
+      infospot3.position.set(  100.92, -37.84, -1637.81 );
+      infospot3.addHoverText( 'Hovering Infospot', -20 );
+      image_littleplanet.add( infospot3 );
+
+      const basic = new PANOLENS.BasicPanorama();
+      const cube = new PANOLENS.CubePanorama( [ 
+        'asset/textures/cube/sand/px.png', 
+        'asset/textures/cube/sand/nx.png',
+        'asset/textures/cube/sand/py.png', 
+        'asset/textures/cube/sand/ny.png',
+        'asset/textures/cube/sand/pz.png', 
+        'asset/textures/cube/sand/nz.png'
+      ] );
+      const googlestreet = new PANOLENS.GoogleStreetviewPanorama( 'JmSoPsBPhqWvaBmOqfFzgA' );
+
+      const infospot = new PANOLENS.Infospot( 350, PANOLENS.DataImage.Info );
+      infospot.position.set( -1294.60, 181.52, -4298.10 );
+      infospot.addHoverText( 'Hovering Infospot' ); 
+
+      const widget = new PANOLENS.Widget();
+
+      const reticle = new PANOLENS.Reticle();
+
+      const camera = new PANOLENS.CameraPanorama({video: {facingMode: 'user'} });
+
+      const viewer = new PANOLENS.Viewer({output: 'console'});
+
+      console.log(empty, image, video, image_littleplanet, basic, cube, googlestreet, infospot, widget, reticle, viewer);
+
+      image.add( infospot );
+
+      camera.link( video, new THREE.Vector3( -428.44, -1283.10, -4287.61 ) );
+      video.link( image, new THREE.Vector3( 31.43, 1423.61, -4265.92 ) );
+      image.link( camera, new THREE.Vector3( -428.44, -1283.10, -4287.61 ) );
+
+      viewer.add( camera, video, image );
+
+    </script>
+
+  </body>
+</html>

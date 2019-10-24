@@ -4,61 +4,81 @@
  * @author pchen66
  */
 
-PANOLENS.StereographicShader = {
+import * as THREE from 'three';
 
-	uniforms: {
+/**
+ * @description Stereograhpic Shader
+ * @module StereographicShader
+ * @property {object} uniforms
+ * @property {THREE.Texture} uniforms.tDiffuse diffuse map
+ * @property {number} uniforms.resolution image resolution
+ * @property {THREE.Matrix4} uniforms.transform transformation matrix
+ * @property {number} uniforms.zoom image zoom factor
+ * @property {number} uniforms.opacity image opacity
+ * @property {string} vertexShader vertex shader
+ * @property {string} fragmentShader fragment shader
+ */
+const StereographicShader = {
 
-		"tDiffuse":   { value: new THREE.Texture() },
-		"resolution": { value: 1.0 },
-		"transform":  { value: new THREE.Matrix4() },
-		"zoom": 	  { value: 1.0 }
+    uniforms: {
 
-	},
+        'tDiffuse': { value: new THREE.Texture() },
+        'resolution': { value: 1.0 },
+        'transform': { value: new THREE.Matrix4() },
+        'zoom': { value: 1.0 },
+        'opacity': { value: 1.0 }
 
-	vertexShader: [
+    },
 
-		"varying vec2 vUv;",
+    vertexShader: [
 
-		"void main() {",
+        'varying vec2 vUv;',
 
-			"vUv = uv;",
-			"gl_Position = vec4( position, 1.0 );",
+        'void main() {',
 
-		"}" 
+        'vUv = uv;',
+        'gl_Position = vec4( position, 1.0 );',
 
-	].join( "\n" ),
+        '}' 
 
-	fragmentShader: [
+    ].join( '\n' ),
 
-		"uniform sampler2D tDiffuse;",
-		"uniform float resolution;",
-		"uniform mat4 transform;",
-		"uniform float zoom;",
+    fragmentShader: [
 
-		"varying vec2 vUv;",
+        'uniform sampler2D tDiffuse;',
+        'uniform float resolution;',
+        'uniform mat4 transform;',
+        'uniform float zoom;',
+        'uniform float opacity;',
 
-		"const float PI = 3.141592653589793;",
+        'varying vec2 vUv;',
 
-		"void main(){",
+        'const float PI = 3.141592653589793;',
 
-			"vec2 position = -1.0 +  2.0 * vUv;",
+        'void main(){',
 
-			"position *= vec2( zoom * resolution, zoom * 0.5 );",
+        'vec2 position = -1.0 +  2.0 * vUv;',
 
-			"float x2y2 = position.x * position.x + position.y * position.y;",
-			"vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );",
+        'position *= vec2( zoom * resolution, zoom * 0.5 );',
 
-			"sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );",
+        'float x2y2 = position.x * position.x + position.y * position.y;',
+        'vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );',
 
-			"vec2 sampleUV = vec2(",
-				"(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,",
-				"(asin(sphere_pnt.z) / PI + 0.5)",
-			");",
+        'sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );',
 
-			"gl_FragColor = texture2D( tDiffuse, sampleUV );",
+        'vec2 sampleUV = vec2(',
+        '(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,',
+        '(asin(sphere_pnt.z) / PI + 0.5)',
+        ');',
 
-		"}"
+        'gl_FragColor = texture2D( tDiffuse, sampleUV );',
 
-	].join( "\n" )
+        'gl_FragColor.a *= opacity;',
+
+        '}'
+
+    ].join( '\n' )
 
 };
+
+export { StereographicShader };

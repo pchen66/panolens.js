@@ -1,0 +1,10460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Viewer - Panolens</title>
+    
+    <meta name="description" content="Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible." />
+    
+        <meta name="keywords" content="panorama, 3d, 360, webgl, threejs" />
+        <meta name="keyword" content="panorama, 3d, 360, webgl, threejs" />
+    
+    
+    
+    <meta property="og:title" content="Panolens"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="https://repository-images.githubusercontent.com/46604802/33c10480-7d64-11e9-97d8-f45a9169911c.png"/>
+    <meta property="og:site_name" content="Panolens"/>
+    <meta property="og:url" content="https://pchen66.github.io/Panolens/"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/pchen66/panolens.js" target="_blank" class="menu-item" id="repository" >Github</a></h2><h3>Classes</h3><ul><li><a href="BasicPanorama.html">BasicPanorama</a></li><li><a href="CameraPanorama.html">CameraPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="CameraPanorama.html#onPanolensContainer">onPanolensContainer</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#onPanolensScene">onPanolensScene</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#start">start</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#stop">stop</a></li></ul></li><li><a href="CubePanorama.html">CubePanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="CubePanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="CubePanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="CubePanorama.html#onLoad">onLoad</a></li></ul></li><li><a href="EmptyPanorama.html">EmptyPanorama</a></li><li><a href="GoogleStreetviewLoader.html">GoogleStreetviewLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#adaptTextureToZoom">adaptTextureToZoom</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#composeFromTile">composeFromTile</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#composePanorama">composePanorama</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#load">load</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#loadPano">loadPano</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#progress">progress</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#setProgress">setProgress</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#setZoom">setZoom</a></li></ul></li><li><a href="GoogleStreetviewPanorama.html">GoogleStreetviewPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#getGSVLoader">getGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#loadGSVLoader">loadGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#reset">reset</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#setGSVLoader">setGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#setupGoogleMapAPI">setupGoogleMapAPI</a></li></ul></li><li><a href="ImageLittlePlanet.html">ImageLittlePlanet</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#updateTexture">updateTexture</a></li></ul></li><li><a href="ImagePanorama.html">ImagePanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ImagePanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#reset">reset</a></li></ul></li><li><a href="Infospot.html">Infospot</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Infospot.html#addHoverElement">addHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#addHoverText">addHoverText</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#enableRaycast">enableRaycast</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#focus">focus</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#getContainer">getContainer</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#hide">hide</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#lockHoverElement">lockHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onClick">onClick</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onDismiss">onDismiss</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onDualEyeEffect">onDualEyeEffect</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHover">onHover</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHoverEnd">onHoverEnd</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHoverStart">onHoverStart</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#removeHoverElement">removeHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setContainer">setContainer</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setCursorHoverStyle">setCursorHoverStyle</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setElementStyle">setElementStyle</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setFocusMethod">setFocusMethod</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setText">setText</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#show">show</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#translateElement">translateElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#unlockHoverElement">unlockHoverElement</a></li></ul></li><li><a href="LittlePlanet.html">LittlePlanet</a></li><li><a href="Media.html">Media</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Media.html#createVideoElement">createVideoElement</a></li><li data-type='method' style='display: none;'><a href="Media.html#createVideoTexture">createVideoTexture</a></li><li data-type='method' style='display: none;'><a href="Media.html#enumerateDevices">enumerateDevices</a></li><li data-type='method' style='display: none;'><a href="Media.html#getDevices">getDevices</a></li><li data-type='method' style='display: none;'><a href="Media.html#getUserMedia">getUserMedia</a></li><li data-type='method' style='display: none;'><a href="Media.html#onWindowResize">onWindowResize</a></li><li data-type='method' style='display: none;'><a href="Media.html#pauseVideo">pauseVideo</a></li><li data-type='method' style='display: none;'><a href="Media.html#playVideo">playVideo</a></li><li data-type='method' style='display: none;'><a href="Media.html#setMediaStream">setMediaStream</a></li><li data-type='method' style='display: none;'><a href="Media.html#setVideDeviceIndex">setVideDeviceIndex</a></li><li data-type='method' style='display: none;'><a href="Media.html#start">start</a></li><li data-type='method' style='display: none;'><a href="Media.html#stop">stop</a></li><li data-type='method' style='display: none;'><a href="Media.html#switchNextVideoDevice">switchNextVideoDevice</a></li></ul></li><li><a href="Panorama.html">Panorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Panorama.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#fadeIn">fadeIn</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#fadeOut">fadeOut</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#getZoomLevel">getZoomLevel</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#link">link</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onClick">onClick</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onEnter">onEnter</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onError">onError</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onLeave">onLeave</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onProgress">onProgress</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#setContainer">setContainer</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#setLinkingImage">setLinkingImage</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#toggleInfospotVisibility">toggleInfospotVisibility</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#updateTexture">updateTexture</a></li></ul></li><li><a href="Reticle.html">Reticle</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Reticle.html#createCanvas">createCanvas</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#createCanvasTexture">createCanvasTexture</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#end">end</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#hide">hide</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#ripple">ripple</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#setColor">setColor</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#show">show</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#start">start</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#update">update</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#updateCanvasArcByProgress">updateCanvasArcByProgress</a></li></ul></li><li><a href="VideoPanorama.html">VideoPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="VideoPanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#getVideoElement">getVideoElement</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#isVideoMuted">isVideoMuted</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#isVideoPaused">isVideoPaused</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#muteVideo">muteVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#pauseVideo">pauseVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#playVideo">playVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#reset">reset</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#resetVideo">resetVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#resumeVideoProgress">resumeVideoProgress</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#setVideoCurrentTime">setVideoCurrentTime</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#setVideoTexture">setVideoTexture</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#toggleVideo">toggleVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#unmuteVideo">unmuteVideo</a></li></ul></li><li><a href="Viewer.html">Viewer</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Viewer.html#activateWidgetItem">activateWidgetItem</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addDefaultControlBar">addDefaultControlBar</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addOutputElement">addOutputElement</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addPanoramaEventListener">addPanoramaEventListener</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addReticle">addReticle</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addUpdateCallback">addUpdateCallback</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addViewIndicator">addViewIndicator</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#animate">animate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#appendControlItem">appendControlItem</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#checkSpriteInViewport">checkSpriteInViewport</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#clearAllCache">clearAllCache</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#destroy">destroy</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableAutoRate">disableAutoRate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableControl">disableControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableEffect">disableEffect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableReticleControl">disableReticleControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#dispatchEventToChildren">dispatchEventToChildren</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableAutoRate">enableAutoRate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableControl">enableControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableEffect">enableEffect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableReticleControl">enableReticleControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#eventHandler">eventHandler</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getCamera">getCamera</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getContainer">getContainer</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getControl">getControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getControlId">getControlId</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getConvertedIntersect">getConvertedIntersect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getNextControlId">getNextControlId</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getNextControlIndex">getNextControlIndex</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getRenderer">getRenderer</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getScene">getScene</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getScreenVector">getScreenVector</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#hideInfospot">hideInfospot</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#hideVideoWidget">hideVideoWidget</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#loadAsyncRequest">loadAsyncRequest</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onChange">onChange</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onKeyDown">onKeyDown</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onKeyUp">onKeyUp</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseDown">onMouseDown</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseMove">onMouseMove</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseUp">onMouseUp</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onPanoramaDispose">onPanoramaDispose</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onTap">onTap</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onVideoUpdate">onVideoUpdate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onWindowResize">onWindowResize</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#outputPosition">outputPosition</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerEventListeners">registerEventListeners</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerMouseAndTouchEvents">registerMouseAndTouchEvents</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerReticleEvent">registerReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#remove">remove</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#removeUpdateCallback">removeUpdateCallback</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#render">render</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#reverseDraggingDirection">reverseDraggingDirection</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setCameraControl">setCameraControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setCameraFov">setCameraFov</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setPanorama">setPanorama</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setVideoCurrentTime">setVideoCurrentTime</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#showVideoWidget">showVideoWidget</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleControlBar">toggleControlBar</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleNextControl">toggleNextControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleVideoPlay">toggleVideoPlay</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#tweenControlCenter">tweenControlCenter</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#tweenControlCenterByObject">tweenControlCenterByObject</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterEventListeners">unregisterEventListeners</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterMouseAndTouchEvents">unregisterMouseAndTouchEvents</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterReticleEvent">unregisterReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#update">update</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#updateReticleEvent">updateReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#updateVideoPlayButton">updateVideoPlayButton</a></li></ul></li><li><a href="Widget.html">Widget</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Widget.html#addControlBar">addControlBar</a></li><li data-type='method' style='display: none;'><a href="Widget.html#addControlButton">addControlButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createCustomItem">createCustomItem</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createDefaultMenu">createDefaultMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createFullscreenButton">createFullscreenButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMainMenu">createMainMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMask">createMask</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenu">createMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenuItem">createMenuItem</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenuItemHeader">createMenuItemHeader</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createSettingButton">createSettingButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createSubMenu">createSubMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControl">createVideoControl</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControlButton">createVideoControlButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControlSeekbar">createVideoControlSeekbar</a></li><li data-type='method' style='display: none;'><a href="Widget.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Widget.html#mergeStyleOptions">mergeStyleOptions</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-CONTROLS.html">CONTROLS</a></li><li><a href="module-CubeTextureLoader.html">CubeTextureLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-CubeTextureLoader.html#~load">load</a></li></ul></li><li><a href="module-DataImage.html">DataImage</a></li><li><a href="module-ImageLoader.html">ImageLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-ImageLoader.html#~load">load</a></li></ul></li><li><a href="module-MODES.html">MODES</a></li><li><a href="module-REVISION.html">REVISION</a></li><li><a href="module-StereographicShader.html">StereographicShader</a></li><li><a href="module-TextureLoader.html">TextureLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-TextureLoader.html#~load">load</a></li></ul></li><li><a href="module-THREE_REVISION.html">THREE_REVISION</a></li><li><a href="module-THREE_VERSION.html">THREE_VERSION</a></li><li><a href="module-VERSION.html">VERSION</a></li></ul><h3>Externals</h3><ul><li><a href="external-CardboardEffect.html">CardboardEffect</a></li><li><a href="external-DeviceOrientationControls.html">DeviceOrientationControls</a></li><li><a href="external-OrbitControls.html">OrbitControls</a></li><li><a href="external-StereoEffect.html">StereoEffect</a></li></ul><h3>Events</h3><ul><li><a href="Infospot.html#event:dismiss">dismiss</a></li><li><a href="Infospot.html#event:panolens-container">panolens-container</a></li><li><a href="Infospot.html#event:panolens-dual-eye-effect">panolens-dual-eye-effect</a></li><li></li><li><a href="Media.html#event:canplay">canplay</a></li><li><a href="Panorama.html#event:enter">enter</a></li><li><a href="Panorama.html#event:enter-complete">enter-complete</a></li><li><a href="Panorama.html#event:enter-fade-complete">enter-fade-complete</a></li><li><a href="Panorama.html#event:enter-fade-start">enter-fade-start</a></li><li><a href="Panorama.html#event:enter-start">enter-start</a></li><li><a href="Panorama.html#event:error">error</a></li><li><a href="Panorama.html#event:infospot-animation-complete">infospot-animation-complete</a></li><li><a href="Panorama.html#event:leave">leave</a></li><li><a href="Panorama.html#event:leave-complete">leave-complete</a></li><li><a href="Panorama.html#event:leave-start">leave-start</a></li><li><a href="Panorama.html#event:load">load</a></li><li><a href="Panorama.html#event:panolens-viewer-handler">panolens-viewer-handler</a></li><li></li><li></li><li><a href="Panorama.html#event:progress">progress</a></li><li><a href="Reticle.html#event:reticle-end">reticle-end</a></li><li><a href="Reticle.html#event:reticle-ripple-end">reticle-ripple-end</a></li><li><a href="Reticle.html#event:reticle-ripple-start">reticle-ripple-start</a></li><li><a href="Reticle.html#event:reticle-start">reticle-start</a></li><li><a href="Reticle.html#event:reticle-update">reticle-update</a></li><li><a href="VideoPanorama.html#event:pause">pause</a></li><li><a href="VideoPanorama.html#event:play">play</a></li><li><a href="VideoPanorama.html#event:play-error">play-error</a></li><li><a href="Viewer.html#event:control-bar-toggle">control-bar-toggle</a></li><li><a href="Viewer.html#event:mode-change">mode-change</a></li><li></li><li><a href="Viewer.html#event:video-control-hide">video-control-hide</a></li><li><a href="Viewer.html#event:video-control-show">video-control-show</a></li><li><a href="Viewer.html#event:video-time">video-time</a></li><li><a href="Viewer.html#event:video-toggle">video-toggle</a></li><li><a href="Viewer.html#event:video-update">video-update</a></li><li><a href="Viewer.html#event:window-resize">window-resize</a></li><li><a href="Widget.html#event:panolens-viewer-handler">panolens-viewer-handler</a></li><li></li><li></li></ul><h3>Namespaces</h3><ul><li><a href="PANOLENS.html">PANOLENS</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Viewer</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        Viewer
+        </h2>
+        
+            <div class="class-description"><p>Viewer contains pre-defined scene, camera and renderer</p></div>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="Viewer"><span class="type-signature"></span>new Viewer<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Use custom or default config options</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>container</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">HTMLElement</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>A HTMLElement to host the canvas</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scene</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Scene</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>THREE.Scene</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>A THREE.Scene which contains panorama and 3D objects</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>camera</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Camera</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>THREE.PerspectiveCamera</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>A THREE.Camera to view the scene</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>renderer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.WebGLRenderer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>THREE.WebGLRenderer</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>A THREE.WebGLRenderer to render canvas</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>controlBar</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>true</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Show/hide control bar on the bottom of the container</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>controlButtons</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>[]</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Button names to mount on controlBar if controlBar exists, Defaults to ['fullscreen', 'setting', 'video']</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoHideControlBar</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Auto hide control bar when click on non-active area</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoHideInfospot</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>true</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Auto hide infospots when click on non-active area</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>horizontalView</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Allow only horizontal camera control</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>clickTolerance</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>10</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Distance tolerance to tigger click / tap event</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cameraFov</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>60</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Camera field of view value</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>reverseDragging</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Reverse dragging direction</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>enableReticle</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Enable reticle for mouseless interaction other than VR mode</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dwellTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1500</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Dwell time for reticle selection in ms</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoReticleSelect</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>true</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Auto select a clickable target after dwellTime</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>viewIndicator</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Adds an angle view indicator in upper left corner</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>indicatorSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>30</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Size of View Indicator</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>output</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'none'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Whether and where to output raycast position. Could be 'console' or 'overlay'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoRotate</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>false</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Auto rotate</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoRotateSpeed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>2.0</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoRotateActivationDuration</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>5000</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Duration before auto rotatation when no user interactivity in ms</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="activateWidgetItem"><span class="type-signature"></span>activateWidgetItem<span class="signature">(controlIndex, mode)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line414">line 414</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Set widget content</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>controlIndex</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Control index</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Modes for effects</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(object)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line250">line 250</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Add an object to the scene
+Automatically hookup with panolens-viewer-handler listener
+to communicate with viewer method</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>object</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Object3D</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The object to be added</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="addDefaultControlBar"><span class="type-signature"></span>addDefaultControlBar<span class="signature">(array)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line325">line 325</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Add default control bar</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>array</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The control buttons array</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="addOutputElement"><span class="type-signature"></span>addOutputElement<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1281">line 1281</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Add output element</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="addPanoramaEventListener"><span class="type-signature"></span>addPanoramaEventListener<span class="signature">(pano)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line816">line 816</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Add default panorama event listeners</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pano</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Panorama.html">Panorama</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The panorama to be added with event listener</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="addReticle"><span class="type-signature"></span>addReticle<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1081">line 1081</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Add reticle</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="addUpdateCallback"><span class="type-signature"></span>addUpdateCallback<span class="signature">(callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line728">line 728</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Add update callback to be called every animation frame</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="addViewIndicator"><span class="type-signature"></span>addViewIndicator<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line2040">line 2040</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>View indicator in upper left</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="animate"><span class="type-signature"></span>animate<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1806">line 1806</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Animate</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="appendControlItem"><span class="type-signature"></span>appendControlItem<span class="signature">(option<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line2110">line 2110</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Append custom control item to existing control bar</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>option</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Style object to overwirte default element style. It takes 'style', 'onTap' and 'group' properties.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="checkSpriteInViewport"><span class="type-signature"></span>checkSpriteInViewport<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1054">line 1054</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Check Sprite in Viewport</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="clearAllCache"><span class="type-signature"></span>clearAllCache<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line2133">line 2133</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Clear all cached files</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="destroy"><span class="type-signature"></span>destroy<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1988">line 1988</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Destroy viewer by disposing and stopping requestAnimationFrame</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="disableAutoRate"><span class="type-signature"></span>disableAutoRate<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line648">line 648</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Disable auto rotation</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="disableControl"><span class="type-signature"></span>disableControl<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1011">line 1011</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Disable current control</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="disableEffect"><span class="type-signature"></span>disableEffect<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line559">line 559</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Disable additional rendering effect</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="disableReticleControl"><span class="type-signature"></span>disableReticleControl<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line612">line 612</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Disable reticle control</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="dispatchEventToChildren"><span class="type-signature"></span>dispatchEventToChildren<span class="signature">(event)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line400">line 400</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Dispatch event to all descendants</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event to be passed along</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="dispose"><span class="type-signature"></span>dispose<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1933">line 1933</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Dispose all scene objects and clear cache</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="enableAutoRate"><span class="type-signature"></span>enableAutoRate<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line636">line 636</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Enable auto rotation</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="enableControl"><span class="type-signature"></span>enableControl<span class="signature">(index)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line970">line 970</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Enable control by index</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">CONTROLS</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Index of camera control</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="enableEffect"><span class="type-signature"></span>enableEffect<span class="signature">(mode)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line495">line 495</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Enable rendering effect</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">MODES</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Modes for effects</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="enableReticleControl"><span class="type-signature"></span>enableReticleControl<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line593">line 593</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Enable reticle control</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="eventHandler"><span class="type-signature"></span>eventHandler<span class="signature">(event)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line384">line 384</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Event handler to execute commands from child objects</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The dispatched event with method as function name and data as an argument</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getCamera"><span class="type-signature"></span>getCamera<span class="signature">()</span><span class="type-signature"> &rarr; {THREE.Camera}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line881">line 881</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get camera</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>The scene camera</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">THREE.Camera</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getContainer"><span class="type-signature"></span>getContainer<span class="signature">()</span><span class="type-signature"> &rarr; {HTMLElement}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line905">line 905</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get container</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>The container holds rendererd canvas</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">HTMLElement</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getControl"><span class="type-signature"></span>getControl<span class="signature">()</span><span class="type-signature"> &rarr; {object|THREE.OrbitControls|THREE.DeviceOrientationControls}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line857">line 857</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get current camera control</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+<ul>
+        <li>
+<div class="param-desc">
+    <ul>
+<li>Current navigation control</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+</li>
+    
+        <li>
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">THREE.OrbitControls</span>
+|
+
+<span class="param-type">THREE.DeviceOrientationControls</span>
+
+
+    </dd>
+</dl>
+</li>
+    </ul>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getControlId"><span class="type-signature"></span>getControlId<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line917">line 917</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get control id</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Control id. 'orbit' or 'device-orientation'</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getConvertedIntersect"><span class="type-signature"></span>getConvertedIntersect<span class="signature">(intersects)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1649">line 1649</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get converted intersect</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>intersects</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getNextControlId"><span class="type-signature"></span>getNextControlId<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line929">line 929</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get next navigation control id</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Next control id</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getNextControlIndex"><span class="type-signature"></span>getNextControlIndex<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line941">line 941</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get next navigation control index</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Next control index</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getRenderer"><span class="type-signature"></span>getRenderer<span class="signature">()</span><span class="type-signature"> &rarr; {THREE.WebGLRenderer}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line893">line 893</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get renderer</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>The renderer using webgl</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">THREE.WebGLRenderer</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getScene"><span class="type-signature"></span>getScene<span class="signature">()</span><span class="type-signature"> &rarr; {THREE.Scene}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line869">line 869</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get scene</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Current scene which the viewer is built on</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">THREE.Scene</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getScreenVector"><span class="type-signature"></span>getScreenVector<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1033">line 1033</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Screen Space Projection</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="hideInfospot"><span class="type-signature"></span>hideInfospot<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1680">line 1680</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Hide infospot</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="hideVideoWidget"><span class="type-signature"></span>hideVideoWidget<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line779">line 779</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Hide video widget</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="loadAsyncRequest"><span class="type-signature"></span>loadAsyncRequest<span class="signature">(url, callback<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line2024">line 2024</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Load ajax call</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>URL to be requested</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Callback after request completes</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onChange"><span class="type-signature"></span>onChange<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1819">line 1819</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>On change</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onKeyDown"><span class="type-signature"></span>onKeyDown<span class="signature">(event)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1721">line 1721</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>On key down</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">KeyboardEvent</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onKeyUp"><span class="type-signature"></span>onKeyUp<span class="signature">(event)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1737">line 1737</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>On key up</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">KeyboardEvent</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onMouseDown"><span class="type-signature"></span>onMouseDown<span class="signature">(event)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1338">line 1338</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>On mouse down</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">MouseEvent</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onMouseMove"><span class="type-signature"></span>onMouseMove<span class="signature">(event)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1355">line 1355</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>On mouse move</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">MouseEvent</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onMouseUp"><span class="type-signature"></span>onMouseUp<span class="signature">(event)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1369">line 1369</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>On mouse up</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">MouseEvent</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onPanoramaDispose"><span class="type-signature"></span>onPanoramaDispose<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line2001">line 2001</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>On panorama dispose</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onTap"><span class="type-signature"></span>onTap<span class="signature">(event, type)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1436">line 1436</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>On tap eveny frame</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">MouseEvent</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onVideoUpdate"><span class="type-signature"></span>onVideoUpdate<span class="signature">(percentage)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line708">line 708</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This will be called when video updates if an widget is present</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>percentage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Percentage of a video. Range from 0.0 to 1.0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Viewer.html#event:video-update">Viewer#event:video-update</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onWindowResize"><span class="type-signature"></span>onWindowResize<span class="signature">(windowWidth<span class="signature-attributes">opt</span>, windowHeight<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1211">line 1211</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This is called when window size is changed</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>windowWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Specify if custom element has changed width</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>windowHeight</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Specify if custom element has changed height</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Viewer.html#event:window-resize">Viewer#event:window-resize</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="outputPosition"><span class="type-signature"></span>outputPosition<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1298">line 1298</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Output position in developer console by holding down Ctrl button</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="registerEventListeners"><span class="type-signature"></span>registerEventListeners<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1901">line 1901</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Register container and window listeners</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="registerMouseAndTouchEvents"><span class="type-signature"></span>registerMouseAndTouchEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1831">line 1831</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Register mouse and touch event on container</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="registerReticleEvent"><span class="type-signature"></span>registerReticleEvent<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1863">line 1863</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Register reticle event</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">(object)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line307">line 307</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Remove an object from the scene</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>object</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Object3D</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Object to be removed</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="removeUpdateCallback"><span class="type-signature"></span>removeUpdateCallback<span class="signature">(fn)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line744">line 744</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Remove update callback</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The function to be removed</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="render"><span class="type-signature"></span>render<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1781">line 1781</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Rendering function to be called on every animation frame
+Render reticle last</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="reverseDraggingDirection"><span class="type-signature"></span>reverseDraggingDirection<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1069">line 1069</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Reverse dragging direction</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setCameraControl"><span class="type-signature"></span>setCameraControl<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line844">line 844</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Set camera control</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setCameraFov"><span class="type-signature"></span>setCameraFov<span class="signature">(fov)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line957">line 957</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Set field of view of camera</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>fov</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setPanorama"><span class="type-signature"></span>setPanorama<span class="signature">(pano)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line353">line 353</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Set a panorama to be the current one</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pano</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Panorama.html">Panorama</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Panorama to be set</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setVideoCurrentTime"><span class="type-signature"></span>setVideoCurrentTime<span class="signature">(percentage)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line685">line 685</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Set currentTime in a video</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>percentage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Percentage of a video. Range from 0.0 to 1.0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Viewer.html#event:video-time">Viewer#event:video-time</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="showVideoWidget"><span class="type-signature"></span>showVideoWidget<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line761">line 761</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Show video widget</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="toggleControlBar"><span class="type-signature"></span>toggleControlBar<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1698">line 1698</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Toggle control bar</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Viewer.html#event:control-bar-toggle">Viewer#event:control-bar-toggle</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="toggleNextControl"><span class="type-signature"></span>toggleNextControl<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1022">line 1022</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Toggle next control</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="toggleVideoPlay"><span class="type-signature"></span>toggleVideoPlay<span class="signature">(pause)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line663">line 663</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Toggle video play or stop</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pause</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Viewer.html#event:video-toggle">Viewer#event:video-toggle</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="tweenControlCenter"><span class="type-signature"></span>tweenControlCenter<span class="signature">(vector, duration<span class="signature-attributes">opt</span>, easing<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1098">line 1098</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Tween control looking center</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vector</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Vector3</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Vector to be looked at the center</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>duration</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1000</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Duration to tween</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>easing</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>TWEEN.Easing.Exponential.Out</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Easing function</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="tweenControlCenterByObject"><span class="type-signature"></span>tweenControlCenterByObject<span class="signature">(object, duration<span class="signature-attributes">opt</span>, easing<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1176">line 1176</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Tween control looking center by object</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>object</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Object3D</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Object to be looked at the center</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>duration</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1000</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Duration to tween</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>easing</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>TWEEN.Easing.Exponential.Out</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>Easing function</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="unregisterEventListeners"><span class="type-signature"></span>unregisterEventListeners<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1917">line 1917</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Unregister container and window listeners</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="unregisterMouseAndTouchEvents"><span class="type-signature"></span>unregisterMouseAndTouchEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1848">line 1848</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Unregister mouse and touch event on container</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="unregisterReticleEvent"><span class="type-signature"></span>unregisterReticleEvent<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1874">line 1874</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Unregister reticle event</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1748">line 1748</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Update control and callbacks</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="updateReticleEvent"><span class="type-signature"></span>updateReticleEvent<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1885">line 1885</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Update reticle event</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="updateVideoPlayButton"><span class="type-signature"></span>updateVideoPlayButton<span class="signature">(paused)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line798">line 798</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Update video play button</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>paused</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+        <h3 class="subsection-title">Events</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:control-bar-toggle">control-bar-toggle</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1702">line 1702</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Toggle control bar event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:mode-change">mode-change</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line544">line 544</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">MODES</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Current display mode</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Dispatch mode change event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:mode-change">mode-change</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line579">line 579</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">MODES</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Current display mode</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Dispatch mode change event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:video-control-hide">video-control-hide</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line783">line 783</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Hide video widget</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:video-control-show">video-control-show</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line765">line 765</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Show video widget event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:video-time">video-time</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line689">line 689</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>percentage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Percentage of a video. Range from 0.0 to 1.0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Setting video time event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:video-toggle">video-toggle</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line667">line 667</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Toggle video event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:video-update">video-update</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line712">line 712</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>percentage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Percentage of a video. Range from 0.0 to 1.0</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Video update event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="event:window-resize">window-resize</h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewer_Viewer.js.html">viewer/Viewer.js</a>, <a href="viewer_Viewer.js.html#line1256">line 1256</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>width</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Width of the window</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>height</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Height of the window</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Window resizing event</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+</article>
+
+</section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a> on Wed Jun 12 2019 12:14:50 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

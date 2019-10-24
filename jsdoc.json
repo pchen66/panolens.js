@@ -1,0 +1,49 @@
+{
+    "tags": {
+        "allowUnknownTags": ["category"]
+    },
+    "source": {
+        "include": ["./src"],
+        "includePattern": ".js",
+        "excludePattern": "(node_modules/|docs)"
+    },
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "opts": {
+        "readme": "README.md",
+        "template": "node_modules/docdash",
+        "destination": "docs/",
+        "recurse": true,
+        "verbose": true
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    },
+    "docdash": {
+        "sort": true,
+        "openGraph": {
+			"title": "Panolens",
+			"type": "website",
+			"image": "https://repository-images.githubusercontent.com/46604802/33c10480-7d64-11e9-97d8-f45a9169911c.png",
+			"site_name": "Panolens",
+			"url": "https://pchen66.github.io/Panolens/"
+		},
+		"meta": {
+			"title": "Panolens",
+			"description": "Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible.",
+			"keyword": "panorama, 3d, 360, webgl, threejs"
+        },
+        "search": true,
+        "collapse": true,
+        "menu":{
+            "Github":{
+                "href":"https://github.com/pchen66/panolens.js",
+                "target":"_blank",
+                "class":"menu-item",
+                "id":"repository"
+            }
+        }
+    }
+}

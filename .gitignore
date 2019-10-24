@@ -1,5 +1,7 @@
 node_modules
 bower_components
-test
 .idea/*
-.DS_Store
+./**.DS_Store
+coverage/
+.nyc_output
+.vscode/

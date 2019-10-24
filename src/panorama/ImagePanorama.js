@@ -1,88 +1,103 @@
-(function(){
-	
-	'use strict';
-	
-	/**
-	 * Equirectangular based image panorama
-	 * @constructor
-	 * @param {string} image - Image url or HTMLImageElement
-	 * @param {number} [radius=5000] - Radius of panorama
-	 */
-	PANOLENS.ImagePanorama = function ( image, radius ) {
+import { Panorama } from './Panorama';
+import { TextureLoader } from '../loaders/TextureLoader';
+import * as THREE from 'three';
 
-		radius = radius || 5000;
+/**
+ * @classdesc Equirectangular based image panorama
+ * @constructor
+ * @param {string} image - Image url or HTMLImageElement
+ */
+function ImagePanorama ( image, _geometry, _material ) {
 
-		var geometry = new THREE.SphereGeometry( radius, 60, 40 ),
-			material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
+    const radius = 5000;
+    const geometry = _geometry || new THREE.SphereBufferGeometry( radius, 60, 40 );
+    const material = _material || new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
-		PANOLENS.Panorama.call( this, geometry, material );
+    Panorama.call( this, geometry, material );
 
-		this.src = image;
+    this.src = image;
+    this.radius = radius;
 
-	}
+}
 
-	PANOLENS.ImagePanorama.prototype = Object.create( PANOLENS.Panorama.prototype );
+ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
-	PANOLENS.ImagePanorama.prototype.constructor = PANOLENS.ImagePanorama;
+    constructor: ImagePanorama,
 
-	/**
-	 * Load image asset
-	 * @param  {*} src - Url or image element
-	 */
-	PANOLENS.ImagePanorama.prototype.load = function ( src ) {
+    /**
+     * Load image asset
+     * @param  {*} src - Url or image element
+     * @memberOf ImagePanorama
+     * @instance
+     */
+    load: function ( src ) {
 
-		src = src || this.src;
+        src = src || this.src;
 
-		if ( !src ) { 
+        if ( !src ) { 
 
-			console.warn( 'Image source undefined' );
+            console.warn( 'Image source undefined' );
 
-			return; 
+            return; 
 
-		} else if ( typeof src === 'string' ) {
+        } else if ( typeof src === 'string' ) {
 
-			PANOLENS.Utils.TextureLoader.load( src, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
+            TextureLoader.load( src, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
 
-		} else if ( src instanceof HTMLImageElement ) {
+        } else if ( src instanceof HTMLImageElement ) {
 
-			this.onLoad( new THREE.Texture( src ) );
+            this.onLoad( new THREE.Texture( src ) );
 
-		}
+        }
 
-	};
+    },
 
-	/**
-	 * This will be called when image is loaded
-	 * @param  {THREE.Texture} texture - Texture to be updated
-	 */
-	PANOLENS.ImagePanorama.prototype.onLoad = function ( texture ) {
+    /**
+     * This will be called when image is loaded
+     * @param  {THREE.Texture} texture - Texture to be updated
+     * @memberOf ImagePanorama
+     * @instance
+     */
+    onLoad: function ( texture ) {
 
-		texture.minFilter = texture.magFilter = THREE.LinearFilter;
-
-		texture.needsUpdate = true;
-
-		this.updateTexture( texture );
-
-		// Call onLoad after second frame being painted
-		window.requestAnimationFrame(function(){
-
-			window.requestAnimationFrame(function(){
-
-				PANOLENS.Panorama.prototype.onLoad.call( this );
-				
-
-			}.bind(this));
-
-		}.bind(this));
-
+        texture.minFilter = texture.magFilter = THREE.LinearFilter;
+        texture.needsUpdate = true;
 		
+        this.updateTexture( texture );
 
-	};
+        window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
 
-	PANOLENS.ImagePanorama.prototype.reset = function () {
+    },
 
-		PANOLENS.Panorama.prototype.reset.call( this );
+    /**
+     * Reset
+     * @memberOf ImagePanorama
+     * @instance
+     */
+    reset: function () {
 
-	};
+        Panorama.prototype.reset.call( this );
 
-})();
+    },
+
+    /**
+     * Dispose
+     * @memberOf ImagePanorama
+     * @instance
+     */
+    dispose: function () {
+
+        const { material: { map } } = this;
+
+        // Release cached image
+        THREE.Cache.remove( this.src );
+
+        if ( map ) { map.dispose(); }
+
+        Panorama.prototype.dispose.call( this );
+
+    }
+
+} );
+
+export { ImagePanorama };

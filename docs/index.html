@@ -1,160 +1,61 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-	<title>Documentation Index</title>
-
-	<!--[if lt IE 9]>
-	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
-	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
-
-	<link type="text/css" rel="stylesheet" href="styles/site.paper.css">
-
+    
+    <meta charset="utf-8">
+    <title>Home - Panolens</title>
+    
+    <meta name="description" content="Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible." />
+    
+        <meta name="keywords" content="panorama, 3d, 360, webgl, threejs" />
+        <meta name="keyword" content="panorama, 3d, 360, webgl, threejs" />
+    
+    
+    
+    <meta property="og:title" content="Panolens"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="https://repository-images.githubusercontent.com/46604802/33c10480-7d64-11e9-97d8-f45a9169911c.png"/>
+    <meta property="og:site_name" content="Panolens"/>
+    <meta property="og:url" content="https://pchen66.github.io/Panolens/"/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div class="navbar navbar-default navbar-fixed-top ">
-<div class="container">
-	<div class="navbar-header">
-		<a class="navbar-brand" href="index.html">Documentation</a>
-		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-        </button>
-	</div>
-	<div class="navbar-collapse collapse" id="topNavigation">
-		<ul class="nav navbar-nav">
-			
-			<li class="dropdown">
-				<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
-				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.html">PANOLENS</a></li><li><a href="PANOLENS.Utils.html">PANOLENS.Utils</a></li><li><a href="PANOLENS.Utils.CubeTextureLoader.html">PANOLENS.Utils.CubeTextureLoader</a></li><li><a href="PANOLENS.Utils.ImageLoader.html">PANOLENS.Utils.ImageLoader</a></li><li><a href="PANOLENS.Utils.TextureLoader.html">PANOLENS.Utils.TextureLoader</a></li>
-				</ul>
-			</li>
-			
-			<li class="dropdown">
-				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
-				<ul class="dropdown-menu ">
-					<li><a href="PANOLENS.BasicPanorama.html">PANOLENS.BasicPanorama</a></li><li><a href="PANOLENS.CubePanorama.html">PANOLENS.CubePanorama</a></li><li><a href="PANOLENS.EmptyPanorama.html">PANOLENS.EmptyPanorama</a></li><li><a href="PANOLENS.GoogleStreetviewPanorama.html">PANOLENS.GoogleStreetviewPanorama</a></li><li><a href="PANOLENS.ImageLittlePlanet.html">PANOLENS.ImageLittlePlanet</a></li><li><a href="PANOLENS.ImagePanorama.html">PANOLENS.ImagePanorama</a></li><li><a href="PANOLENS.Infospot.html">PANOLENS.Infospot</a></li><li><a href="PANOLENS.LittlePlanet.html">PANOLENS.LittlePlanet</a></li><li><a href="PANOLENS.Panorama.html">PANOLENS.Panorama</a></li><li><a href="PANOLENS.Reticle.html">PANOLENS.Reticle</a></li><li><a href="PANOLENS.SpriteText.html">PANOLENS.SpriteText</a></li><li><a href="PANOLENS.Tile.html">PANOLENS.Tile</a></li><li><a href="PANOLENS.TileGroup.html">PANOLENS.TileGroup</a></li><li><a href="PANOLENS.VideoPanorama.html">PANOLENS.VideoPanorama</a></li><li><a href="PANOLENS.Viewer.html">PANOLENS.Viewer</a></li><li><a href="PANOLENS.Widget.html">PANOLENS.Widget</a></li>
-				</ul>
-			</li>
-			
-			<li class="dropdown">
-				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
-				<ul class="dropdown-menu ">
-					<li><a href="global.html#event:'pause'">event:'pause'</a></li><li><a href="global.html#event:'play'">event:'play'</a></li><li><a href="PANOLENS.Infospot.html#event:dismiss">PANOLENS.Infospot#event:dismiss</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-container">PANOLENS.Infospot#event:panolens-container</a></li><li><a href="PANOLENS.Infospot.html#event:panolens-dual-eye-effect">PANOLENS.Infospot#event:panolens-dual-eye-effect</a></li><li><a href="PANOLENS.Panorama.html#event:enter">PANOLENS.Panorama#event:enter</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-complete">PANOLENS.Panorama#event:enter-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:enter-animation-start">PANOLENS.Panorama#event:enter-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:enter-fade-complete">PANOLENS.Panorama#event:enter-fade-complete</a></li><li><a href="PANOLENS.Panorama.html#event:enter-fade-start">PANOLENS.Panorama#event:enter-fade-start</a></li><li><a href="PANOLENS.Panorama.html#event:error">PANOLENS.Panorama#event:error</a></li><li><a href="PANOLENS.Panorama.html#event:infospot-animation-complete">PANOLENS.Panorama#event:infospot-animation-complete</a></li><li><a href="PANOLENS.Panorama.html#event:leave">PANOLENS.Panorama#event:leave</a></li><li><a href="PANOLENS.Panorama.html#event:leave-animation-start">PANOLENS.Panorama#event:leave-animation-start</a></li><li><a href="PANOLENS.Panorama.html#event:leave-complete">PANOLENS.Panorama#event:leave-complete</a></li><li><a href="PANOLENS.Panorama.html#event:load">PANOLENS.Panorama#event:load</a></li><li><a href="PANOLENS.Panorama.html#event:panolens-viewer-handler">PANOLENS.Panorama#event:panolens-viewer-handler</a></li><li><a href="PANOLENS.Panorama.html#event:progress">PANOLENS.Panorama#event:progress</a></li><li><a href="PANOLENS.Viewer.html#event:control-bar-toggle">PANOLENS.Viewer#event:control-bar-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-hide">PANOLENS.Viewer#event:video-control-hide</a></li><li><a href="PANOLENS.Viewer.html#event:video-control-show">PANOLENS.Viewer#event:video-control-show</a></li><li><a href="PANOLENS.Viewer.html#event:video-time">PANOLENS.Viewer#event:video-time</a></li><li><a href="PANOLENS.Viewer.html#event:video-toggle">PANOLENS.Viewer#event:video-toggle</a></li><li><a href="PANOLENS.Viewer.html#event:video-update">PANOLENS.Viewer#event:video-update</a></li><li><a href="PANOLENS.Viewer.html#event:window-resize">PANOLENS.Viewer#event:window-resize</a></li>
-				</ul>
-			</li>
-			
-		</ul>
-        
-            <div class="col-sm-3 col-md-3">
-                <form class="navbar-form" role="search">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
-                        <div class="input-group-btn">
-                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        
-	</div>
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-</div>
-</div>
+<label for="nav-trigger" class="overlay"></label>
 
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/pchen66/panolens.js" target="_blank" class="menu-item" id="repository" >Github</a></h2><h3>Classes</h3><ul><li><a href="BasicPanorama.html">BasicPanorama</a></li><li><a href="CameraPanorama.html">CameraPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="CameraPanorama.html#onPanolensContainer">onPanolensContainer</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#onPanolensScene">onPanolensScene</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#start">start</a></li><li data-type='method' style='display: none;'><a href="CameraPanorama.html#stop">stop</a></li></ul></li><li><a href="CubePanorama.html">CubePanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="CubePanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="CubePanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="CubePanorama.html#onLoad">onLoad</a></li></ul></li><li><a href="EmptyPanorama.html">EmptyPanorama</a></li><li><a href="GoogleStreetviewLoader.html">GoogleStreetviewLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#adaptTextureToZoom">adaptTextureToZoom</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#composeFromTile">composeFromTile</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#composePanorama">composePanorama</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#load">load</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#loadPano">loadPano</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#progress">progress</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#setProgress">setProgress</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewLoader.html#setZoom">setZoom</a></li></ul></li><li><a href="GoogleStreetviewPanorama.html">GoogleStreetviewPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#getGSVLoader">getGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#loadGSVLoader">loadGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#reset">reset</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#setGSVLoader">setGSVLoader</a></li><li data-type='method' style='display: none;'><a href="GoogleStreetviewPanorama.html#setupGoogleMapAPI">setupGoogleMapAPI</a></li></ul></li><li><a href="ImageLittlePlanet.html">ImageLittlePlanet</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="ImageLittlePlanet.html#updateTexture">updateTexture</a></li></ul></li><li><a href="ImagePanorama.html">ImagePanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ImagePanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="ImagePanorama.html#reset">reset</a></li></ul></li><li><a href="Infospot.html">Infospot</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Infospot.html#addHoverElement">addHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#addHoverText">addHoverText</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#enableRaycast">enableRaycast</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#focus">focus</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#getContainer">getContainer</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#hide">hide</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#lockHoverElement">lockHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onClick">onClick</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onDismiss">onDismiss</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onDualEyeEffect">onDualEyeEffect</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHover">onHover</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHoverEnd">onHoverEnd</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#onHoverStart">onHoverStart</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#removeHoverElement">removeHoverElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setContainer">setContainer</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setCursorHoverStyle">setCursorHoverStyle</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setElementStyle">setElementStyle</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setFocusMethod">setFocusMethod</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#setText">setText</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#show">show</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#translateElement">translateElement</a></li><li data-type='method' style='display: none;'><a href="Infospot.html#unlockHoverElement">unlockHoverElement</a></li></ul></li><li><a href="LittlePlanet.html">LittlePlanet</a></li><li><a href="Media.html">Media</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Media.html#createVideoElement">createVideoElement</a></li><li data-type='method' style='display: none;'><a href="Media.html#createVideoTexture">createVideoTexture</a></li><li data-type='method' style='display: none;'><a href="Media.html#enumerateDevices">enumerateDevices</a></li><li data-type='method' style='display: none;'><a href="Media.html#getDevices">getDevices</a></li><li data-type='method' style='display: none;'><a href="Media.html#getUserMedia">getUserMedia</a></li><li data-type='method' style='display: none;'><a href="Media.html#onWindowResize">onWindowResize</a></li><li data-type='method' style='display: none;'><a href="Media.html#pauseVideo">pauseVideo</a></li><li data-type='method' style='display: none;'><a href="Media.html#playVideo">playVideo</a></li><li data-type='method' style='display: none;'><a href="Media.html#setMediaStream">setMediaStream</a></li><li data-type='method' style='display: none;'><a href="Media.html#setVideDeviceIndex">setVideDeviceIndex</a></li><li data-type='method' style='display: none;'><a href="Media.html#start">start</a></li><li data-type='method' style='display: none;'><a href="Media.html#stop">stop</a></li><li data-type='method' style='display: none;'><a href="Media.html#switchNextVideoDevice">switchNextVideoDevice</a></li></ul></li><li><a href="Panorama.html">Panorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Panorama.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#fadeIn">fadeIn</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#fadeOut">fadeOut</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#getZoomLevel">getZoomLevel</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#link">link</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onClick">onClick</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onEnter">onEnter</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onError">onError</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onLeave">onLeave</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onLoad">onLoad</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#onProgress">onProgress</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#setContainer">setContainer</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#setLinkingImage">setLinkingImage</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#toggleInfospotVisibility">toggleInfospotVisibility</a></li><li data-type='method' style='display: none;'><a href="Panorama.html#updateTexture">updateTexture</a></li></ul></li><li><a href="Reticle.html">Reticle</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Reticle.html#createCanvas">createCanvas</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#createCanvasTexture">createCanvasTexture</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#end">end</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#hide">hide</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#ripple">ripple</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#setColor">setColor</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#show">show</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#start">start</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#update">update</a></li><li data-type='method' style='display: none;'><a href="Reticle.html#updateCanvasArcByProgress">updateCanvasArcByProgress</a></li></ul></li><li><a href="VideoPanorama.html">VideoPanorama</a><ul class='methods'><li data-type='method' style='display: none;'><a href="VideoPanorama.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#getVideoElement">getVideoElement</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#isVideoMuted">isVideoMuted</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#isVideoPaused">isVideoPaused</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#load">load</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#muteVideo">muteVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#pauseVideo">pauseVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#playVideo">playVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#reset">reset</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#resetVideo">resetVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#resumeVideoProgress">resumeVideoProgress</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#setVideoCurrentTime">setVideoCurrentTime</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#setVideoTexture">setVideoTexture</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#toggleVideo">toggleVideo</a></li><li data-type='method' style='display: none;'><a href="VideoPanorama.html#unmuteVideo">unmuteVideo</a></li></ul></li><li><a href="Viewer.html">Viewer</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Viewer.html#activateWidgetItem">activateWidgetItem</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addDefaultControlBar">addDefaultControlBar</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addOutputElement">addOutputElement</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addPanoramaEventListener">addPanoramaEventListener</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addReticle">addReticle</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addUpdateCallback">addUpdateCallback</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#addViewIndicator">addViewIndicator</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#animate">animate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#appendControlItem">appendControlItem</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#checkSpriteInViewport">checkSpriteInViewport</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#clearAllCache">clearAllCache</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#destroy">destroy</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableAutoRate">disableAutoRate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableControl">disableControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableEffect">disableEffect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#disableReticleControl">disableReticleControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#dispatchEventToChildren">dispatchEventToChildren</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableAutoRate">enableAutoRate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableControl">enableControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableEffect">enableEffect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#enableReticleControl">enableReticleControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#eventHandler">eventHandler</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getCamera">getCamera</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getContainer">getContainer</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getControl">getControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getControlId">getControlId</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getConvertedIntersect">getConvertedIntersect</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getNextControlId">getNextControlId</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getNextControlIndex">getNextControlIndex</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getRenderer">getRenderer</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getScene">getScene</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#getScreenVector">getScreenVector</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#hideInfospot">hideInfospot</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#hideVideoWidget">hideVideoWidget</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#loadAsyncRequest">loadAsyncRequest</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onChange">onChange</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onKeyDown">onKeyDown</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onKeyUp">onKeyUp</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseDown">onMouseDown</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseMove">onMouseMove</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onMouseUp">onMouseUp</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onPanoramaDispose">onPanoramaDispose</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onTap">onTap</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onVideoUpdate">onVideoUpdate</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#onWindowResize">onWindowResize</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#outputPosition">outputPosition</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerEventListeners">registerEventListeners</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerMouseAndTouchEvents">registerMouseAndTouchEvents</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#registerReticleEvent">registerReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#remove">remove</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#removeUpdateCallback">removeUpdateCallback</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#render">render</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#reverseDraggingDirection">reverseDraggingDirection</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setCameraControl">setCameraControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setCameraFov">setCameraFov</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setPanorama">setPanorama</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#setVideoCurrentTime">setVideoCurrentTime</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#showVideoWidget">showVideoWidget</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleControlBar">toggleControlBar</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleNextControl">toggleNextControl</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#toggleVideoPlay">toggleVideoPlay</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#tweenControlCenter">tweenControlCenter</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#tweenControlCenterByObject">tweenControlCenterByObject</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterEventListeners">unregisterEventListeners</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterMouseAndTouchEvents">unregisterMouseAndTouchEvents</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#unregisterReticleEvent">unregisterReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#update">update</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#updateReticleEvent">updateReticleEvent</a></li><li data-type='method' style='display: none;'><a href="Viewer.html#updateVideoPlayButton">updateVideoPlayButton</a></li></ul></li><li><a href="Widget.html">Widget</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Widget.html#addControlBar">addControlBar</a></li><li data-type='method' style='display: none;'><a href="Widget.html#addControlButton">addControlButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createCustomItem">createCustomItem</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createDefaultMenu">createDefaultMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createFullscreenButton">createFullscreenButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMainMenu">createMainMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMask">createMask</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenu">createMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenuItem">createMenuItem</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createMenuItemHeader">createMenuItemHeader</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createSettingButton">createSettingButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createSubMenu">createSubMenu</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControl">createVideoControl</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControlButton">createVideoControlButton</a></li><li data-type='method' style='display: none;'><a href="Widget.html#createVideoControlSeekbar">createVideoControlSeekbar</a></li><li data-type='method' style='display: none;'><a href="Widget.html#dispose">dispose</a></li><li data-type='method' style='display: none;'><a href="Widget.html#mergeStyleOptions">mergeStyleOptions</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-CONTROLS.html">CONTROLS</a></li><li><a href="module-CubeTextureLoader.html">CubeTextureLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-CubeTextureLoader.html#~load">load</a></li></ul></li><li><a href="module-DataImage.html">DataImage</a></li><li><a href="module-ImageLoader.html">ImageLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-ImageLoader.html#~load">load</a></li></ul></li><li><a href="module-MODES.html">MODES</a></li><li><a href="module-REVISION.html">REVISION</a></li><li><a href="module-StereographicShader.html">StereographicShader</a></li><li><a href="module-TextureLoader.html">TextureLoader</a><ul class='methods'><li data-type='method' style='display: none;'><a href="module-TextureLoader.html#~load">load</a></li></ul></li><li><a href="module-THREE_REVISION.html">THREE_REVISION</a></li><li><a href="module-THREE_VERSION.html">THREE_VERSION</a></li><li><a href="module-VERSION.html">VERSION</a></li></ul><h3>Externals</h3><ul><li><a href="external-CardboardEffect.html">CardboardEffect</a></li><li><a href="external-DeviceOrientationControls.html">DeviceOrientationControls</a></li><li><a href="external-OrbitControls.html">OrbitControls</a></li><li><a href="external-StereoEffect.html">StereoEffect</a></li></ul><h3>Events</h3><ul><li><a href="Infospot.html#event:dismiss">dismiss</a></li><li><a href="Infospot.html#event:panolens-container">panolens-container</a></li><li><a href="Infospot.html#event:panolens-dual-eye-effect">panolens-dual-eye-effect</a></li><li></li><li><a href="Media.html#event:canplay">canplay</a></li><li><a href="Panorama.html#event:enter">enter</a></li><li><a href="Panorama.html#event:enter-complete">enter-complete</a></li><li><a href="Panorama.html#event:enter-fade-complete">enter-fade-complete</a></li><li><a href="Panorama.html#event:enter-fade-start">enter-fade-start</a></li><li><a href="Panorama.html#event:enter-start">enter-start</a></li><li><a href="Panorama.html#event:error">error</a></li><li><a href="Panorama.html#event:infospot-animation-complete">infospot-animation-complete</a></li><li><a href="Panorama.html#event:leave">leave</a></li><li><a href="Panorama.html#event:leave-complete">leave-complete</a></li><li><a href="Panorama.html#event:leave-start">leave-start</a></li><li><a href="Panorama.html#event:load">load</a></li><li><a href="Panorama.html#event:panolens-viewer-handler">panolens-viewer-handler</a></li><li></li><li></li><li><a href="Panorama.html#event:progress">progress</a></li><li><a href="Reticle.html#event:reticle-end">reticle-end</a></li><li><a href="Reticle.html#event:reticle-ripple-end">reticle-ripple-end</a></li><li><a href="Reticle.html#event:reticle-ripple-start">reticle-ripple-start</a></li><li><a href="Reticle.html#event:reticle-start">reticle-start</a></li><li><a href="Reticle.html#event:reticle-update">reticle-update</a></li><li><a href="VideoPanorama.html#event:pause">pause</a></li><li><a href="VideoPanorama.html#event:play">play</a></li><li><a href="VideoPanorama.html#event:play-error">play-error</a></li><li><a href="Viewer.html#event:control-bar-toggle">control-bar-toggle</a></li><li><a href="Viewer.html#event:mode-change">mode-change</a></li><li></li><li><a href="Viewer.html#event:video-control-hide">video-control-hide</a></li><li><a href="Viewer.html#event:video-control-show">video-control-show</a></li><li><a href="Viewer.html#event:video-time">video-time</a></li><li><a href="Viewer.html#event:video-toggle">video-toggle</a></li><li><a href="Viewer.html#event:video-update">video-update</a></li><li><a href="Viewer.html#event:window-resize">window-resize</a></li><li><a href="Widget.html#event:panolens-viewer-handler">panolens-viewer-handler</a></li><li></li><li></li></ul><h3>Namespaces</h3><ul><li><a href="PANOLENS.html">PANOLENS</a></li></ul>
+</nav>
 
-<div class="container" id="toc-content">
-<div class="row">
+<div id="main">
+    
 
-	
-	<div class="col-md-8">
-	
-		<div id="main">
-			
-
-	
-	
+    
 
 
 
+    
 
 
-
-
-
-
-
-
-	
-	
-
-
-
-
-
-    <section class="readme-section">
-        <article><h1><a href="http://pchen66.github.io/Panolens">Panolens.js</a></h1><p><a href="https://github.com/pchen66/panolens.js/releases"><img src="https://img.shields.io/github/release/pchen66/panolens.js.svg" alt="Release"></a>
-<a href="./LICENSE"><img src="https://img.shields.io/github/license/pchen66/panolens.js.svg" alt="License"></a>
-<img src="http://img.badgesize.io/https://raw.githubusercontent.com/pchen66/panolens.js/master/build/panolens.min.js?compression=gzip&amp;label=gzip%20size" alt="GzipSize"></p>
-<h3>Javascript Panorama Viewer</h3><p>Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible. It's built on top of <a href="https://github.com/mrdoob/three.js">Three.JS</a>.</p>
-<p><img src="https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens.gif?raw=true" alt="Panorama Demo"></p>
-<h3>Usage</h3><p>Include <code>three.min.js</code> and <code>panolens.min.js</code>
-If you want to support offline experience, please include <code>panolens-offline.min.js</code> instead</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;js/three.min.js&quot;>&lt;/script>
-&lt;script src=&quot;js/panolens.min.js&quot;>&lt;/script></code></pre><p>This code creates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, simply use <code>panorama.link( other_panorama, new THREE.Vector3( X, Y, Z ) )</code> to connect the two. See <a href="http://pchen66.github.io/Panolens/">examples</a> and <a href="http://pchen66.github.io/Panolens/docs/index.html">documentation</a> for more details.</p>
-<pre class="prettyprint source lang-html"><code>&lt;script>
-
-    var panorama, viewer;
-
-    panorama = new PANOLENS.ImagePanorama( 'asset/equirectangular.jpg' );
-
-    viewer = new PANOLENS.Viewer();
-    viewer.add( panorama );
-
-&lt;/script></code></pre><h3>PANOLENS.Viewer Configuration</h3><p>All attributes are optional</p>
-<pre class="prettyprint source lang-html"><code>&lt;script>
-    viewer = new PANOLENS.Viewer({
-        container: document.body,        // A DOM Element container
-        controlBar: true,             // Vsibility of bottom control bar
-        controlButtons: [],            // Buttons array in the control bar. Default to ['fullscreen', 'setting', 'video']
-        autoHideControlBar: false,        // Auto hide control bar
-        autoHideInfospot: true,            // Auto hide infospots
-        horizontalView: false,            // Allow only horizontal camera control
-        cameraFov: 60,                // Camera field of view in degree
-        reverseDragging: false,            // Reverse orbit control direction
-        enableReticle: false,            // Enable reticle for mouseless interaction
-        dwellTime: 1500,            // Dwell time for reticle selection in millisecond
-        autoReticleSelect: true,        // Auto select a clickable target after dwellTime
-        viewIndicator: false,            // Adds an angle view indicator in upper left corner
-        indicatorSize: 30,            // Size of View Indicator
-        output: 'console'            // Whether and where to output infospot position. Could be 'console' or 'overlay'
-    });
-&lt;/script></code></pre><h3>Examples</h3><p>Check Panolens <a href="http://pchen66.github.io/Panolens/#Example">example page</a></p>
-<h3>Features</h3><ol>
-<li>Support equirectangular image</li>
-<li>Support cubemap images</li>
-<li>Support google streetview with panoId (<a href="http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id">How to get Panorama ID</a>)</li>
-<li>Support 360 equirectangular video (like youtube/facebook 360 video) even on iOS!</li>
-<li>Support text/image/domElement annotations (Infospot)</li>
-<li>Built-in Orbit / DeviceOrientation camera controls</li>
-<li>Built-in fullscreen and video control widgets</li>
-<li>Convert equirectangular image into little planet (Stereographic projection)</li>
-</ol>
-<h3>How to add an infospot (hotspot)</h3><p>Move cursor on a specific point in a panorama and press <code>Ctrl</code> with clicking or hovering, which will generate position (x, y, z) in the console or on the overlay element based on parameter <code>output='console' or 'overlay'</code>. See <a href="http://pchen66.github.io/Panolens/examples/panorama_infospot.html">Panorama Infospot</a> example for creating and attaching infospots.</p>
-<p><img src="https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens_add_infospot_480p.gif?raw=true" alt="Panorama Finding Infospot Position"></p>
-<h3>Dependency</h3><p>Panolens.js includes <a href="https://github.com/tweenjs/tween.js/">Tween.js</a> and <a href="https://github.com/bfred-it/iphone-inline-video">iphone-inline-video</a> by default</p>
-<h3>How to contribute</h3><p>Always make your contributions for the latest <code>dev</code> branch, not <code>master</code>, so it can be tracked for the next release. </p>
-<h3>Roadmap</h3><ol>
-<li>npm packaging</li>
-<li>infospot editor</li>
-</ol></article>
+    <section class="package">
+        <h3> </h3>		
     </section>
 
 
@@ -163,131 +64,77 @@ If you want to support offline experience, please include <code>panolens-offline
 
 
 
-		</div>
-	</div>
 
-	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
-	
+    
 
+
+
+    <section class="readme">
+        <article><h1>Panolens.js</h1>
+<p><a href="https://www.npmjs.com/package/panolens"><img src="https://img.shields.io/npm/v/panolens.svg" alt="NPM package"></a>
+<a href="./LICENSE"><img src="https://img.shields.io/github/license/pchen66/panolens.js.svg" alt="License"></a>
+<a href="https://bundlephobia.com/result?p=panolens"><img src="https://badgen.net/bundlephobia/minzip/panolens" alt="Bundle Size"></a>
+<a href="https://travis-ci.com/pchen66/panolens.js"><img src="https://travis-ci.com/pchen66/panolens.js.svg?branch=dev" alt="Build Status"></a>
+<a href="https://david-dm.org/pchen66/panolens.js"><img src="https://img.shields.io/david/pchen66/panolens.js.svg" alt="Dependencies"></a>
+<a href="https://david-dm.org/pchen66/panolens.js?type=dev"><img src="https://img.shields.io/david/dev/pchen66/panolens.js.svg" alt="Dev Dependencies"></a>
+<a href="https://lgtm.com/projects/g/pchen66/panolens.js/context:javascript"><img src="https://img.shields.io/lgtm/grade/javascript/g/pchen66/panolens.js.svg?logo=lgtm&amp;logoWidth=18&amp;label=code%20quality" alt="Language Grade"></a>
+<a href="https://coveralls.io/github/pchen66/panolens.js?branch=dev"><img src="https://coveralls.io/repos/github/pchen66/panolens.js/badge.svg?branch=dev" alt="Coverage"></a></p>
+<h2>Javascript 360 Panorama Viewer</h2>
+<p>Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and flexible. It's built on top of <a href="https://github.com/mrdoob/three.js">Three.JS</a>.</p>
+<p><a href="https://pchen66.github.io/Panolens/#Example">Examples</a> —
+<a href="https://pchen66.github.io/panolens.js">Documentation</a> —
+<a href="https://github.com/pchen66/panolens.js/wiki/MigrationGuide">Migration</a> —
+<a href="https://github.com/pchen66/panolens.js/wiki/Frequently-Asked-Questions">FAQ</a></p>
+<p align="center">
+  <img alt= "Panorama Demo" style="object-fit:cover" src="https://github.com/pchen66/pchen66.github.io/blob/master/Panolens/images/panolens.gif?raw=true">
+</p>
+<h2>Usage</h2>
+<p>Include <code>three.min.js</code> and <code>panolens.min.js</code></p>
+<p>To find the correct supported versions, please check <code>dependencies</code> section in <code>package.json</code> or acess <code>PANOLENS.VERSION</code> or <code>PANOLENS.THREE_VERSION</code> at runtime.</p>
+<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;js/three.min.js&quot;>&lt;/script>
+&lt;script src=&quot;js/panolens.min.js&quot;>&lt;/script>
+</code></pre>
+<p>The following code generates a 360 image panorama. The first panorama added to the viewer will be the entry point. To link panoramas, use <code>panorama.link( other_panorama, new THREE.Vector3( X, Y, Z ) )</code> to connect the two.</p>
+<pre class="prettyprint source lang-javascript"><code>const panorama = new PANOLENS.ImagePanorama( 'asset/equirectangular.jpg' );
+const viewer = new PANOLENS.Viewer();
+viewer.add( panorama );
+</code></pre>
+<h2>Dependency</h2>
+<p>Panolens.js includes <a href="https://github.com/tweenjs/tween.js/">Tween.js</a> by default, meaning <code>TWEEN</code> will be available with <code>window</code> object</p>
+<h2>How to contribute</h2>
+<p>Always make your contributions for the latest <code>dev</code> branch, not <code>master</code>, so it can be tracked for the next release.</p>
+<h3><strong>Development</strong></h3>
+<pre class="prettyprint source"><code>npm start
+</code></pre>
+<h3><strong>Build</strong></h3>
+<pre class="prettyprint source"><code>npm run build-closure
+</code></pre></article>
+    </section>
+
+
+
+
+
+
+    
+    
 </div>
-</div>
 
-
-    <div class="modal fade" id="searchResults">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Search results</h4>
-          </div>
-          <div class="modal-body"></div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div>
-
+<br class="clear">
 
 <footer>
-
-
-<span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
-	
-		on 2017-07-08T00:16:25-07:00
-	
-	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
-</span>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a> on Wed Jun 12 2019 12:14:50 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
-<script src="scripts/docstrap.lib.js"></script>
-<script src="scripts/toc.js"></script>
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
 
-    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
-
-
-<script>
-$( function () {
-	$( "[id*='$']" ).each( function () {
-		var $this = $( this );
-
-		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
-	} );
-
-	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
-		var $this = $( this );
-
-		var example = $this.find( "code" );
-		exampleText = example.html();
-		var lang = /{@lang (.*?)}/.exec( exampleText );
-		if ( lang && lang[1] ) {
-			exampleText = exampleText.replace( lang[0], "" );
-			example.html( exampleText );
-			lang = lang[1];
-		} else {
-			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
-			lang = langClassMatch ? langClassMatch[1] : "javascript";
-		}
-
-		if ( lang ) {
-
-			$this
-			.addClass( "sunlight-highlight-" + lang )
-			.addClass( "linenums" )
-			.html( example.html() );
-
-		}
-	} );
-
-	Sunlight.highlightAll( {
-		lineNumbers : false,
-		showMenu : true,
-		enableDoclinks : true
-	} );
-
-	$.catchAnchorLinks( {
-        navbarOffset: 10
-	} );
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
-		showAndHide : false,
-		smoothScrolling: true
-	} );
-
-	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-	$( '.dropdown-toggle' ).dropdown();
-
-    $( "table" ).each( function () {
-      var $this = $( this );
-      $this.addClass('table');
-    } );
-
-} );
-</script>
+<script src="scripts/search.js" defer></script>
 
 
-
-<!--Navigation and Symbol Display-->
-
-
-<!--Google Analytics-->
-
-
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            SearcherDisplay.init();
-        });
-    </script>
+<script src="scripts/collapse.js" defer></script>
 
 
 </body>

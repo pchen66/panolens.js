@@ -1,37 +1,70 @@
-( function () {
+import { LittlePlanet } from './LittlePlanet';
+import * as THREE from 'three';
 
-	/**
-	 * Image Little Planet
-	 * @constructor
-	 * @param {string} source 		- URL for the image source
-	 * @param {number} [size=10000] - Size of plane geometry
-	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
-	 */
-	PANOLENS.ImageLittlePlanet = function ( source, size, ratio ) {
+/**
+ * @classdesc Image Little Planet
+ * @constructor
+ * @param {string} source 		- URL for the image source
+ * @param {number} [size=10000] - Size of plane geometry
+ * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
+ */
+function ImageLittlePlanet ( source, size, ratio ) {
 
-		PANOLENS.LittlePlanet.call( this, 'image', source, size, ratio );
+    LittlePlanet.call( this, 'image', source, size, ratio );
 
-	};
+}
 
-	PANOLENS.ImageLittlePlanet.prototype = Object.create( PANOLENS.LittlePlanet.prototype );
-	
-	PANOLENS.ImageLittlePlanet.prototype.constructor = PANOLENS.ImageLittlePlanet;
+ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
 
-	PANOLENS.ImageLittlePlanet.prototype.onLoad = function ( texture ) {
+    constructor: ImageLittlePlanet,
 
-		this.updateTexture( texture );
+    /**
+     * On loaded with texture
+     * @param {THREE.Texture} texture
+     * @memberOf ImageLittlePlanet
+     * @instance
+     */
+    onLoad: function ( texture ) {
 
-		PANOLENS.ImagePanorama.prototype.onLoad.call( this, texture );
-		PANOLENS.LittlePlanet.prototype.onLoad.call( this );
+        this.updateTexture( texture );
 
-	};
+        LittlePlanet.prototype.onLoad.call( this, texture );
 
-	PANOLENS.ImageLittlePlanet.prototype.updateTexture = function ( texture ) {
+    },
+    
+    /**
+     * Update texture
+     * @param {THREE.Texture} texture 
+     * @memberOf ImageLittlePlanet
+     * @instance
+     */
+    updateTexture: function ( texture ) {
 
-		texture.minFilter = texture.magFilter = THREE.LinearFilter;
+        texture.minFilter = texture.magFilter = THREE.LinearFilter;
 		
-		this.material.uniforms[ "tDiffuse" ].value = texture;
+        this.material.uniforms[ 'tDiffuse' ].value = texture;
 
-	};
+    },
 
-} )();
+    /**
+     * Dispose
+     * @memberOf ImageLittlePlanet
+     * @instance
+     */
+    dispose: function () {
+
+        const tDiffuse = this.material.uniforms[ 'tDiffuse' ];
+
+        if ( tDiffuse && tDiffuse.value ) {
+
+            tDiffuse.value.dispose();
+
+        }
+
+        LittlePlanet.prototype.dispose.call( this );
+
+    }
+
+} );
+
+export { ImageLittlePlanet };
