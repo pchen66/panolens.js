@@ -35,6 +35,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     this.cursorStyle = null;
 
     this.mode = MODES.NORMAL;
+    this.loaded = false;
 
     this.scale.set( scale, scale, 1 );
     this.rotation.y = Math.PI;
@@ -79,6 +80,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
 
         this.material.map = texture;
         this.material.needsUpdate = true;
+        setTimeout(() => this.loaded = true, duration*3);
 
     }.bind( this );
 
@@ -198,7 +200,11 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    onHover: function () {},
+    onHover: function (event) {
+        if (!this.isHovering){
+            this.onHoverStart(event);
+        }
+    },
 
     /**
      * This will be called on a mouse hover start
@@ -209,6 +215,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      */
     onHoverStart: function ( event ) {
 
+        if ( !this.loaded ) { return; }
         if ( !this.getContainer() ) { return; }
 
         const cursorStyle = this.cursorStyle || ( this.mode === MODES.NORMAL ? 'pointer' : 'default' );
