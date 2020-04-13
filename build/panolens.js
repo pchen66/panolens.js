@@ -2,9 +2,9 @@
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('three')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'three'], factory) :
 	(global = global || self, factory(global.PANOLENS = {}, global.THREE));
-}(this, function (exports, THREE) { 'use strict';
+}(this, (function (exports, THREE) { 'use strict';
 
-	const version="0.11.0";const devDependencies={"@tweenjs/tween.js":"^17.4.0",ava:"^2.1.0","browser-env":"^3.2.6",concurrently:"^4.1.0",coveralls:"^3.0.4",docdash:"^1.1.1",eslint:"^5.16.0","google-closure-compiler":"^20190528.0.0","http-server":"^0.11.1",jsdoc:"^3.6.2",nyc:"^14.1.1",rollup:"^1.15.1","rollup-plugin-commonjs":"^10.0.0","rollup-plugin-inject":"^2.2.0","rollup-plugin-json":"^4.0.0","rollup-plugin-node-resolve":"^5.0.1",three:"^0.105.2",xmlhttprequest:"^1.8.0"};
+	const version="0.11.0";const devDependencies={"@rollup/plugin-commonjs":"^11.0.2","@rollup/plugin-inject":"^4.0.1","@rollup/plugin-json":"^4.0.2","@rollup/plugin-node-resolve":"^7.1.1","@tweenjs/tween.js":"^18.5.0",ava:"^3.5.0","browser-env":"^3.3.0",concurrently:"^5.1.0",coveralls:"^3.0.11",docdash:"^1.2.0",eslint:"^6.8.0",esm:"^3.2.25","google-closure-compiler":"^20200315.0.0","http-server":"^0.12.1",jsdoc:"^3.6.3","local-web-server":"^3.0.7",nyc:"^14.1.1",rollup:"^2.3.2",three:"^0.115.0",xmlhttprequest:"^1.8.0"};
 
 	/**
 	 * REVISION
@@ -720,8 +720,6 @@
 	            roffset.set( 0.5, 0.0 );
 	            break;
 
-	        default: break;
-
 	        }
 
 	    },
@@ -1055,11 +1053,8 @@
 
 	} );
 
-	function createCommonjsModule(fn, module) {
-		return module = { exports: {} }, fn(module, module.exports), module.exports;
-	}
+	var version$1 = '18.5.0';
 
-	var Tween = createCommonjsModule(function (module, exports) {
 	/**
 	 * Tween.js - Licensed under the MIT license
 	 * https://github.com/tweenjs/tween.js
@@ -1114,10 +1109,11 @@
 
 			time = time !== undefined ? time : TWEEN.now();
 
-			// Tweens are updated in "batches". If you add a new tween during an update, then the
-			// new tween will be updated in the next batch.
-			// If you remove a tween during an update, it may or may not be updated. However,
-			// if the removed tween was added during the current batch, then it will not be updated.
+			// Tweens are updated in "batches". If you add a new tween during an
+			// update, then the new tween will be updated in the next batch.
+			// If you remove a tween during an update, it may or may not be updated.
+			// However, if the removed tween was added during the current batch,
+			// then it will not be updated.
 			while (tweenIds.length > 0) {
 				this._tweensAddedDuringUpdate = {};
 
@@ -1182,6 +1178,8 @@
 
 
 	TWEEN.Tween = function (object, group) {
+		this._isPaused = false;
+		this._pauseStart = null;
 		this._object = object;
 		this._valuesStart = {};
 		this._valuesEnd = {};
@@ -1217,6 +1215,10 @@
 			return this._isPlaying;
 		},
 
+		isPaused: function () {
+			return this._isPaused;
+		},
+
 		to: function (properties, duration) {
 
 			this._valuesEnd = Object.create(properties);
@@ -1239,6 +1241,8 @@
 			this._group.add(this);
 
 			this._isPlaying = true;
+
+			this._isPaused = false;
 
 			this._onStartCallbackFired = false;
 
@@ -1265,8 +1269,10 @@
 					continue;
 				}
 
-				// Save the starting value.
-				this._valuesStart[property] = this._object[property];
+				// Save the starting value, but only once.
+				if (typeof(this._valuesStart[property]) === 'undefined') {
+					this._valuesStart[property] = this._object[property];
+				}
 
 				if ((this._valuesStart[property] instanceof Array) === false) {
 					this._valuesStart[property] *= 1.0; // Ensures we're using numbers, not strings
@@ -1287,7 +1293,10 @@
 			}
 
 			this._group.remove(this);
+
 			this._isPlaying = false;
+
+			this._isPaused = false;
 
 			if (this._onStopCallback !== null) {
 				this._onStopCallback(this._object);
@@ -1301,6 +1310,41 @@
 		end: function () {
 
 			this.update(Infinity);
+			return this;
+
+		},
+
+		pause: function(time) {
+
+			if (this._isPaused || !this._isPlaying) {
+				return this;
+			}
+
+			this._isPaused = true;
+
+			this._pauseStart = time === undefined ? TWEEN.now() : time;
+
+			this._group.remove(this);
+
+			return this;
+
+		},
+
+		resume: function(time) {
+
+			if (!this._isPaused || !this._isPlaying) {
+				return this;
+			}
+
+			this._isPaused = false;
+
+			this._startTime += (time === undefined ? TWEEN.now() : time)
+				- this._pauseStart;
+
+			this._pauseStart = 0;
+
+			this._group.add(this);
+
 			return this;
 
 		},
@@ -1970,19 +2014,7 @@
 		}
 
 	};
-
-	// UMD (Universal Module Definition)
-	(function (root) {
-
-		{
-
-			// Node.js
-			module.exports = TWEEN;
-
-		}
-
-	})();
-	});
+	TWEEN.version = version$1;
 
 	/**
 	 * @classdesc Information spot attached to panorama
@@ -2031,8 +2063,8 @@
 	    this.material.transparent = true;
 	    this.material.opacity = 0;
 
-	    this.scaleUpAnimation = new Tween.Tween();
-	    this.scaleDownAnimation = new Tween.Tween();
+	    this.scaleUpAnimation = new TWEEN.Tween();
+	    this.scaleDownAnimation = new TWEEN.Tween();
 
 
 	    const postLoad = function ( texture ) {
@@ -2049,13 +2081,13 @@
 
 	        textureScale.copy( this.scale );
 
-	        this.scaleUpAnimation = new Tween.Tween( this.scale )
+	        this.scaleUpAnimation = new TWEEN.Tween( this.scale )
 	            .to( { x: textureScale.x * scaleFactor, y: textureScale.y * scaleFactor }, duration )
-	            .easing( Tween.Easing.Elastic.Out );
+	            .easing( TWEEN.Easing.Elastic.Out );
 
-	        this.scaleDownAnimation = new Tween.Tween( this.scale )
+	        this.scaleDownAnimation = new TWEEN.Tween( this.scale )
 	            .to( { x: textureScale.x, y: textureScale.y }, duration )
-	            .easing( Tween.Easing.Elastic.Out );
+	            .easing( TWEEN.Easing.Elastic.Out );
 
 	        this.material.map = texture;
 	        this.material.needsUpdate = true;
@@ -2063,15 +2095,15 @@
 	    }.bind( this );
 
 	    // Add show and hide animations
-	    this.showAnimation = new Tween.Tween( this.material )
+	    this.showAnimation = new TWEEN.Tween( this.material )
 	        .to( { opacity: 1 }, duration )
 	        .onStart( this.enableRaycast.bind( this, true ) )
-	        .easing( Tween.Easing.Quartic.Out );
+	        .easing( TWEEN.Easing.Quartic.Out );
 
-	    this.hideAnimation = new Tween.Tween( this.material )
+	    this.hideAnimation = new TWEEN.Tween( this.material )
 	        .to( { opacity: 0 }, duration )
 	        .onStart( this.enableRaycast.bind( this, false ) )
-	        .easing( Tween.Easing.Quartic.Out );
+	        .easing( TWEEN.Easing.Quartic.Out );
 
 	    // Attach event listeners
 	    this.addEventListener( 'click', this.onClick );
@@ -3958,6 +3990,8 @@
             sampleUV.x = atan( direction.z, direction.x ) * RECIPROCAL_PI2 + 0.5;
             sampleUV *= repeat;
             sampleUV += offset;
+            if(sampleUV.x > 1.0) sampleUV.x -= 1.0;
+            if(sampleUV.y > 1.0) sampleUV.y -= 1.0;
             vec4 texColor = texture2D( tEquirect, sampleUV );
             gl_FragColor = mapTexelToLinear( texColor );
             gl_FragColor.a *= opacity;
@@ -4007,7 +4041,7 @@
 
 	    this.active = false;
 
-	    this.infospotAnimation = new Tween.Tween( this ).to( {}, this.animationDuration / 2 );
+	    this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
 
 	    this.addEventListener( 'load', this.fadeIn.bind( this ) );
 	    this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
@@ -4448,8 +4482,8 @@
 
 	    setupTransitions: function () {
 
-	        this.fadeInAnimation = new Tween.Tween( this.material )
-	            .easing( Tween.Easing.Quartic.Out )
+	        this.fadeInAnimation = new TWEEN.Tween( this.material )
+	            .easing( TWEEN.Easing.Quartic.Out )
 	            .onStart( function () {
 
 	                this.visible = true;
@@ -4464,8 +4498,8 @@
 
 	            }.bind( this ) );
 
-	        this.fadeOutAnimation = new Tween.Tween( this.material )
-	            .easing( Tween.Easing.Quartic.Out )
+	        this.fadeOutAnimation = new TWEEN.Tween( this.material )
+	            .easing( TWEEN.Easing.Quartic.Out )
 	            .onComplete( function () {
 
 	                this.visible = false;
@@ -4480,8 +4514,8 @@
 
 	            }.bind( this ) );
 
-	        this.enterTransition = new Tween.Tween( this )
-	            .easing( Tween.Easing.Quartic.Out )
+	        this.enterTransition = new TWEEN.Tween( this )
+	            .easing( TWEEN.Easing.Quartic.Out )
 	            .onComplete( function () {
 
 	                /**
@@ -4494,8 +4528,8 @@
 	            }.bind ( this ) )
 	            .start();
 
-	        this.leaveTransition = new Tween.Tween( this )
-	            .easing( Tween.Easing.Quartic.Out );
+	        this.leaveTransition = new TWEEN.Tween( this )
+	            .easing( TWEEN.Easing.Quartic.Out );
 
 	    },
 
@@ -6087,10 +6121,6 @@
 
 	            break;
 
-	        default:
-
-	            break;
-
 	        }
 
 	        this.onUpdateCallback();
@@ -6127,10 +6157,6 @@
 	            const distance = Math.sqrt( dx * dx + dy * dy );
 
 	            this.addZoomDelta( this.userMouse.pinchDistance - distance );
-
-	            break;
-
-	        default:
 
 	            break;
 
@@ -6591,6 +6617,176 @@
 	        }
 
 	        VideoPanorama.prototype.dispose.call( this );
+
+	    }
+
+	} );
+
+	/* eslint-disable */
+
+	var _0x1eee=['updating','DONE','match','appendBuffer','querySelectorAll','failure\x20during\x20init','web_video_url','auto','response','rotation','URL','render','length','moment_type','\x20Could\x20not\x20load\x20url.','start_frame','error','aspect_ratio','s3.amazonaws.com/staging-data.panomoments.com','PanoMoment\x20Web\x20SDK\x20Disposed','min','range','target','parseFromString','&sdk_client_type=web','cache-control','moment_id','content','setAttribute','timestampOffset','blob','sequence','exception\x20during\x20chunk\x20download,\x20retrying','&public_api_key=','&moment_id=','GET','set','Render\x20called\x20before\x20download\x20is\x20ready.\x20Wait\x20for\x20Ready\x20callback\x20before\x20calling\x20Render.','https://staging-data.panomoments.com/','FrameCount','autoplay','append','currentIndex','addEventListener','arrayBuffer','textureReady','Error:\x20','text/xml','public_api_key','https://data.panomoments.com/','sourceopen','preload','fastSeek','no-store','private_api_key=','allow_streaming','getAttribute','&variation=','muted','push','filter','mode','pragma','abs','src','indexOf','createObjectURL','round','responseType','Buffer\x20not\x20ready.\x20Retrying\x20in\x201\x20second.','firstPassCompleteIndex','s3.amazonaws.com/data.panomoments.com','onload','userAgent','mediaRange','replace','dispose','Range','index','bytes=','Invalid\x20Index','split','playsinline','test','video/mp4;\x20codecs=\x22avc1.640033\x22','no-cache','toLowerCase','pause','floor','addSourceBuffer','onreadystatechange','Initialization','HAVE_FUTURE_DATA','web_mpd_url','send','log','bind','aligned','POST','private_api_key','createElement','video/mp4','ceil','text','map','then','toString','currentTime','https://my.panomoments.com/sdk/moment','readyState'];(function(_0x206f48,_0x1eee9b){var _0x1f8dc7=function(_0x2ff051){while(--_0x2ff051){_0x206f48['push'](_0x206f48['shift']());}};_0x1f8dc7(++_0x1eee9b);}(_0x1eee,0xec));var _0x1f8d=function(_0x206f48,_0x1eee9b){_0x206f48=_0x206f48-0x0;var _0x1f8dc7=_0x1eee[_0x206f48];return _0x1f8dc7;};function PanoMoments(_0x395126,_0x1b74d0,_0x1aee28,_0x19b365){var _0xcced99=this;var _0x12dfa3;var _0x53906a;var _0x57d7b3=[];var _0x4cdd70=new MediaSource();var _0x2265b6=document[_0x1f8d('0x54')]('video');var _0x3396cb=[];var _0x266669;var _0x5560e4;var _0x5e2699;var _0x3ceaeb;var _0x26dd34;var _0x576e68;var _0x5ebea2;var _0x1f6ef0;var _0x34ecf6=[];var _0x5de658=-0x1;var _0x34f181;var _0x1f7c40=[];var _0x342957=0x0;var _0x3bcef2=0x0;var _0x138929;var _0x5e50f2;var _0x471654;var _0x41bc9a;var _0x26dd34;var _0x433395={};var _0x117967;var _0x4fd2fd;var _0x42eef3;var _0x4ab137;var _0x430d27;var _0x4684dd;if(navigator[_0x1f8d('0x39')][_0x1f8d('0x60')](/Android/i)){_0x5e2699=!![];}else if(navigator['userAgent'][_0x1f8d('0x60')](/iPhone|iPad|iPod/i)){_0x5560e4=!![];}if(/Chrome/i[_0x1f8d('0x43')](navigator[_0x1f8d('0x39')][_0x1f8d('0x46')]())||/Chrome WebView/i['test'](navigator['userAgent'][_0x1f8d('0x46')]())||/Chromium/i[_0x1f8d('0x43')](navigator['userAgent'][_0x1f8d('0x46')]())){_0x3ceaeb=!![];}else if(/Firefox/i[_0x1f8d('0x43')](navigator[_0x1f8d('0x39')]['toLowerCase']())||/Supermedium/i[_0x1f8d('0x43')](navigator['userAgent'][_0x1f8d('0x46')]())){_0x26dd34=!![];if(!_0x5e2699){_0x3ceaeb=!![];}}else if(/Mobile Safari/i[_0x1f8d('0x43')](navigator[_0x1f8d('0x39')]['toLowerCase']()));else if(/Safari/i[_0x1f8d('0x43')](navigator[_0x1f8d('0x39')][_0x1f8d('0x46')]())&&!/Chrome/i[_0x1f8d('0x43')](navigator[_0x1f8d('0x39')][_0x1f8d('0x46')]()));if(!_0x3ceaeb){_0x2265b6[_0x1f8d('0xc')](_0x1f8d('0x42'),'');_0x2265b6[_0x1f8d('0x2a')]=!![];_0x2265b6[_0x1f8d('0x18')]=!![];}else {_0x2265b6[_0x1f8d('0x30')]=window[_0x1f8d('0x68')][_0x1f8d('0x32')](_0x4cdd70);_0x2265b6[_0x1f8d('0x23')]=_0x1f8d('0x65');_0x4cdd70[_0x1f8d('0x1b')](_0x1f8d('0x22'),_0x15a37a);}fetch(_0x1f8d('0x5c'),{'method':_0x1f8d('0x52'),'body':_0x1f8d('0x26')+_0x395126[_0x1f8d('0x53')]+_0x1f8d('0x11')+_0x395126[_0x1f8d('0x20')]+_0x1f8d('0x12')+_0x395126[_0x1f8d('0xa')]+_0x1f8d('0x29')+_0x395126['variation']+_0x1f8d('0x8'),'headers':{'Content-Type':'application/x-www-form-urlencoded'}})[_0x1f8d('0x59')](_0x1967d3=>_0x1967d3['json']())[_0x1f8d('0x59')](_0x17ebdb=>{_0x433395=_0x17ebdb;_0x117967=_0x433395[_0x1f8d('0x4d')];_0x4fd2fd=_0x433395[_0x1f8d('0x64')];_0x12f82b();});this[_0x1f8d('0x1a')]=0x0;this[_0x1f8d('0x17')]=0x0;this['textureReady']=![];this[_0x1f8d('0x69')]=function(_0x55817d){if(_0x5e50f2){_0x55a364();_0xcced99['currentIndex']=_0x55817d;_0x4ab137=_0xcced99[_0x1f8d('0x1a')]/(_0xcced99[_0x1f8d('0x17')]-0x1)*0x168;_0x430d27=0x168/(_0xcced99[_0x1f8d('0x17')]/(_0x433395[_0x1f8d('0x67')]/0x168));if(_0x4ab137<0x0){_0x4ab137=_0x433395[_0x1f8d('0x67')]+_0x4ab137;}_0x42eef3=parseInt(Math[_0x1f8d('0x33')](_0x4ab137/_0x430d27),0xa);if(_0x42eef3==_0xcced99[_0x1f8d('0x17')]&&_0x433395[_0x1f8d('0x6b')]){_0x42eef3=_0xcced99[_0x1f8d('0x17')]-0x1;}else if(_0x42eef3==_0xcced99[_0x1f8d('0x17')]&&!_0x433395[_0x1f8d('0x6b')]||!_0x42eef3){_0x42eef3=0x0;}if(_0xcced99[_0x1f8d('0x1d')]&&_0x5de658!=_0x42eef3){_0xcced99[_0x1f8d('0x1a')]=_0x5cc880();_0x331c17(_0xcced99[_0x1f8d('0x1a')]);_0x5de658=_0x42eef3;}_0x1b74d0(_0x2265b6);}else {console[_0x1f8d('0x4f')](_0x1f8d('0x15'));}};this[_0x1f8d('0x3c')]=function(){_0x2265b6[_0x1f8d('0x30')]='';_0x1f7c40=[];_0x1b74d0=null;_0x1aee28=null;_0x19b365=null;console[_0x1f8d('0x4f')](_0x1f8d('0x3'));};const _0x55a364=()=>{_0xcced99['textureReady']=![];if(_0x26dd34&&_0x2265b6[_0x1f8d('0x5d')]===_0x2265b6[_0x1f8d('0x4c')]){_0xcced99[_0x1f8d('0x1d')]=!![];}else if(_0x2265b6[_0x1f8d('0x5d')]===_0x2265b6['HAVE_ENOUGH_DATA']){_0xcced99[_0x1f8d('0x1d')]=!![];}};function _0x15a37a(){_0x12dfa3=_0x4cdd70[_0x1f8d('0x49')](_0x1f8d('0x44'));_0x12dfa3[_0x1f8d('0x2d')]=_0x1f8d('0xf');}function _0x12f82b(){_0x138929=new XMLHttpRequest();_0x5594c6(_0x117967,{'responseType':_0x1f8d('0x57'),'onreadystatechange':_0x4c2d16=>{const _0x94a104=_0x4c2d16[_0x1f8d('0x6')];if(_0x94a104&&_0x94a104['readyState']==_0x94a104[_0x1f8d('0x5f')]){var _0x2b0adb=new DOMParser();var _0x5d2b24=_0x2b0adb[_0x1f8d('0x7')](_0x94a104[_0x1f8d('0x66')],_0x1f8d('0x1f'),0x0);_0x1a034c(_0x5d2b24);if(!_0x433395[_0x1f8d('0x27')]){_0x266669=_0xcced99[_0x1f8d('0x17')];}else {_0x266669=Math[_0x1f8d('0x4')](0x3c,_0xcced99[_0x1f8d('0x17')]);}_0x380b31(_0x4fd2fd);if(!_0x3ceaeb){_0x138929['open'](_0x1f8d('0x13'),_0x4fd2fd);_0x138929['responseType']=_0x1f8d('0xe');_0x138929['onload']=function(_0x583c63){_0x23ec45();};return ()=>{console[_0x1f8d('0x4f')]('ABORT');_0x138929['abort']();allowAnimate=![];};}}}});}const _0x380b31=async _0x26665d=>{var _0xab3252=new Headers();const _0x2cbd9a='bytes='+_0x34ecf6[0x0][_0x1f8d('0x28')](_0x1f8d('0x5'))['toString']();_0x471654=_0x433395['aspect_ratio']?_0x433395[_0x1f8d('0x1')]:1.7777777;if(_0x26665d[_0x1f8d('0x31')](_0x1f8d('0x21'))>-0x1){_0x26665d=_0x26665d['replace'](/data.panomoments.com/i,_0x1f8d('0x37'));}else if(_0x26665d[_0x1f8d('0x31')]('https://staging-data.panomoments.com/')>-0x1){_0x26665d=_0x26665d[_0x1f8d('0x3b')](/staging-data.panomoments.com/i,_0x1f8d('0x2'));}_0xab3252[_0x1f8d('0x19')]('Range',_0x2cbd9a);let _0xfec7ba=0x0;let _0xa6ab8a=![];while(_0xfec7ba<0x5&&!_0xa6ab8a){try{const _0x14ad29=await fetch(_0x26665d,{'headers':_0xab3252,'method':_0x1f8d('0x13')});const _0x521c0b=await _0x14ad29[_0x1f8d('0x1c')]();_0x6b4f54(_0x4fd2fd,new Uint8Array(_0x521c0b));_0xa6ab8a=!![];}catch(_0x40b16d){console['log'](_0x1f8d('0x63'),_0xfec7ba,_0x40b16d);_0xfec7ba++;}}};const _0x486aaf=_0x19c15d=>{_0x1c84e0(_0x19c15d);};const _0x1c84e0=_0x8db8b6=>{if((!_0x12dfa3||_0x12dfa3&&_0x12dfa3[_0x1f8d('0x5e')])&&_0x3bcef2==0x0){console['log'](_0x1f8d('0x35'));_0x4684dd=setTimeout(()=>{_0x1c84e0(_0x8db8b6);},0x3e8);return;}else if(_0x8db8b6&&_0x12dfa3&&!_0x12dfa3[_0x1f8d('0x5e')]&&_0x3bcef2==0x0){_0x2265b6[_0x1f8d('0x5b')]+=0x1/_0x53906a;_0x12dfa3[_0x1f8d('0xd')]=_0x2265b6[_0x1f8d('0x5b')];_0x12dfa3[_0x1f8d('0x61')](_0x8db8b6);_0x3bcef2++;_0x4684dd=setTimeout(()=>{_0x1c84e0(_0x8db8b6);},0x1f4);}};function _0x1a034c(_0x4c827b){try{var _0x11021c=_0x4c827b[_0x1f8d('0x62')]('Representation');_0x53906a=0x1;_0x57d7b3=_0x4c827b[_0x1f8d('0x62')]('SegmentURL');_0x34ecf6=_0x4c827b['querySelectorAll'](_0x1f8d('0x4b'));_0xcced99['FrameCount']=_0x57d7b3[_0x1f8d('0x6a')];}catch(_0x25cb25){console[_0x1f8d('0x4f')](_0x25cb25);}}function _0x331c17(_0x54c3e8){if(!_0x3ceaeb){if(_0x5560e4||_0x26dd34){if(!_0x433395[_0x1f8d('0x51')]){_0x2265b6[_0x1f8d('0x24')]((_0x54c3e8+framePadding)%_0xcced99[_0x1f8d('0x17')]*0x1/_0x53906a);}else {_0x2265b6[_0x1f8d('0x24')](_0x54c3e8*0x1/_0x53906a);}}else {_0x2265b6[_0x1f8d('0x5b')]=_0x54c3e8*0x1/_0x53906a;}}else if(_0x1f7c40[_0x54c3e8]&&_0x12dfa3&&!_0x12dfa3[_0x1f8d('0x5e')]&&_0x5e50f2){if(_0x54c3e8<_0xcced99['FrameCount']){_0x2265b6[_0x1f8d('0x5b')]+=0x1/_0x53906a;_0x12dfa3['timestampOffset']=_0x2265b6[_0x1f8d('0x5b')];if(!_0x433395[_0x1f8d('0x51')]){_0x12dfa3[_0x1f8d('0x61')](_0x1f7c40[(_0x54c3e8+framePadding)%_0xcced99['FrameCount']]);}else {_0x12dfa3[_0x1f8d('0x61')](_0x1f7c40[_0x54c3e8]);}}else {console['log'](_0x1f8d('0x40'));}}}function _0x466aa0(_0x201842,_0x424414){_0x576e68=_0x34f181[_0x1f8d('0x6a')];_0x5ebea2=0x0;_0x1f6ef0=0x0;var _0x1e126b=0x8;if(navigator[_0x1f8d('0x39')][_0x1f8d('0x60')](/Android/i)){_0x1e126b=0x4;}for(let _0x4db160=0x0;_0x4db160<_0x1e126b;_0x4db160++){_0xbe992(_0x201842,_0x266669,()=>{if(!_0x5e50f2){_0x1aee28(_0x2265b6,_0x433395);}_0x5e50f2=!![];for(let _0x22a27d=0x0;_0x22a27d<_0x1e126b;_0x22a27d++){_0xbe992(_0x201842,_0x576e68,()=>{_0x19b365(_0x2265b6,_0x433395);});}});}}function _0xbe992(_0x3c1535,_0x30d6a1,_0x2a2966){setTimeout(_0x4d3d4b,0x0,_0x3c1535,_0x30d6a1,_0x2a2966);}async function _0x4d3d4b(_0x4e9708,_0x251dc1,_0x4b054b){while(_0x342957<_0x251dc1){let _0x2a3dcc=0x0;let _0x187d59=![];const _0x287c24=_0x34f181[_0x5ebea2++];_0x342957++;while(_0x2a3dcc<0x3&&!_0x187d59){const _0x24c9fc=new Headers();_0x24c9fc[_0x1f8d('0x19')](_0x1f8d('0x3d'),_0x287c24[_0x1f8d('0xb')]);_0x24c9fc[_0x1f8d('0x19')](_0x1f8d('0x9'),_0x1f8d('0x25'));_0x24c9fc['append'](_0x1f8d('0x2e'),_0x1f8d('0x45'));_0x24c9fc[_0x1f8d('0x19')](_0x1f8d('0x9'),_0x1f8d('0x45'));try{const _0x1b789f=await fetch(_0x4e9708,{'headers':_0x24c9fc,'method':_0x1f8d('0x13')});const _0x1b98ac=await _0x1b789f['arrayBuffer']();_0x2e1201(_0x1b98ac,_0x287c24[_0x1f8d('0x3e')]);_0x1f6ef0++;_0x187d59=!![];}catch(_0x3246fa){console[_0x1f8d('0x4f')](_0x1f8d('0x10'),++_0x2a3dcc,_0x3246fa);_0x2a3dcc++;}finally{}}}if(_0x1f6ef0===_0x251dc1){_0x4b054b();}}function _0x23ec45(){_0x1aee28(_0x2265b6,_0x433395);_0x19b365(_0x2265b6,_0x433395);_0x2265b6[_0x1f8d('0x30')]=window[_0x1f8d('0x68')][_0x1f8d('0x32')](_0x138929[_0x1f8d('0x66')]);_0x2265b6[_0x1f8d('0x47')]();_0x5e50f2=!![];}function _0x5594c6(_0x3efbbe,_0xe9f5ed){if(_0x3efbbe!=null&&_0x3efbbe!==''){var _0x28b2ac=new XMLHttpRequest();_0x28b2ac['open']('GET',_0x3efbbe,!![]);if(_0xe9f5ed){_0x28b2ac[_0x1f8d('0x34')]=_0xe9f5ed[_0x1f8d('0x34')];if(_0xe9f5ed[_0x1f8d('0x4a')]){_0x28b2ac[_0x1f8d('0x4a')]=_0xe9f5ed[_0x1f8d('0x4a')][_0x1f8d('0x50')](_0x28b2ac);}if(_0xe9f5ed[_0x1f8d('0x38')]){_0x28b2ac['onload']=_0xe9f5ed[_0x1f8d('0x38')];}}_0x28b2ac[_0x1f8d('0x1b')](_0x1f8d('0x0'),function(_0x1181bd){console[_0x1f8d('0x4f')](_0x1f8d('0x1e')+_0x1181bd+_0x1f8d('0x6c'));},![]);_0x28b2ac[_0x1f8d('0x4e')]();return _0x28b2ac;}}const _0x6b4f54=async(_0x48b20e,_0x2b3ba0)=>{var _0x507416=new Headers();_0xcced99[_0x1f8d('0x1a')]=parseInt(Math[_0x1f8d('0x33')]((_0x433395[_0x1f8d('0x6d')]+0x5a)/(0x168/(_0xcced99[_0x1f8d('0x17')]/(_0x433395[_0x1f8d('0x67')]/0x168)))%_0xcced99[_0x1f8d('0x17')]),0xa);const _0x2bfe39='bytes='+_0x57d7b3[_0xcced99['currentIndex']][_0x1f8d('0x28')](_0x1f8d('0x3a'))[_0x1f8d('0x5a')]();_0x507416[_0x1f8d('0x19')](_0x1f8d('0x3d'),_0x2bfe39);if(_0x48b20e[_0x1f8d('0x31')](_0x1f8d('0x21'))>-0x1){_0x48b20e=_0x48b20e[_0x1f8d('0x3b')](/data.panomoments.com/i,_0x1f8d('0x37'));}else if(_0x48b20e[_0x1f8d('0x31')](_0x1f8d('0x16'))>-0x1){_0x48b20e=_0x48b20e[_0x1f8d('0x3b')](/staging-data.panomoments.com/i,_0x1f8d('0x2'));}let _0xf50996=0x0;let _0x374721=![];while(_0xf50996<0x5&&!_0x374721){try{const _0x3d8ebb=await fetch(_0x48b20e,{'headers':_0x507416,'method':_0x1f8d('0x13')});const _0x20bfae=await _0x3d8ebb[_0x1f8d('0x1c')]();var _0x2b1f2b=new Uint8Array(_0x20bfae);var _0x3d14a9=new Int8Array(_0x2b3ba0[_0x1f8d('0x6a')]+_0x2b1f2b[_0x1f8d('0x6a')]);_0x3d14a9[_0x1f8d('0x14')](_0x2b3ba0);_0x3d14a9['set'](_0x2b1f2b,_0x2b3ba0[_0x1f8d('0x6a')]);_0x41bc9a=!![];if(!_0x3ceaeb){_0x2265b6[_0x1f8d('0x30')]=window['URL'][_0x1f8d('0x32')](new Blob([_0x3d14a9],{'type':_0x1f8d('0x55')}));_0x2265b6[_0x1f8d('0x47')]();_0x1b74d0(_0x2265b6,_0x433395);_0x138929[_0x1f8d('0x4e')]();}else {_0x2e1201(_0x20bfae,_0xcced99[_0x1f8d('0x1a')]);_0x486aaf(_0x3d14a9);_0xcced99['textureReady']=!![];_0x1b74d0(_0x2265b6,_0x433395);_0x34f181=_0x55161b(_0x57d7b3,_0x266669,_0x3396cb,![]);_0x466aa0(_0x4fd2fd,0x1);}_0x374721=!![];}catch(_0x78cc6e){console[_0x1f8d('0x4f')]('failure\x20during\x20first\x20frame\x20download',_0xf50996,_0x78cc6e);_0xf50996++;}}};function _0x2e1201(_0x1fc18e,_0x2ffa82){_0x1f7c40[_0x2ffa82]=new Uint8Array(_0x1fc18e);}const _0x5cc880=()=>{var _0x561e31;if(!_0x3ceaeb){return _0x42eef3;}_0x561e31=_0x42eef3;if(_0x34f181[_0x1f8d('0x6a')]!=0x0&&!_0x1f7c40[_0x42eef3]){var _0x3ea3c0,_0x299c6c,_0x53c7dc,_0x427987=![],_0x366e9d=![];_0x3ea3c0=_0x42eef3;while(!_0x427987&&_0x3ea3c0<_0xcced99[_0x1f8d('0x17')]){if(_0x1f7c40[_0x3ea3c0]){_0x427987=!![];_0x299c6c=_0x3ea3c0;}else {_0x3ea3c0++;}}_0x3ea3c0=_0x42eef3;while(!_0x366e9d&&_0x3ea3c0>=0x0){if(_0x1f7c40[_0x3ea3c0]){_0x366e9d=!![];_0x53c7dc=_0x3ea3c0;}else {_0x3ea3c0--;}}if(!_0x299c6c){_0x299c6c=_0xcced99[_0x1f8d('0x17')];}if(Math[_0x1f8d('0x2f')](_0x42eef3-_0x299c6c)<=Math[_0x1f8d('0x2f')](_0x42eef3-_0x53c7dc)&&_0x299c6c==_0xcced99['FrameCount']){_0x561e31=0x0;}else if(Math[_0x1f8d('0x2f')](_0x42eef3-_0x299c6c)<=Math[_0x1f8d('0x2f')](_0x42eef3-_0x53c7dc)){_0x561e31=_0x299c6c;}else {_0x561e31=_0x53c7dc;}}else {_0x561e31=_0x42eef3;}if(!_0x561e31){_0x561e31=0x0;}return _0x561e31;};function _0x4d023a(_0x36182d,_0x393421,_0x5d14f8,_0x15d83e,_0x511127){return {'header':'Range','content':_0x1f8d('0x3f')+_0x36182d[_0x1f8d('0x28')](_0x1f8d('0x3a'))[_0x1f8d('0x5a')](),'index':_0x393421,'countPosition':_0x5d14f8,'firstPass':_0x15d83e,'firstPassCompleteIndex':_0x511127};}function _0x55161b(_0xce414e,_0xaec18a,_0x53a51f,_0x43eb26=![]){var _0x51c777=[];var _0x359081=0x0;if(_0x43eb26){for(var _0x255be1=0x0;_0x255be1<_0xce414e['length'];_0x255be1++){_0x51c777[_0x1f8d('0x2b')](_0x4d023a(_0xce414e[_0x255be1],_0x255be1,![]));}return _0x51c777;}const _0x2f69d3=parseInt(Math['round'](_0xce414e[_0x1f8d('0x6a')]/_0xaec18a),0xa);const _0x3ed805=Math[_0x1f8d('0x56')](_0xce414e[_0x1f8d('0x6a')]/_0xaec18a);var _0x3646b0=_0xaec18a+_0x3ed805;for(var _0x255be1=0x0;_0x255be1<_0x3646b0;_0x255be1++){if(_0xce414e[_0x255be1*_0x2f69d3]){_0x51c777[_0x1f8d('0x2b')](_0x4d023a(_0xce414e[_0x255be1*_0x2f69d3],_0x255be1*_0x2f69d3,_0x359081++,!![],_0x3646b0));_0x53a51f[_0x1f8d('0x2b')](_0x255be1*_0x2f69d3);}}_0x3646b0=_0x51c777[_0x1f8d('0x6a')];for(var _0x255be1=0x0;_0x255be1<_0x51c777[_0x1f8d('0x6a')];_0x255be1++){_0x51c777[_0x255be1][_0x1f8d('0x36')]=_0x3646b0;}var _0x19ab58=_0x2f69d3;_0x359081=0x0;for(var _0x3afb6c=Math[_0x1f8d('0x48')](_0x2f69d3/0x2);_0x3afb6c>0x1;_0x3afb6c=Math[_0x1f8d('0x48')](_0x3afb6c/0x2)){for(var _0x255be1=0x0;_0x255be1<_0xce414e[_0x1f8d('0x6a')]/_0x19ab58;_0x255be1++){if(_0xce414e[_0x3afb6c+_0x255be1*_0x19ab58]){_0x51c777[_0x1f8d('0x2b')](_0x4d023a(_0xce414e[_0x3afb6c+_0x255be1*_0x19ab58],_0x3afb6c+_0x255be1*_0x19ab58,_0x359081++,![],_0x3646b0));}}_0x19ab58=Math[_0x1f8d('0x48')](_0x3afb6c/0x2);}var _0x7415ee=[];for(var _0x255be1=0x0;_0x255be1<_0x51c777[_0x1f8d('0x6a')];_0x255be1++){_0x7415ee[_0x51c777[_0x255be1]['index']]=_0x51c777[_0x255be1][_0x1f8d('0x3e')];}for(var _0x255be1=0x0;_0x255be1<_0xce414e[_0x1f8d('0x6a')];_0x255be1++){if(!_0x7415ee[_0x255be1]){_0x51c777['push'](_0x4d023a(_0xce414e[_0x255be1],_0x255be1,_0x359081++,![],_0x3646b0));}}function _0x4ab294(_0x465fd7,_0x542e06){return _0x465fd7[_0x1f8d('0x2c')](function(_0x4a962a,_0x48adaf,_0x12f61c){return _0x12f61c[_0x1f8d('0x58')](function(_0x871e1b){return _0x871e1b[_0x542e06];})[_0x1f8d('0x31')](_0x4a962a[_0x542e06])===_0x48adaf;});}var _0x4e6272=_0x4ab294(_0x51c777,'index');_0x51c777=[];_0x7415ee=[];return _0x4e6272;}}
+
+	/**
+	 * PanoMoments Panorama
+	 * @param {object} identifier PanoMoment identifier
+	 * @param {object} offset texture uv offset
+	 */
+	function PanoMomentPanorama ( identifier, offset = { x: 0.5, y: 0.0 } ) {
+
+	    Panorama.call( this );
+
+	    this.identifier = identifier;
+	    this.PanoMoments = null;
+	    this.momentData = null;
+	    this.camera = null;
+
+	    // Default offset for pano moments
+	    this.material.uniforms.offset.value.x = offset.x;
+	    this.material.uniforms.offset.value.y = offset.y;
+
+	    this.addEventListener( 'panolens-camera', this.onPanolensCamera.bind( this ) );
+
+	}
+
+	PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
+
+	    constructor: PanoMomentPanorama,
+
+	    /**
+	     * When camera reference dispatched
+	     * @param {THREE.Camera} camera 
+	     */
+	    onPanolensCamera: function( { camera } ) {
+	        this.camera = camera;
+	    },
+
+	    /**
+	     * Load Pano Moment Panorama
+	     */
+	    load: function () {
+
+	        this.dispatchEvent( { type: 'panoMomentLoad' } );
+	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' });
+
+	        Panorama.prototype.load.call( this );
+
+	    },
+
+	    /**
+	     * On Panolens update callback
+	     */
+	    updateCallback: function() {
+
+	        const { camera, momentData } = this;
+
+	        if(!momentData) return;
+	        
+	        const rotation = THREE.Math.radToDeg(camera.rotation.y) + 180;
+	        const yaw = (rotation * (momentData.clockwise ? -1.0 : 1.0) + 90) % 360;
+
+	        this.setPanoMomentYaw( yaw );
+	        
+	    },
+
+	    /**
+	     * On Pano Moment Render Callback
+	     */
+	    renderCallback: function (video, momentData) {
+
+	        if (!this.momentData) {
+
+	            this.momentData = momentData;
+
+	            const texture = new THREE.VideoTexture( video );
+	            texture.minFilter = texture.magFilter = THREE.LinearFilter;
+	            texture.generateMipmaps = false;
+	            texture.format = THREE.RGBFormat;         
+	            this.updateTexture( texture );
+
+	            const angle = (momentData.start_frame + 180) / 180 * Math.PI;
+	            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'rotateControlLeft', data: angle } );
+
+	            console.log('PanoMoments First Frame Decoded');
+	        }
+	    },
+
+	    /**
+	     * On Pano Moment Ready Callback
+	     */
+	    readyCallback: function () {
+	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl' });
+	        this.dispatchEvent( { type: 'panoMomentReady' } );
+	        console.log('PanoMoment Ready');
+	    },
+
+	    /**
+	     * On Pano Moment Loaded Callback
+	     */
+	    loadedCallback: function () {
+	        console.log('PanoMoment Download Completed');
+	    },
+
+	    /**
+	     * Set PanoMoment yaw
+	     * @memberOf PanoMomentPanorama
+	     * @param {number} yaw - yaw value from 0 to 360 in degree
+	     */
+	    setPanoMomentYaw: function (yaw) {
+
+	        const { momentData, PanoMoments: { render, FrameCount, textureReady } } = this;
+
+	        if(!momentData) return;
+
+	        render((yaw / 360) * FrameCount);
+
+	        if (textureReady) this.getTexture().needsUpdate = true;
+
+	    },
+
+	    /**
+	     * onEnter
+	     * @memberOf PanoMomentPanorama
+	     * @instance
+	     */
+	    onEnter: function () {
+
+	        const { identifier, renderCallback, readyCallback, loadedCallback } = this;
+
+	        this.PanoMoments = new PanoMoments(
+	            identifier, 
+	            renderCallback.bind( this ), 
+	            readyCallback.bind( this ), 
+	            loadedCallback.bind( this )
+	        );
+
+	        // Add update callback
+	        this.dispatchEvent( { 
+	            type: 'panolens-viewer-handler', 
+	            method: 'addUpdateCallback', 
+	            data: this.updateCallback.bind(this)
+	        });
+
+	        Panorama.prototype.onEnter.call( this );
+
+	    },
+
+	    /**
+	     * onLeave
+	     * @memberOf PanoMomentPanorama
+	     * @instance
+	     */
+	    onLeave: function () {
+
+	        // Remove update callback
+	        this.dispatchEvent( { 
+	            type: 'panolens-viewer-handler', 
+	            method: 'removeUpdateCallback', 
+	            data: this.updateCallback.bind(this)
+	        });
+
+	        this.PanoMoments.dispose();
+	        this.PanoMoments = null;
+	        Panorama.prototype.onLeave.call( this );
 
 	    }
 
@@ -7927,8 +8123,8 @@
 	    this.autoRotateRequestId = null;
 	    this.outputDivElement = null;
 	    this.touchSupported = 'ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch;
-	    this.tweenLeftAnimation = new Tween.Tween();
-	    this.tweenUpAnimation = new Tween.Tween();
+	    this.tweenLeftAnimation = new TWEEN.Tween();
+	    this.tweenUpAnimation = new TWEEN.Tween();
 	    this.outputEnabled = false;
 	    this.viewIndicatorSize = indicatorSize;
 	    this.tempEnableReticle = enableReticle;
@@ -8096,6 +8292,12 @@
 	        if ( object instanceof CameraPanorama ) {
 
 	            object.dispatchEvent( { type: 'panolens-scene', scene: this.scene } );
+
+	        }
+
+	        if ( object instanceof PanoMomentPanorama ) {
+
+	            object.dispatchEvent( { type: 'panolens-camera', camera: this.camera } );
 
 	        }
 
@@ -8978,7 +9180,7 @@
 	        }
 
 	        duration = duration !== undefined ? duration : 1000;
-	        easing = easing || Tween.Easing.Exponential.Out;
+	        easing = easing || TWEEN.Easing.Exponential.Out;
 
 	        const { left, up } = this.calculateCameraDirectionDelta( vector );
 	        const rotateControlLeft = this.rotateControlLeft.bind( this );
@@ -8990,7 +9192,7 @@
 	        this.tweenLeftAnimation.stop();
 	        this.tweenUpAnimation.stop();
 
-	        this.tweenLeftAnimation = new Tween.Tween( ov )
+	        this.tweenLeftAnimation = new TWEEN.Tween( ov )
 	            .to( { left }, duration )
 	            .easing( easing )
 	            .onUpdate(function(ov){
@@ -8999,7 +9201,7 @@
 	            })
 	            .start();
 
-	        this.tweenUpAnimation = new Tween.Tween( ov )
+	        this.tweenUpAnimation = new TWEEN.Tween( ov )
 	            .to( { up }, duration )
 	            .easing( easing )
 	            .onUpdate(function(ov){
@@ -9141,9 +9343,6 @@
 
 	            case 'overlay':
 	                this.outputDivElement.textContent = message;
-	                break;
-
-	            default:
 	                break;
 
 	            }
@@ -9570,7 +9769,7 @@
 	     */
 	    update: function () {
 
-	        Tween.update();
+	        TWEEN.update();
 
 	        this.updateCallbacks.forEach( function( callback ){ callback(); } );
 
@@ -9974,7 +10173,7 @@
 	 * @author pchen66
 	 * @namespace PANOLENS
 	 */
-	window.TWEEN = Tween;
+	window.TWEEN = TWEEN;
 
 	exports.BasicPanorama = BasicPanorama;
 	exports.CONTROLS = CONTROLS;
@@ -9991,6 +10190,7 @@
 	exports.LittlePlanet = LittlePlanet;
 	exports.MODES = MODES;
 	exports.Media = Media;
+	exports.PanoMomentPanorama = PanoMomentPanorama;
 	exports.Panorama = Panorama;
 	exports.REVISION = REVISION;
 	exports.Reticle = Reticle;
@@ -10008,4 +10208,4 @@
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
