@@ -10,6 +10,7 @@ import { DataImage } from '../DataImage';
 import { Panorama } from '../panorama/Panorama';
 import { VideoPanorama } from '../panorama/VideoPanorama';
 import { CameraPanorama } from '../panorama/CameraPanorama';
+import { PanoMomentPanorama } from '../panorama/PanoMomentPanorama';
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
 
@@ -265,6 +266,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         if ( object instanceof CameraPanorama ) {
 
             object.dispatchEvent( { type: 'panolens-scene', scene: this.scene } );
+
+        }
+
+        if ( object instanceof PanoMomentPanorama ) {
+
+            object.dispatchEvent( { type: 'panolens-camera', camera: this.camera } );
 
         }
 
