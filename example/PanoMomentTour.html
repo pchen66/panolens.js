@@ -204,6 +204,33 @@
                 align-items: center;
       }
 
+      #alignment {
+        display: none;
+        width: 100%;
+        margin: 0 auto;
+        position: absolute;
+        bottom: 40px;
+        text-align: center;
+        -webkit-box-align: center;
+            -ms-flex-align: center;
+                align-items: center;
+      }
+
+      .leftRight {
+        display: inline-block;
+        cursor: pointer;
+        margin-bottom: 5%;
+        margin-left: 5%;
+        margin-right: 5%;
+        margin-bottom: 5%;
+        padding-top: 2%;
+        padding-bottom: 2%;
+        padding-left: 2%;
+        padding-right: 2%;
+        color: #fff;
+        font-size: xx-large;
+      }
+
       #stripeDiv {
         display: none;
         max-width: 500px;
@@ -322,6 +349,7 @@
         <div id="bar" class="hide"></div>
       </div>
       <div id="credit"><a id="creditText" href="" target="_blank"></a></div>
+      <div id="alignment"><div class="leftRight" id="alignmentLeft">←</div><div class="leftRight" id="alignmentRight">→</div></div>
     </div>
       <div id="dialog">
         <div id="typed"></div>
@@ -483,7 +511,7 @@
 
       var credit = document.getElementById("credit");
       var creditText = document.getElementById("creditText");
-      $('#creditText').on('click touchend', function(event) { // Ugly workaround for handling touch and click events due to conflict with viewer touch event listeners
+      $('#creditText').on('click touchend', function(event) {
           if (viewer.panorama == panomoment5) {
             window.open("https://www.mettle.com/360vr-master-series-free-360-downloads-page/", "_blank"); 
           } else  if (viewer.panorama == panomoment6) {
@@ -496,6 +524,28 @@
             window.open("http://www.digitalmuffin.com/vr/panorama03.jpg", "_blank"); 
           }
       });       
+
+      var alignment = document.getElementById("alignment");
+      var alignmentRight = document.getElementById("alignmentRight");
+      var alignmentLeft = document.getElementById("alignmentLeft");
+
+      var timeOutA = 0;
+      $('#alignmentRight').on('mousedown touchstart', function(e) {
+        timeOutA = setInterval(function(){
+          viewer.panorama.material.uniforms.offset.value.x = (viewer.panorama.material.uniforms.offset.value.x + .01) % 1;
+        }, 100);
+      }).bind('mouseup mouseleave touchend', function() {
+        clearInterval(timeOutA);
+      });
+
+      var timeOutB = 0;
+      $('#alignmentLeft').on('mousedown touchstart', function(e) {
+        timeOutB = setInterval(function(){
+          viewer.panorama.material.uniforms.offset.value.x = (viewer.panorama.material.uniforms.offset.value.x - .01) % 1;
+        }, 100);
+      }).bind('mouseup mouseleave touchend', function() {
+        clearInterval(timeOutB);
+      });
 
       var svg = document.getElementById("tourSVG");
       var playButtonVisible = false;
@@ -568,7 +618,7 @@
         composite_water: [ 'Soak in the sun and crystal waters of Vis. ', 'This charming island, just off Croatia\'s coast, offers beautiful beaches, stunning views, and fresh seafood.' ],
         cuba_parallax: [ 'PanoMoments created with a rotating camera are able to capture parallax.', 'Try moving around and notice that small interior spaces feel three-dimensional and more lifelike.' ],
         triggers: [ 'You can define angular trigger points to invoke custom actions', 'Pan to the right to check it out.' ],
-        alignment: [ 'This PanoMoment was created from 360 Video footage.', ' Try using the [ ] keyboard keys to change the time+angle association.', 'This allows you to tell a different story.' ],
+        alignment: [ 'This PanoMoment was created from 360 Video footage.', ' Try holding the ← → on-screen buttons to change the time/angle association.', 'This allows you to tell a different story.' ],
         bam: ['Bam!!!']
       };
 
@@ -854,6 +904,7 @@
               setPlayTourButton ();
             }
             bar.classList.add ('hide');
+            alignment.style.display = 'block';
             credit.style.display = 'block';
             creditText.innerHTML = "Credit: PHILIPPE A. COLLIN + CLÉMENT LÉOTARD";
             break;
@@ -1234,11 +1285,11 @@
           var key = e.key;
           switch (key) {
               case "[":
-                  viewer.panorama.rotation.y = viewer.panorama.rotation.y - THREE.Math.degToRad(5);
-                  break;
+                viewer.panorama.material.uniforms.offset.value.x = (viewer.panorama.material.uniforms.offset.value.x - .01) % 1;
+                break;
               case "]":
-                  viewer.panorama.rotation.y = viewer.panorama.rotation.y + THREE.Math.degToRad(5);
-                  break;
+                viewer.panorama.material.uniforms.offset.value.x = (viewer.panorama.material.uniforms.offset.value.x + .01) % 1;
+                break;
           }
         }
       }
