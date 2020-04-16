@@ -532,8 +532,8 @@
       var timeOutA = 0;
       $('#alignmentRight').on('mousedown touchstart', function(e) {
         timeOutA = setInterval(function(){
-          viewer.panorama.material.uniforms.offset.value.x = (viewer.panorama.material.uniforms.offset.value.x + .01) % 1;
-        }, 100);
+          viewer.panorama.material.uniforms.offset.value.x = (viewer.panorama.material.uniforms.offset.value.x + .001) % 1;
+        }, 10);
       }).bind('mouseup mouseleave touchend', function() {
         clearInterval(timeOutA);
       });
@@ -541,8 +541,8 @@
       var timeOutB = 0;
       $('#alignmentLeft').on('mousedown touchstart', function(e) {
         timeOutB = setInterval(function(){
-          viewer.panorama.material.uniforms.offset.value.x = (viewer.panorama.material.uniforms.offset.value.x - .01) % 1;
-        }, 100);
+          viewer.panorama.material.uniforms.offset.value.x = (viewer.panorama.material.uniforms.offset.value.x - .001) % 1;
+        }, 10);
       }).bind('mouseup mouseleave touchend', function() {
         clearInterval(timeOutB);
       });
