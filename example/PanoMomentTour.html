@@ -851,9 +851,6 @@
 
         stopTypedAndCancelDelayExecute();
 
-        const matchingPanorama = (element) => element == this;
-        currentViewerChildIndex = viewer.scene.children.findIndex(matchingPanorama);
-
         if (sound && sound.isPlaying) {
           sound.pause();
         }
@@ -933,6 +930,11 @@
             creditText.innerHTML = "Credit: DigitalMuffin.com";
             break;
 
+        }
+
+        if (this != panoramaLinked1 && this != panoramaLinked2 && this != videoLinked1) { // Ignore these indices
+          const matchingPanorama = (element) => element == this;
+          currentViewerChildIndex = viewer.scene.children.findIndex(matchingPanorama);
         }
 
       }
