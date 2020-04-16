@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <style>
+
+      html,
+      body {
+        font: 100%/1.4em 'Calibre Light', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        width: 100%;
+        height: 100%;
+        overflow: hidden; 
+        margin: 0;
+        background-color: #000;
+        -webkit-text-size-adjust: none;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a:link, a:visited{
+        color: #fff;
+      }
+
+      .panel {
+        text-align: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      .slideout-menu {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 256px;
+        min-height: 100vh;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+        z-index: 0;
+        display: none;
+      }
+
+      .slideout-menu-left {
+        left: 0;
+      }
+
+      .slideout-open .slideout-menu {
+        display: block;
+      }
+
+      .toggle-button {
+        color: white;
+        font-size: larger;
+        background-color: transparent;
+        border: none;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        outline:none;
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      #panolens {
+        text-decoration: underline;
+      }
+      
+      #sdk {
+        text-decoration: underline;
+      }
+
+      li {
+        cursor: pointer;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .menu {
+        background-color: #1D1F20;
+      }
+
+      .menu a {
+        color: #fff;
+      }
+
+      .menu-section {
+        margin: 25px 0;
+      }
+
+      .menu-section-title {
+        text-transform: uppercase;
+        color: #85888d;
+        font-weight: 200;
+        font-size: 13px;
+        letter-spacing: 1px;
+        padding: 0 20px;
+        margin:0;
+      }
+
+      .menu-section-list {
+        padding:0;
+        margin: 10px 0;
+        list-style:none;
+      }
+
+      .menu-section-list a {
+        display: block;
+        padding: 10px 20px;
+      }
+
+      .menu-section-list a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .currentlySelected {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      ::-webkit-scrollbar {
+          height: 12px;
+          width: 6px;
+          background: #1D1F20;
+      }
+
+      ::-webkit-scrollbar-thumb {
+          background: #fff;
+          -webkit-border-radius: 1ex;
+          -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+      }
+
+      ::-webkit-scrollbar-corner {
+          background: #000;
+      }
+
+      #progress {
+        position: absolute;
+        width: 100%;
+        height: 3px;
+      }
+
+      #bar {
+        background-color: #fff;
+        height: 100%;
+        transition: width 0.1s ease;
+      }
+
+      #bar.hide {
+        opacity: 0;
+        transition: opacity 1s ease;
+      }
+
+      .title {
+        display: none;
+        font-size: 1.5em;
+        text-align: center;
+        padding: 5px;
+      }
+
+      .text {
+        display: none;
+        padding: 0 20px 20px 20px;
+      }
+
+
+      #typed {
+        color: #fff;
+        text-shadow: 0px 0px 4px #000;
+        font-size: 25px;
+        font-size: calc(15px + 2vw);
+        line-height: 1em;
+      }
+
+      #dialog {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10vw;
+        box-sizing: border-box;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+
+      #tourSVG {
+        display: none;;
+      } 
+
+      #credit {
+        display: none;
+        width: 100%;
+        margin: 0 auto;
+        position: absolute;
+        bottom: 0;
+        padding-bottom: 10px;
+        color: #fff;
+        font-size: 11px;
+        -webkit-box-align: center;
+            -ms-flex-align: center;
+                align-items: center;
+      }
+
+      #stripeDiv {
+        display: none;
+        max-width: 500px;
+        min-width: 300px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      #stripeDiv button {
+        border: none;
+        border-radius: 4px;
+        outline: none;
+        text-decoration: none;
+        color: #fff;
+        background: #0073ef;
+        white-space: nowrap;
+        display: inline-block;
+        height: 40px;
+        line-height: 40px;
+        padding: 0 14px;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, .11), 0 1px 3px rgba(0, 0, 0, .08);
+        border-radius: 4px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.025em;
+        text-decoration: none;
+        -webkit-transition: all 150ms ease;
+        transition: all 150ms ease;
+        margin-top: 10px;
+      }
+
+      .StripeElement {
+        box-sizing: border-box;
+
+        height: 40px;
+
+        padding: 10px 12px;
+
+        border: 1px solid transparent;
+        border-radius: 4px;
+        background-color: white;
+
+        box-shadow: 0 1px 3px 0 #e6ebf1;
+        -webkit-transition: box-shadow 150ms ease;
+        transition: box-shadow 150ms ease;
+      }
+
+      .StripeElement--focus {
+        box-shadow: 0 1px 3px 0 #cfd7df;
+      }
+
+      .StripeElement--invalid {
+        border-color: #fa755a;
+      }
+
+      .StripeElement--webkit-autofill {
+        background-color: #fefde5 !important;
+      }
+
+    </style>
+  </head>
+
+  <body>
+
+    <div id="stripeDiv">
+      <form id="payment-form">
+        <div class="form-row">
+          <label for="card-element"></label>
+          <div id="card-element">
+            <!-- A Stripe Element will be inserted here. -->
+          </div>
+
+          <!-- Used to display form errors. -->
+          <div id="card-errors" role="alert"></div>
+        </div>
+
+        <button>Submit Payment - Demo</button>
+      </form>
+    </div>
+
+    <nav id="menu" class="menu slideout-menu slideout-menu-left">
+      <section class="menu-section">
+        <h3 class="menu-section-title">PanoMoments</h3>
+        <ul class="menu-section-list">
+          <li id="panomoment0"><a>Tour with E-Commerce</a></li>
+          <li id="panomoment3"><a>Rotation Parallax</a></li>
+          <li id="panomoment1"><a>Tour with Sound</a></li>
+          <li id="panomoment5"><a>View-based Triggers</a></li>
+          <li id="panomoment6"><a>360 Video Conversion</a></li>
+          <li id="mixedContent"><a>Mixed Content Linking</a></li>              
+        </ul>
+      </section>
+<!--       <section class="menu-section">
+        <h3 class="menu-section-title">360 Photos</h3>
+        <ul class="menu-section-list">
+          <li id="panoramaLinked1"><a>Pier</a></li>
+          <li id="panoramaLinked2"><a>Old Train</a></li>
+        </ul>
+      </section>
+      <section class="menu-section">
+        <h3 class="menu-section-title">360 Videos</h3>
+        <ul class="menu-section-list">
+          <li id="videoLinked1"><a>Ayutthaya by Mettle</a></li>
+        </ul>
+      </section> -->
+      <section class="menu-section">
+        <h3 class="menu-section-title">Learn More</h3>
+        <ul class="menu-section-list">
+          <li id="homepage"><a href="https://www.panomoments.com/" target="_blank">Go to PanoMoments.com</a></li>
+        </ul>
+      </section>
+    </nav>
+
+    <main id="panel" class="panel slideout-panel" data-slideout-ignore>
+      <div id="progress">
+        <div id="bar" class="hide"></div>
+      </div>
+      <div id="credit"><a id="creditText" href="" target="_blank"></a></div>
+    </div>
+      <div id="dialog">
+        <div id="typed"></div>
+      </div>
+
+
+      <!-- Play/Stop morph animation from - https://codepen.io/bradleyboy/pen/ByKxNZ -->
+      <svg viewbox="0 0 140 140" id="tourSVG">
+        <polygon id="shape" points="50,40 100,70 100,70 50,100, 50,40" style="fill:#fff;">
+          <animate 
+            id="animate_to_stop" 
+            begin="indefinite" 
+            fill="freeze" 
+            attributeName="points" 
+            dur="1000ms" 
+            to="45,45 95,45 95,95, 45,95 45,45"
+            keySplines="
+              0.1 0.8 0.2 1; 
+              0.1 0.8 0.2 1; 
+              0.1 0.8 0.2 1; 
+              0.1 0.8 0.2 1; 
+              0.1 0.8 0.2 1; 
+              0.1 0.8 0.2 1"
+            keyTimes="0;0.22;0.33;0.55;0.66;0.88;1" 
+            calcMode="spline"
+          />
+          
+          <animate 
+            id="animate_to_play" 
+            begin="indefinite" 
+            fill="freeze" 
+            attributeName="points" 
+            dur="1000ms" 
+            to="50,40 100,70 100,70 50,100, 50,40" 
+            keySplines="
+              0.1 0.8 0.2 1; 
+              0.1 0.8 0.2 1; 
+              0.1 0.8 0.2 1; 
+              0.1 0.8 0.2 1; 
+              0.1 0.8 0.2 1; 
+              0.1 0.8 0.2 1"
+            keyTimes="0;0.22;0.33;0.55;0.66;0.88;1" 
+            calcMode="spline"
+          />
+        </polygon>
+    </svg>
+
+    </main>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.11/typed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slideout/1.0.1/slideout.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+    <script src="../build/panolens.js"></script>
+    <script type="text/javascript">
+
+      // Create a Stripe client.
+      var stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+
+      // Create an instance of Elements.
+      var elements = stripe.elements();
+
+      // Custom styling can be passed to options when creating an Element.
+      // (Note that this demo uses a wider set of styles than the guide below.)
+      var style = {
+        base: {
+          color: '#32325d',
+          fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+          fontSmoothing: 'antialiased',
+          fontSize: '16px',
+          '::placeholder': {
+            color: '#aab7c4'
+          }
+        },
+        invalid: {
+          color: '#fa755a',
+          iconColor: '#fa755a'
+        }
+      };
+
+      // Create an instance of the card Element.
+      var card = elements.create('card', {style: style});
+
+      // Add an instance of the card Element into the `card-element` <div>.
+      card.mount('#card-element');
+
+      // Handle real-time validation errors from the card Element.
+      card.addEventListener('change', function(event) {
+        var displayError = document.getElementById('card-errors');
+        if (event.error) {
+          displayError.textContent = event.error.message;
+        } else {
+          displayError.textContent = '';
+        }
+      });
+
+      // Handle form submission.
+      var form = document.getElementById('payment-form');
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        stripe.createToken(card).then(function(result) {
+          if (result.error) {
+            // Inform the user if there was an error.
+            var errorElement = document.getElementById('card-errors');
+            errorElement.textContent = result.error.message;
+          } else {
+            // Send the token to your server.
+            stripeTokenHandler(result.token);
+          }
+        });
+      });
+
+      // Submit the form with the token ID.
+      function stripeTokenHandler(token) {
+        // Insert the token ID into the form so it gets submitted to the server
+        var form = document.getElementById('payment-form');
+        var hiddenInput = document.createElement('input');
+        hiddenInput.setAttribute('type', 'hidden');
+        hiddenInput.setAttribute('name', 'stripeToken');
+        hiddenInput.setAttribute('value', token.id);
+        form.appendChild(hiddenInput);
+
+        // Submit the form
+        form.submit();
+      }
+
+      var slideout = new Slideout({
+        'panel': document.getElementById('panel'),
+        'menu': document.getElementById('menu'),
+        'padding': 256,
+        'tolerance': 70
+      });
+
+      var menu = $('#menu');
+      var menuTimeout = null;
+      var prevX, prevY;
+      $(window).on('mousemove', mouseMoveHandler);
+
+      function mouseMoveHandler(e) {
+          var diffX = Math.abs(e.pageX - prevX);
+          var diffY = Math.abs(e.pageY - prevY);
+          prevX = e.pageX;
+          prevY = e.pageY;
+          if ((diffX == 1 && e.pageY >= 150 && e.pageY <= window.innerHeight - 150 && e.pageX < 100 && e.pageX >= 1) || menu.is(':hover')) { // Only invoke the menu if moving slowly
+              clearTimeout(menuTimeout);
+              menuTimeout = null;
+              if (!slideout.isOpen()) {
+                slideout.open();
+              }
+              
+          } else if (menuTimeout === null) {
+              menuTimeout = setTimeout(
+                function () {slideout.close();
+              }, 1000);
+          }
+      }
+
+      var credit = document.getElementById("credit");
+      var creditText = document.getElementById("creditText");
+      $('#creditText').on('click touchend', function(event) { // Ugly workaround for handling touch and click events due to conflict with viewer touch event listeners
+          if (viewer.panorama == panomoment5) {
+            window.open("https://www.mettle.com/360vr-master-series-free-360-downloads-page/", "_blank"); 
+          } else  if (viewer.panorama == panomoment6) {
+            window.open("https://with.in/watch/kinoscope", "_blank"); 
+          } else if (viewer.panorama == videoLinked1) {
+            window.open("https://www.mettle.com/360vr-master-series-free-360-downloads-page/", "_blank"); 
+          } else if (viewer.panorama == panoramaLinked1) {
+            window.open("http://www.photophoto.cn/tupian/360quanjingtiankong.html", "_blank"); 
+          } else if (viewer.panorama == panoramaLinked2) {
+            window.open("http://www.digitalmuffin.com/vr/panorama03.jpg", "_blank"); 
+          }
+      });       
+
+      var svg = document.getElementById("tourSVG");
+      var playButtonVisible = false;
+
+      var dialog = document.getElementById( 'dialog' );
+      var audioBuffer, buffer, sound;
+      var panomoment0, panomoment1, panomoment2, panomoment3, panomoment5, panomoment6, panomomentLinked1, panoramaLinked1, panoramaLinked2, videoLinked1;
+      var viewer;
+
+      var setTimeoutIDArray = [];
+
+      var panomoment0_identifier = {
+        moment_id: "5a90ce21d3df99000e981d11",
+        variation: 101, // Should detect mobile / desktop and change default quality.
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomoment1_identifier = {
+        moment_id: "58a5d20affe5e3000bdb34c0",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomoment2_identifier = {
+        moment_id: "594034259456f0000ba62f29",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomoment3_identifier = {
+        moment_id: "58a5f6dd482e59000ba26fee",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomomentLinked1_identifier = {
+        moment_id: "5abec35ff96ff2000e8cccbe",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomoment5_identifier = {
+        moment_id: "5e95b8bf9e48cf0016e5d942",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomoment6_identifier = {
+        moment_id: "5a9060988ac76a000ec9ee74",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var bar = document.querySelector( '#bar' );
+
+      // Storytelling
+      var typed, tourRunning = false, firstLoad = true;
+      var storyInfospot1, storyInfospot2, storyInfospot3, hiddenInfospot1, hiddenInfospot2, hiddenInfospot3, storyInfospot4, buyButton1;
+      var tweeningDelay = 300, typeStartDelay = 1000, typeSpeed = 50;
+      var paragraphs = {
+
+        landing: [ 'Welcome!^500', "This is a demo of what you can build with the <a id='sdk' href='' target='_blank'><strong>PanoMoments SDK</strong></a> + <a id='panolens' href='' target='_blank'><strong>Panolens.js</strong></a>^3000", 'Click and drag to explore.', 'Select the ☰ button to view other examples.', 'Click the play button to take a guided tour.^1000' ],
+        welcome: [ 'PanoMoments Presents: ', 'PanoMoments Presents: A Journey to <strong>Grand Central</strong>' ],
+        applestore: [ 'Grand Central is home to an Apple Retail Store', 'It\'s a great place to charge your phone.'],
+        vending: [ 'Purchase train tickets here, ^500 and also find when your train will arrive.' ],
+        ceiling: [ 'A beautiful ceiling mural to stare at.' ],
+        ending: [ 'Please continue your journey with Grand Central on your own or hit the play button to restart the tour.' ],
+        composite_funicular: [ 'Enjoy the views while you ascend Buda Castle Hill with a ride on the Buda Hill Funicular' ],
+        composite_statue: [ 'Unwind with the locals in Budapest\'s historic Szechenyi baths with a refreshing dip in the pool or a therapeutic spa treatment.'],
+        composite_water: [ 'Soak in the sun and crystal waters of Vis. ', 'This charming island, just off Croatia\'s coast, offers beautiful beaches, stunning views, and fresh seafood.' ],
+        cuba_parallax: [ 'PanoMoments created with a rotating camera are able to capture parallax.', 'Try moving around and notice that small interior spaces feel three-dimensional and more lifelike.' ],
+        triggers: [ 'You can define angular trigger points to invoke custom actions', 'Pan to the right to check it out.' ],
+        alignment: [ 'This PanoMoment was created from 360 Video footage.', ' Try using the [ ] keyboard keys to change the time+angle association.', 'This allows you to tell a different story.' ],
+        bam: ['Bam!!!']
+      };
+
+      // Patch for typed.js of cutting back-to-back words
+      for ( var section in paragraphs ) {
+
+        if ( paragraphs.hasOwnProperty( section ) ) {
+
+          paragraphs[ section ].unshift( '' );
+          paragraphs[ section ].push( '' );
+
+        }
+
+      }
+
+      function delayExecute ( func, delay ) {
+
+        var id = setTimeout( func, delay );
+        setTimeoutIDArray.push(id);
+
+      }
+
+      function onPanoMomentLoad () {
+        if (viewer.panorama == this) {
+          viewer.OrbitControls.enabled = false;
+        }
+      }
+
+      function onCroatiaReady () {
+        if (viewer.panorama == this) {
+          viewer.OrbitControls.enabled = true;
+        }
+      }
+
+      function onCubaReady () {
+        if (viewer.panorama == this) {
+          cubaTour();
+          viewer.OrbitControls.enabled = true;
+        }
+      }
+
+      function onLaQuintaReady () {
+        if (viewer.panorama == this) {
+          viewer.OrbitControls.enabled = true;
+        }
+      }
+
+      function onConversionReady () {
+        if (viewer.panorama == this) {
+          conversionLanding();
+          viewer.OrbitControls.enabled = true;
+        }
+      }
+
+      function onAlignmentReady () {
+        if (viewer.panorama == this) {
+          alignmentLanding();
+          viewer.OrbitControls.enabled = true;
+        }
+      }
+
+      function onWelcomeStory() {
+        if (viewer.getControlId() == "device-orientation") {
+          viewer.enableControl(0);
+        }
+        viewer.panorama.toggleInfospotVisibility(false);
+        type( paragraphs.welcome, onWelcomeComplete, 300 );
+      }
+
+      function conversionLanding () {
+        if (viewer.getControlId() == "device-orientation") {
+          viewer.enableControl(0);
+        }
+        setStopTourButton ();
+        type( paragraphs.triggers, function() { 
+        stopTypedAndCancelDelayExecute();
+        tourRunning = false;
+        setPlayTourButton ();
+        }, 0);
+      }
+
+      function alignmentLanding () {
+        if (viewer.getControlId() == "device-orientation") {
+          viewer.enableControl(0);
+        }
+        setStopTourButton ();
+        type( paragraphs.alignment, function() { 
+        stopTypedAndCancelDelayExecute();
+        tourRunning = false;
+        setPlayTourButton ();
+        }, 0);
+      }
+
+      function cubaTour () {
+        if (viewer.getControlId() == "device-orientation") {
+          viewer.enableControl(0);
+        }
+        setStopTourButton ();
+        type( paragraphs.cuba_parallax, function() { 
+        stopTypedAndCancelDelayExecute();
+        tourRunning = false;
+        setPlayTourButton ();
+        }, 0);
+      }
+
+      function onCompositeReady () {
+        if (viewer.panorama == this) {
+          setPlayTourButton ();
+          if (firstLoad) {
+            landing_type( paragraphs.landing, stopTypedAndCancelDelayExecute, 0 );
+          }
+          viewer.OrbitControls.enabled = true;
+          firstLoad = false;
+        }
+      }
+
+      function onGrandCentralReady () {
+        if (viewer.panorama == this) {
+          setPlayTourButton ();
+          viewer.OrbitControls.enabled = true;
+        }
+
+      }
+
+      function onCompositeStory1 () {
+        if (viewer.getControlId() == "device-orientation") {
+          viewer.enableControl(0);
+        }
+        buyButton1.material.visible = true; // Workaround for losing focus below in delayExecute
+        buyButton1.onDismiss();
+        delayExecute( hiddenInfospot1.focus.bind( hiddenInfospot1, 4000 ), tweeningDelay );
+        type( paragraphs.composite_funicular, onCompositeStory2, 0 );
+      }
+
+      function onCompositeStory2 () {
+
+        delayExecute( hiddenInfospot2.focus.bind( hiddenInfospot2, 8000 ), tweeningDelay );
+        type( paragraphs.composite_statue, onCompositeStory3 );
+        
+      }
+
+      function onCompositeStory3 () {
+
+        delayExecute( hiddenInfospot3.focus.bind( hiddenInfospot3, 4000 ), tweeningDelay );
+        type( paragraphs.composite_water, function() { 
+          stopTypedAndCancelDelayExecute();
+          tourRunning = false;
+          setPlayTourButton ();
+        });
+      }
+
+      function onWelcomeComplete () {
+        delayExecute( storyInfospot1.focus.bind( storyInfospot1, 4000 ), tweeningDelay );
+        type( paragraphs.applestore, onStory1Complete );
+        
+      }
+
+      function onStory1Complete () {
+
+        delayExecute( storyInfospot2.focus.bind( storyInfospot2, 4000 ), tweeningDelay );
+        type( paragraphs.vending, onStory2Complete );
+
+      }
+
+      function onStory2Complete () {
+
+        delayExecute( storyInfospot3.focus.bind( storyInfospot3, 4000 ), tweeningDelay );
+        type( paragraphs.ceiling, onEndComplete );
+
+      }
+
+      function onEndComplete () {
+        delayExecute(storyInfospot4.focus.bind( storyInfospot4, 4000 ), tweeningDelay );
+        type( paragraphs.ending, function() { 
+          viewer.panorama.toggleInfospotVisibility(true);
+          stopTypedAndCancelDelayExecute();
+          viewer.OrbitControls.enabled = true; 
+          tourRunning = false;
+          setPlayTourButton ();
+        });
+      }
+
+      function stopTypedAndCancelDelayExecute() {
+
+        dialog.style.pointerEvents = "none";
+
+        setTimeoutIDArray.forEach(function (value, index, array) {
+          window.clearTimeout(array[index]);
+        });
+        setTimeoutIDArray = [];
+
+        if (typed) {
+          typed.stop(); 
+          typed.reset();
+        }
+
+      }
+
+      function setPlayTourButton () {
+        tourToggleButton.style.display="inline-grid";
+        if (!playButtonVisible) {
+          playButtonVisible = true;
+          $('#animate_to_play').get(0).beginElement();
+        }
+      }
+
+      function setStopTourButton () {
+        tourToggleButton.style.display="inline-grid";
+        if (playButtonVisible) {
+          playButtonVisible = false;
+          $('#animate_to_stop').get(0).beginElement();
+        }
+      }
+
+      function hideTourButton () {
+        tourToggleButton.style.display="none";
+      }
+
+      function onEnter ( event ) {
+
+        $('#menu').find('a').removeClass("currentlySelected")
+
+        credit.style.display = 'none'
+        viewer.OrbitControls.enabled = true;
+
+        viewer.panorama.toggleInfospotVisibility(true);
+
+        buyButton1.material.visible = true; // Workaround for buy button if it was left visible
+        buyButton1.onDismiss();
+
+        stopTypedAndCancelDelayExecute();
+
+        const matchingPanorama = (element) => element == this;
+        currentViewerChildIndex = viewer.scene.children.findIndex(matchingPanorama);
+
+        if (sound && sound.isPlaying) {
+          sound.pause();
+        }
+
+        if (!videoLinked1.isVideoPaused()) {
+          videoLinked1.getVideoElement().pause();
+        }
+
+        switch(this) {
+          case panomoment0:
+            $('#menu').find('#panomoment0 a').addClass("currentlySelected");
+            if (viewer.panorama.isReady) {
+              setPlayTourButton ();
+            }
+            bar.classList.add ('hide');
+            break;
+          case panomoment1:
+            $('#menu').find('#panomoment1 a').addClass("currentlySelected");
+            if (viewer.panorama.isReady) {
+              setPlayTourButton ();
+            }
+            bar.classList.add ('hide');
+            sound.play();
+            break;
+          case panomoment2:
+            $('#menu').find('#panomoment2 a').addClass("currentlySelected");
+            bar.classList.add ('hide');
+            break;
+          case panomoment3:
+            $('#menu').find('#panomoment3 a').addClass("currentlySelected");
+            if (viewer.panorama.isReady) {
+              setPlayTourButton ();
+            }
+            bar.classList.add ('hide');
+            break;
+          case panomoment5:
+            $('#menu').find('#panomoment5 a').addClass("currentlySelected");
+             if (viewer.panorama.isReady) {
+              setPlayTourButton ();
+            }
+            bar.classList.add ('hide');
+            credit.style.display = 'block';
+            creditText.innerHTML = "Credit: 360 Video Conversion by Mettle.com";
+            break;
+          case panomoment6:
+            $('#menu').find('#panomoment6 a').addClass("currentlySelected");
+             if (viewer.panorama.isReady) {
+              setPlayTourButton ();
+            }
+            bar.classList.add ('hide');
+            credit.style.display = 'block';
+            creditText.innerHTML = "Credit: PHILIPPE A. COLLIN + CLÉMENT LÉOTARD";
+            break;
+          case panomomentLinked1:
+            $('#menu').find('#mixedContent a').addClass("currentlySelected");
+            bar.classList.add ('hide');
+            break;
+          case videoLinked1:
+            $('#menu').find('#mixedContent a').addClass("currentlySelected");
+            bar.classList.add ('hide');
+            credit.style.display = 'block';
+            creditText.innerHTML = "Credit: Mettle.com";
+            break;
+          case panoramaLinked1:
+            $('#menu').find('#mixedContent a').addClass("currentlySelected");
+            bar.classList.remove( 'hide' );
+            hideTourButton();
+            credit.style.display = 'block';
+            creditText.innerHTML = "Credit: photophoto.cn";
+            break;
+          case panoramaLinked2:
+            $('#menu').find('#mixedContent a').addClass("currentlySelected");
+            bar.classList.remove( 'hide' );
+            hideTourButton();
+            credit.style.display = 'block';
+            creditText.innerHTML = "Credit: DigitalMuffin.com";
+            break;
+
+        }
+
+      }
+
+      function onProgress ( event ) {
+
+        var progress = event.progress.loaded / event.progress.total * 100;
+        progressElement.style.width = progress + '%';
+        if ( progress === 100 ) {
+          progressElement.classList.add( 'finish' );
+        }
+
+      }
+
+      function type ( stringArray, onComplete, startDelay ) {
+
+        if (typed) {
+          typed.stop(); 
+          typed.reset();
+        }
+
+        onComplete = onComplete || function(){};
+        startDelay = startDelay >= 0 ? startDelay : typeStartDelay;
+        tourRunning = true;
+        setStopTourButton();
+
+        typed = new Typed( "#typed", {
+
+          strings: stringArray,
+          typeSpeed: typeSpeed,
+          showCursor: false,
+          smartBackspace: true,
+          startDelay: startDelay,
+          onComplete: onComplete,
+          onStop: function() {tourRunning = false}
+          
+        });
+
+      }
+
+      function bam_type ( stringArray, onComplete ) {
+        if (typed) {
+          typed.stop(); 
+          typed.reset();
+        }
+
+        typed = new Typed( "#typed", {
+
+          strings: stringArray,
+          typeSpeed: typeSpeed,
+          showCursor: false,
+          smartBackspace: true,
+          startDelay: 0,
+          onComplete: onComplete,
+          
+        });
+
+      }
+
+      function landing_type ( stringArray, onComplete, startDelay ) {
+
+        dialog.style.pointerEvents = "all";
+
+        onComplete = onComplete || function(){};
+        startDelay = startDelay >= 0 ? startDelay : typeStartDelay;
+
+        typed = new Typed( "#typed", {
+
+          strings: stringArray,
+          typeSpeed: typeSpeed,
+          showCursor: false,
+          fadeOut: false,
+          smartBackspace: true,
+          startDelay: startDelay,
+          onComplete: onComplete,
+          onTypingPaused: function () {
+            $('#panolens').on('onmousedown click touchend', function(event) {
+              window.open("https://pchen66.github.io/Panolens/", "_blank"); 
+            });
+
+            $('#sdk').on('click touchend', function(event) {
+              window.open("https://github.com/MomentCaptureInc/PanoMoments", "_blank"); 
+            });
+          }
+          
+        });
+
+      }
+
+      function onFocus () {
+        this.focus( 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] );
+        this.onClick({mouseEvent: {clientX: 0, clientY:0}}) // Bit of a hack to force the hover event
+      }
+
+      function onBuyEnter () {
+        if (buyButton1.material.visible) {
+          setPlayTourButton ();
+          stopTypedAndCancelDelayExecute();
+          this.onClick({mouseEvent: {clientX: 0, clientY:0}}) // Bit of a hack to force the hover event
+          buyButton1.material.visible = false;
+        }
+      }
+
+      function onBuyLeave () {
+        if (!buyButton1.material.visible) {
+          this.onDismiss();
+          buyButton1.material.visible = true;
+        }
+      }
+
+      // Grand Central infospots
+      storyInfospot1 = new PANOLENS.Infospot();
+      storyInfospot2 = new PANOLENS.Infospot();
+      storyInfospot3 = new PANOLENS.Infospot();
+      storyInfospot4 = new PANOLENS.Infospot();
+      storyInfospot1.position.set( -187.65, 2110.38, 4518.76 ); // Apple store
+      storyInfospot2.position.set( 2645.91, 1095.57, -4087.84 ); // Vending machines
+      storyInfospot3.position.set( -2124.13, 4113.43, -1878.20 ); // Ceiling
+      storyInfospot4.position.set( 7.16, 1072.23, -3785.69); // Flag
+      storyInfospot1.addHoverText( 'Apple Store', 50 );
+      storyInfospot2.addHoverText( 'Ticket Vending', 50 );
+      storyInfospot3.addHoverText( 'Ceiling Mural', 50 );
+      storyInfospot4.addHoverText( 'America', 50 );
+      storyInfospot1.addEventListener( 'click', onFocus );
+      storyInfospot2.addEventListener( 'click', onFocus );
+      storyInfospot3.addEventListener( 'click', onFocus );
+      storyInfospot4.addEventListener( 'click', onFocus );
+
+      // Composite infospots
+      hiddenInfospot1 = new PANOLENS.Infospot( 10e-7 );  // Make it not visible
+      hiddenInfospot2 = new PANOLENS.Infospot( 10e-7 );  // Make it not visible
+      hiddenInfospot3 = new PANOLENS.Infospot( 10e-7 );  // Make it not visible
+      hiddenInfospot1.position.set( 1242.74, 147.69, -4830.30 ); // Funicular
+      hiddenInfospot2.position.set( -2072.10, 184.37, 2149.43 ); // Statue
+      hiddenInfospot3.position.set( 4015.30, -1868.69, 2316.97 ); // Water
+
+      // Buy buttons
+      buyButton1 = new PANOLENS.Infospot(400, 'asset/textures/buy.png', true);
+      buyButton1.position.set( 5000.00, -879.20, 3697.63 );
+      buyButton1.addHoverElement( document.getElementById( 'stripeDiv' ), 0 ); // This breaks click event and requires below hack
+      buyButton1.addEventListener( 'hoverenter', onBuyEnter ); 
+      // buyButton1.addEventListener( 'hoverleave', onBuyLeave );
+      buyButton1.addEventListener( 'dismiss', onBuyLeave );
+      buyButton1.addEventListener( 'click', onBuyEnter );
+
+      function onProgressUpdate ( event ) {
+        var percentage = event.progress.loaded/ event.progress.total * 100;
+        bar.style.width = percentage + "%";
+        if (percentage >= 100){
+          bar.classList.add( 'hide' );
+          setTimeout(function(){
+            bar.style.width = 0;
+          }, 1000);
+        }
+      }
+
+      var currentViewerChildIndex = 0;
+
+      panomoment0 = new PANOLENS.PanoMomentPanorama( panomoment0_identifier, false );
+      panomoment0.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
+      panomoment0.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
+      panomoment0.addEventListener( 'panoMomentReady', onCompositeReady );
+      panomoment0.addEventListener( 'enter', onEnter );
+      panomoment0.add( hiddenInfospot1, hiddenInfospot2, hiddenInfospot3, buyButton1);
+
+      panomoment1 = new PANOLENS.PanoMomentPanorama( panomoment1_identifier, false );
+      panomoment1.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
+      panomoment1.addEventListener( 'panoMomentReady', onGrandCentralReady );
+      panomoment1.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
+      panomoment1.addEventListener( 'enter', onEnter );
+      panomoment1.add( storyInfospot1, storyInfospot2, storyInfospot3, storyInfospot4 );
+
+      panomoment2 = new PANOLENS.PanoMomentPanorama( panomoment2_identifier, false );
+      panomoment2.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
+      panomoment2.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
+      panomoment2.addEventListener( 'panoMomentReady', onCroatiaReady );
+      panomoment2.addEventListener( 'enter', onEnter );
+
+      panomoment3 = new PANOLENS.PanoMomentPanorama( panomoment3_identifier, true );
+      panomoment3.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
+      panomoment3.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
+      panomoment3.addEventListener( 'panoMomentReady', onCubaReady );
+      panomoment3.addEventListener( 'enter', onEnter );
+
+      panomoment5 = new PANOLENS.PanoMomentPanorama( panomoment5_identifier, false );
+      panomoment5.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
+      panomoment5.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
+      panomoment5.addEventListener( 'panoMomentReady', onConversionReady );
+      panomoment5.addEventListener( 'enter', onEnter );
+
+      panomoment6 = new PANOLENS.PanoMomentPanorama( panomoment6_identifier, false );
+      panomoment6.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
+      panomoment6.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
+      panomoment6.addEventListener( 'panoMomentReady', onAlignmentReady );
+      panomoment6.addEventListener( 'enter', onEnter );
+
+      panomomentLinked1 = new PANOLENS.PanoMomentPanorama( panomomentLinked1_identifier, false );
+      panomomentLinked1.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
+      panomomentLinked1.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
+      panomomentLinked1.addEventListener( 'panoMomentReady', onLaQuintaReady );
+      panomomentLinked1.addEventListener( 'enter', onEnter );
+
+      videoLinked1 = new PANOLENS.VideoPanorama( 'http://files.panomoments.com/AyutthayaDroneByMettle1080p.mp4', { autoplay: true, muted: true });
+      videoLinked1.addEventListener('enter', onEnter);
+
+      panoramaLinked1 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/pier4000x2000.jpg' );
+      panoramaLinked1.addEventListener( 'progress', onProgressUpdate );
+      panoramaLinked1.addEventListener('enter', onEnter);
+
+      panoramaLinked2 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/dusty9000x4500.jpg' );
+      panoramaLinked2.addEventListener( 'progress', onProgressUpdate );
+      panoramaLinked2.addEventListener('enter', onEnter);
+
+      viewer = new PANOLENS.Viewer( { container: panel, output: 'console', autoHideInfospot: false} );
+      viewer.setCameraFov(80);
+
+      var bamHidden = false;
+      function updateCallback () {
+        if (viewer.panorama == panomoment5) {
+          var currentYaw = THREE.Math.radToDeg(viewer.camera.rotation.y) + 180;
+          if (!bamHidden && currentYaw <= 35 && currentYaw >= 20) {
+              bam_type( paragraphs.bam, stopTypedAndCancelDelayExecute);
+              bamHidden = true;
+          } else if (currentYaw > 35 || currentYaw < 20) {
+            bamHidden = false;
+          }
+        }
+      }
+
+      // Regular button touch / click events appear to have conflicts with Slideout.js on mobile devices. This is a workaround and possibly better design anyway.
+      var menuButtonEventType;
+      var menuButton = viewer.widget.createCustomItem({onTap: function(event) {slideout.toggle(); menuButtonEventType = event.type;}, style: {'color': 'white', 'font-size': 'xx-large', 'background-color': 'transparent', 'border': 'none', 'position': 'absolute', 'top': '5px', 'left': '5px', 'outline': 'none', 'filter': 'none', 'height': '50px', 'width': '50px', 'display': 'inline-grid', 'align-items': 'center'}});
+      var previousButton = viewer.widget.createCustomItem({onTap: function() {loadPrevious()}, style: {'color': 'white', 'font-size': 'xx-large', 'background-color': 'transparent', 'border': 'none', 'position': 'absolute', 'top': '0px', 'right': '50px', 'outline': 'none', 'filter': 'none', 'height': '50px', 'width': '50px', 'display': 'inline-grid', 'align-items': 'center'}});
+      var nextButton = viewer.widget.createCustomItem({onTap: function() {loadNext()}, style: {'color': 'white', 'font-size': 'xx-large', 'background-color': 'transparent', 'border': 'none', 'position': 'absolute', 'top': '0px', 'right': '5px', 'outline': 'none', 'filter': 'none', 'height': '50px', 'width': '50px', 'display': 'inline-grid', 'align-items': 'center'}});
+      var tourToggleButton = viewer.widget.createCustomItem({onTap: function() {toggleTour()}, style: {'color': 'white', 'background-color': 'transparent', 'border': 'none', 'position': 'absolute', 'bottom': '0px', 'left': '0px', 'outline': 'none', 'filter': 'none', 'height': '42px', 'width': '42px', 'display': 'none', 'align-items': 'center', 'background-size': '100%'}});
+
+      menuButton.innerHTML = '☰';
+      previousButton.innerHTML = '«';
+      nextButton.innerHTML = '»';
+      tourToggleButton.appendChild(svg);
+      svg.style.display = 'unset';
+
+      document.getElementById("panel").appendChild(menuButton);      
+      document.getElementById("panel").appendChild(previousButton);     
+      document.getElementById("panel").appendChild(nextButton);     
+      document.getElementById("panel").appendChild(tourToggleButton);
+
+      var listener = new THREE.AudioListener();
+      var audioLoader = new THREE.AudioLoader();
+      sound = new THREE.Audio( listener );
+      audioLoader.load( './asset/audio/grandcentral.mp3', function( buffer ) {
+        audioBuffer = buffer;
+        sound.setBuffer( buffer );
+        sound.setLoop( true );
+      });
+
+      viewer.add( panomoment0, panomoment3, panomoment1, panomoment5, panomoment6, panomomentLinked1, panoramaLinked1, panoramaLinked2, videoLinked1 );
+      
+      panomomentLinked1.link( panoramaLinked1, new THREE.Vector3( 2088.41, -64.02, 2097.66 ) );
+      panoramaLinked1.link( panomomentLinked1, new THREE.Vector3( 2088.41, -64.02, 2097.66 ) );
+
+      // panomomentLinked1.link( panoramaLinked2, new THREE.Vector3( 958.49, -959.65, 2631.33 ) );
+      // panoramaLinked2.link( panomomentLinked1, new THREE.Vector3( 958.49, -959.65, 2631.33 ) );
+
+      // panomomentLinked1.link( videoLinked1, new THREE.Vector3( -1145.23, -3704.40, 1149.48 ) );
+      // videoLinked1.link( panomomentLinked1, new THREE.Vector3( -1429.01, 1205.85, -3421.88 ) );
+
+      viewer.widget.barElement.children[3].children[1].style.width = "20%"; // Set progress bar width
+      viewer.panorama.dispatchEvent( { 
+          type: 'panolens-viewer-handler', 
+          method: 'addUpdateCallback', 
+          data: updateCallback
+      });
+
+      function onButtonClick( targetPanorama ) {
+        hideTourButton();
+        if (menuButtonEventType == "touchend") {
+          slideout.close();
+        }
+        viewer.setPanorama( targetPanorama );
+      }
+
+      function loadNext () {
+        hideTourButton();
+        var newIndex = (currentViewerChildIndex + 1) % (viewer.scene.children.length - 3); // Exclude linked sub-items
+        viewer.setPanorama(viewer.scene.children[newIndex]);
+      }
+
+      function loadPrevious() {
+        hideTourButton();
+        var newIndex = (currentViewerChildIndex - 1) % (viewer.scene.children.length - 3); // Exclude linked sub-items
+        if (newIndex < 0) {
+          newIndex = viewer.scene.children.length - 4; // Exclude linked sub-items
+        }
+        viewer.setPanorama(viewer.scene.children[newIndex]);
+      }
+
+      function toggleTour () {
+
+        switch(viewer.panorama) {
+          case panomoment0:
+            if (tourRunning) {
+              setPlayTourButton ();
+              stopTypedAndCancelDelayExecute();
+            } else {
+              onCompositeStory1();
+            }   
+            break;
+          case panomoment1:
+            if (tourRunning) {
+              viewer.panorama.toggleInfospotVisibility(true);
+              setPlayTourButton ();
+              stopTypedAndCancelDelayExecute();
+            } else {
+              onWelcomeStory();
+            }  
+            break;
+          case panomoment3:
+            if (tourRunning) {
+              setPlayTourButton ();
+              stopTypedAndCancelDelayExecute();
+            } else {
+              cubaTour();
+            }   
+            break;
+          case panomoment5:
+            if (tourRunning) {
+              setPlayTourButton ();
+              stopTypedAndCancelDelayExecute();
+            } else {
+              conversionLanding();
+            }   
+            break;
+          case panomoment6:
+            if (tourRunning) {
+              setPlayTourButton ();
+              stopTypedAndCancelDelayExecute();
+            } else {
+              alignmentLanding();
+            }   
+            break;
+        }
+        
+      }
+
+      document.addEventListener('keypress', onKeypress, false); 
+
+      function onKeypress(e) {
+        if (viewer.panorama == panomoment6) {
+          var key = e.key;
+          switch (key) {
+              case "[":
+                  viewer.panorama.rotation.y = viewer.panorama.rotation.y - THREE.Math.degToRad(5);
+                  break;
+              case "]":
+                  viewer.panorama.rotation.y = viewer.panorama.rotation.y + THREE.Math.degToRad(5);
+                  break;
+          }
+        }
+      }
+
+      // document.querySelector( '#panoramaLinked1' ).addEventListener( 'click', onButtonClick.bind( this, panoramaLinked1 ) );
+      // document.querySelector( '#panoramaLinked2' ).addEventListener( 'click', onButtonClick.bind( this, panoramaLinked2 ) );
+      document.querySelector( '#panomoment0' ).addEventListener( 'click', onButtonClick.bind( this, panomoment0 ) );
+      document.querySelector( '#panomoment1' ).addEventListener( 'click', onButtonClick.bind( this, panomoment1 ) );
+      document.querySelector( '#panomoment3' ).addEventListener( 'click', onButtonClick.bind( this, panomoment3 ) );
+      // document.querySelector( '#videoLinked1' ).addEventListener( 'click', onButtonClick.bind( this, videoLinked1 ) );
+      document.querySelector( '#mixedContent' ).addEventListener( 'click', onButtonClick.bind( this, panomomentLinked1 ) );
+      document.querySelector( '#panomoment5' ).addEventListener( 'click', onButtonClick.bind( this, panomoment5 ) );
+      document.querySelector( '#panomoment6' ).addEventListener( 'click', onButtonClick.bind( this, panomoment6 ) );
+
+      function hasTouch() { // From here - https://stackoverflow.com/questions/23885255/how-to-remove-ignore-hover-css-style-on-touch-devices
+          return 'ontouchstart' in document.documentElement
+                 || navigator.maxTouchPoints > 0
+                 || navigator.msMaxTouchPoints > 0;
+      }
+
+      if (hasTouch()) { // remove all the :hover stylesheets
+          try { // prevent exception on browsers not supporting DOM styleSheets properly
+              for (var si in document.styleSheets) {
+                  var styleSheet = document.styleSheets[si];
+                  if (!styleSheet.rules) continue;
+
+                  for (var ri = styleSheet.rules.length - 1; ri >= 0; ri--) {
+                      if (!styleSheet.rules[ri].selectorText) continue;
+
+                      if (styleSheet.rules[ri].selectorText.match(':hover')) {
+                          styleSheet.deleteRule(ri);
+                      }
+                  }
+              }
+          } catch (ex) {}
+      }
+
+    </script>
+
+  </body>
+</html>

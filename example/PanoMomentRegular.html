@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      a:link, a:visited{
+        color: #bdc3c7;
+      }
+
+    </style>
+  </head>
+
+  <body>
+
+    <div id="progress"></div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
+    <script src="../build/panolens.js"></script>
+
+    <script>
+      var identifier = {
+        moment_id: "5c95d9843c344e001f1588f6",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var infospot1;
+      infospot1 = new PANOLENS.Infospot();
+      infospot1.addHoverText( 'TEST', 50 );
+      infospot1.position.set( 0,0,0 );
+
+      var panomoment = new PANOLENS.PanoMomentRegular( identifier );
+      var viewer = new PANOLENS.Viewer( { output: 'console', autoHideInfospot: false } );
+      viewer.add( panomoment, infospot1 );
+    </script>
+
+  </body>
+</html>

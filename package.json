@@ -21,8 +21,8 @@
   "scripts": {
     "build-closure": "npm run lint && rollup -c && java -jar node_modules/google-closure-compiler-java/compiler.jar --rewrite_polyfills=false --warning_level=VERBOSE --hide_warnings_for='build/panolens.js' --jscomp_off=globalThis --jscomp_off=checkTypes --jscomp_off=checkVars --jscomp_off=suspiciousCode --jscomp_off=misplacedTypeAnnotation --jscomp_off=nonStandardJsDocs --language_in=ECMASCRIPT6 --js build/panolens.js --js_output_file build/panolens.min.js",
     "build": "npm run lint && rollup -c",
-    "dev": "concurrently --names \"ROLLUP,HTTP\" \"rollup -c -w -m inline\" \"http-server -p 8080\"",
-    "dev-https": "concurrently --names \"ROLLUP,HTTP\" \"rollup -c -w -m inline\" \"ws -p 8080 --https\"",
+    "dev": "concurrently --names \"ROLLUP,HTTP\" \"rollup -c -w -m inline\" \"http-server -p 8888\"",
+    "dev-https": "concurrently --names \"ROLLUP,HTTP\" \"rollup -c -w -m inline\" \"ws -p 8888 --https\"",
     "lint": "eslint src",
     "lint-fix": "eslint src --fix",
     "test": "nyc --reporter=html --reporter=text ava",
@@ -139,5 +139,8 @@
       "README.md"
     ],
     "directories": {}
+  },
+  "dependencies": {
+    "commonjs": "^0.0.1"
   }
 }

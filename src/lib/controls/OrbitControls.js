@@ -62,9 +62,11 @@ function OrbitControls ( object, domElement ) {
     this.maxPolarAngle = Math.PI; // radians
 
     // Momentum
-  	this.momentumDampingFactor = 0.90;
+  	this.panoMomentMomentumDampingFactor = 0.95;
+    this.momentumDampingFactor = 0.90;
   	this.momentumScalingFactor = -0.005;
   	this.momentumKeydownFactor = 20;
+    this.maxMomentum = 10;
 
   	// Fov
   	this.minFov = 30;
@@ -155,6 +157,19 @@ function OrbitControls ( object, domElement ) {
 
     this.getLastPosition = function () {
         return lastPosition;
+    };
+
+    this.AzimuthAngleLimits = function() {
+
+
+        this.minPolarAngle = 0;
+        this.maxPolarAngle = Math.PI; 
+
+        if (this.panorama && this.panorama.momentData && this.panorama.momentData.contains_parallax) {
+            this.minPolarAngle = Math.PI / 2  - THREE.Math.degToRad((.95*this.panorama.momentData.min_vertical_fov - object.fov) / 2 ) ;
+            this.maxPolarAngle = Math.PI / 2 + THREE.Math.degToRad((.95*this.panorama.momentData.min_vertical_fov - object.fov ) / 2 ) ;
+        } 
+
     };
 
     this.rotateLeft = function ( angle ) {
@@ -255,8 +270,15 @@ function OrbitControls ( object, domElement ) {
             return;
         }
 
-        momentumUp   *= this.momentumDampingFactor;
-        momentumLeft *= this.momentumDampingFactor;
+        if (this.panorama && this.panorama.momentData) {
+            momentumUp   *= this.panoMomentMomentumDampingFactor;
+            momentumLeft *= this.panoMomentMomentumDampingFactor;
+            momentumUp = THREE.Math.clamp(momentumUp, -this.maxMomentum, this.maxMomentum);
+            momentumLeft = THREE.Math.clamp(momentumLeft, -this.maxMomentum, this.maxMomentum);
+        } else { 
+            momentumUp   *= this.momentumDampingFactor;
+            momentumLeft *= this.momentumDampingFactor;
+        }
 
         thetaDelta -= this.momentumScalingFactor * momentumLeft;
         phiDelta   -= this.momentumScalingFactor * momentumUp;
@@ -575,6 +597,8 @@ function OrbitControls ( object, domElement ) {
 
         }
 
+        scope.AzimuthAngleLimits(); // Get the latest limits of viewing angle
+
         if ( delta > 0 ) {
 
             // scope.dollyOut();
@@ -593,11 +617,28 @@ function OrbitControls ( object, domElement ) {
 
         }
 
+        scope.enforceFOVLimits (); // Enforce FOV limits for PanoMoments based on metadata
+
         scope.update();
         scope.dispatchEvent( changeEvent );
         scope.dispatchEvent( startEvent );
         scope.dispatchEvent( endEvent );
 
+    }
+
+    this.enforceFOVLimits = function () {
+        if (scope.panorama && scope.panorama.momentData) {
+            scope.object.aspect = window.innerWidth / window.innerHeight;
+            scope.hFOV = 2 * Math.atan(Math.tan(THREE.Math.degToRad(scope.object.fov) / 2) * scope.object.aspect);
+            if (THREE.Math.radToDeg(scope.hFOV) > (scope.panorama.momentData.min_horizontal_fov * .95)) {
+                scope.object.fov = THREE.Math.radToDeg(2 * Math.atan(Math.tan(THREE.Math.degToRad(scope.panorama.momentData.min_horizontal_fov * .95) / 2) / scope.object.aspect));
+            } 
+            else if (THREE.Math.radToDeg(scope.hFOV) < scope.minFov) {
+                scope.object.fov = THREE.Math.radToDeg(2 * Math.atan(Math.tan(THREE.Math.degToRad(scope.minFov) / 2) / scope.object.aspect));
+            }
+            scope.object.fov = THREE.Math.clamp( scope.object.fov, 20, 110 );
+        }
+        scope.object.updateProjectionMatrix();
     }
 
     function onKeyUp ( event ) {
@@ -764,19 +805,21 @@ function OrbitControls ( object, domElement ) {
             dollyEnd.set( 0, distance );
             dollyDelta.subVectors( dollyEnd, dollyStart );
 
+            scope.AzimuthAngleLimits(); // Get the latest limits of viewing angle
+
             if ( dollyDelta.y < 0 ) {
 
                 scope.object.fov = ( scope.object.fov < scope.maxFov ) 
                     ? scope.object.fov + 1
                     : scope.maxFov;
-                scope.object.updateProjectionMatrix();
+                scope.enforceFOVLimits ();
 
             } else if ( dollyDelta.y > 0 ) {
 
                 scope.object.fov = ( scope.object.fov > scope.minFov ) 
                     ? scope.object.fov - 1
                     : scope.minFov;
-                scope.object.updateProjectionMatrix();
+                scope.enforceFOVLimits ();
 
             }
 

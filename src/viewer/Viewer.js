@@ -272,9 +272,9 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         if ( object instanceof PanoMomentPanorama ) {
 
             object.dispatchEvent( { type: 'panolens-camera', camera: this.camera } );
+            object.dispatchEvent( { type: 'panolens-orbitcontrols', OrbitControls: this.OrbitControls } );
 
         }
-
         // Hookup default panorama event listeners
         if ( object instanceof Panorama ) {
 
@@ -346,6 +346,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      */
     setPanorama: function ( pano ) {
+
+        this.OrbitControls.panorama = pano;
+        this.OrbitControls.AzimuthAngleLimits();
+        this.OrbitControls.enforceFOVLimits();
 
         const leavingPanorama = this.panorama;
 
@@ -1242,6 +1246,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         }
 
         this.camera.aspect = width / height;
+        this.OrbitControls.enforceFOVLimits();
         this.camera.updateProjectionMatrix();
 
         this.renderer.setSize( width, height );
