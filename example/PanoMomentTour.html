@@ -699,20 +699,20 @@
         }
         buyButton1.material.visible = true; // Workaround for losing focus below in delayExecute
         buyButton1.onDismiss();
-        delayExecute( hiddenInfospot1.focus.bind( hiddenInfospot1, 4000 ), tweeningDelay );
+        delayExecute( hiddenInfospot1.focus.bind( hiddenInfospot1, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.composite_funicular, onCompositeStory2, 0 );
       }
 
       function onCompositeStory2 () {
 
-        delayExecute( hiddenInfospot2.focus.bind( hiddenInfospot2, 8000 ), tweeningDelay );
+        delayExecute( hiddenInfospot2.focus.bind( hiddenInfospot2, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.composite_statue, onCompositeStory3 );
         
       }
 
       function onCompositeStory3 () {
 
-        delayExecute( hiddenInfospot3.focus.bind( hiddenInfospot3, 4000 ), tweeningDelay );
+        delayExecute( hiddenInfospot3.focus.bind( hiddenInfospot3, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.composite_water, function() { 
           stopTypedAndCancelDelayExecute();
           tourRunning = false;
@@ -721,27 +721,27 @@
       }
 
       function onWelcomeComplete () {
-        delayExecute( storyInfospot1.focus.bind( storyInfospot1, 4000 ), tweeningDelay );
+        delayExecute( storyInfospot1.focus.bind( storyInfospot1, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.applestore, onStory1Complete );
         
       }
 
       function onStory1Complete () {
 
-        delayExecute( storyInfospot2.focus.bind( storyInfospot2, 4000 ), tweeningDelay );
+        delayExecute( storyInfospot2.focus.bind( storyInfospot2, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.vending, onStory2Complete );
 
       }
 
       function onStory2Complete () {
 
-        delayExecute( storyInfospot3.focus.bind( storyInfospot3, 4000 ), tweeningDelay );
+        delayExecute( storyInfospot3.focus.bind( storyInfospot3, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.ceiling, onEndComplete );
 
       }
 
       function onEndComplete () {
-        delayExecute(storyInfospot4.focus.bind( storyInfospot4, 4000 ), tweeningDelay );
+        delayExecute(storyInfospot4.focus.bind( storyInfospot4, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.ending, function() { 
           viewer.panorama.toggleInfospotVisibility(true);
           stopTypedAndCancelDelayExecute();
@@ -997,10 +997,10 @@
       storyInfospot2 = new PANOLENS.Infospot();
       storyInfospot3 = new PANOLENS.Infospot();
       storyInfospot4 = new PANOLENS.Infospot();
-      storyInfospot1.position.set( -187.65, 2110.38, 4518.76 ); // Apple store
-      storyInfospot2.position.set( 2645.91, 1095.57, -4087.84 ); // Vending machines
-      storyInfospot3.position.set( -2124.13, 4113.43, -1878.20 ); // Ceiling
-      storyInfospot4.position.set( 7.16, 1072.23, -3785.69); // Flag
+      storyInfospot1.position.set( -172.64, 2105.08, 4518.50 ); // Apple store
+      storyInfospot2.position.set( -5000.00, 1723.35, -3395.01 ); // Vending machines
+      storyInfospot3.position.set( 2356.13, 5000.00, -1849.96 ); // Ceiling
+      storyInfospot4.position.set( 185.53, 1873.94, -5000.00); // Flag
       storyInfospot1.addHoverText( 'Apple Store', 50 );
       storyInfospot2.addHoverText( 'Ticket Vending', 50 );
       storyInfospot3.addHoverText( 'Ceiling Mural', 50 );
@@ -1014,9 +1014,9 @@
       hiddenInfospot1 = new PANOLENS.Infospot( 10e-7 );  // Make it not visible
       hiddenInfospot2 = new PANOLENS.Infospot( 10e-7 );  // Make it not visible
       hiddenInfospot3 = new PANOLENS.Infospot( 10e-7 );  // Make it not visible
-      hiddenInfospot1.position.set( 1242.74, 147.69, -4830.30 ); // Funicular
-      hiddenInfospot2.position.set( -2072.10, 184.37, 2149.43 ); // Statue
-      hiddenInfospot3.position.set( 4015.30, -1868.69, 2316.97 ); // Water
+      hiddenInfospot1.position.set( 282.72, 563.14, -5000.00 ); // Funicular
+      hiddenInfospot2.position.set( 5000.00, 1728.18, 3919.85 ); // Statue
+      hiddenInfospot3.position.set( -5000.00, -2954.57, 1120.11 ); // Water
 
       // Buy buttons
       buyButton1 = new PANOLENS.Infospot(400, 'asset/textures/buy.png', true);

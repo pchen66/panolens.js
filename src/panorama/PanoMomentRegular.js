@@ -4,14 +4,18 @@ import { BallSpinerLoader } from '../lib/spinners/BallSpinner';
 import * as THREE from 'three';
 
 /**
- * @classdesc PanoMomentPanorama based panorama
+ * @classdesc PanoMomentRegular
  * @constructor
  * @param {object, bool} PanoMoments identifier and force reload option
  */
 
-function PanoMomentPanorama ( identifier, forceReload ) {
+function PanoMomentRegular ( identifier, forceReload ) {
 
-    Panorama.call( this );
+
+    this.geometry = new THREE.PlaneGeometry(1, 1);
+    this.material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } ); // Apparently this isn't supported on the latest code. It was working (albeit in a major hackish way) on code based on current master.
+
+    Panorama.call( this, this.geometry, this.material );
 
     this.identifier = identifier;
     this.PanoMomentss = null;
@@ -27,9 +31,9 @@ function PanoMomentPanorama ( identifier, forceReload ) {
 
 }
 
-PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
+PanoMomentRegular.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
-    constructor: PanoMomentPanorama,
+    constructor: PanoMomentRegular,
 
     /**
      * When camera reference dispatched
@@ -99,7 +103,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         this.setPanoMomentYaw( yaw );
     },
 
-    renderCallback: function (video, momentData) {
+    renderCallback: function (video, momentData) { // All hacks...
         
         if (!this.momentData) {
 
@@ -111,16 +115,39 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
             texture.format = THREE.RGBFormat;         
             this.updateTexture( texture );
 
+
             this.OrbitControls.panorama = this;
             this.OrbitControls.AzimuthAngleLimits();
             this.camera.position.copy( this.position );
             this.camera.position.z += 1;
-            this.OrbitControls.rotateLeft( THREE.Math.degToRad(this.momentData.start_frame + 180) ); // Needed a way to specify a starting viewing angle. Out of the box, OrbitControls doesn't provide this... I'm sure there's some other way to do this though.
 
-            this.material.uniforms.offset.value.x = (this.momentData.max_horizontal_fov / 360 + .25) % 1;
+            this.viewer.scene.add(this.camera);
+            this.camera.add(this);
+            this.position.set(0,0,-2);
+            this.material.side = THREE.FrontSide;
+
+            var windowAspectRatio = window.innerWidth / window.innerHeight;
+            var videoAspectRatio = this.momentData.aspect_ratio ? this.momentData.aspect_ratio : 1.7777777; // Shouldn't really fall back to 16/9 but it's okay for now
+            var distanceToPlane = Math.abs(this.position.z);
+
+            var limit;
+            if (videoAspectRatio < windowAspectRatio) {
+                limit = (Math.tan (THREE.Math.degToRad(this.camera.fov * 0.5)) * distanceToPlane * 2.0) * videoAspectRatio; 
+            } else {
+                limit = (Math.tan (THREE.Math.degToRad(this.camera.fov * 0.5)) * distanceToPlane * 2.0) * windowAspectRatio 
+            }
+
+            var calcScale = new THREE.Vector3 (limit, limit / videoAspectRatio, 1);
+            this.scale.set(calcScale.x,calcScale.y,1);
+
+            viewer.camera.add(viewer.scene.children[0]);
+            this.camera.children[3].material.opacity = 1;
+            this.camera.children[3].position.set(0,0,-50);
+            this.camera.children[3].scale.set(1,1,0.003333333333333334);
+
             console.log('PanoMoments First Frame Decoded.');
+
         }
-        
     },
 
     readyCallback: function (video, momentData) {
@@ -138,7 +165,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
     /**
      * Set PanoMoment yaw
-     * @memberOf PanoMomentPanorama
+     * @memberOf PanoMomentRegular
      * @instance
      * @param {object} event - Event contains float. 0.0 to 360.0
      */
@@ -161,7 +188,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
      /**
      * onEnter
-     * @memberOf PanoMomentPanorama
+     * @memberOf PanoMomentRegular
      * @instance
      */
     onEnter: function () {
@@ -184,7 +211,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
     /**
      * onLeave
-     * @memberOf PanoMomentPanorama
+     * @memberOf PanoMomentRegular
      * @instance
      */
     onLeave: function () {
@@ -213,7 +240,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
     /**
      * Reset
-     * @memberOf PanoMomentPanorama
+     * @memberOf PanoMomentRegular
      * @instance
      */
     reset: function () {
@@ -224,7 +251,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
     /**
      * Dispose
-     * @memberOf PanoMomentPanorama
+     * @memberOf PanoMomentRegular
      * @instance
      */
     dispose: function () {
@@ -239,4 +266,4 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
 } );
 
-export { PanoMomentPanorama };
+export { PanoMomentRegular };
