@@ -1191,14 +1191,14 @@
 
       viewer.add( panomoment0, panomoment3, panomoment1, panomoment5, panomoment6, panomomentLinked1, panoramaLinked1, panoramaLinked2, videoLinked1 );
       
-      panomomentLinked1.link( panoramaLinked1, new THREE.Vector3( 2088.41, -64.02, 2097.66 ) );
-      panoramaLinked1.link( panomomentLinked1, new THREE.Vector3( 2088.41, -64.02, 2097.66 ) );
+      panomomentLinked1.link( panoramaLinked1, new THREE.Vector3( -3547.13, -1931.95, 5000.00 ) );
+      panoramaLinked1.link( panomomentLinked1, new THREE.Vector3( 1257.65, -1448.96, 5000.00 ) );
 
       // panomomentLinked1.link( panoramaLinked2, new THREE.Vector3( 958.49, -959.65, 2631.33 ) );
       // panoramaLinked2.link( panomomentLinked1, new THREE.Vector3( 958.49, -959.65, 2631.33 ) );
 
-      // panomomentLinked1.link( videoLinked1, new THREE.Vector3( -1145.23, -3704.40, 1149.48 ) );
-      // videoLinked1.link( panomomentLinked1, new THREE.Vector3( -1429.01, 1205.85, -3421.88 ) );
+      panomomentLinked1.link( videoLinked1, new THREE.Vector3( 1677.91, 1756.31, 5000.00 ) );
+      videoLinked1.link( panomomentLinked1, new THREE.Vector3( -3641.22, 1888.04, 5000.00 ) );
 
       viewer.widget.barElement.children[3].children[1].style.width = "20%"; // Set progress bar width
       viewer.panorama.dispatchEvent( { 
