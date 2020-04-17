@@ -16,6 +16,8 @@ function PanoMomentPanorama ( identifier, offset = { x: 0.5, y: 0.0 } ) {
     this.momentData = null;
     this.camera = null;
 
+    this.viwerUpdateCallback = this.updateCallback.bind(this);
+
     // Default offset for pano moments
     this.material.uniforms.offset.value.x = offset.x;
     this.material.uniforms.offset.value.y = offset.y;
@@ -139,7 +141,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         this.dispatchEvent( { 
             type: 'panolens-viewer-handler', 
             method: 'addUpdateCallback', 
-            data: this.updateCallback.bind(this)
+            data: this.viwerUpdateCallback
         });
 
         Panorama.prototype.onEnter.call( this );
@@ -157,7 +159,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         this.dispatchEvent( { 
             type: 'panolens-viewer-handler', 
             method: 'removeUpdateCallback', 
-            data: this.updateCallback.bind(this)
+            data: this.viwerUpdateCallback
         });
 
         this.PanoMoments.dispose();
