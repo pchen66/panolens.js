@@ -111,11 +111,12 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
             texture.format = THREE.RGBFormat;         
             this.updateTexture( texture );
 
-            this.OrbitControls.panorama = this;
             this.OrbitControls.AzimuthAngleLimits();
-            this.camera.position.copy( this.position );
-            this.camera.position.z += 1;
-            this.OrbitControls.rotateLeft( THREE.Math.degToRad(this.momentData.start_frame + 180) ); // Needed a way to specify a starting viewing angle. Out of the box, OrbitControls doesn't provide this... I'm sure there's some other way to do this though.
+            this.camera.position.copy( this.position );// This was in the old viewer.enableControl() but that's since been removed in the dev branch. My feeling is that Panoramas should reset to their original viewing angle on enter, and not use the previous panoramas angle. But that's debatable.
+            this.camera.position.z += 1; 
+            
+            const angle = (this.momentData.start_frame + 180) / 180 * Math.PI;
+            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'rotateControlLeft', data: angle } );
 
             this.material.uniforms.offset.value.x = (this.momentData.max_horizontal_fov / 360 + .25) % 1;
             console.log('PanoMoments First Frame Decoded.');
