@@ -843,7 +843,7 @@
 
       function onEnter ( event ) {
 
-        // viewer.camera.position.copy( this.position ); // This makes the fade transition issue worse.
+        // viewer.camera.position.copy( this.position ); // This breaks fade transition.
         // viewer.camera.position.z += 1; 
 
         $('#menu').find('a').removeClass("currentlySelected")
@@ -851,8 +851,6 @@
         credit.style.display = 'none';
         alignment.style.display = 'none';
         viewer.OrbitControls.enabled = true;
-
-        viewer.panorama.toggleInfospotVisibility(true);
 
         buyButton1.material.visible = true; // Workaround for buy button if it was left visible
         buyButton1.onDismiss();
