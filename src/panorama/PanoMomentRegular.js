@@ -133,7 +133,8 @@ PanoMomentRegular.prototype = Object.assign( Object.create( Panorama.prototype )
             this.camera.children[3].material.opacity = 1;
             this.camera.children[3].position.set(0,0,-50);
             this.camera.children[3].scale.set(1,1,0.003333333333333334);
-
+            
+            this.dispatchEvent( { type: 'panoMomentFirstFrameDecoded' } );
             console.log('PanoMoments First Frame Decoded.');
 
         }

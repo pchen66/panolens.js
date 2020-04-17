@@ -110,6 +110,8 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
             this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'rotateControlLeft', data: angle } );
 
             this.material.uniforms.offset.value.x = (this.momentData.max_horizontal_fov / 360 + .25) % 1;
+
+            this.dispatchEvent( { type: 'panoMomentFirstFrameDecoded' } );
             console.log('PanoMoments First Frame Decoded.');
         }
         
