@@ -871,13 +871,11 @@
         if (!videoLinked1.isVideoPaused()) {
           videoLinked1.getVideoElement().pause();
         }
-        console.log("HERE")
+
         switch(this) {
           case panomoment0:
             $('#menu').find('#panomoment0 a').addClass("currentlySelected");
             if (viewer.panorama.isReady) {
-                      console.log("HERE2")
-
               setPlayTourButton ();
             }
             bar.classList.add ('hide');
@@ -1065,7 +1063,7 @@
       storyInfospot2 = new PANOLENS.Infospot();
       storyInfospot3 = new PANOLENS.Infospot();
       storyInfospot4 = new PANOLENS.Infospot();
-      storyInfospot1.position.set( -172.64, 2105.08, 4518.50 ); // Apple store
+      storyInfospot1.position.set( 425.58, 2423.30, 5000.00 ); // Apple store
       storyInfospot2.position.set( -5000.00, 1723.35, -3395.01 ); // Vending machines
       storyInfospot3.position.set( 2356.13, 5000.00, -1849.96 ); // Ceiling
       storyInfospot4.position.set( 185.53, 1873.94, -5000.00); // Flag
@@ -1217,7 +1215,9 @@
       panomomentLinked1.link( videoLinked1, new THREE.Vector3( 1677.91, 1756.31, 5000.00 ) );
       videoLinked1.link( panomomentLinked1, new THREE.Vector3( -3641.22, 1888.04, 5000.00 ) );
 
-      viewer.widget.barElement.children[3].children[1].style.width = "20%"; // Set progress bar width
+      if (viewer.widget.barElement.children[3] && viewer.widget.barElement.children[3].children[1]) { // Need to fix. Some browsers (Safari) don't have all these elements
+        viewer.widget.barElement.children[3].children[1].style.width = "20%"; // Set progress bar width
+      }
       viewer.panorama.dispatchEvent( { 
           type: 'panolens-viewer-handler', 
           method: 'addUpdateCallback', 
