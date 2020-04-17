@@ -222,6 +222,7 @@ PanoMomentRegular.prototype = Object.assign( Object.create( Panorama.prototype )
             this.PanoMoments.dispose(); // This currently doesn't stop an ongoing download which is a bit of an issue... Maybe for later though.
             this.PanoMoments = null; 
             this.momentData = null;
+            this.updateTexture(null); // Get rid of the stale frame
         }
 
         Panorama.prototype.onLeave.call( this );
