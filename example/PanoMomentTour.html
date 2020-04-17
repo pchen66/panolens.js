@@ -627,7 +627,7 @@
         composite_water: [ 'Soak in the sun and crystal waters of Vis. ', 'This charming island, just off Croatia\'s coast, offers beautiful beaches, stunning views, and fresh seafood.' ],
         cuba_parallax: [ 'PanoMoments created with a rotating camera are able to capture parallax.', 'Try moving around and notice that small interior spaces feel three-dimensional and more lifelike.' ],
         triggers: [ 'You can define angular trigger points to invoke custom actions', 'Pan to the right to check it out.' ],
-        alignment: [ 'This PanoMoment was created from 360 Video footage.', ' Try panning around and focus on the story in the windows.', "Now hold the <span id='arrows'>← →</span> on-screen buttons to change the time/angle association.", 'This allows you to tell a different story. Try around 240° degrees as an example and then pan back to the windows.' ],
+        alignment: [ 'This PanoMoment was created from 360 Video footage.', ' Try panning around and focus on the story in the windows.', "Hold the <span id='arrows'>← →</span> on-screen buttons to change the time/angle association.", 'This allows you to tell a different story. Try around 240° degrees as an example and then pan back to the windows.' ],
         bam: ['Bam!!!']
       };
 
@@ -684,6 +684,8 @@
 
       function onAlignmentReady () {
         if (viewer.panorama == this) {
+          degrees.innerHTML = (Math.round(viewer.panorama.material.uniforms.offset.value.x * 360 * 10) / 10).toFixed(1) + '°';
+          alignment.style.display = 'block';
           alignmentLanding();
           viewer.OrbitControls.enabled = true;
         }
@@ -846,15 +848,6 @@
         tourToggleButton.style.display="none";
       }
 
-      function onPanoMomentFirstFrameDecoded (event) {
-        switch(this) {
-          case panomoment6:
-            degrees.innerHTML = (Math.round(viewer.panorama.material.uniforms.offset.value.x * 360 * 10) / 10).toFixed(1) + '°';
-            alignment.style.display = 'block';
-            break;
-        }
-      }
-
       function onEnter ( event ) {
 
         // viewer.camera.position.copy( this.position ); // This breaks fade transition.
@@ -878,11 +871,13 @@
         if (!videoLinked1.isVideoPaused()) {
           videoLinked1.getVideoElement().pause();
         }
-
+        console.log("HERE")
         switch(this) {
           case panomoment0:
             $('#menu').find('#panomoment0 a').addClass("currentlySelected");
             if (viewer.panorama.isReady) {
+                      console.log("HERE2")
+
               setPlayTourButton ();
             }
             bar.classList.add ('hide');
@@ -919,9 +914,9 @@
             $('#menu').find('#panomoment6 a').addClass("currentlySelected");
              if (viewer.panorama.isReady) {
               setPlayTourButton ();
+              alignment.style.display = 'block';
             }
             bar.classList.add ('hide');
-            if (viewer.panorama.isReady) alignment.style.display = 'block';
             credit.style.display = 'block';
             creditText.innerHTML = "Credit: PHILIPPE A. COLLIN + CLÉMENT LÉOTARD";
             break;
@@ -1149,7 +1144,6 @@
       panomoment6.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
       panomoment6.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
       panomoment6.addEventListener( 'panoMomentReady', onAlignmentReady );
-      panomoment6.addEventListener( 'panoMomentFirstFrameDecoded', onPanoMomentFirstFrameDecoded );
       panomoment6.addEventListener( 'enter', onEnter );
 
       panomomentLinked1 = new PANOLENS.PanoMomentPanorama( panomomentLinked1_identifier, false );
