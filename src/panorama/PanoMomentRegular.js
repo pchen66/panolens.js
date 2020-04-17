@@ -27,7 +27,6 @@ function PanoMomentRegular ( identifier, forceReload ) {
     this.isReady = false;
 
     this.addEventListener( 'panolens-camera', this.onPanolensCamera.bind( this ) );
-    this.addEventListener( 'panolens-orbitcontrols', this.onPanolensOrbitControls.bind( this ) );
 
 }
 
@@ -41,14 +40,6 @@ PanoMomentRegular.prototype = Object.assign( Object.create( Panorama.prototype )
      */
     onPanolensCamera: function( { camera } ) {
         this.camera = camera;
-    },
-
-    /**
-     * When OrbitControls reference dispatched
-     * @param {THREE.Camera} camera 
-     */
-    onPanolensOrbitControls: function( { OrbitControls } ) {
-        this.OrbitControls = OrbitControls;
     },
 
     load: function () {
@@ -115,11 +106,9 @@ PanoMomentRegular.prototype = Object.assign( Object.create( Panorama.prototype )
             texture.format = THREE.RGBFormat;         
             this.updateTexture( texture );
 
-
-            this.OrbitControls.panorama = this;
-            this.OrbitControls.AzimuthAngleLimits();
-            this.camera.position.copy( this.position );
-            this.camera.position.z += 1;
+            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'resetAzimuthAngleLimits' } );
+            this.camera.position.copy( this.position );// This was in the old viewer.enableControl() but that's since been removed in the dev branch. My feeling is that Panoramas should reset to their original viewing angle on enter, and not use the previous panoramas angle. But that's debatable.
+            this.camera.position.z += 1; 
 
             this.viewer.scene.add(this.camera);
             this.camera.add(this);

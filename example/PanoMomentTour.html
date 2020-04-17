@@ -843,6 +843,9 @@
 
       function onEnter ( event ) {
 
+        // viewer.camera.position.copy( this.position ); // This makes the fade transition issue worse.
+        // viewer.camera.position.z += 1; 
+
         $('#menu').find('a').removeClass("currentlySelected")
 
         credit.style.display = 'none';

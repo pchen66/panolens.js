@@ -273,7 +273,6 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         if ( object instanceof PanoMomentPanorama || object instanceof PanoMomentRegular ) {
 
             object.dispatchEvent( { type: 'panolens-camera', camera: this.camera } );
-            object.dispatchEvent( { type: 'panolens-orbitcontrols', OrbitControls: this.OrbitControls } );
             object.dispatchEvent( { type: 'panolens-viewer', viewer: this } ); // Hack for testing non-360 PanoMoments
 
         }
@@ -1082,6 +1081,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         sceneReticle.add( camera );
 
         return reticle;
+
+    },
+
+    resetAzimuthAngleLimits: function () {
+
+        this.OrbitControls.AzimuthAngleLimits();
 
     },
 
