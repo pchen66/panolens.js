@@ -1193,6 +1193,7 @@
           var currentYaw = THREE.Math.radToDeg(viewer.camera.rotation.y) + 180;
           if (!bamHidden && currentYaw <= 35 && currentYaw >= 20) {
               bam_type( paragraphs.bam, stopTypedAndCancelDelayExecute);
+              setPlayTourButton ();
               bamHidden = true;
           } else if (currentYaw > 35 || currentYaw < 20) {
             bamHidden = false;
