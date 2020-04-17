@@ -1147,9 +1147,9 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         if ( vector instanceof Array ) {
 
-            vector = vector[ 0 ];
-            duration = vector[ 1 ];
             easing = vector[ 2 ];
+            duration = vector[ 1 ];
+            vector = vector[ 0 ];
 
         }
 
