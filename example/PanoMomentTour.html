@@ -760,20 +760,20 @@
         }
         buyButton1.material.visible = true; // Workaround for losing focus below in delayExecute
         buyButton1.onDismiss();
-        delayExecute( hiddenInfospot1.focus.bind( hiddenInfospot1, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
+        delayExecute( viewer.tweenControlCenterByObject( hiddenInfospot1, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.composite_funicular, onCompositeStory2, 0 );
       }
 
       function onCompositeStory2 () {
 
-        delayExecute( hiddenInfospot2.focus.bind( hiddenInfospot2, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
+        delayExecute( viewer.tweenControlCenterByObject( hiddenInfospot2, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.composite_statue, onCompositeStory3 );
         
       }
 
       function onCompositeStory3 () {
 
-        delayExecute( hiddenInfospot3.focus.bind( hiddenInfospot3, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
+        delayExecute( viewer.tweenControlCenterByObject( hiddenInfospot3, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.composite_water, function() { 
           stopTypedAndCancelDelayExecute();
           tourRunning = false;
@@ -782,27 +782,27 @@
       }
 
       function onWelcomeComplete () {
-        delayExecute( storyInfospot1.focus.bind( storyInfospot1, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
+        delayExecute( viewer.tweenControlCenterByObject( storyInfospot1, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.applestore, onStory1Complete );
         
       }
 
       function onStory1Complete () {
 
-        delayExecute( storyInfospot2.focus.bind( storyInfospot2, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
+        delayExecute( viewer.tweenControlCenterByObject( storyInfospot2, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.vending, onStory2Complete );
 
       }
 
       function onStory2Complete () {
 
-        delayExecute( storyInfospot3.focus.bind( storyInfospot3, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
+        delayExecute( viewer.tweenControlCenterByObject( storyInfospot3, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.ceiling, onEndComplete );
 
       }
 
       function onEndComplete () {
-        delayExecute(storyInfospot4.focus.bind( storyInfospot4, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
+        delayExecute( viewer.tweenControlCenterByObject( storyInfospot4, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.ending, function() { 
           viewer.panorama.toggleInfospotVisibility(true);
           stopTypedAndCancelDelayExecute();
@@ -1038,7 +1038,7 @@
       }
 
       function onFocus () {
-        this.focus( 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] );
+        viewer.tweenControlCenterByObject( this, 4000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] );
         this.onClick({mouseEvent: {clientX: 0, clientY:0}}) // Bit of a hack to force the hover event
       }
 
@@ -1081,7 +1081,7 @@
       hiddenInfospot2 = new PANOLENS.Infospot( 10e-7 );  // Make it not visible
       hiddenInfospot3 = new PANOLENS.Infospot( 10e-7 );  // Make it not visible
       hiddenInfospot1.position.set( 282.72, 563.14, -5000.00 ); // Funicular
-      hiddenInfospot2.position.set( 5000.00, 1728.18, 3919.85 ); // Statue
+      hiddenInfospot2.position.set( 5000.00, 730.51, 3764.90 ); // Statue
       hiddenInfospot3.position.set( -5000.00, -2954.57, 1120.11 ); // Water
 
       // Buy buttons
