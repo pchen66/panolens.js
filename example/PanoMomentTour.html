@@ -1136,7 +1136,7 @@
       panomoment0.addEventListener( 'enter', onEnter );
       panomoment0.add( hiddenInfospot1, hiddenInfospot2, hiddenInfospot3, buyButton1);
 
-      panomoment1 = new PANOLENS.PanoMomentPanorama( panomoment1_identifier, false );
+      panomoment1 = new PANOLENS.PanoMomentPanorama( panomoment1_identifier, true );
       panomoment1.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
       panomoment1.addEventListener( 'panoMomentReady', onGrandCentralReady );
       panomoment1.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
@@ -1149,7 +1149,7 @@
       panomoment2.addEventListener( 'panoMomentReady', onCroatiaReady );
       panomoment2.addEventListener( 'enter', onEnter );
 
-      panomoment3 = new PANOLENS.PanoMomentPanorama( panomoment3_identifier, true );
+      panomoment3 = new PANOLENS.PanoMomentPanorama( panomoment3_identifier, false );
       panomoment3.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
       panomoment3.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
       panomoment3.addEventListener( 'panoMomentReady', onCubaReady );
