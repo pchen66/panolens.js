@@ -11,7 +11,6 @@ import { Panorama } from '../panorama/Panorama';
 import { VideoPanorama } from '../panorama/VideoPanorama';
 import { CameraPanorama } from '../panorama/CameraPanorama';
 import { PanoMomentPanorama } from '../panorama/PanoMomentPanorama';
-import { PanoMomentRegular } from '../panorama/PanoMomentRegular';
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
 
@@ -270,10 +269,9 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         }
 
-        if ( object instanceof PanoMomentPanorama || object instanceof PanoMomentRegular ) {
+        if ( object instanceof PanoMomentPanorama ) {
 
             object.dispatchEvent( { type: 'panolens-camera', camera: this.camera } );
-            object.dispatchEvent( { type: 'panolens-viewer', viewer: this } ); // Hack for testing non-360 PanoMoments
 
         }
         // Hookup default panorama event listeners

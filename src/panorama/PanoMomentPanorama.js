@@ -1,6 +1,5 @@
 import { Panorama } from './Panorama';
 import { PanoMoments } from '../loaders/PanoMoments';
-import { BallSpinerLoader } from '../lib/spinners/BallSpinner';
 import * as THREE from 'three';
 
 /**
@@ -40,46 +39,16 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
     load: function () {
         this.PanoMoments = new PanoMoments(this.identifier, this.renderCallback.bind( this ), this.readyCallback.bind( this ), this.loadedCallback.bind( this ));
-        this.spinner = new BallSpinerLoader({ groupRadius:20 }); 
-        this.spinner.mesh.position.set(0,0,-600);
-        this.addSpinner(this.spinner.mesh);
-        console.log("PanoMoment Initialized.");
-
         this.dispatchEvent( { type: 'panoMomentLoad' } );
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' });
-        
+        console.log("PanoMoment Initialized.");
         Panorama.prototype.load.call( this );
-    },
-
-     /**
-     * Add Spinner
-     * @param {object} spinner.mesh 
-     */
-    addSpinner: function ( spinnerMesh ) {
-        
-        this.camera.add(spinnerMesh);
-        spinnerMesh.name='spinner';
-
-    },
-
-     /**
-     * Remove Spinner
-     * @param {object} spinner.mesh 
-     */
-    removeSpinner: function ( spinnerMesh ) {
-
-        this.camera.remove(this.camera.getObjectById(spinnerMesh.id));
-
     },
 
     /**
      * On Panolens update callback
      */
     updateCallback: function() {
-        if (this.camera.getObjectByName('spinner') && this.spinner) { // Not sure if this is expensive to do...
-            this.spinner.animate();
-        }
-
         const { camera, momentData } = this;
 
         if(!momentData || !this.isReady) return;
@@ -120,10 +89,8 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
     readyCallback: function (video, momentData) {
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl' }); // This won't work with cached PanoMoments as the callback doesn't happen. Using isReady for now.
         this.dispatchEvent( { type: 'panoMomentReady' } );
-        console.log('PanoMoment Ready.');
-
         this.isReady = true;
-        this.removeSpinner(this.spinner.mesh);
+        console.log('PanoMoment Ready.');
     },
 
     loadedCallback: function (video, momentData) {
@@ -190,12 +157,9 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
             data: this.updateCallback.bind(this)
         });
 
-        this.removeSpinner(this.spinner.mesh);
-
         if (this.forceReload) {
             this.isReady = false;
             this.reload = true;
-            this.spinner = null;
             this.PanoMoments.dispose(); // This currently doesn't stop an ongoing download which is a bit of an issue... Maybe for later though.
             this.PanoMoments = null; 
             this.momentData = null;

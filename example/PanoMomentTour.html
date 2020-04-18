@@ -410,7 +410,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slideout/1.0.1/slideout.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
     <script src="../build/panolens.js"></script>
-    <script type="text/javascript">
+    <script type="module">
+
+      import { BallSpinerLoader } from './BallSpinner.js'
 
       // Create a Stripe client.
       var stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
@@ -644,6 +646,10 @@
 
       }
 
+      var spinner = new BallSpinerLoader({ groupRadius:20 }); 
+      spinner.mesh.position.set(0,0,-600);
+      spinner.mesh.name='spinner';
+
       function delayExecute ( func, delay ) {
 
         var id = setTimeout( func, delay );
@@ -654,68 +660,55 @@
       function onPanoMomentLoad () {
         if (viewer.panorama == this) {
           viewer.OrbitControls.enabled = false;
+          viewer.camera.add(spinner.mesh);
         }
       }
 
-      function onCroatiaReady () {
-        if (viewer.panorama == this) {
-          viewer.OrbitControls.enabled = true;
+      function onPanoMomentReady () {
+
+        viewer.OrbitControls.enabled = true;
+        viewer.camera.remove(viewer.camera.getObjectById(spinner.mesh.id));
+
+        switch(this) {
+          case panomoment0:
+            setPlayTourButton();
+            landing_type( paragraphs.landing, stopTypedAndCancelDelayExecute, 0 );
+            break;
+          case panomoment1:
+            setPlayTourButton();
+            landing_type( paragraphs.welcome, stopTypedAndCancelDelayExecute, 0 );
+            break;
+          case panomoment2:
+            break;
+          case panomoment3:
+            cubaLanding();
+            break;
+          case panomoment5:
+            conversionLanding();
+            break;
+          case panomoment6:
+            degrees.innerHTML = (Math.round(viewer.panorama.material.uniforms.offset.value.x * 360 * 10) / 10).toFixed(1) + '°';
+            alignment.style.display = 'block';
+            alignmentLanding();
+            break;
+          case panomomentLinked1:
+            linkedLanding();
+            break;
+          case videoLinked1:
+            break;
+          case panoramaLinked1:
+            break;
+          case panoramaLinked2:
+            break;
         }
       }
 
-      function onCubaReady () {
-        if (viewer.panorama == this) {
-          cubaLanding();
-          viewer.OrbitControls.enabled = true;
-        }
-      }
-
-      function onLinkedReady () {
-        if (viewer.panorama == this) {
-          linkedLanding();
-          viewer.OrbitControls.enabled = true;
-        }
-      }
-
-      function onConversionReady () {
-        if (viewer.panorama == this) {
-          conversionLanding();
-          viewer.OrbitControls.enabled = true;
-        }
-      }
-
-      function onAlignmentReady () {
-        if (viewer.panorama == this) {
-          degrees.innerHTML = (Math.round(viewer.panorama.material.uniforms.offset.value.x * 360 * 10) / 10).toFixed(1) + '°';
-          alignment.style.display = 'block';
-          alignmentLanding();
-          viewer.OrbitControls.enabled = true;
-        }
-      }
-
-      function onCompositeReady () {
-        if (viewer.panorama == this) {
-          setPlayTourButton ();
-          landing_type( paragraphs.landing, stopTypedAndCancelDelayExecute, 0 );
-          viewer.OrbitControls.enabled = true;
-        }
-      }
-
-      function onGrandCentralReady () {
-        if (viewer.panorama == this) {
-          setPlayTourButton ();
-          landing_type( paragraphs.welcome, stopTypedAndCancelDelayExecute, 0 );
-          viewer.OrbitControls.enabled = true;
-        }
-
-      }
-
-      function onWelcomeStory() {
+      function grandCentralTour() {
         if (viewer.getControlId() == "device-orientation") {
           viewer.enableControl(0);
         }
         viewer.panorama.toggleInfospotVisibility(false);
-        onWelcomeComplete();
+        onGrandCentralStory1();
       }
 
       function conversionLanding () {
@@ -793,27 +786,27 @@
         });
       }
 
-      function onWelcomeComplete () {
+      function onGrandCentralStory1 () {
         delayExecute( viewer.tweenControlCenterByObject( storyInfospot1, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
-        type( paragraphs.applestore, onStory1Complete );
+        type( paragraphs.applestore, onGrandCentralStory2 );
         
       }
 
-      function onStory1Complete () {
+      function onGrandCentralStory2 () {
 
         delayExecute( viewer.tweenControlCenterByObject( storyInfospot2, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
-        type( paragraphs.vending, onStory2Complete );
+        type( paragraphs.vending, onGrandCentralStory3 );
 
       }
 
-      function onStory2Complete () {
+      function onGrandCentralStory3 () {
 
         delayExecute( viewer.tweenControlCenterByObject( storyInfospot3, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
-        type( paragraphs.ceiling, onEndComplete );
+        type( paragraphs.ceiling, onGrandCentralStory3 );
 
       }
 
-      function onEndComplete () {
+      function onGrandCentralStory4 () {
         delayExecute( viewer.tweenControlCenterByObject( storyInfospot4, 8000, TWEEN.Easing[ 'Exponential' ][ 'Out' ] ), tweeningDelay );
         type( paragraphs.ending, function() { 
           viewer.panorama.toggleInfospotVisibility(true);
@@ -864,7 +857,13 @@
         tourToggleButton.style.display="none";
       }
 
-      function onEnter ( event ) {
+      function onLeave () {
+        if (viewer.panorama == this) {
+          viewer.camera.remove(viewer.camera.getObjectById(spinner.mesh.id));
+        }
+      }
+
+      function onEnter () {
 
         // viewer.camera.position.copy( this.position ); // This breaks fade transition.
         // viewer.camera.position.z += 1; 
@@ -1132,46 +1131,54 @@
       panomoment0 = new PANOLENS.PanoMomentPanorama( panomoment0_identifier, false );
       panomoment0.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
       panomoment0.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
-      panomoment0.addEventListener( 'panoMomentReady', onCompositeReady );
+      panomoment0.addEventListener( 'panoMomentReady', onPanoMomentReady );
       panomoment0.addEventListener( 'enter', onEnter );
+      panomoment0.addEventListener( 'leave', onLeave );
       panomoment0.add( hiddenInfospot1, hiddenInfospot2, hiddenInfospot3, buyButton1);
 
       panomoment1 = new PANOLENS.PanoMomentPanorama( panomoment1_identifier, true );
       panomoment1.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
-      panomoment1.addEventListener( 'panoMomentReady', onGrandCentralReady );
+      panomoment1.addEventListener( 'panoMomentReady', onPanoMomentReady );
       panomoment1.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
       panomoment1.addEventListener( 'enter', onEnter );
+      panomoment1.addEventListener( 'leave', onLeave );
       panomoment1.add( storyInfospot1, storyInfospot2, storyInfospot3, storyInfospot4 );
 
       panomoment2 = new PANOLENS.PanoMomentPanorama( panomoment2_identifier, false );
       panomoment2.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
       panomoment2.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
-      panomoment2.addEventListener( 'panoMomentReady', onCroatiaReady );
+      panomoment2.addEventListener( 'panoMomentReady', onPanoMomentReady );
       panomoment2.addEventListener( 'enter', onEnter );
+      panomoment2.addEventListener( 'leave', onLeave );
 
       panomoment3 = new PANOLENS.PanoMomentPanorama( panomoment3_identifier, false );
       panomoment3.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
       panomoment3.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
-      panomoment3.addEventListener( 'panoMomentReady', onCubaReady );
+      panomoment3.addEventListener( 'panoMomentReady', onPanoMomentReady );
       panomoment3.addEventListener( 'enter', onEnter );
+      panomoment3.addEventListener( 'leave', onLeave );
 
       panomoment5 = new PANOLENS.PanoMomentPanorama( panomoment5_identifier, false );
       panomoment5.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
       panomoment5.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
-      panomoment5.addEventListener( 'panoMomentReady', onConversionReady );
+      panomoment5.addEventListener( 'panoMomentReady', onPanoMomentReady );
       panomoment5.addEventListener( 'enter', onEnter );
+      panomoment5.addEventListener( 'leave', onLeave );
+
 
       panomoment6 = new PANOLENS.PanoMomentPanorama( panomoment6_identifier, false );
       panomoment6.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
       panomoment6.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
-      panomoment6.addEventListener( 'panoMomentReady', onAlignmentReady );
+      panomoment6.addEventListener( 'panoMomentReady', onPanoMomentReady );
       panomoment6.addEventListener( 'enter', onEnter );
+      panomoment6.addEventListener( 'leave', onLeave );
 
       panomomentLinked1 = new PANOLENS.PanoMomentPanorama( panomomentLinked1_identifier, false );
       panomomentLinked1.addEventListener( 'progress', onProgressUpdate ); // PanoMomentPanorama doesn't support this yet...
       panomomentLinked1.addEventListener( 'panoMomentLoad', onPanoMomentLoad );
-      panomomentLinked1.addEventListener( 'panoMomentReady', onLinkedReady );
+      panomomentLinked1.addEventListener( 'panoMomentReady', onPanoMomentReady );
       panomomentLinked1.addEventListener( 'enter', onEnter );
+      panomomentLinked1.addEventListener( 'leave', onLeave );
 
       videoLinked1 = new PANOLENS.VideoPanorama( 'http://files.panomoments.com/AyutthayaDroneByMettle1080p.mp4', { autoplay: true, muted: true });
       videoLinked1.addEventListener('enter', onEnter);
@@ -1189,6 +1196,11 @@
 
       var bamHidden = false;
       function updateCallback () {
+
+        if (viewer.camera.getObjectByName('spinner') && spinner) {
+            spinner.animate();
+        }
+
         if (viewer.panorama == panomoment5) {
           var currentYaw = THREE.Math.radToDeg(viewer.camera.rotation.y) + 180;
           if (!bamHidden && currentYaw <= 35 && currentYaw >= 20) {
@@ -1199,6 +1211,7 @@
             bamHidden = false;
           }
         }
+
       }
 
       // Regular button touch / click events appear to have conflicts with Slideout.js on mobile devices. This is a workaround and possibly better design anyway.
@@ -1242,6 +1255,7 @@
       if (viewer.widget.barElement.children[3] && viewer.widget.barElement.children[3].children[1]) { // Need to fix. Some browsers (Safari) don't have all these elements
         viewer.widget.barElement.children[3].children[1].style.width = "20%"; // Set progress bar width
       }
+
       viewer.panorama.dispatchEvent( { 
           type: 'panolens-viewer-handler', 
           method: 'addUpdateCallback', 
@@ -1288,7 +1302,7 @@
               setPlayTourButton ();
               stopTypedAndCancelDelayExecute();
             } else {
-              onWelcomeStory();
+              grandCentralTour();
             }  
             break;
           case panomoment3:
