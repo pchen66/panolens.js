@@ -147,6 +147,7 @@ function OrbitControls ( object, domElement ) {
     const changeEvent = { type: 'change' };
     const startEvent = { type: 'start' };
     const endEvent = { type: 'end' };
+    const fovEvent = { type: 'fov' };
 
     this.setLastQuaternion = function ( quaternion ) {
         lastQuaternion.copy( quaternion );
@@ -245,6 +246,15 @@ function OrbitControls ( object, domElement ) {
 
     };
 
+    this.updateMomentum = function( up, left ) {
+
+        return [
+            up * this.momentumDampingFactor,
+            left * this.momentumDampingFactor
+        ];
+
+    };
+
     this.momentum = function(){
 		
         if ( !momentumOn ) return;
@@ -255,8 +265,10 @@ function OrbitControls ( object, domElement ) {
             return;
         }
 
-        momentumUp   *= this.momentumDampingFactor;
-        momentumLeft *= this.momentumDampingFactor;
+        const [ up, left ] = this.updateMomentum( momentumUp, momentumLeft );
+
+        momentumUp = up;
+        momentumLeft = left;
 
         thetaDelta -= this.momentumScalingFactor * momentumLeft;
         phiDelta   -= this.momentumScalingFactor * momentumUp;
@@ -597,6 +609,7 @@ function OrbitControls ( object, domElement ) {
         scope.dispatchEvent( changeEvent );
         scope.dispatchEvent( startEvent );
         scope.dispatchEvent( endEvent );
+        scope.dispatchEvent( fovEvent );
 
     }
 
@@ -784,6 +797,7 @@ function OrbitControls ( object, domElement ) {
 
             scope.update();
             scope.dispatchEvent( changeEvent );
+            scope.dispatchEvent( fovEvent );
             break;
 
         case 3: // three-fingered touch: pan
