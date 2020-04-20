@@ -53,7 +53,7 @@
   "homepage": "https://pchen66.github.io/Panolens/",
   "eslintConfig": {
     "parserOptions": {
-      "ecmaVersion": 6,
+      "ecmaVersion": 8,
       "sourceType": "module"
     },
     "rules": {
