@@ -1115,7 +1115,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * Set control center
      * @param {THREE.Vector3} vector - Vector to be looked at the center
      */
-    setControlCenter: function( vector ) {
+    setControlCenter: function( vector = this.options.initialLookAt ) {
 
         const { left, up } = this.calculateCameraDirectionDelta( vector );
         this.rotateOrbitControl( left, up );

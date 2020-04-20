@@ -167,10 +167,10 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         if ( !this.momentData ) return;
 
-        const { camera, position, momentData: { start_frame, max_horizontal_fov } } = this;
+        const { momentData: { start_frame, max_horizontal_fov } } = this;
 
-        camera.position.copy( position );
-        camera.position.z += 1; 
+        // reset center to initial lookat
+        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setControlCenter' } );
 
         // rotate to initial frame center
         const angle = (start_frame + 180) / 180 * Math.PI;
