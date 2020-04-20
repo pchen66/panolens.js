@@ -8,8 +8,6 @@ import { EquirectShader } from '../shaders/EquirectShader';
 /**
  * @classdesc Base Panorama
  * @constructor
- * @param {THREE.Geometry} geometry - The geometry for this panorama
- * @param {THREE.Material} material - The material for this panorama
  */
 function Panorama () {
 
