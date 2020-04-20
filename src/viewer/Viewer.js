@@ -9,8 +9,6 @@ import { Infospot } from '../infospot/Infospot';
 import { DataImage } from '../DataImage';
 import { Panorama } from '../panorama/Panorama';
 import { VideoPanorama } from '../panorama/VideoPanorama';
-import { CameraPanorama } from '../panorama/CameraPanorama';
-import { PanoMomentPanorama } from '../panorama/PanoMomentPanorama';
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
 
@@ -235,6 +233,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     add: function ( object ) {
 
+        const { container, scene, camera, controls } = this;
+
         if ( arguments.length > 1 ) {
 
             for ( let i = 0; i < arguments.length; i ++ ) {
@@ -247,7 +247,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         }
 
-        this.scene.add( object );
+        scene.add( object );
 
         // All object added to scene has 'panolens-viewer-handler' event to handle viewer communication
         if ( object.addEventListener ) {
@@ -256,28 +256,15 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         }
 
-        // All object added to scene being passed with container
-        if ( object instanceof Panorama && object.dispatchEvent ) {
-
-            object.dispatchEvent( { type: 'panolens-container', container: this.container } );
-
-        }
-
-        if ( object instanceof CameraPanorama ) {
-
-            object.dispatchEvent( { type: 'panolens-scene', scene: this.scene } );
-
-        }
-
-        if ( object instanceof PanoMomentPanorama ) {
-
-            object.dispatchEvent( { type: 'panolens-camera', camera: this.camera } );
-
-        }
-
-        // Hookup default panorama event listeners
         if ( object instanceof Panorama ) {
 
+            // Dispatch viewer variables to panorama
+            object.dispatchEvent( { type: 'panolens-container', container } );
+            object.dispatchEvent( { type: 'panolens-scene', scene } );
+            object.dispatchEvent( { type: 'panolens-camera', camera } );
+            object.dispatchEvent( { type: 'panolens-controls', controls } );
+
+            // Hookup default panorama event listeners
             this.addPanoramaEventListener( object );
 
             if ( !this.panorama ) {
