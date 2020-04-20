@@ -201,8 +201,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         this.dispatchEvent( { type: PANOMOMENT.LOAD } );
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' });
 
-        Panorama.prototype.load.call( this );
-
     },
 
     /**
@@ -240,6 +238,9 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
             this.dispatchEvent( { type: PANOMOMENT.FIRST_FRAME_DECODED } );
             console.log('PanoMoments First Frame Decoded');
+
+            // actual load callback
+            Panorama.prototype.load.call( this );
         }
     },
 
@@ -371,7 +372,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
      */
     enter: function() {
 
-        this.updateHeading();
         this.attachFOVListener( true );
         this.resetControlLimits( false );
         this.overrideUpdateMomentum( true );

@@ -344,11 +344,11 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             const afterEnterComplete = function () {
 
                 if ( leavingPanorama ) { leavingPanorama.onLeave(); }
-                pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
+                pano.removeEventListener( 'enter-start', afterEnterComplete );
 
             };
 
-            pano.addEventListener( 'enter-fade-start', afterEnterComplete );
+            pano.addEventListener( 'enter-start', afterEnterComplete );
 
             // Assign and enter panorama
             (this.panorama = pano).onEnter();
