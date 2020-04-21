@@ -24,22 +24,17 @@ function Panorama () {
     this.ImageQualitySuperHigh = 5;
 
     this.animationDuration = 1000;
-
     this.defaultInfospotSize = 350;
-
     this.container = undefined;
-
     this.loaded = false;
-
     this.linkedSpots = [];
-
     this.isInfospotVisible = false;
 	
     this.linkingImageURL = undefined;
     this.linkingImageScale = undefined;
 
     this.renderOrder = -1;
-
+    this.visible = false;
     this.active = false;
 
     this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
