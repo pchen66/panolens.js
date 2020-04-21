@@ -332,26 +332,61 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @memberOf Viewer
      * @instance
      */
-    setPanorama: function ( pano ) {
+    setPanorama: function ( ep ) {
 
-        const leavingPanorama = this.panorama;
+        const lp = this.panorama;
 
-        if ( pano instanceof Panorama && leavingPanorama !== pano ) {
+        if ( ep instanceof Panorama && lp !== ep ) {
 
             // Clear exisiting infospot
             this.hideInfospot();
 
-            const afterEnterComplete = function () {
+            const onSwitch = () => {
 
-                if ( leavingPanorama ) { leavingPanorama.onLeave(); }
-                pano.removeEventListener( 'enter-start', afterEnterComplete );
+                if ( lp ) { 
+                    
+                    lp.onLeave(); 
+                
+                } else {
+
+                    ep.onEnter();
+
+                }
 
             };
 
-            pano.addEventListener( 'enter-start', afterEnterComplete );
+            if ( lp ) {
 
-            // Assign and enter panorama
-            (this.panorama = pano).onEnter();
+                const onLeaveComplete = () => {
+
+                    ep.onEnter();
+                    lp.removeEventListener( 'leave-complete', onLeaveComplete );
+    
+                };
+
+                lp.addEventListener( 'leave-complete', onLeaveComplete );
+
+            }
+
+            if( ep.loaded ) {
+
+                onSwitch();
+
+            } else {
+
+                const onLoaded = () => {
+
+                    onSwitch();
+                    ep.removeEventListener( 'loaded', onLoaded );
+    
+                };
+
+                ep.addEventListener( 'loaded', onLoaded );
+                ep.load();
+
+            }
+
+            this.panorama = ep;
 			
         }
 
