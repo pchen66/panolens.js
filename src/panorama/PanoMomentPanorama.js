@@ -37,12 +37,18 @@ function PanoMomentPanorama ( identifier, options = {} ) {
     // Setup Dispatcher
     this.setupDispatcher();
 
-    // Event Listeners
+    // Event Bindings
     this.viewerUpdateCallback = () => this.updateCallback();
     this.viewerResetControlLimits = () => this.resetControlLimits( false );
     this.updateMomentum = ( up, left ) => this.momentumFunction( up, left );
+
+    // Event Listeners
     this.addEventListener( 'panolens-camera', data => this.onPanolensCamera( data ) );
     this.addEventListener( 'panolens-controls', data => this.onPanolensControls( data ) );
+    this.addEventListener( 'enter-start', () => this.enter() );
+    this.addEventListener( 'leave-complete', () => this.leave() );
+    this.addEventListener( PANOMOMENT.LOAD, () => this.disableControl() );
+    this.addEventListener( PANOMOMENT.READY, () => this.enableControl() );
 
 }
 
@@ -94,6 +100,28 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
             dispatch( event );
 
         };
+
+    },
+
+    /**
+     * Enable Control
+     */
+    enableControl: function() {
+
+        const event = { type: 'panolens-viewer-handler', method: 'enableControl' };
+
+        requestAnimationFrame( this.dispatchEvent.bind( this, event ) );
+
+    },
+
+    /**
+     * Disable Control
+     */
+    disableControl: function() {
+
+        const event = { type: 'panolens-viewer-handler', method: 'disableControl' };
+
+        requestAnimationFrame( this.dispatchEvent.bind( this, event ) );
 
     },
 
@@ -199,7 +227,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         );
 
         this.dispatchEvent( { type: PANOMOMENT.LOAD } );
-        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' });
 
     },
 
@@ -228,8 +255,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
             this.momentData = momentData;
 
-            this.updateHeading();
-
             const texture = new THREE.VideoTexture( video );
             texture.minFilter = texture.magFilter = THREE.LinearFilter;
             texture.generateMipmaps = false;
@@ -241,6 +266,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
             // actual load callback
             Panorama.prototype.load.call( this );
+
         }
     },
 
@@ -249,9 +275,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
      */
     readyCallback: function () {
 
-        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl' });
         this.dispatchEvent( { type: PANOMOMENT.READY } );
-
         console.log('PanoMoment Ready');
     },
 
@@ -342,36 +366,11 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
     },
 
     /**
-     * onEnter
-     * @memberOf PanoMomentPanorama
-     * @instance
-     */
-    onEnter: function () {
-
-        this.enter();
-
-        Panorama.prototype.onEnter.call( this );
-
-    },
-
-    /**
-     * onLeave
-     * @memberOf PanoMomentPanorama
-     * @instance
-     */
-    onLeave: function () {
-
-        this.leave();
-
-        Panorama.prototype.onLeave.call( this );
-
-    },
-
-    /**
      * Enter Panorama
      */
     enter: function() {
 
+        this.updateHeading();
         this.attachFOVListener( true );
         this.resetControlLimits( false );
         this.overrideUpdateMomentum( true );
