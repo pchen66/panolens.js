@@ -4,7 +4,7 @@ import { BasicPanorama } from '../../../src/panorama/BasicPanorama';
 
 test.cb('Load Event', t => {
     const panorama = new BasicPanorama();
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         t.true(panorama.material.uniforms[ 'tCube' ].value instanceof THREE.CubeTexture);
         t.end();
     } );

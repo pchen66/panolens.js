@@ -5,7 +5,7 @@ const panoId = 'JmSoPsBPhqWvaBmOqfFzgA';
 
 test.cb('Get Photos From Street View', t => {
     const panorama = new GoogleStreetviewPanorama( panoId );
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         t.end();
     } );
     panorama.load();

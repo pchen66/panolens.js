@@ -9,7 +9,7 @@ const container = document.createElement( 'div' );
 test.cb('Load Event', t => {
     const panorama = new ImageLittlePlanet( cabinImageURL );
     panorama.setContainer( container );
-    panorama.addEventListener( 'load', ()=>{
+    panorama.addEventListener( 'loaded', ()=>{
         t.end();
     } );
     panorama.load();
@@ -18,7 +18,7 @@ test.cb('Load Event', t => {
 test.cb('Dispose', t => {
     const panorama = new ImageLittlePlanet( cabinImageURL );
     panorama.setContainer( container );
-    panorama.addEventListener( 'load', ()=>{
+    panorama.addEventListener( 'loaded', ()=>{
         panorama.dispose();
         t.falsy(panorama.geometry);
         t.falsy(panorama.material);

@@ -7,13 +7,13 @@ const videoURL = join( __dirname, localImageFolder, '1941-battle-low.mp4' );
 
 test.cb('Load Event', t => {
     const panorama = new VideoPanorama( videoURL );
-    panorama.addEventListener( 'load', () => t.end() );
+    panorama.addEventListener( 'loaded', () => t.end() );
     panorama.load();
 });
 
 test.cb('Video Play and Pause', t => {
     const panorama = new VideoPanorama( videoURL );
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         const element = panorama.getVideoElement();
         const percentage = 0.5;
         t.true(panorama.isVideoPaused());
@@ -36,7 +36,7 @@ test.cb('Video Play and Pause', t => {
 
 test.cb('Video AutoPlay', t => {
     const panorama = new VideoPanorama( videoURL, { autoplay: true } );
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         const percentage = 0.7;
         panorama.setVideoCurrentTime( { percentage } );
         panorama.resumeVideoProgress();
@@ -48,7 +48,7 @@ test.cb('Video AutoPlay', t => {
 
 test.cb('Video Mute and Unmute', t => {
     const panorama = new VideoPanorama( videoURL );
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         t.true(panorama.isVideoMuted());
         panorama.unmuteVideo();
         t.false(panorama.isVideoMuted());
@@ -63,7 +63,7 @@ test.cb('Preloaded Video', t => {
     const videoElement = document.createElement( 'video' );
     videoElement.readyState = 3;
     const panorama = new VideoPanorama( videoURL, { videoElement } );
-    panorama.addEventListener( 'load', () => t.end() );
+    panorama.addEventListener( 'loaded', () => t.end() );
     panorama.load();
 });
 
@@ -91,7 +91,7 @@ test('Load Video on Mobile Browser without autoplay or muted', t => {
 test.cb('Video Non Loopable Video', t => {
     const panorama = new VideoPanorama( videoURL, { loop: false } );
 
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         panorama.playVideo();
         setTimeout( ()=> {
             t.end();
@@ -108,7 +108,7 @@ test('Set Empty Video Texture', t => {
 
 test.cb('Reset', t => {
     const panorama = new VideoPanorama( videoURL );
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         panorama.reset();
         t.falsy(panorama.getVideoElement());
         panorama.dispatchEvent( { type: 'video-toggle' } );
@@ -119,7 +119,7 @@ test.cb('Reset', t => {
 
 test.cb('Dispose', t => {
     const panorama = new VideoPanorama( videoURL );
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         panorama.dispose();
         t.falsy(panorama.geometry);
         t.falsy(panorama.material);

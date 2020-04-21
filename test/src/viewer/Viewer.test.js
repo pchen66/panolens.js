@@ -377,7 +377,7 @@ test.cb('Stereo Image Panorama', t => {
     const viewer = new Viewer( { renderer } );
     const stereo = new Stereo( 0 );
     const stereoImage = new StereoImagePanorama( cabinImageURL, stereo );
-    stereoImage.addEventListener( 'load', () => {
+    stereoImage.addEventListener( 'loaded', () => {
         renderer.autoClear = true;
         viewer.render();
         t.end();
@@ -392,7 +392,7 @@ test.cb('Stereo Video Panorama', t => {
     const viewer = new Viewer();
     const stereo = new Stereo( 0 );
     const stereoVideo = new StereoVideoPanorama( '../../../example/asset/textures/video/1941-battle-low.mp4', stereo );
-    stereoVideo.addEventListener( 'load', () => {
+    stereoVideo.addEventListener( 'loaded', () => {
         viewer.render();
         t.end();
     });

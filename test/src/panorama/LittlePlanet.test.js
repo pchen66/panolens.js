@@ -83,7 +83,7 @@ test.cb('Mouse Down, Move and Up Events', t => {
     const container = document.createElement( 'div' );
     panorama.dispatchEvent( { type: 'panolens-container', container } );
     t.is(panorama.container, container);
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         start( 'mouse', container, { button: THREE.MOUSE.LEFT }, () => t.end() );
     })
     panorama.load();
@@ -96,7 +96,7 @@ test.cb('Touch Start, Move and End Events', t => {
     const container = document.createElement( 'div' );
     panorama.dispatchEvent( { type: 'panolens-container', container } );
     t.is(panorama.container, container);
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         start( 'touch', container, { finger: 2 }, () => t.end() );
     })
     panorama.load();
@@ -108,7 +108,7 @@ test.cb('Mouse Wheel Event', t => {
     const container = document.createElement( 'div' );
     panorama.dispatchEvent( { type: 'panolens-container', container } );
     t.is(panorama.container, container);
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         const eventIncrease = new window.MouseWheelEvent( 1 );
         const eventDecrease = new window.MouseWheelEvent( -1 );
         container.dispatchEvent( eventIncrease );
@@ -123,7 +123,7 @@ test.cb('ContextMenu Event', t => {
     const container = document.createElement( 'div' );
     panorama.dispatchEvent( { type: 'panolens-container', container } );
     t.is(panorama.container, container);
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         panorama.onContextMenu();
         t.false(panorama.dragging);
         t.end();
@@ -136,7 +136,7 @@ test.cb('On Leave', t => {
     const container = document.createElement( 'div' );
     panorama.dispatchEvent( { type: 'panolens-container', container } );
     t.is(panorama.container, container);
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         panorama.onLeave();
         t.end();
     })
@@ -148,7 +148,7 @@ test.cb('Dispose', t => {
     const container = document.createElement( 'div' );
     panorama.dispatchEvent( { type: 'panolens-container', container } );
     t.is(panorama.container, container);
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         panorama.dispose();
         t.end();
     })

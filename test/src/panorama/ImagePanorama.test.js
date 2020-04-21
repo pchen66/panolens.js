@@ -9,7 +9,7 @@ const fieldImageURL = join( __dirname, localImageFolder, 'field.jpg' );
 
 test.cb('Load Event', t => {
     const panorama = new ImagePanorama( cabinImageURL );
-    panorama.addEventListener( 'load', ()=>{
+    panorama.addEventListener( 'loaded', ()=>{
         t.end();
     } );
     panorama.load();
@@ -52,7 +52,7 @@ test.cb('Dispose', t => {
     const panorama = new ImagePanorama( fieldImageURL );
     const object3D = new THREE.Object3D();
     panorama.add( object3D );
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
 
         panorama.dispose();
         t.is(panorama.geometry, null);

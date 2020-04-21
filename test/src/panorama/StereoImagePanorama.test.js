@@ -25,7 +25,7 @@ test('OnLoad TAB', t => {
 test.cb('Dispose', t => {
     const stereo = new Stereo( 1 );
     const panorama = new StereoImagePanorama( TABImageURL, stereo );
-    panorama.addEventListener( 'load', () => {
+    panorama.addEventListener( 'loaded', () => {
         panorama.dispose();
         t.falsy(panorama.geometry);
         t.end();

@@ -39,7 +39,6 @@ function Panorama () {
 
     this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
 
-    this.addEventListener( 'load', this.fadeIn.bind( this ) );
     this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
     this.addEventListener( 'click', this.onClick.bind( this ) );
 
@@ -240,9 +239,9 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
         /**
          * Load panorama event
          * @type {object}
-         * @event Panorama#load
+         * @event Panorama#loaded
          */
-        this.dispatchEvent( { type: 'load' } );
+        this.dispatchEvent( { type: 'loaded' } );
 
     },
 
