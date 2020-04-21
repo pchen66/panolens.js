@@ -52,11 +52,7 @@ const EquirectShader = {
             sampleUV += offset;
             sampleUV.x = fract(sampleUV.x);
             sampleUV.y = fract(sampleUV.y);
-            vec4 texColor = texture2D( tEquirect, sampleUV );
-            gl_FragColor = mapTexelToLinear( texColor );
-            gl_FragColor.a *= opacity;
-            #include <tonemapping_fragment>
-            #include <encodings_fragment>
+            gl_FragColor = vec4(texture2D( tEquirect, sampleUV ).rgb, opacity);
         }
     `
 
