@@ -1004,10 +1004,14 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         index = ( index >= 0 && index < this.controls.length ) ? index : 0;
 
+        if( this.control instanceof DeviceOrientationControls ) this.control.disconnect();
+
         this.control.enabled = false;
         this.control = this.controls[ index ];
         this.control.enabled = true;
         this.control.update();
+        
+        if( this.control instanceof DeviceOrientationControls ) this.control.connect();
         
         this.setControlCenter( this.getRaycastViewCenter() );
         this.activateWidgetItem( index, undefined );
