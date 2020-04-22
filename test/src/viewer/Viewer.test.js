@@ -124,15 +124,14 @@ test.cb('Panorama Enter and Leave', t => {
     const advance = () => {
         viewer.setPanorama( panorama2 );
     };
-
+    panorama1.addEventListener( 'loaded', () => setTimeout( advance, 1000 ) );
     panorama1.addEventListener( 'enter', pass ); // yes
     panorama1.addEventListener( 'leave', pass ); // yes
-    panorama1.addEventListener( 'leave-complete', () => t.end() )
     panorama2.addEventListener( 'enter', pass ); // yes
     panorama2.addEventListener( 'leave', pass ); // no
+    panorama2.addEventListener( 'enter', () => setTimeout( t.end, 1000 ) ); // yes
+    
     viewer.add( panorama1, panorama2 );
-
-    setTimeout( advance, 2000 );
 
 });
 

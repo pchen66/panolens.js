@@ -64,6 +64,7 @@ test('Window Orientation Change Event', t => {
     const container = document.createElement( 'div' );
     const control = new DeviceOrientationControls( camera, container );
     const event = new window.Event( 'orientationchange' );
+    control.connect();
     window.orientation = 180;
     window.dispatchEvent( event );
     control.update();
@@ -77,6 +78,7 @@ test('Window Orientation Change Event', t => {
     control.update();
     t.is(control.screenOrientation, window.orientation);
     window.orientation = 0;
+    control.disconnect();
 });
 
 test('Device Orientation Change Event', t => {
@@ -84,9 +86,11 @@ test('Device Orientation Change Event', t => {
     const container = document.createElement( 'div' );
     const control = new DeviceOrientationControls( camera, container );
     const event = new window.DeviceOrientationEvent();
+    control.connect();
     window.dispatchEvent( event );
     control.update();
     t.is(control.deviceOrientation, event);
     t.pass();
+    control.disconnect();
 });
 
