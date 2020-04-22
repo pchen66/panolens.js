@@ -4223,7 +4223,7 @@
 	     * This will be called when panorama is loaded
 	     * @memberOf Panorama
 	     * @instance
-	     * @fires Panorama#load
+	     * @fires Panorama#loaded
 	     */
 	    onLoad: function () {
 
@@ -4589,7 +4589,7 @@
 	    onEnter: function () {
 
 	        const duration = this.animationDuration;
-	        
+
 	        /**
 	         * Enter panorama event
 	         * @event Panorama#enter
@@ -6848,7 +6848,7 @@
 
 	        const { camera, momentData, status } = this;
 
-	        if( (status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
+	        if( (status !== PANOMOMENT.FIRST_FRAME_DECODED && status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
 	        
 	        const rotation = THREE.Math.radToDeg(camera.rotation.y) + 180;
 	        const yaw = (rotation * (momentData.clockwise ? -1.0 : 1.0) + 90) % 360;
@@ -6966,13 +6966,14 @@
 	     */
 	    setPanoMomentYaw: function (yaw) {
 
-	        const { momentData, PanoMoments: { render, FrameCount, textureReady } } = this;
+	        const { status, momentData, PanoMoments: { render, FrameCount } } = this;
 
-	        if(!momentData) return;
+	        if( (status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
 
 	        render((yaw / 360) * FrameCount);
 
-	        if (textureReady) this.getTexture().needsUpdate = true;
+	        // textureReady updated 
+	        if (this.PanoMoments.textureReady) this.getTexture().needsUpdate = true;
 
 	    },
 
@@ -7966,6 +7967,17 @@
 
 	    };
 
+	    const onRegisterEvent = function() {
+
+	        window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, { passive: false } );
+	        window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, { passive: false } );
+	        window.addEventListener( 'deviceorientation', this.update, { passive: true } );
+
+	        scope.domElement.addEventListener( 'touchstart', onTouchStartEvent, { passive: false } );
+	        scope.domElement.addEventListener( 'touchmove', onTouchMoveEvent, { passive: false } );
+
+	    }.bind( this );
+
 	    // The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
 
 	    const setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
@@ -8021,12 +8033,29 @@
 
 	        onScreenOrientationChangeEvent(); // run once on load
 
-	        window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, { passive: true } );
-	        window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, { passive: true } );
-	        window.addEventListener( 'deviceorientation', this.update.bind( this ), { passive: true } );
+	        // iOS 13+
 
-	        scope.domElement.addEventListener( 'touchstart', onTouchStartEvent, { passive: false } );
-	        scope.domElement.addEventListener( 'touchmove', onTouchMoveEvent, { passive: false } );
+	        if ( window.DeviceOrientationEvent !== undefined && typeof window.DeviceOrientationEvent.requestPermission === 'function' ) {
+
+	            window.DeviceOrientationEvent.requestPermission().then( function ( response ) {
+
+	                if ( response == 'granted' ) {
+
+	                    onRegisterEvent();
+
+	                }
+
+	            } ).catch( function ( error ) {
+
+	                console.error( 'THREE.DeviceOrientationControls: Unable to use DeviceOrientation API:', error );
+
+	            } );
+
+	        } else {
+
+	            onRegisterEvent();
+
+	        }
 
 	        scope.enabled = true;
 
@@ -8036,7 +8065,7 @@
 
 	        window.removeEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
 	        window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
-	        window.removeEventListener( 'deviceorientation', this.update.bind( this ), false );
+	        window.removeEventListener( 'deviceorientation', this.update, false );
 
 	        scope.domElement.removeEventListener( 'touchstart', onTouchStartEvent, false );
 	        scope.domElement.removeEventListener( 'touchmove', onTouchMoveEvent, false );
@@ -8089,8 +8118,6 @@
 	        this.disconnect();
 
 	    };
-
-	    this.connect();
 
 	}
 	DeviceOrientationControls.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype), {
@@ -9140,7 +9167,7 @@
 	     */
 	    setCameraControl: function () {
 
-	        this.OrbitControls.target.copy( this.panorama.position );
+	        if( this.panorama ) this.OrbitControls.target.copy( this.panorama.position );
 
 	    },
 
@@ -9284,10 +9311,14 @@
 
 	        index = ( index >= 0 && index < this.controls.length ) ? index : 0;
 
+	        if( this.control instanceof DeviceOrientationControls ) this.control.disconnect();
+
 	        this.control.enabled = false;
 	        this.control = this.controls[ index ];
 	        this.control.enabled = true;
 	        this.control.update();
+	        
+	        if( this.control instanceof DeviceOrientationControls ) this.control.connect();
 	        
 	        this.setControlCenter( this.getRaycastViewCenter() );
 	        this.activateWidgetItem( index, undefined );
