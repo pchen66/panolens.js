@@ -860,7 +860,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     setCameraControl: function () {
 
-        this.OrbitControls.target.copy( this.panorama.position );
+        if( this.panorama ) this.OrbitControls.target.copy( this.panorama.position );
 
     },
 
