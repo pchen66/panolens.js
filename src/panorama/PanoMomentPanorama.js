@@ -237,7 +237,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         const { camera, momentData, status } = this;
 
-        if( (status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
+        if( (status !== PANOMOMENT.FIRST_FRAME_DECODED && status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
         
         const rotation = THREE.Math.radToDeg(camera.rotation.y) + 180;
         const yaw = (rotation * (momentData.clockwise ? -1.0 : 1.0) + 90) % 360;
@@ -355,13 +355,14 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
      */
     setPanoMomentYaw: function (yaw) {
 
-        const { momentData, PanoMoments: { render, FrameCount, textureReady } } = this;
+        const { status, momentData, PanoMoments: { render, FrameCount } } = this;
 
-        if(!momentData) return;
+        if( (status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
 
         render((yaw / 360) * FrameCount);
 
-        if (textureReady) this.getTexture().needsUpdate = true;
+        // textureReady updated 
+        if (this.PanoMoments.textureReady) this.getTexture().needsUpdate = true;
 
     },
 
