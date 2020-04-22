@@ -230,7 +230,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      * This will be called when panorama is loaded
      * @memberOf Panorama
      * @instance
-     * @fires Panorama#load
+     * @fires Panorama#loaded
      */
     onLoad: function () {
 
@@ -596,7 +596,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
     onEnter: function () {
 
         const duration = this.animationDuration;
-        
+
         /**
          * Enter panorama event
          * @event Panorama#enter
