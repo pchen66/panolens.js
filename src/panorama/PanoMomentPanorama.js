@@ -4,7 +4,6 @@ import * as THREE from 'three';
 
 const PANOMOMENT = {
     NONE: 'panomoments.none',
-    LOAD: 'panomoments.load',
     FIRST_FRAME_DECODED: 'panomoments.first_frame_decoded',
     READY: 'panomoments.ready',
     COMPLETED: 'panomoments.completed',
@@ -216,6 +215,8 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
      * Load Pano Moment Panorama
      */
     load: function () {
+
+        Panorama.prototype.load.call( this, false );
         
         const { identifier, renderCallback, readyCallback, loadedCallback } = this;
 
@@ -225,8 +226,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
             readyCallback.bind( this ), 
             loadedCallback.bind( this )
         );
-
-        this.dispatchEvent( { type: PANOMOMENT.LOAD } );
 
     },
 
@@ -264,8 +263,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
             this.dispatchEvent( { type: PANOMOMENT.FIRST_FRAME_DECODED } );
             console.log('PanoMoments First Frame Decoded');
 
-            // actual load callback
-            Panorama.prototype.load.call( this );
+            Panorama.prototype.onLoad.call( this );
 
         }
     },

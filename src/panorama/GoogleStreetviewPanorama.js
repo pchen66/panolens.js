@@ -34,6 +34,8 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
      */
     load: function ( panoId ) {
 
+        Panorama.prototype.load.call( this, false );
+
         this.loadRequested = true;
 
         panoId = ( panoId || this.panoId ) || {};
@@ -54,11 +56,28 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
      */
     setupGoogleMapAPI: function ( apiKey ) {
 
+        const scriptId = 'panolens-gmapscript';
+        const onScriptLoaded = this.setGSVLoader.bind( this );
+
+        if( document.querySelector( `#${scriptId}` ) ) {
+            onScriptLoaded();
+            return;
+        }
+
         const script = document.createElement( 'script' );
+        script.id = scriptId;
         script.src = 'https://maps.googleapis.com/maps/api/js?';
         script.src += apiKey ? 'key=' + apiKey : '';
-        script.onreadystatechange = this.setGSVLoader.bind( this );
-        script.onload = this.setGSVLoader.bind( this );
+        if( script.readyState ) { // IE
+            script.onreadystatechange = function() {
+                if ( script.readyState === 'loaded' || script.readyState === 'complete' ) {
+                    script.onreadystatechange = null;
+                    onScriptLoaded();
+                }
+            };
+        } else {
+            script.onload = onScriptLoaded;
+        }
 
         document.querySelector( 'head' ).appendChild( script );
 

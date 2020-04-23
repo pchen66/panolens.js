@@ -54,6 +54,8 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     load: function () {
 
+        Panorama.prototype.load.call( this, false );
+
         CubeTextureLoader.load( 	
 
             this.images, 

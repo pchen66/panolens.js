@@ -28,6 +28,8 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     load: function ( src ) {
 
+        Panorama.prototype.load.call( this, false );
+
         src = src || this.src;
 
         if ( !src ) { 

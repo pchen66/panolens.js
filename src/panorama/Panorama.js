@@ -149,9 +149,20 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
     },
 
-    load: function () {
+    /**
+     * Load Panorama
+     * @param {boolean} immediate load immediately
+     */
+    load: function ( immediate = true ) {
 
-        this.onLoad();
+        /**
+         * Start loading panorama event
+         * @type {object}
+         * @event Panorama#load-start
+         */
+        this.dispatchEvent( { type: 'load-start' } );
+
+        if (immediate) this.onLoad();
 		
     },
 

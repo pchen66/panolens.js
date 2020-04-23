@@ -62,6 +62,8 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     load: function () {
 
+        Panorama.prototype.load.call( this, false );
+
         const { muted, loop, autoplay, playsinline, crossOrigin } = this.options;
         const video = this.videoElement;
         const onProgress = this.onProgress.bind( this );
