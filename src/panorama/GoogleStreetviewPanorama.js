@@ -1,3 +1,4 @@
+import { Panorama } from './Panorama';
 import { ImagePanorama } from './ImagePanorama';
 import { GoogleStreetviewLoader } from '../loaders/GoogleStreetviewLoader';
 import * as THREE from 'three';
