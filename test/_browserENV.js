@@ -152,7 +152,7 @@ const customDocument = function () {
 
 	this.querySelector = function ( selector ) {
 
-		if ( selector === 'panolens-style-addon' ) { return null; }
+		if ( selector === 'panolens-style-addon' || selector === '#panolens-gmapscript' ) { return null; }
 
 		return new customElement();
 
@@ -489,10 +489,15 @@ customVideo.prototype = Object.assign( Object.create( customElement.prototype ),
 
 const customScript = function () {
 
+	let id = null;
 	let src = null;
 	let onload = () => {};
 
 	Object.defineProperties( this, {
+		'id': {
+			get: function(){ return _id; },
+			set: function( _id ){ id = _id; }
+		},
 		'src': {
 			get: function(){ return src; },
 			set: function( url ){ src = url; }
@@ -521,6 +526,7 @@ const customScript = function () {
 				}
 			}
 		};
+		console.log('google loaded')
 		onload();
 	}, 1000 );
 
