@@ -349,7 +349,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
                 
                 } else {
 
-                    ep.onEnter();
+                    ep.fadeIn();
 
                 }
 
@@ -359,7 +359,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
                 const onLeaveComplete = () => {
 
-                    ep.onEnter();
+                    ep.fadeIn();
                     lp.removeEventListener( 'leave-complete', onLeaveComplete );
     
                 };
@@ -368,25 +368,17 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             }
 
-            if( ep.loaded ) {
+            const onReady = () => {
 
                 onSwitch();
+                ep.removeEventListener( 'ready', onReady );
 
-            } else {
+            };
 
-                const onLoaded = () => {
-
-                    onSwitch();
-                    ep.removeEventListener( 'loaded', onLoaded );
-    
-                };
-
-                ep.addEventListener( 'loaded', onLoaded );
-                ep.load();
-
-            }
+            ep.addEventListener( 'ready', onReady );
 
             this.panorama = ep;
+            this.panorama.onEnter();
 			
         }
 

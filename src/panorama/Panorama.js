@@ -254,6 +254,13 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
          */
         this.dispatchEvent( { type: 'loaded' } );
 
+        /**
+         * Panorama is ready to go
+         * @event Panorama#ready
+         * @type {object} 
+         */
+        this.dispatchEvent( { type: 'ready' } );
+
     },
 
     /**
@@ -629,7 +636,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 				
                 if ( this.loaded ) {
 
-                    this.fadeIn( duration );
+                    /**
+                     * Panorama is ready to go
+                     * @event Panorama#ready
+                     * @type {object} 
+                     */
+                    this.dispatchEvent( { type: 'ready' } );
 
                 } else {
 
