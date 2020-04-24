@@ -46,7 +46,7 @@ function PanoMomentPanorama ( identifier, options = {} ) {
     this.addEventListener( 'panolens-controls', data => this.onPanolensControls( data ) );
     this.addEventListener( 'enter-fade-start', () => this.enter() );
     this.addEventListener( 'leave-complete', () => this.leave() );
-    this.addEventListener( PANOMOMENT.LOAD, () => this.disableControl() );
+    this.addEventListener( 'load-start', () => this.disableControl() );
     this.addEventListener( PANOMOMENT.READY, () => this.enableControl() );
 
 }
