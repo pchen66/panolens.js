@@ -38,6 +38,9 @@ import TWEEN from '@tweenjs/tween.js';
  * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
  * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
  * @param {THREE.Vector3} [options.initialLookAt=new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )] - Initial looking at vector
+ * @param {boolean} [options.momentum=false] - Use momentum even during mouse/touch move
+ * @param {number} [options.momentumFactor=2.5] - Momentum factor
+ * @param {number} [options.dampingFactor=.07] - Damping factor
  */
 function Viewer ( options = {} ) {
 
@@ -61,7 +64,10 @@ function Viewer ( options = {} ) {
         autoRotate: false,
         autoRotateSpeed: 2.0,
         autoRotateActivationDuration: 5000,
-        initialLookAt: new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )
+        initialLookAt: new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER ),
+        momentum: true,
+        momentumFactor: 2.5,
+        dampingFactor: .07
 
     }, options );
 
@@ -155,7 +161,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     setupControls: function ( camera, container ) {
 
-        const { autoRotate, autoRotateSpeed, horizontalView } = this.options;
+        const { autoRotate, autoRotateSpeed, horizontalView, momentum, momentumFactor, dampingFactor } = this.options;
 
         const orbit = new OrbitControls( camera, container );
         orbit.id = 'orbit';
@@ -164,6 +170,9 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         orbit.noPan = true;
         orbit.autoRotate = autoRotate;
         orbit.autoRotateSpeed = autoRotateSpeed;
+        orbit.momentum = momentum;
+        orbit.momentumFactor = momentumFactor;
+        orbit.dampingFactor = dampingFactor;
 
         if ( horizontalView ) {
 
@@ -172,7 +181,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         }
 
-        const orient = new DeviceOrientationControls( camera, container );
+        const orient = new DeviceOrientationControls( camera );
         orient.id = 'device-orientation';
         orient.index = CONTROLS.DEVICEORIENTATION;
         orient.enabled = false;
@@ -992,20 +1001,25 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @memberOf Viewer
      * @instance
      */
-    enableControl: function ( index ) {
+    enableControl: function ( index = CONTROLS.ORBIT ) {
 
-        index = ( index >= 0 && index < this.controls.length ) ? index : 0;
+        const { control: { index: currentControlIndex }, DeviceOrientationControls } = this;
 
-        if( this.control instanceof DeviceOrientationControls ) this.control.disconnect();
+        if( index === currentControlIndex ) {                   // ignore
 
-        this.control.enabled = false;
+            return;
+
+        } else if( index === CONTROLS.DEVICEORIENTATION ) {     // device orientation
+
+            DeviceOrientationControls.connect();
+
+        } else {
+
+            DeviceOrientationControls.disconnect();             // orbit
+
+        }
+
         this.control = this.controls[ index ];
-        this.control.enabled = true;
-        this.control.update();
-        
-        if( this.control instanceof DeviceOrientationControls ) this.control.connect();
-        
-        this.setControlCenter( this.getRaycastViewCenter() );
         this.activateWidgetItem( index, undefined );
         this.onChange();
 
@@ -1099,13 +1113,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     rotateControlLeft: function ( left ) {
 
-        this.control.rotateLeft( left );
+        this.OrbitControls.rotateLeftStatic( left );
 
     },
 
     rotateControlUp: function ( up ) {
 
-        this.control.rotateUp( up );
+        this.OrbitControls.rotateUpStatic( up );
 
     },
 
@@ -1764,26 +1778,37 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     update: function () {
 
+        const { scene, control, OrbitControls, DeviceOrientationControls } = this;
+
+        // Tween Update
         TWEEN.update();
 
-        this.updateCallbacks.forEach( function( callback ){ callback(); } );
+        // Callbacks Update
+        this.updateCallbacks.forEach( callback => callback() );
 
-        this.control.update();
+        // Control Update
+        OrbitControls.update();
+        if ( control === DeviceOrientationControls ) {
+            DeviceOrientationControls.update(OrbitControls.publicSphericalDelta.theta);
+        }
 
-        this.scene.traverse( function( child ){
+        // Infospot Update
+        const v3 = new THREE.Vector3();
+
+        scene.traverse( function( child ){
             if ( child instanceof Infospot 
-				&& child.element 
-				&& ( this.hoverObject === child 
-					|| child.element.style.display !== 'none' 
-					|| (child.element.left && child.element.left.style.display !== 'none')
-					|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
+                && child.element 
+                && ( this.hoverObject === child 
+                    || child.element.style.display !== 'none' 
+                    || (child.element.left && child.element.left.style.display !== 'none')
+                    || (child.element.right && child.element.right.style.display !== 'none') ) ) {
                 if ( this.checkSpriteInViewport( child ) ) {
-                    const { x, y } = this.getScreenVector( child.getWorldPosition( new THREE.Vector3() ) );
+                    const { x, y } = this.getScreenVector( child.getWorldPosition( v3 ) );
                     child.translateElement( x, y );
                 } else {
                     child.onDismiss();
                 }
-				
+                
             }
         }.bind( this ) );
 
