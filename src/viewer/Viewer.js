@@ -2044,11 +2044,25 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     onPanoramaDispose: function ( panorama ) {
 
+        const { scene } = this;
+        const infospotDisposeMapper = infospot => infospot.toPanorama !== panorama ? infospot : infospot.dispose();
+
         if ( panorama instanceof VideoPanorama ) {
 
             this.hideVideoWidget();
 
         }
+
+        // traverse the scene to find association
+        scene.traverse( object => {
+
+            if ( object instanceof Panorama ) {
+
+                object.linkedSpots = object.linkedSpots.map( infospotDisposeMapper ).filter( infospot => !!infospot );
+
+            }
+
+        } );
 
         if ( panorama === this.panorama ) {
 
