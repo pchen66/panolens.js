@@ -7025,7 +7025,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         this.leave();
 
-        this.PanoMoments.dispose();
+        // this.PanoMoments.dispose();
         this.PanoMoments = null;
         this.momentData = null;
 
@@ -10241,11 +10241,25 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      */
     onPanoramaDispose: function ( panorama ) {
 
+        const { scene } = this;
+        const infospotDisposeMapper = infospot => infospot.toPanorama !== panorama ? infospot : infospot.dispose();
+
         if ( panorama instanceof VideoPanorama ) {
 
             this.hideVideoWidget();
 
         }
+
+        // traverse the scene to find association
+        scene.traverse( object => {
+
+            if ( object instanceof Panorama ) {
+
+                object.linkedSpots = object.linkedSpots.map( infospotDisposeMapper ).filter( infospot => !!infospot );
+
+            }
+
+        } );
 
         if ( panorama === this.panorama ) {
 
