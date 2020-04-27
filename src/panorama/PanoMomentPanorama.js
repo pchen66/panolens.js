@@ -67,6 +67,10 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
      * @param {THREE.Object[]} controls 
      */
     onPanolensControls: function( { controls } ) {
+
+        const [ { minPolarAngle, maxPolarAngle } ] = controls;
+
+        Object.assign( this.defaults, { minPolarAngle, maxPolarAngle } );
         
         this.controls = controls;
 
@@ -260,10 +264,14 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
      */
     resetAzimuthAngleLimits: function( reset = false ) {
 
-        const { controls: [ OrbitControls ], 
-            momentData: { contains_parallax, min_vertical_fov } , defaults, camera } = this;
+        const { 
+            controls: [ OrbitControls ], 
+            momentData: { contains_parallax, min_vertical_fov }, 
+            defaults: { minPolarAngle, maxPolarAngle }, 
+            camera 
+        } = this;
 
-        if ( !contains_parallax ) return;
+        if ( !contains_parallax && !reset ) return;
 
         const delta = THREE.Math.degToRad( ( 0.95 * min_vertical_fov - camera.fov ) / 2 );
         const angles = {
@@ -271,7 +279,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
             maxPolarAngle: Math.PI / 2 + delta
         };
 
-        Object.assign( OrbitControls, reset ? defaults : angles );
+        Object.assign( OrbitControls, reset ? { minPolarAngle, maxPolarAngle } : angles );
 
     },
 

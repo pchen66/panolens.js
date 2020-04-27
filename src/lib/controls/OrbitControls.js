@@ -129,6 +129,9 @@ function OrbitControls ( object, domElement ) {
 
     let state = STATE.NONE;
 
+    // eslint-disable-next-line no-unused-vars
+    let keyUp, keyBottom, keyLeft, keyRight;
+
     // for reset
 
     this.target0 = this.target.clone();
