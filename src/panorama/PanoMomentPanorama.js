@@ -378,7 +378,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         this.leave();
 
-        // this.PanoMoments.dispose();
+        this.PanoMoments.dispose();
         this.PanoMoments = null;
         this.momentData = null;
 
