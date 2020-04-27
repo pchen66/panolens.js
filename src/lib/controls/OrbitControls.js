@@ -66,7 +66,7 @@ function OrbitControls ( object, domElement ) {
     this.speedLimit = 0.04;
     this.publicSphericalDelta = new THREE.Spherical();
     this.momentum = true;
-    this.momentumFactor = 2.5;
+    this.momentumFactor = 7.5;
 
     this.enableDamping = true;
     this.dampingFactor = 0.03;

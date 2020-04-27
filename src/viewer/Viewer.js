@@ -27,7 +27,6 @@ import TWEEN from '@tweenjs/tween.js';
  * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
  * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
  * @param {number}  [options.cameraFov=60] - Camera field of view value
- * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
  * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
  * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection in ms
  * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
@@ -38,9 +37,9 @@ import TWEEN from '@tweenjs/tween.js';
  * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
  * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
  * @param {THREE.Vector3} [options.initialLookAt=new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )] - Initial looking at vector
- * @param {boolean} [options.momentum=false] - Use momentum even during mouse/touch move
- * @param {number} [options.momentumFactor=2.5] - Momentum factor
- * @param {number} [options.dampingFactor=.07] - Damping factor
+ * @param {boolean} [options.momentum=true] - Use momentum even during mouse/touch move
+ * @param {number} [options.rotateSpeed=-1.0] - Drag Rotation Speed
+ * @param {number} [options.dampingFactor=.1] - Damping factor
  */
 function Viewer ( options = {} ) {
 
@@ -66,8 +65,8 @@ function Viewer ( options = {} ) {
         autoRotateActivationDuration: 5000,
         initialLookAt: new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER ),
         momentum: true,
-        momentumFactor: 2.5,
-        dampingFactor: .07
+        rotateSpeed: -1.0,
+        dampingFactor: 0.1
 
     }, options );
 
@@ -161,7 +160,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     setupControls: function ( camera, container ) {
 
-        const { autoRotate, autoRotateSpeed, horizontalView, momentum, momentumFactor, dampingFactor } = this.options;
+        const { autoRotate, autoRotateSpeed, horizontalView, momentum, rotateSpeed, dampingFactor } = this.options;
 
         const orbit = new OrbitControls( camera, container );
         orbit.id = 'orbit';
@@ -171,7 +170,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         orbit.autoRotate = autoRotate;
         orbit.autoRotateSpeed = autoRotateSpeed;
         orbit.momentum = momentum;
-        orbit.momentumFactor = momentumFactor;
+        orbit.rotateSpeed = rotateSpeed;
         orbit.dampingFactor = dampingFactor;
 
         if ( horizontalView ) {
@@ -1090,8 +1089,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     reverseDraggingDirection: function () {
 
+        console.warn('reverseDragging option is deprecated. Please use rotateSpeed to indicate strength and direction');
         this.OrbitControls.rotateSpeed *= -1;
-        this.OrbitControls.momentumScalingFactor *= -1;
 
     },
 
