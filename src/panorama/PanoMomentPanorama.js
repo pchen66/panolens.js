@@ -37,6 +37,7 @@ function PanoMomentPanorama ( identifier ) {
     this.updateMomentum = ( up, left ) => this.momentumFunction( up, left );
 
     // Event Listeners
+    this.addEventListener( 'window-resize', () => this.onWindowResize() );
     this.addEventListener( 'panolens-camera', data => this.onPanolensCamera( data ) );
     this.addEventListener( 'panolens-controls', data => this.onPanolensControls( data ) );
     this.addEventListener( 'enter-fade-start', () => this.enter() );
@@ -49,6 +50,16 @@ function PanoMomentPanorama ( identifier ) {
 PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     constructor: PanoMomentPanorama,
+
+    /**
+     * When window is resized
+     * @param {width, height} 
+     */
+    onWindowResize: function() {
+
+        if(this.active) this.resetControlLimits(false);
+
+    },
 
     /**
      * When camera reference dispatched
@@ -150,8 +161,8 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         if ( !momentData ) return;
 
-        this.resetAzimuthAngleLimits( reset );
         this.resetFOVLimits( reset );
+        this.resetAzimuthAngleLimits( reset );
 
     },
 
@@ -207,7 +218,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         if( (status !== PANOMOMENT.FIRST_FRAME_DECODED && status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
         
         const rotation = THREE.Math.radToDeg(camera.rotation.y) + 180;
-        const yaw = (rotation * (momentData.clockwise ? -1.0 : 1.0) + 90) % 360;
+        const yaw = ((momentData.clockwise ? 90 : -90) - rotation) % 360;
 
         // textureReady() must be called before render() 
         if (this.PanoMoments.textureReady()) this.getTexture().needsUpdate = true;
