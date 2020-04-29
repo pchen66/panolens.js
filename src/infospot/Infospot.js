@@ -100,6 +100,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     this.addEventListener( 'hoverleave', this.onHoverEnd );
     this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
     this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+    this.addEventListener( 'panorama-leave', this.onDismiss );
     this.addEventListener( 'dismiss', this.onDismiss );
     this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
 

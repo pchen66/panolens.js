@@ -697,12 +697,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
          */
         this.dispatchEvent( { type: 'leave' } );
 
-        this.children.forEach( child => {
+        // dispatch panorama-leave to descendents
+        this.traverse( child => child.dispatchEvent( { type: 'panorama-leave' } ));
 
-            child.dispatchEvent( { type: 'panorama-leave' } );
-
-        } );
-
+        // mark active
         this.active = false;
 
     },
