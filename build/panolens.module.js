@@ -5034,7 +5034,7 @@ BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype )
 /**
  * User Agent
  */
-const ua = navigator.userAgent || navigator.vendor || window.opera;
+const ua = window.navigator.userAgent || window.navigator.vendor || window.opera;
 
 /**
  * Check if mobile device
@@ -8019,7 +8019,7 @@ function DeviceOrientationControls ( object ) {
 
     };
 
-    this.update = function ({ theta }) {
+    this.update = function ({ theta } = {}) {
 
         if ( scope.enabled === false ) return;
 

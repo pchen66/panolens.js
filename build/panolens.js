@@ -5038,7 +5038,7 @@
 	/**
 	 * User Agent
 	 */
-	const ua = navigator.userAgent || navigator.vendor || window.opera;
+	const ua = window.navigator.userAgent || window.navigator.vendor || window.opera;
 
 	/**
 	 * Check if mobile device
@@ -8023,7 +8023,7 @@
 
 	    };
 
-	    this.update = function ({ theta }) {
+	    this.update = function ({ theta } = {}) {
 
 	        if ( scope.enabled === false ) return;
 
