@@ -1788,7 +1788,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         // Control Update
         OrbitControls.update();
         if ( control === DeviceOrientationControls ) {
-            DeviceOrientationControls.update(OrbitControls.publicSphericalDelta.theta);
+            DeviceOrientationControls.update(OrbitControls.publicSphericalDelta.data);
         }
 
         // Infospot Update

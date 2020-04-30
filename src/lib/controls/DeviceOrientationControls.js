@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { isAndroid } from '../../utils/Utility';
 
 /**
  * @classdesc Device Orientation Control
@@ -17,14 +18,27 @@ function DeviceOrientationControls ( object ) {
 
     this.enabled = true;
 
-    this.deviceOrientation = {};
+    this.deviceOrientation = null;
     this.screenOrientation = 0;
 
     this.alphaOffset = 0; // radians
+    this.initialOffset = null;
 
-    const onDeviceOrientationChangeEvent = function ( event ) {
+    const onDeviceOrientationChangeEvent = function ( { alpha, beta, gamma } ) {
 
-        scope.deviceOrientation = event;
+        if( isAndroid ) {
+
+            if( scope.initialOffset === null ) {
+                scope.initialOffset = alpha;
+            }
+ 
+            alpha = alpha - scope.initialOffset;
+
+            if(alpha < 0) alpha += 360;
+
+        }
+
+        scope.deviceOrientation = { alpha, beta, gamma };
 
     };
 
@@ -36,8 +50,8 @@ function DeviceOrientationControls ( object ) {
 
     const onRegisterEvent = function() {
 
-        window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, { passive: false } );
-        window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, { passive: false } );
+        window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
+        window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
 
     }.bind( this );
 
@@ -109,7 +123,7 @@ function DeviceOrientationControls ( object ) {
 
     };
 
-    this.update = function (thetaDamping = 0) {
+    this.update = function ({ theta }) {
 
         if ( scope.enabled === false ) return;
 
@@ -125,9 +139,7 @@ function DeviceOrientationControls ( object ) {
 
             const orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
 
-            scope.thetaOffsetSum += thetaDamping;
-        
-            setObjectQuaternion( scope.object.quaternion, alpha + scope.thetaOffsetSum, beta, gamma, orient );
+            setObjectQuaternion( scope.object.quaternion, alpha + theta, beta, gamma, orient );
 
         }
 

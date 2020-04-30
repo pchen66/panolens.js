@@ -345,11 +345,12 @@ function OrbitControls ( object, domElement ) {
             thetaDelta = THREE.Math.clamp(thetaDelta, -this.speedLimit, this.speedLimit);
             phiDelta = THREE.Math.clamp(phiDelta, -this.speedLimit, this.speedLimit);
         }
-
-        scope.publicSphericalDelta.theta = thetaDelta; // DeviceOrientationControl support
-
+        
         theta += thetaDelta;
         phi += phiDelta;
+
+        // DeviceOrientationControl support
+        scope.publicSphericalDelta.data = { theta }; 
 
         // restrict theta to be between desired limits
         theta = Math.max( this.minAzimuthAngle, Math.min( this.maxAzimuthAngle, theta ) );
