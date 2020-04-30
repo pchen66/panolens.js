@@ -83,13 +83,16 @@ test('Window Orientation Change Event', t => {
 
 test('Device Orientation Change Event', t => {
     const camera = new THREE.PerspectiveCamera();
-    const container = document.createElement( 'div' );
-    const control = new DeviceOrientationControls( camera, container );
+    const control = new DeviceOrientationControls( camera );
     const event = new window.DeviceOrientationEvent();
+    const orient = { alpha: 1, beta: 2, gamma: 3};
+    Object.assign(event, orient);
     control.connect();
     window.dispatchEvent( event );
     control.update();
-    t.is(control.deviceOrientation, event);
+    t.is(control.deviceOrientation.alpha, orient.alpha);
+    t.is(control.deviceOrientation.beta, orient.beta);
+    t.is(control.deviceOrientation.gamma, orient.gamma);
     t.pass();
     control.disconnect();
 });

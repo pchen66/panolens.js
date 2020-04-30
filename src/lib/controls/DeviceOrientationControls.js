@@ -123,7 +123,7 @@ function DeviceOrientationControls ( object ) {
 
     };
 
-    this.update = function ({ theta }) {
+    this.update = function ({ theta } = {}) {
 
         if ( scope.enabled === false ) return;
 
