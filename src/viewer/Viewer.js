@@ -9,6 +9,7 @@ import { Infospot } from '../infospot/Infospot';
 import { DataImage } from '../DataImage';
 import { Panorama } from '../panorama/Panorama';
 import { VideoPanorama } from '../panorama/VideoPanorama';
+import { isAndroid } from '../utils/Utility';
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
 
@@ -1253,8 +1254,6 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             this.container._height = windowHeight;
 
         } else {
-
-            const isAndroid = /(android)/i.test(window.navigator.userAgent);
 
             const adjustWidth = isAndroid 
                 ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 

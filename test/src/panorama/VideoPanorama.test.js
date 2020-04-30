@@ -67,27 +67,6 @@ test.cb('Preloaded Video', t => {
     panorama.load();
 });
 
-test('Load Video on Mobile Browser with autoplay and muted', t => {
-    const videoElement = document.createElement( 'video' );
-    videoElement.readyState = 4;
-    global.userAgent = global.mobileUserAgent;
-    const panorama = new VideoPanorama( videoURL, { videoElement, autoplay: true, muted: true } );
-    t.true(panorama.isMobile());
-    panorama.load();
-    global.userAgent = global.desktopUserAgent;
-});
-
-test('Load Video on Mobile Browser without autoplay or muted', t => {
-    const videoElement = document.createElement( 'video' );
-    videoElement.src = 'panolensvideo';
-    videoElement.readyState = 4;
-    global.userAgent = global.mobileUserAgent;
-    const panorama = new VideoPanorama( videoURL, { videoElement, autoplay: false, muted: false } );
-    t.true(panorama.isMobile());
-    panorama.load();
-    global.userAgent = global.desktopUserAgent;
-});
-
 test.cb('Video Non Loopable Video', t => {
     const panorama = new VideoPanorama( videoURL, { loop: false } );
 
@@ -95,7 +74,7 @@ test.cb('Video Non Loopable Video', t => {
         panorama.playVideo();
         setTimeout( ()=> {
             t.end();
-        }, 5000 )
+        }, 5000 );
     } );
     panorama.load();
 });
