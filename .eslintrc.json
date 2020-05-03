@@ -1,0 +1,30 @@
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-expressions": "error",
+    "no-unused-vars": "error",
+    "semi": 2,
+    "indent": ["error", 4],
+    "spaced-comment": ["error", "always"],
+    "multiline-comment-style": ["error", "starred-block"],
+    "linebreak-style": ["error", "unix"],
+    "key-spacing": [
+      "error",
+      {
+        "beforeColon": false,
+        "afterColon": true
+      }
+    ],
+    "quotes": [
+      "error",
+      "single",
+      {
+        "allowTemplateLiterals": true
+      }
+    ]
+  }
+}

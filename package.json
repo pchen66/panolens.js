@@ -51,47 +51,6 @@
     "url": "https://github.com/pchen66/panolens.js/issues"
   },
   "homepage": "https://pchen66.github.io/Panolens/",
-  "eslintConfig": {
-    "parserOptions": {
-      "ecmaVersion": 8,
-      "sourceType": "module"
-    },
-    "rules": {
-      "no-unused-expressions": "error",
-      "no-unused-vars": "error",
-      "semi": 2,
-      "indent": [
-        "error",
-        4
-      ],
-      "spaced-comment": [
-        "error",
-        "always"
-      ],
-      "multiline-comment-style": [
-        "error",
-        "starred-block"
-      ],
-      "linebreak-style": [
-        "error",
-        "unix"
-      ],
-      "key-spacing": [
-        "error",
-        {
-          "beforeColon": false,
-          "afterColon": true
-        }
-      ],
-      "quotes": [
-        "error",
-        "single",
-        {
-          "allowTemplateLiterals": true
-        }
-      ]
-    }
-  },
   "ava": {
     "files": [
       "./test/**/*.js"
@@ -114,6 +73,7 @@
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@tweenjs/tween.js": "^18.5.0",
     "ava": "^3.5.0",
+    "babel-eslint": "^10.1.0",
     "browser-env": "^3.3.0",
     "concurrently": "^5.1.0",
     "coveralls": "^3.0.11",
@@ -121,7 +81,7 @@
     "eslint": "^6.8.0",
     "esm": "^3.2.25",
     "google-closure-compiler": "^20200315.0.0",
-    "http-server": "^0.12.1",
+    "http-server": "^0.12.3",
     "jsdoc": "^3.6.3",
     "local-web-server": "^3.0.7",
     "nyc": "^14.1.1",
