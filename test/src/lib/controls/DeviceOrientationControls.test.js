@@ -90,7 +90,7 @@ test('Device Orientation Change Event', t => {
     control.connect();
     window.dispatchEvent( event );
     control.update();
-    t.is(control.deviceOrientation.alpha, orient.alpha);
+    t.is(control.deviceOrientation.alpha, 0);
     t.is(control.deviceOrientation.beta, orient.beta);
     t.is(control.deviceOrientation.gamma, orient.gamma);
     t.pass();
