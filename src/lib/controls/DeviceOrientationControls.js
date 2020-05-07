@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { isAndroid } from '../../utils/Utility';
 
 /**
  * @classdesc Device Orientation Control
@@ -14,8 +13,6 @@ function DeviceOrientationControls ( object ) {
     this.object = object;
     this.object.rotation.reorder( 'YXZ' );
 
-    this.thetaOffsetSum = 0;
-
     this.enabled = true;
 
     this.deviceOrientation = null;
@@ -26,17 +23,13 @@ function DeviceOrientationControls ( object ) {
 
     const onDeviceOrientationChangeEvent = function ( { alpha, beta, gamma } ) {
 
-        if( isAndroid ) {
-
-            if( scope.initialOffset === null ) {
-                scope.initialOffset = alpha;
-            }
- 
-            alpha = alpha - scope.initialOffset;
-
-            if(alpha < 0) alpha += 360;
-
+        if( scope.initialOffset === null ) {
+            scope.initialOffset = alpha;
         }
+
+        alpha = alpha - scope.initialOffset;
+
+        if(alpha < 0) alpha += 360;
 
         scope.deviceOrientation = { alpha, beta, gamma };
 
@@ -120,10 +113,12 @@ function DeviceOrientationControls ( object ) {
         window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
 
         scope.enabled = false;
-
+        scope.deviceOrientation = null;
+        scope.initialOffset = null;
+        
     };
 
-    this.update = function ({ theta } = {}) {
+    this.update = function ({ theta = 0 } = { theta: 0 }) {
 
         if ( scope.enabled === false ) return;
 
@@ -152,6 +147,21 @@ function DeviceOrientationControls ( object ) {
 
     };
 
+    this.getAlpha = function() {
+
+        const { deviceOrientation: device } = scope;
+
+        return device && device.alpha ? THREE.Math.degToRad( device.alpha ) + scope.alphaOffset : 0;
+
+    };
+
+    this.getBeta = function() {
+
+        const { deviceOrientation: device } = scope;
+
+        return device && device.beta ? THREE.Math.degToRad( device.beta ) : 0;
+
+    };
 
 };
 

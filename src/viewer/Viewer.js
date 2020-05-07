@@ -102,9 +102,13 @@ function Viewer ( options = {} ) {
     this.touchSupported = 'ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch;
     this.tweenLeftAnimation = new TWEEN.Tween();
     this.tweenUpAnimation = new TWEEN.Tween();
+    this.tweenCanvasOpacityOut = new TWEEN.Tween();
+    this.tweenCanvasOpacityIn = new TWEEN.Tween();
     this.outputEnabled = false;
     this.viewIndicatorSize = indicatorSize;
     this.tempEnableReticle = enableReticle;
+
+    this.setupTween();
 
     this.handlerMouseUp = this.onMouseUp.bind( this );
     this.handlerMouseDown = this.onMouseDown.bind( this );
@@ -152,6 +156,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         renderer.autoClear = false;
         renderer.domElement.classList.add( 'panolens-canvas' );
         renderer.domElement.style.display = 'block';
+        renderer.domElement.style.transition = 'opacity 0.5s ease';
         container.style.backgroundColor = '#000';
         container.appendChild( renderer.domElement );
 
@@ -229,6 +234,15 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             return element;
             
         }
+
+    },
+
+    setupTween: function() {
+
+        this.tweenCanvasOpacityOut.to({}, 500).easing(TWEEN.Easing.Exponential.Out);
+        this.tweenCanvasOpacityIn.to({}, 500).easing(TWEEN.Easing.Exponential.Out);
+
+        this.tweenCanvasOpacityOut.chain(this.tweenCanvasOpacityIn);
 
     },
 
@@ -1003,7 +1017,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     enableControl: function ( index = CONTROLS.ORBIT ) {
 
-        const { control: { index: currentControlIndex }, DeviceOrientationControls } = this;
+        const { control: { index: currentControlIndex }, OrbitControls, DeviceOrientationControls, container } = this;
+        const canvas = container.querySelector('canvas');
 
         if( index === currentControlIndex ) {                   // ignore
 
@@ -1011,17 +1026,48 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         } else if( index === CONTROLS.DEVICEORIENTATION ) {     // device orientation
 
-            DeviceOrientationControls.connect();
+            this.tweenCanvasOpacityOut.onStart(() => {
+                OrbitControls.enabled = false;
+                DeviceOrientationControls.enabled = false;
+                canvas.style.opacity = 0;
+            });
+
+            this.tweenCanvasOpacityIn.onStart(() => {
+                OrbitControls.enabled = true;
+                DeviceOrientationControls.connect();
+                canvas.style.opacity = 1;
+            });
+
+            this.tweenCanvasOpacityOut.start();
+
 
         } else {
 
-            DeviceOrientationControls.disconnect();             // orbit
+            const { getAlpha, getBeta } = DeviceOrientationControls;
+            const alpha = -getAlpha();
+            const beta = Math.PI / 2 - getBeta();
+            const center = this.getRaycastViewCenter();
+
+            this.tweenCanvasOpacityOut.onStart(() => {
+                OrbitControls.enabled = false;
+                DeviceOrientationControls.disconnect();
+                canvas.style.opacity = 0;
+            });
+
+            this.tweenCanvasOpacityIn.onStart(function() {
+                OrbitControls.enabled = true;
+                this.rotateControlLeft(alpha);
+                this.rotateControlUp(beta);
+                this.setControlCenter(center);
+                canvas.style.opacity = 1;
+            }.bind(this));
+
+            this.tweenCanvasOpacityOut.start();
 
         }
 
         this.control = this.controls[ index ];
         this.activateWidgetItem( index, undefined );
-        this.onChange();
 
     },
 
@@ -1785,7 +1831,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         this.updateCallbacks.forEach( callback => callback() );
 
         // Control Update
-        OrbitControls.update();
+        if ( OrbitControls.enabled ) OrbitControls.update();
         if ( control === DeviceOrientationControls ) {
             DeviceOrientationControls.update(OrbitControls.publicSphericalDelta.data);
         }
