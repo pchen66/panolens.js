@@ -1,6 +1,6 @@
 import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, Vector2, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BoxBufferGeometry, UniformsUtils, ShaderMaterial, BackSide, Object3D, BufferGeometry, BufferAttribute, MeshBasicMaterial, ShaderLib, Matrix4, Quaternion, PlaneBufferGeometry, Math as Math$1, Spherical, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, Raycaster, Frustum, WebGLRenderer, REVISION as REVISION$1 } from 'three';
 
-const version="0.11.0";const devDependencies={"@rollup/plugin-commonjs":"^11.0.2","@rollup/plugin-inject":"^4.0.1","@rollup/plugin-json":"^4.0.2","@rollup/plugin-node-resolve":"^7.1.1","@tweenjs/tween.js":"^18.5.0",ava:"^3.5.0","browser-env":"^3.3.0",concurrently:"^5.1.0",coveralls:"^3.0.11",docdash:"^1.2.0",eslint:"^6.8.0",esm:"^3.2.25","google-closure-compiler":"^20200315.0.0","http-server":"^0.12.1",jsdoc:"^3.6.3","local-web-server":"^3.0.7",nyc:"^14.1.1",rollup:"^2.3.2",three:"^0.105.2",xmlhttprequest:"^1.8.0"};
+const version="0.11.0";const devDependencies={"@rollup/plugin-commonjs":"^11.0.2","@rollup/plugin-inject":"^4.0.1","@rollup/plugin-json":"^4.0.2","@rollup/plugin-node-resolve":"^7.1.1","@tweenjs/tween.js":"^18.5.0",ava:"^3.5.0","babel-eslint":"^10.1.0","browser-env":"^3.3.0",concurrently:"^5.1.0",coveralls:"^3.0.11",docdash:"^1.2.0",eslint:"^6.8.0",esm:"^3.2.25","google-closure-compiler":"^20200315.0.0","http-server":"^0.12.3",jsdoc:"^3.6.3","local-web-server":"^3.0.7",nyc:"^14.1.1",rollup:"^2.3.2",three:"^0.105.2",xmlhttprequest:"^1.8.0"};
 
 /**
  * REVISION
@@ -7910,8 +7910,6 @@ function DeviceOrientationControls ( object ) {
     this.object = object;
     this.object.rotation.reorder( 'YXZ' );
 
-    this.thetaOffsetSum = 0;
-
     this.enabled = true;
 
     this.deviceOrientation = null;
@@ -7922,17 +7920,13 @@ function DeviceOrientationControls ( object ) {
 
     const onDeviceOrientationChangeEvent = function ( { alpha, beta, gamma } ) {
 
-        if( isAndroid ) {
-
-            if( scope.initialOffset === null ) {
-                scope.initialOffset = alpha;
-            }
- 
-            alpha = alpha - scope.initialOffset;
-
-            if(alpha < 0) alpha += 360;
-
+        if( scope.initialOffset === null ) {
+            scope.initialOffset = alpha;
         }
+
+        alpha = alpha - scope.initialOffset;
+
+        if(alpha < 0) alpha += 360;
 
         scope.deviceOrientation = { alpha, beta, gamma };
 
@@ -8016,10 +8010,12 @@ function DeviceOrientationControls ( object ) {
         window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
 
         scope.enabled = false;
-
+        scope.deviceOrientation = null;
+        scope.initialOffset = null;
+        
     };
 
-    this.update = function ({ theta } = {}) {
+    this.update = function ({ theta = 0 } = { theta: 0 }) {
 
         if ( scope.enabled === false ) return;
 
@@ -8048,6 +8044,21 @@ function DeviceOrientationControls ( object ) {
 
     };
 
+    this.getAlpha = function() {
+
+        const { deviceOrientation: device } = scope;
+
+        return device && device.alpha ? Math$1.degToRad( device.alpha ) + scope.alphaOffset : 0;
+
+    };
+
+    this.getBeta = function() {
+
+        const { deviceOrientation: device } = scope;
+
+        return device && device.beta ? Math$1.degToRad( device.beta ) : 0;
+
+    };
 
 }
 DeviceOrientationControls.prototype = Object.assign( Object.create( EventDispatcher.prototype), {
@@ -8339,9 +8350,13 @@ function Viewer ( options = {} ) {
     this.touchSupported = 'ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch;
     this.tweenLeftAnimation = new TWEEN.Tween();
     this.tweenUpAnimation = new TWEEN.Tween();
+    this.tweenCanvasOpacityOut = new TWEEN.Tween();
+    this.tweenCanvasOpacityIn = new TWEEN.Tween();
     this.outputEnabled = false;
     this.viewIndicatorSize = indicatorSize;
     this.tempEnableReticle = enableReticle;
+
+    this.setupTween();
 
     this.handlerMouseUp = this.onMouseUp.bind( this );
     this.handlerMouseDown = this.onMouseDown.bind( this );
@@ -8388,6 +8403,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         renderer.autoClear = false;
         renderer.domElement.classList.add( 'panolens-canvas' );
         renderer.domElement.style.display = 'block';
+        renderer.domElement.style.transition = 'opacity 0.5s ease';
         container.style.backgroundColor = '#000';
         container.appendChild( renderer.domElement );
 
@@ -8465,6 +8481,15 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             return element;
             
         }
+
+    },
+
+    setupTween: function() {
+
+        this.tweenCanvasOpacityOut.to({}, 500).easing(TWEEN.Easing.Exponential.Out);
+        this.tweenCanvasOpacityIn.to({}, 500).easing(TWEEN.Easing.Exponential.Out);
+
+        this.tweenCanvasOpacityOut.chain(this.tweenCanvasOpacityIn);
 
     },
 
@@ -9239,7 +9264,8 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      */
     enableControl: function ( index = CONTROLS.ORBIT ) {
 
-        const { control: { index: currentControlIndex }, DeviceOrientationControls } = this;
+        const { control: { index: currentControlIndex }, OrbitControls, DeviceOrientationControls, container } = this;
+        const canvas = container.querySelector('canvas');
 
         if( index === currentControlIndex ) {                   // ignore
 
@@ -9247,17 +9273,48 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         } else if( index === CONTROLS.DEVICEORIENTATION ) {     // device orientation
 
-            DeviceOrientationControls.connect();
+            this.tweenCanvasOpacityOut.onStart(() => {
+                OrbitControls.enabled = false;
+                DeviceOrientationControls.enabled = false;
+                canvas.style.opacity = 0;
+            });
+
+            this.tweenCanvasOpacityIn.onStart(() => {
+                OrbitControls.enabled = true;
+                DeviceOrientationControls.connect();
+                canvas.style.opacity = 1;
+            });
+
+            this.tweenCanvasOpacityOut.start();
+
 
         } else {
 
-            DeviceOrientationControls.disconnect();             // orbit
+            const { getAlpha, getBeta } = DeviceOrientationControls;
+            const alpha = -getAlpha();
+            const beta = Math.PI / 2 - getBeta();
+            const center = this.getRaycastViewCenter();
+
+            this.tweenCanvasOpacityOut.onStart(() => {
+                OrbitControls.enabled = false;
+                DeviceOrientationControls.disconnect();
+                canvas.style.opacity = 0;
+            });
+
+            this.tweenCanvasOpacityIn.onStart(function() {
+                OrbitControls.enabled = true;
+                this.rotateControlLeft(alpha);
+                this.rotateControlUp(beta);
+                this.setControlCenter(center);
+                canvas.style.opacity = 1;
+            }.bind(this));
+
+            this.tweenCanvasOpacityOut.start();
 
         }
 
         this.control = this.controls[ index ];
         this.activateWidgetItem( index, undefined );
-        this.onChange();
 
     },
 
@@ -10018,7 +10075,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         this.updateCallbacks.forEach( callback => callback() );
 
         // Control Update
-        OrbitControls.update();
+        if ( OrbitControls.enabled ) OrbitControls.update();
         if ( control === DeviceOrientationControls ) {
             DeviceOrientationControls.update(OrbitControls.publicSphericalDelta.data);
         }
