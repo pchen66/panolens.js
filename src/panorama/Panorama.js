@@ -83,8 +83,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
             vertexShader,
             uniforms,
             side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
+            transparent: true
     
         } );
 
@@ -495,37 +494,9 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
     setupTransitions: function () {
 
-        this.fadeInAnimation = new TWEEN.Tween( this.material )
-            .easing( TWEEN.Easing.Quartic.Out )
-            .onStart( function () {
+        this.fadeInAnimation = new TWEEN.Tween();
 
-                this.visible = true;
-                // this.material.visible = true;
-
-                /**
-                 * Enter panorama fade in start event
-                 * @event Panorama#enter-fade-start
-                 * @type {object} 
-                 */
-                this.dispatchEvent( { type: 'enter-fade-start' } );
-
-            }.bind( this ) );
-
-        this.fadeOutAnimation = new TWEEN.Tween( this.material )
-            .easing( TWEEN.Easing.Quartic.Out )
-            .onComplete( function () {
-
-                this.visible = false;
-                // this.material.visible = true;
-
-                /**
-                 * Leave panorama complete event
-                 * @event Panorama#leave-complete
-                 * @type {object} 
-                 */
-                this.dispatchEvent( { type: 'leave-complete' } );
-
-            }.bind( this ) );
+        this.fadeOutAnimation = new TWEEN.Tween();
 
         this.enterTransition = new TWEEN.Tween( this )
             .easing( TWEEN.Easing.Quartic.Out )
@@ -550,7 +521,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
         const alpha = this.material.opacity;
         const { uniforms } = this.material;
-
+//console.log(alpha)
         if ( uniforms && uniforms.opacity ) {
             uniforms.opacity.value = alpha;
         }
@@ -563,28 +534,42 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      * @instance
      * @fires Panorama#enter-fade-complete
      */
-    fadeIn: function ( duration ) {
+    fadeIn: function ( duration = this.animationDuration ) {
 
-        duration = duration >= 0 ? duration : this.animationDuration;
+        const { opacity } = this.material.uniforms;
+        const onStart = function() {
+
+            this.visible = true;
+
+            /**
+             * Enter panorama fade in start event
+             * @event Panorama#enter-fade-start
+             * @type {object} 
+             */
+            this.dispatchEvent( { type: 'enter-fade-start' } );
+
+        }.bind( this );
+        const onComplete = function() {
+
+            this.toggleInfospotVisibility( true, duration / 2 );
+
+            /**
+             * Enter panorama fade complete event
+             * @event Panorama#enter-fade-complete
+             * @type {object} 
+             */
+            this.dispatchEvent( { type: 'enter-fade-complete' } );
+
+        }.bind( this );
 
         this.fadeOutAnimation.stop();
-        this.fadeInAnimation
-            .to( { opacity: 1 }, duration )
-            .onUpdate( this.onFadeAnimationUpdate.bind( this ) )
-            .onComplete( function () {
-
-                this.toggleInfospotVisibility( true, duration / 2 );
-
-                /**
-                 * Enter panorama fade complete event
-                 * @event Panorama#enter-fade-complete
-                 * @type {object} 
-                 */
-                this.dispatchEvent( { type: 'enter-fade-complete' } );			
-
-            }.bind( this ) )
+        this.fadeInAnimation = new TWEEN.Tween( opacity )
+            .to( { value: 1 }, duration )
+            .easing( TWEEN.Easing.Quartic.Out )
+            .onStart( onStart )
+            .onComplete( onComplete )
             .start();
-
+        
     },
 
     /**
@@ -592,14 +577,27 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      * @memberOf Panorama
      * @instance
      */
-    fadeOut: function ( duration ) {
+    fadeOut: function ( duration = this.animationDuration ) {
 
-        duration = duration >= 0 ? duration : this.animationDuration;
+        const { opacity } = this.material.uniforms;
+        const onComplete = function() {
+
+            this.visible = false;
+
+            /**
+             * Leave panorama complete event
+             * @event Panorama#leave-complete
+             * @type {object} 
+             */
+            this.dispatchEvent( { type: 'leave-complete' } );
+
+        }.bind( this );
 
         this.fadeInAnimation.stop();
-        this.fadeOutAnimation
-            .to( { opacity: 0 }, duration )
-            .onUpdate( this.onFadeAnimationUpdate.bind( this ) )
+        this.fadeOutAnimation = new TWEEN.Tween( opacity )
+            .to( { value: 0 }, duration )
+            .easing( TWEEN.Easing.Quartic.Out )
+            .onComplete( onComplete )
             .start();
 
     },
