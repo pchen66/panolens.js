@@ -517,17 +517,6 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
     },
 
-    onFadeAnimationUpdate: function () {
-
-        const alpha = this.material.opacity;
-        const { uniforms } = this.material;
-//console.log(alpha)
-        if ( uniforms && uniforms.opacity ) {
-            uniforms.opacity.value = alpha;
-        }
-
-    },
-
     /**
      * Start fading in animation
      * @memberOf Panorama
