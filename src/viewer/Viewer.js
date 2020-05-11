@@ -9,6 +9,7 @@ import { Infospot } from '../infospot/Infospot';
 import { DataImage } from '../DataImage';
 import { Panorama } from '../panorama/Panorama';
 import { VideoPanorama } from '../panorama/VideoPanorama';
+import { PanoMomentPanorama } from '../panorama/PanoMomentPanorama';
 import { isAndroid } from '../utils/Utility';
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
@@ -364,12 +365,50 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             // Clear exisiting infospot
             this.hideInfospot();
 
-            const onSwitch = () => {
+            if( lp ) {
 
-                if ( lp ) { 
-                    
-                    lp.onLeave(); 
-                
+                if( ep instanceof PanoMomentPanorama ) {
+
+                    const onLeaveComplete = () => {
+    
+                        lp.removeEventListener( 'leave-complete', onLeaveComplete );
+                        delete lp._onLeaveComplete;
+                        if ( ep.active && ep.loaded ) ep.fadeIn();
+        
+                    };
+    
+                    lp._onLeaveComplete = onLeaveComplete;
+                    lp.addEventListener( 'leave-complete', onLeaveComplete );
+                }
+
+                if ( lp._onReady ) {
+
+                    lp.removeEventListener( 'ready', lp._onReady );
+                    delete lp._onReady;
+
+                }
+
+                lp.onLeave();
+            }
+
+            if( ep._onLeaveComplete ) {
+
+                ep.removeEventListener( 'leave-complete', ep._onLeaveComplete );
+                delete ep._onLeaveComplete;
+    
+            }
+
+            const onReady = () => {        
+
+                ep.removeEventListener( 'ready', onReady );
+                delete ep._onReady;
+
+                if( !ep.active ) return;
+
+                if( ep instanceof PanoMomentPanorama ) {
+
+                    if(!lp || (lp && !lp._onLeaveComplete)) ep.fadeIn();
+
                 } else {
 
                     ep.fadeIn();
@@ -378,27 +417,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             };
 
-            if ( lp ) {
-
-                const onLeaveComplete = () => {
-
-                    ep.fadeIn();
-                    lp.removeEventListener( 'leave-complete', onLeaveComplete );
-    
-                };
-
-                lp.addEventListener( 'leave-complete', onLeaveComplete );
-
-            }
-
-            const onReady = () => {
-
-                onSwitch();
-                ep.removeEventListener( 'ready', onReady );
-
-            };
-
             ep.addEventListener( 'ready', onReady );
+            ep._onReady = onReady;
 
             this.panorama = ep;
             this.panorama.onEnter();
