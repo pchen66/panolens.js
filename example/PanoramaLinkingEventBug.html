@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      a:link, a:visited{
+        color: #bdc3c7;
+      }
+
+      #textHolder {
+        z-index: 9999;
+        display: block;
+        width: 100%;
+        margin: 0 auto;
+        position: absolute;
+        bottom: 0;
+        padding: 10px;
+        color: #fff;
+        font-size: xx-large;
+        -webkit-box-align: center;
+            -ms-flex-align: center;
+                align-items: center;
+      }
+
+      .lds-ring {
+        display: inline-block;
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        padding-bottom: 40px;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+      }
+      .lds-ring.hidden {
+        opacity: 0;
+      }
+      .lds-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border: 8px solid #fff;
+        border-radius: 50%;
+        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: #fff transparent transparent transparent;
+      }
+      .lds-ring div:nth-child(1) {
+        animation-delay: -0.45s;
+      }
+      .lds-ring div:nth-child(2) {
+        animation-delay: -0.3s;
+      }
+      .lds-ring div:nth-child(3) {
+        animation-delay: -0.15s;
+      }
+      @keyframes lds-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+    </style>
+  </head>
+
+  <body>
+
+    <div class="lds-ring hidden"><div></div><div></div><div></div><div></div></div>
+    <div id="textHolder"><span id="text"></span></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
+    <script src="../build/panolens.js"></script>
+
+    <script>
+
+      const spinner = document.querySelector('.lds-ring');
+      spinner.show = function() {
+        this.classList.remove('hidden');
+      };
+      spinner.hide = function() {
+        this.classList.add('hidden');
+      };
+
+      var panomoment0, panomoment1, panomoment2, panomoment3, panomoment4, panomoment5;
+      
+      var panomoment0_identifier = {
+        moment_id: "5a90ce21d3df99000e981d11",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomoment1_identifier = {
+        moment_id: "58a5d20affe5e3000bdb34c0",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomoment2_identifier = {
+        moment_id: "594034259456f0000ba62f29",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomoment3_identifier = {
+        moment_id: "58a5f6dd482e59000ba26fee",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomoment4_identifier = {
+        moment_id: "5e95b8bf9e48cf0016e5d942",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var panomoment5_identifier = {
+        moment_id: "5a9060988ac76a000ec9ee74",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+      };
+
+      var currentViewerChildIndex = 0;
+
+      panomoment0 = new PANOLENS.PanoMomentPanorama( panomoment0_identifier, false );
+      panorama1 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
+      panorama2 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/building.jpg' );
+      panomoment1 = new PANOLENS.PanoMomentPanorama( panomoment1_identifier, false );
+      panomoment2 = new PANOLENS.PanoMomentPanorama( panomoment2_identifier, false );
+      panomoment3 = new PANOLENS.PanoMomentPanorama( panomoment3_identifier, false );
+      panomoment4 = new PANOLENS.PanoMomentPanorama( panomoment4_identifier, false );
+      panomoment5 = new PANOLENS.PanoMomentPanorama( panomoment5_identifier, false );
+
+      viewer = new PANOLENS.Viewer( { output: 'console', autoHideInfospot: false, momentum: true, dampingFactor: .03, rotateSpeed: -0.15 } );
+      //viewer.add( panomoment0, panomoment1, panomoment2, panomoment3, panomoment4, panomoment5);
+
+      const panoramas = [panomoment0, panomoment1, panomoment2, panomoment3, panomoment4, panomoment5, panorama1, panorama2];
+
+      panoramas.forEach((p, i) => {
+        const id = `p${i}`;
+        p.addEventListener('enter', onEnter);
+        p.addEventListener('enter', () => console.log(`${id} enter`));
+        p.addEventListener('load-start', () => {
+          console.log(`${id} load-start`);
+          spinner.show();
+        });
+        p.addEventListener('panomoments.ready', () => {
+          spinner.hide();
+        });
+        p.addEventListener('loaded', () => {
+          console.log(`${id} loaded`);
+          if(!(p instanceof PANOLENS.PanoMomentPanorama)) spinner.hide();
+        });
+        p.addEventListener('leave', () => console.log(`${id} leave`));
+      });
+
+      viewer.add( ...panoramas );
+
+      var previousButton = viewer.widget.createCustomItem({onTap: function() {loadPrevious()}, style: {'color': 'white', 'font-size': 'xx-large', 'background-color': 'transparent', 'border': 'none', 'position': 'absolute', 'top': '0px', 'right': '50px', 'outline': 'none', 'filter': 'none', 'height': '50px', 'width': '50px', 'display': 'inline-grid', 'align-items': 'center'}});
+      var nextButton = viewer.widget.createCustomItem({onTap: function() {loadNext()}, style: {'color': 'white', 'font-size': 'xx-large', 'background-color': 'transparent', 'border': 'none', 'position': 'absolute', 'top': '0px', 'right': '5px', 'outline': 'none', 'filter': 'none', 'height': '50px', 'width': '50px', 'display': 'inline-grid', 'align-items': 'center'}});
+      previousButton.innerHTML = '«';
+      nextButton.innerHTML = '»';
+      document.body.appendChild(previousButton);     
+      document.body.appendChild(nextButton);
+      
+      function loadNext () {
+        var newIndex = (currentViewerChildIndex + 1) % (viewer.scene.children.length);
+        viewer.setPanorama(viewer.scene.children[newIndex]);
+      }
+
+      function loadPrevious() {
+        var newIndex = (currentViewerChildIndex - 1) % (viewer.scene.children.length); 
+        if (newIndex < 0) {
+          newIndex = viewer.scene.children.length - 1;
+        }
+        viewer.setPanorama(viewer.scene.children[newIndex]);
+      }
+
+      function onEnter () {
+        var textHolder = document.getElementById("textHolder");
+        var text = document.getElementById("text");
+
+        switch(this) {
+          case panomoment0:
+            panomoment0.name = text.innerHTML = "panomoment0 - Water Scene";
+            break;
+          case panomoment1:
+            panomoment1.name = text.innerHTML = "panomoment1 - Grand Central";
+            break;
+          case panomoment2:           
+            panomoment2.name = text.innerHTML = "panomoment2 - Kids Jumping";
+            break;
+          case panomoment3:
+            panomoment3.name = text.innerHTML = "panomoment3 - Kitchen";
+            break;
+          case panomoment4:
+            panomoment4.name = text.innerHTML = "panomoment4 - Temple";
+            break;
+          case panomoment5:
+            panomoment5.name = text.innerHTML = "panomoment5 - Animation";
+            break;
+          case panorama1:
+            panorama1.name = text.innerHTML = "panorama1 - 1";
+            break;
+          case panorama2:
+            panorama2.name = text.innerHTML = "panorama2 - 2";
+            break;
+        }
+
+        const matchingPanorama = (element) => element == this;
+        currentViewerChildIndex = viewer.scene.children.findIndex(matchingPanorama);
+
+    }
+
+    </script>
+
+  </body>
+</html>
