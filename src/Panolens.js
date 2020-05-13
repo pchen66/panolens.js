@@ -16,13 +16,8 @@ export { Panorama } from './panorama/Panorama';
 export { ImagePanorama } from './panorama/ImagePanorama';
 export { ImagePartialPanorama } from './panorama/ImagePartialPanorama';
 export { EmptyPanorama } from './panorama/EmptyPanorama';
-export { CubePanorama } from './panorama/CubePanorama';
-export { BasicPanorama } from './panorama/BasicPanorama';
-export { VideoPanorama } from './panorama/VideoPanorama';
-export { GoogleStreetviewPanorama } from './panorama/GoogleStreetviewPanorama';
 export { LittlePlanet } from './panorama/LittlePlanet';
 export { ImageLittlePlanet } from './panorama/ImageLittlePlanet';
-export { CameraPanorama } from './panorama/CameraPanorama';
 export { Viewer } from './viewer/Viewer';
 import './Check';
 
