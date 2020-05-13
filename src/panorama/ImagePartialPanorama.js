@@ -10,7 +10,7 @@ import * as THREE from 'three';
 function ImagePartialPanorama ( image, _geometry, _material, imageWidth, imageHeight ) {
 
     const verticalOffset = -0.1;
-    const heightProportionDenominator = Math.PI;
+    let heightProportionDenominator = Math.PI;
 
     if (imageWidth && imageHeight) {
         heightProportionDenominator = imageWidth/imageHeight; // .3612328
