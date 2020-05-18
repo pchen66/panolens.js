@@ -706,19 +706,19 @@
 
 	        switch ( format ) {
 
-	        case STEREOFORMAT.TAB:
-	            repeat.set( 1.0, 0.5 );
-	            offset.set( 0.0, 0.5 );
-	            loffset.set( 0.0, 0.5 );
-	            roffset.set( 0.0, 0.0 );
-	            break;
+	            case STEREOFORMAT.TAB:
+	                repeat.set( 1.0, 0.5 );
+	                offset.set( 0.0, 0.5 );
+	                loffset.set( 0.0, 0.5 );
+	                roffset.set( 0.0, 0.0 );
+	                break;
 
-	        case STEREOFORMAT.SBS:
-	            repeat.set( 0.5, 1.0 );
-	            offset.set( 0.0, 0.0 );
-	            loffset.set( 0.0, 0.0 );
-	            roffset.set( 0.5, 0.0 );
-	            break;
+	            case STEREOFORMAT.SBS:
+	                repeat.set( 0.5, 1.0 );
+	                offset.set( 0.0, 0.0 );
+	                loffset.set( 0.0, 0.0 );
+	                roffset.set( 0.5, 0.0 );
+	                break;
 
 	        }
 
@@ -2903,30 +2903,30 @@
 
 	        switch( name ) {
 
-	        case 'fullscreen':
+	            case 'fullscreen':
 
-	            element = this.createFullscreenButton();
-	            this.fullscreenElement = element; 
+	                element = this.createFullscreenButton();
+	                this.fullscreenElement = element; 
 
-	            break;
+	                break;
 
-	        case 'setting':
+	            case 'setting':
 
-	            element = this.createSettingButton();
-	            this.settingElement = element;
+	                element = this.createSettingButton();
+	                this.settingElement = element;
 
-	            break;
+	                break;
 
-	        case 'video':
+	            case 'video':
 
-	            element = this.createVideoControl();
-	            this.videoElement = element;
+	                element = this.createVideoControl();
+	                this.videoElement = element;
 
-	            break;
+	                break;
 
-	        default:
+	            default:
 
-	            return;
+	                return;
 
 	        }
 
@@ -3951,7 +3951,7 @@
 	 * @description Equirectangular Shader
 	 * @module EquirectShader
 	 * @property {object} uniforms
-	 * @property {THREE.Texture} uniforms.tEquirect diffuse map
+	 * @property {THREE.Texture} uniforms.texture diffuse map
 	 * @property {number} uniforms.opacity image opacity
 	 * @property {string} vertexShader vertex shader
 	 * @property {string} fragmentShader fragment shader
@@ -3960,7 +3960,7 @@
 
 	    uniforms: {
 
-	        'tEquirect': { value: new THREE.Texture() },
+	        'texture': { value: new THREE.Texture() },
 	        'repeat': { value: new THREE.Vector2( 1.0, 1.0 ) },
 	        'offset': { value: new THREE.Vector2( 0.0, 0.0 ) },
 	        'opacity': { value: 1.0 }
@@ -3978,7 +3978,7 @@
     `,
 
 	    fragmentShader: `
-        uniform sampler2D tEquirect;
+        uniform sampler2D texture;
         uniform vec2 repeat;
         uniform vec2 offset;
         uniform float opacity;
@@ -3993,7 +3993,7 @@
             sampleUV += offset;
             sampleUV.x = fract(sampleUV.x);
             sampleUV.y = fract(sampleUV.y);
-            gl_FragColor = vec4(texture2D( tEquirect, sampleUV ).rgb, opacity);
+            gl_FragColor = vec4(texture2D( texture, sampleUV ).rgb, opacity);
         }
     `
 
@@ -4138,7 +4138,7 @@
 
 	    getTexture: function(){
 
-	        return this.material.uniforms.tEquirect.value;
+	        return this.material.uniforms.texture.value;
 
 	    },
 
@@ -4335,7 +4335,7 @@
 	     */
 	    updateTexture: function ( texture ) {
 
-	        this.material.uniforms.tEquirect.value = texture;
+	        this.material.uniforms.texture.value = texture;
 
 	    },
 
@@ -4695,7 +4695,7 @@
 
 	        const { material } = this;
 
-	        if ( material && material.uniforms && material.uniforms.tEquirect ) material.uniforms.tEquirect.value.dispose();
+	        if ( material && material.uniforms && material.uniforms.texture ) material.uniforms.texture.value.dispose();
 
 	        this.infospotAnimation.stop();
 	        this.fadeInAnimation.stop();
@@ -6139,24 +6139,24 @@
 
 	        switch ( inputCount ) {
 
-	        case 1:
+	            case 1:
 
-	            const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
-	            const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+	                const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
+	                const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
-	            this.dragging = true;
-	            this.userMouse.set( x, y );
+	                this.dragging = true;
+	                this.userMouse.set( x, y );
 
-	            break;
+	                break;
 
-	        case 2:
+	            case 2:
 
-	            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-	            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-	            const distance = Math.sqrt( dx * dx + dy * dy );
-	            this.userMouse.pinchDistance = distance;
+	                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+	                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+	                const distance = Math.sqrt( dx * dx + dy * dy );
+	                this.userMouse.pinchDistance = distance;
 
-	            break;
+	                break;
 
 	        }
 
@@ -6170,32 +6170,32 @@
 
 	        switch ( inputCount ) {
 
-	        case 1:
+	            case 1:
 
-	            const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
-	            const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+	                const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
+	                const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
-	            const angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
-	            const angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
+	                const angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
+	                const angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
 
-	            if ( this.dragging ) {
-	                this.quatA.setFromAxisAngle( this.vectorY, angleX );
-	                this.quatB.setFromAxisAngle( this.vectorX, angleY );
-	                this.quatCur.multiply( this.quatA ).multiply( this.quatB );
-	                this.userMouse.set( x, y );
-	            }
+	                if ( this.dragging ) {
+	                    this.quatA.setFromAxisAngle( this.vectorY, angleX );
+	                    this.quatB.setFromAxisAngle( this.vectorX, angleY );
+	                    this.quatCur.multiply( this.quatA ).multiply( this.quatB );
+	                    this.userMouse.set( x, y );
+	                }
 
-	            break;
+	                break;
 
-	        case 2:
+	            case 2:
 
-	            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-	            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-	            const distance = Math.sqrt( dx * dx + dy * dy );
+	                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+	                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+	                const distance = Math.sqrt( dx * dx + dy * dy );
 
-	            this.addZoomDelta( this.userMouse.pinchDistance - distance );
+	                this.addZoomDelta( this.userMouse.pinchDistance - distance );
 
-	            break;
+	                break;
 
 	        }
 
@@ -6518,7 +6518,7 @@
 
 	        this.stereo.updateUniformByFormat( format, this.material.uniforms );
 
-	        this.material.uniforms[ 'tEquirect' ].value = texture;
+	        this.material.uniforms[ 'texture' ].value = texture;
 
 	        ImagePanorama.prototype.onLoad.call( this, texture );
 
@@ -6553,7 +6553,7 @@
 	     */
 	    dispose: function () {	
 
-	        const { value } = this.material.uniforms.tEquirect;
+	        const { value } = this.material.uniforms.texture;
 
 	        if ( value instanceof THREE.Texture ) {
 
@@ -6610,7 +6610,7 @@
 
 	        this.stereo.updateUniformByFormat( format, this.material.uniforms );
 
-	        this.material.uniforms[ 'tEquirect' ].value = texture;
+	        this.material.uniforms[ 'texture' ].value = texture;
 
 	        VideoPanorama.prototype.onLoad.call( this );
 
@@ -6645,7 +6645,7 @@
 	     */
 	    dispose: function () {	
 
-	        const { value } = this.material.uniforms.tEquirect;
+	        const { value } = this.material.uniforms.texture;
 
 	        if ( value instanceof THREE.Texture ) {
 
@@ -6662,11 +6662,82 @@
 	/* eslint-disable */
 	var _0x5ea5=['playsinline','dispose','appendBuffer','autoplay','mediaRange','toLowerCase','currentIndex','querySelectorAll','video/mp4','failure\x20during\x20first\x20frame\x20download','readyState','timestampOffset','createObjectURL','send','moment_id','start_frame','splice','match','PanoMoment\x20Web\x20SDK\x20Disposed','clockwise','updating','onreadystatechange','onload','s3.amazonaws.com/data.panomoments.com','fastSeek','blob','addEventListener','failure\x20during\x20init','floor','replace','web_video_url','s3.amazonaws.com/staging-data.panomoments.com','Buffer\x20not\x20ready.\x20Retrying\x20in\x201\x20second.','responseType','canplaythrough','createElement','&public_api_key=','&moment_id=','filter','Invalid\x20Index','arrayBuffer','json','GET','then','Initialization','map','Representation','toString','index','test','public_api_key','web_mpd_url','text/xml','src','round','video','min','text','setAttribute','getAttribute','content','muted','SegmentURL','textureReady','indexOf','auto','FrameCount','&sdk_client_type=web','abs','bind','currentTime','moment_type','target','DONE','variation','set','https://my.panomoments.com/sdk/moment','timeupdate','append','&variation=','cache-control','https://staging-data.panomoments.com/','Range','split','parseFromString','https://data.panomoments.com/','ceil','firstPassCompleteIndex','addSourceBuffer','length','pragma','range','allow_streaming','application/x-www-form-urlencoded','pause','mode','Render\x20called\x20before\x20download\x20is\x20ready.\x20Wait\x20for\x20Ready\x20callback\x20before\x20calling\x20Render.','push','open','URL','POST','Error:\x20','userAgent','aspect_ratio','preload','bytes=','aligned','private_api_key','error','log','HAVE_ENOUGH_DATA','HAVE_FUTURE_DATA','no-cache'];(function(_0x229802,_0x5ea547){var _0x4b6d65=function(_0xd7fd9f){while(--_0xd7fd9f){_0x229802['push'](_0x229802['shift']());}};_0x4b6d65(++_0x5ea547);}(_0x5ea5,0xf5));var _0x4b6d=function(_0x229802,_0x5ea547){_0x229802=_0x229802-0x0;var _0x4b6d65=_0x5ea5[_0x229802];return _0x4b6d65;};function PanoMoments(_0x3d1178,_0x32fef6,_0x356de0,_0x2cada2){var _0x18a280=this;var _0x3ee2ce;var _0xd8607;var _0x4eac4e=[];var _0x2cf931;var _0x82e951=document[_0x4b6d('0x10')](_0x4b6d('0x24'));var _0x1ba7a8=[];var _0x1c34b3;var _0x5c78e0;var _0x57f1d8;var _0x5186f4;var _0x186df2;var _0x544415;var _0x24cb2c;var _0x4c8594;var _0x262cbd=[];var _0xca59ba=-0x1;var _0x2d50af;var _0x3a4493=[];var _0x54e868=0x0;var _0x1b1049=0x0;var _0x1f2cc5;var _0x5515a4;var _0x186df2;var _0x1add2f={};var _0x19debf;var _0x5143d4;var _0x4ee53f;var _0x2bd974;var _0x1197e7;var _0x1055e7;var _0x21f945;var _0x33d8d3;if(navigator[_0x4b6d('0x53')][_0x4b6d('0x6f')](/Android/i)){_0x57f1d8=!![];}else if(navigator[_0x4b6d('0x53')][_0x4b6d('0x6f')](/iPhone|iPad|iPod/i)){_0x5c78e0=!![];}if(/Chrome/i['test'](navigator[_0x4b6d('0x53')]['toLowerCase']())||/Chrome WebView/i[_0x4b6d('0x1e')](navigator['userAgent'][_0x4b6d('0x63')]())||/Chromium/i['test'](navigator['userAgent']['toLowerCase']())){_0x5186f4=!![];}else if(/Firefox/i[_0x4b6d('0x1e')](navigator[_0x4b6d('0x53')][_0x4b6d('0x63')]())||/Supermedium/i[_0x4b6d('0x1e')](navigator['userAgent'][_0x4b6d('0x63')]())){_0x186df2=!![];if(!_0x57f1d8){_0x5186f4=!![];}}else if(/Mobile Safari/i[_0x4b6d('0x1e')](navigator[_0x4b6d('0x53')][_0x4b6d('0x63')]()));else if(/Safari/i[_0x4b6d('0x1e')](navigator['userAgent'][_0x4b6d('0x63')]())&&!/Chrome/i['test'](navigator[_0x4b6d('0x53')][_0x4b6d('0x63')]()));if(!_0x5186f4){_0x82e951[_0x4b6d('0x27')](_0x4b6d('0x5e'),'');_0x82e951[_0x4b6d('0x2a')]=!![];_0x82e951[_0x4b6d('0x61')]=!![];}else {_0x2cf931=new MediaSource();_0x82e951[_0x4b6d('0x22')]=window[_0x4b6d('0x50')][_0x4b6d('0x6a')](_0x2cf931);_0x82e951[_0x4b6d('0x55')]=_0x4b6d('0x2e');_0x2cf931[_0x4b6d('0x7')]('sourceopen',_0x4bc2d2);}fetch(_0x4b6d('0x39'),{'method':_0x4b6d('0x51'),'body':'private_api_key='+_0x3d1178[_0x4b6d('0x58')]+_0x4b6d('0x11')+_0x3d1178[_0x4b6d('0x1f')]+_0x4b6d('0x12')+_0x3d1178[_0x4b6d('0x6c')]+_0x4b6d('0x3c')+_0x3d1178[_0x4b6d('0x37')]+_0x4b6d('0x30'),'headers':{'Content-Type':_0x4b6d('0x4a')}})[_0x4b6d('0x18')](_0x5410f8=>_0x5410f8[_0x4b6d('0x16')]())[_0x4b6d('0x18')](_0x42975b=>{_0x1add2f=_0x42975b;_0x19debf=_0x1add2f[_0x4b6d('0x20')];_0x5143d4=_0x1add2f[_0x4b6d('0xb')];_0x307095();});this[_0x4b6d('0x64')]=0x0;this['FrameCount']=0x0;this['render']=function(_0xb1c266){if(_0x1f2cc5){_0x2bd974=_0xb1c266/_0x18a280[_0x4b6d('0x2f')]*0x168;_0x1197e7=0x168/_0x18a280[_0x4b6d('0x2f')];if(!_0x1add2f[_0x4b6d('0x0')]){_0x2bd974=-_0x2bd974;_0x2bd974=0x21c+_0x2bd974;}else if(_0x2bd974<0x0){_0x2bd974=0x168+_0x2bd974;}_0x2bd974=_0x2bd974%0x168;_0x4ee53f=parseInt(Math['round'](_0x2bd974/_0x1197e7),0xa);if(_0x4ee53f==_0x18a280[_0x4b6d('0x2f')]&&_0x1add2f[_0x4b6d('0x34')]){_0x4ee53f=_0x18a280[_0x4b6d('0x2f')]-0x1;}else if(_0x4ee53f==_0x18a280[_0x4b6d('0x2f')]&&!_0x1add2f[_0x4b6d('0x34')]||!_0x4ee53f){_0x4ee53f=0x0;}if(_0x18a280['textureReady']()&&_0xca59ba!=_0x4ee53f){_0x18a280['currentIndex']=_0x26ae7d();_0x312f77(_0x18a280[_0x4b6d('0x64')]);_0xca59ba=_0x4ee53f;}_0x32fef6(_0x82e951,_0x1add2f);}else {console[_0x4b6d('0x5a')](_0x4b6d('0x4d'));}};this[_0x4b6d('0x5f')]=function(){_0x82e951['src']='';_0x82e951=null;_0x32fef6=null;_0x356de0=null;_0x2cada2=null;_0x3ee2ce=null;_0xd8607=null;_0x4eac4e=[];_0x2cf931=null;_0x1ba7a8[_0x4b6d('0x6e')](0x0,_0x1ba7a8[_0x4b6d('0x46')]);_0x1c34b3=null;_0x5c78e0=null;_0x57f1d8=null;_0x5186f4=null;_0x186df2=null;_0x544415=null;_0x24cb2c=null;_0x4c8594=null;_0x262cbd=[];_0x262cbd[_0x4b6d('0x6e')](0x0,_0x262cbd[_0x4b6d('0x46')]);_0xca59ba=null;_0x2d50af=null;_0x3a4493[_0x4b6d('0x6e')](0x0,_0x3a4493[_0x4b6d('0x46')]);_0x54e868=null;_0x1b1049=null;_0x1f2cc5=null;_0x5515a4=null;_0x186df2=null;_0x1add2f={};_0x19debf=null;_0x5143d4=null;_0x4ee53f=null;_0x2bd974=null;_0x1197e7=null;_0x1055e7=null;_0x21f945=null;_0x33d8d3=null;console[_0x4b6d('0x5a')](_0x4b6d('0x70'));};this[_0x4b6d('0x2c')]=function(){if(_0x186df2&&_0x82e951[_0x4b6d('0x68')]===_0x82e951[_0x4b6d('0x5c')]||_0x82e951[_0x4b6d('0x68')]===_0x82e951[_0x4b6d('0x5b')]){return !![];}return ![];};function _0x4bc2d2(){_0x3ee2ce=_0x2cf931[_0x4b6d('0x45')]('video/mp4;\x20codecs=\x22avc1.640033\x22');_0x3ee2ce[_0x4b6d('0x4c')]='sequence';}function _0x307095(){_0x5d649d(_0x19debf,{'responseType':_0x4b6d('0x26'),'onreadystatechange':_0x1b3018=>{const _0x3e0c62=_0x1b3018[_0x4b6d('0x35')];if(_0x3e0c62&&_0x3e0c62[_0x4b6d('0x68')]==_0x3e0c62[_0x4b6d('0x36')]){var _0x261b18=new DOMParser();var _0x5f5c66=_0x261b18[_0x4b6d('0x41')](_0x3e0c62['response'],_0x4b6d('0x21'),0x0);_0x11d351(_0x5f5c66);if(!_0x1add2f[_0x4b6d('0x49')]){_0x1c34b3=_0x18a280[_0x4b6d('0x2f')];}else {_0x1c34b3=Math[_0x4b6d('0x25')](0x3c,_0x18a280['FrameCount']);}_0xabdfb6(_0x5143d4);}}});}const _0xabdfb6=async _0x1ee151=>{var _0x457032=new Headers();const _0x46643d=_0x4b6d('0x56')+_0x262cbd[0x0][_0x4b6d('0x28')](_0x4b6d('0x48'))[_0x4b6d('0x1c')]();_0x5515a4=_0x1add2f[_0x4b6d('0x54')]?_0x1add2f[_0x4b6d('0x54')]:1.7777777;if(_0x1ee151[_0x4b6d('0x2d')]('https://data.panomoments.com/')>-0x1){_0x1ee151=_0x1ee151[_0x4b6d('0xa')](/data.panomoments.com/i,'s3.amazonaws.com/data.panomoments.com');}else if(_0x1ee151[_0x4b6d('0x2d')](_0x4b6d('0x3e'))>-0x1){_0x1ee151=_0x1ee151[_0x4b6d('0xa')](/staging-data.panomoments.com/i,'s3.amazonaws.com/staging-data.panomoments.com');}_0x457032['append'](_0x4b6d('0x3f'),_0x46643d);let _0x868f4f=0x0;let _0x54c422=![];while(_0x868f4f<0x5&&!_0x54c422){try{const _0x6c5158=await fetch(_0x1ee151,{'headers':_0x457032,'method':_0x4b6d('0x17')});const _0x405104=await _0x6c5158[_0x4b6d('0x15')]();_0x8ae31f(_0x5143d4,new Uint8Array(_0x405104));_0x54c422=!![];}catch(_0x499c27){console[_0x4b6d('0x5a')](_0x4b6d('0x8'),_0x868f4f,_0x499c27);_0x868f4f++;}}};const _0x14fedb=_0xa0c5f1=>{_0x128fa7(_0xa0c5f1);};const _0x128fa7=_0x5bb4c7=>{if((!_0x3ee2ce||_0x3ee2ce&&_0x3ee2ce['updating'])&&_0x1b1049==0x0){console[_0x4b6d('0x5a')](_0x4b6d('0xd'));_0x1055e7=setTimeout(()=>{_0x128fa7(_0x5bb4c7);},0x3e8);return;}else if(_0x5bb4c7&&_0x3ee2ce&&!_0x3ee2ce[_0x4b6d('0x1')]&&_0x1b1049==0x0){_0x82e951[_0x4b6d('0x33')]+=0x1/_0xd8607;_0x3ee2ce[_0x4b6d('0x69')]=_0x82e951[_0x4b6d('0x33')];_0x3ee2ce[_0x4b6d('0x60')](_0x5bb4c7);_0x1b1049++;_0x1055e7=setTimeout(()=>{_0x128fa7(_0x5bb4c7);},0x1f4);}};function _0x11d351(_0x54209a){try{var _0x45cb65=_0x54209a[_0x4b6d('0x65')](_0x4b6d('0x1b'));_0xd8607=0x1;_0x4eac4e=_0x54209a[_0x4b6d('0x65')](_0x4b6d('0x2b'));_0x262cbd=_0x54209a['querySelectorAll'](_0x4b6d('0x19'));_0x18a280[_0x4b6d('0x2f')]=_0x4eac4e[_0x4b6d('0x46')];}catch(_0x3cfd0f){console[_0x4b6d('0x5a')](_0x3cfd0f);}}function _0x312f77(_0x2277da){if(_0x33d8d3==_0x2277da)return;_0x33d8d3=_0x2277da;if(!_0x5186f4){if(_0x5c78e0||_0x186df2){if(!_0x1add2f['aligned']){_0x82e951[_0x4b6d('0x5')]((_0x2277da+framePadding)%_0x18a280['FrameCount']*0x1/_0xd8607);}else {_0x82e951['fastSeek'](_0x2277da*0x1/_0xd8607);}}else {_0x82e951['currentTime']=_0x2277da*0x1/_0xd8607;}}else if(_0x3a4493[_0x2277da]&&_0x3ee2ce&&!_0x3ee2ce[_0x4b6d('0x1')]&&_0x1f2cc5){if(_0x2277da<_0x18a280[_0x4b6d('0x2f')]){_0x82e951[_0x4b6d('0x33')]+=0x1/_0xd8607;_0x3ee2ce[_0x4b6d('0x69')]=_0x82e951[_0x4b6d('0x33')];if(!_0x1add2f[_0x4b6d('0x57')]){_0x3ee2ce[_0x4b6d('0x60')](_0x3a4493[(_0x2277da+framePadding)%_0x18a280[_0x4b6d('0x2f')]]);}else {_0x3ee2ce[_0x4b6d('0x60')](_0x3a4493[_0x2277da]);}}else {console[_0x4b6d('0x5a')](_0x4b6d('0x14'));}}}function _0x1b5edb(_0x294f3b,_0x431268){_0x544415=_0x2d50af['length'];_0x24cb2c=0x0;_0x4c8594=0x0;var _0xb65bab=0x8;if(navigator[_0x4b6d('0x53')][_0x4b6d('0x6f')](/Android/i)){_0xb65bab=0x4;}for(let _0x2c2050=0x0;_0x2c2050<_0xb65bab;_0x2c2050++){_0x52b042(_0x294f3b,_0x1c34b3,()=>{if(!_0x1f2cc5){_0x356de0(_0x82e951,_0x1add2f);}_0x1f2cc5=!![];for(let _0x2ec5ec=0x0;_0x2ec5ec<_0xb65bab;_0x2ec5ec++){_0x52b042(_0x294f3b,_0x544415,()=>{_0x2cada2(_0x82e951,_0x1add2f);});}});}}function _0x52b042(_0x5aa3cb,_0x467c46,_0x371a46){setTimeout(_0x41719d,0x0,_0x5aa3cb,_0x467c46,_0x371a46);}async function _0x41719d(_0x3bad4a,_0x13519e,_0x207ace){while(_0x54e868<_0x13519e){let _0x3fd877=0x0;let _0x5bd905=![];const _0x3467c9=_0x2d50af[_0x24cb2c++];_0x54e868++;while(_0x3fd877<0x3&&!_0x5bd905){const _0xc75bce=new Headers();_0xc75bce[_0x4b6d('0x3b')](_0x4b6d('0x3f'),_0x3467c9[_0x4b6d('0x29')]);_0xc75bce['append']('cache-control','no-store');_0xc75bce[_0x4b6d('0x3b')](_0x4b6d('0x47'),_0x4b6d('0x5d'));_0xc75bce[_0x4b6d('0x3b')](_0x4b6d('0x3d'),_0x4b6d('0x5d'));try{const _0x4de632=await fetch(_0x3bad4a,{'headers':_0xc75bce,'method':'GET'});const _0x385c5e=await _0x4de632[_0x4b6d('0x15')]();_0x43e4ee(_0x385c5e,_0x3467c9[_0x4b6d('0x1d')]);_0x4c8594++;_0x5bd905=!![];}catch(_0x2d8b23){console[_0x4b6d('0x5a')]('exception\x20during\x20chunk\x20download,\x20retrying',++_0x3fd877,_0x2d8b23);_0x3fd877++;}finally{}}}if(_0x4c8594===_0x13519e){_0x207ace();}}function _0x25174f(){_0x82e951[_0x4b6d('0x33')]=_0x18a280[_0x4b6d('0x64')];_0x21f945=setTimeout(function(){_0x5ab3d3();},0x64);}function _0x5ab3d3(){if(_0x21f945){clearTimeout(_0x21f945);_0x21f945=null;}_0x82e951[_0x4b6d('0x33')]=_0x18a280[_0x4b6d('0x64')];_0x1f2cc5=!![];_0x356de0(_0x82e951,_0x1add2f);_0x2cada2(_0x82e951,_0x1add2f);_0x82e951['removeEventListener'](_0x4b6d('0xf'),_0x25174f,![]);_0x82e951['removeEventListener'](_0x4b6d('0x3a'),_0x5ab3d3,![]);}function _0x5d649d(_0x1a7071,_0x46d540){if(_0x1a7071!=null&&_0x1a7071!==''){var _0x4a8555=new XMLHttpRequest();_0x4a8555[_0x4b6d('0x4f')](_0x4b6d('0x17'),_0x1a7071,!![]);if(_0x46d540){_0x4a8555['responseType']=_0x46d540[_0x4b6d('0xe')];if(_0x46d540[_0x4b6d('0x2')]){_0x4a8555['onreadystatechange']=_0x46d540[_0x4b6d('0x2')][_0x4b6d('0x32')](_0x4a8555);}if(_0x46d540['onload']){_0x4a8555[_0x4b6d('0x3')]=_0x46d540[_0x4b6d('0x3')];}}_0x4a8555['addEventListener'](_0x4b6d('0x59'),function(_0x1a8b46){console['log'](_0x4b6d('0x52')+_0x1a8b46+'\x20Could\x20not\x20load\x20url.');},![]);_0x4a8555[_0x4b6d('0x6b')]();return _0x4a8555;}}const _0x8ae31f=async(_0x3e2ac0,_0x4beb27)=>{var _0x2c71a6=new Headers();var _0x1ac276=_0x1add2f[_0x4b6d('0x6d')]+0x5a;_0x1197e7=0x168/_0x18a280[_0x4b6d('0x2f')];if(!_0x1add2f[_0x4b6d('0x0')]){_0x1ac276=-_0x1ac276;}if(_0x1ac276<0x0){_0x1ac276=0x168+_0x1ac276;}_0x18a280[_0x4b6d('0x64')]=parseInt(Math[_0x4b6d('0x23')](_0x1ac276/_0x1197e7),0xa);const _0x4190ce=_0x4b6d('0x56')+_0x4eac4e[_0x18a280[_0x4b6d('0x64')]][_0x4b6d('0x28')](_0x4b6d('0x62'))[_0x4b6d('0x1c')]();_0x2c71a6[_0x4b6d('0x3b')](_0x4b6d('0x3f'),_0x4190ce);if(_0x3e2ac0[_0x4b6d('0x2d')](_0x4b6d('0x42'))>-0x1){_0x3e2ac0=_0x3e2ac0['replace'](/data.panomoments.com/i,_0x4b6d('0x4'));}else if(_0x3e2ac0[_0x4b6d('0x2d')](_0x4b6d('0x3e'))>-0x1){_0x3e2ac0=_0x3e2ac0[_0x4b6d('0xa')](/staging-data.panomoments.com/i,_0x4b6d('0xc'));}let _0x1d5027=0x0;let _0x434012=![];while(_0x1d5027<0x5&&!_0x434012){try{const _0x1d96e7=await fetch(_0x3e2ac0,{'headers':_0x2c71a6,'method':_0x4b6d('0x17')});const _0x47f87b=await _0x1d96e7['arrayBuffer']();var _0x312396=new Uint8Array(_0x47f87b);var _0x3a684f=new Int8Array(_0x4beb27[_0x4b6d('0x46')]+_0x312396['length']);_0x3a684f[_0x4b6d('0x38')](_0x4beb27);_0x3a684f[_0x4b6d('0x38')](_0x312396,_0x4beb27[_0x4b6d('0x46')]);if(!_0x5186f4){_0x82e951['src']=window[_0x4b6d('0x50')][_0x4b6d('0x6a')](new Blob([_0x3a684f],{'type':_0x4b6d('0x66')}));_0x82e951['pause']();_0x32fef6(_0x82e951,_0x1add2f);fetch(_0x5143d4)[_0x4b6d('0x18')](function(_0x3db38c){_0x3db38c[_0x4b6d('0x6')]()[_0x4b6d('0x18')](function(_0x21b809){_0x82e951[_0x4b6d('0x7')](_0x4b6d('0xf'),_0x25174f,![]);_0x82e951[_0x4b6d('0x7')]('timeupdate',_0x5ab3d3,![]);_0x82e951[_0x4b6d('0x22')]=window[_0x4b6d('0x50')][_0x4b6d('0x6a')](_0x21b809);_0x82e951[_0x4b6d('0x4b')]();});});}else {_0x43e4ee(_0x47f87b,_0x18a280[_0x4b6d('0x64')]);_0x14fedb(_0x3a684f);_0x32fef6(_0x82e951,_0x1add2f);_0x2d50af=_0x102dfc(_0x4eac4e,_0x1c34b3,_0x1ba7a8,![]);_0x1b5edb(_0x5143d4,0x1);}_0x434012=!![];}catch(_0xed3e30){console['log'](_0x4b6d('0x67'),_0x1d5027,_0xed3e30);_0x1d5027++;}}};function _0x43e4ee(_0x471f08,_0x4a8b62){_0x3a4493[_0x4a8b62]=new Uint8Array(_0x471f08);}const _0x26ae7d=()=>{var _0x9d89ad;if(!_0x5186f4){return _0x4ee53f;}_0x9d89ad=_0x4ee53f;if(_0x2d50af['length']!=0x0&&!_0x3a4493[_0x4ee53f]){var _0x512ee5,_0x5876e1,_0x49ddc8,_0x387281=![],_0x10a486=![];_0x512ee5=_0x4ee53f;while(!_0x387281&&_0x512ee5<_0x18a280[_0x4b6d('0x2f')]){if(_0x3a4493[_0x512ee5]){_0x387281=!![];_0x5876e1=_0x512ee5;}else {_0x512ee5++;}}_0x512ee5=_0x4ee53f;while(!_0x10a486&&_0x512ee5>=0x0){if(_0x3a4493[_0x512ee5]){_0x10a486=!![];_0x49ddc8=_0x512ee5;}else {_0x512ee5--;}}if(!_0x5876e1){_0x5876e1=_0x18a280[_0x4b6d('0x2f')];}if(Math[_0x4b6d('0x31')](_0x4ee53f-_0x5876e1)<=Math[_0x4b6d('0x31')](_0x4ee53f-_0x49ddc8)&&_0x5876e1==_0x18a280[_0x4b6d('0x2f')]){_0x9d89ad=0x0;}else if(Math[_0x4b6d('0x31')](_0x4ee53f-_0x5876e1)<=Math[_0x4b6d('0x31')](_0x4ee53f-_0x49ddc8)){_0x9d89ad=_0x5876e1;}else {_0x9d89ad=_0x49ddc8;}}else {_0x9d89ad=_0x4ee53f;}if(!_0x9d89ad){_0x9d89ad=0x0;}return _0x9d89ad;};function _0x4d4cfb(_0x1c8cc1,_0x58631b,_0x316ea7,_0x2c4bf2,_0x2450de){return {'header':_0x4b6d('0x3f'),'content':_0x4b6d('0x56')+_0x1c8cc1[_0x4b6d('0x28')](_0x4b6d('0x62'))[_0x4b6d('0x1c')](),'index':_0x58631b,'countPosition':_0x316ea7,'firstPass':_0x2c4bf2,'firstPassCompleteIndex':_0x2450de};}function _0x102dfc(_0x557e2e,_0x300b08,_0x187c55,_0x58611b=![]){var _0xb69eb4=[];var _0x39acd1=0x0;if(_0x58611b){for(var _0xcaa830=0x0;_0xcaa830<_0x557e2e[_0x4b6d('0x46')];_0xcaa830++){_0xb69eb4[_0x4b6d('0x4e')](_0x4d4cfb(_0x557e2e[_0xcaa830],_0xcaa830,![]));}return _0xb69eb4;}const _0x284b3a=parseInt(Math['round'](_0x557e2e[_0x4b6d('0x46')]/_0x300b08),0xa);const _0x3bc2cf=Math[_0x4b6d('0x43')](_0x557e2e[_0x4b6d('0x46')]/_0x300b08);var _0x19eb74=_0x300b08+_0x3bc2cf;for(var _0xcaa830=0x0;_0xcaa830<_0x19eb74;_0xcaa830++){if(_0x557e2e[_0xcaa830*_0x284b3a]){_0xb69eb4['push'](_0x4d4cfb(_0x557e2e[_0xcaa830*_0x284b3a],_0xcaa830*_0x284b3a,_0x39acd1++,!![],_0x19eb74));_0x187c55[_0x4b6d('0x4e')](_0xcaa830*_0x284b3a);}}_0x19eb74=_0xb69eb4[_0x4b6d('0x46')];for(var _0xcaa830=0x0;_0xcaa830<_0xb69eb4[_0x4b6d('0x46')];_0xcaa830++){_0xb69eb4[_0xcaa830][_0x4b6d('0x44')]=_0x19eb74;}var _0x52ba20=_0x284b3a;_0x39acd1=0x0;for(var _0x18391f=Math[_0x4b6d('0x9')](_0x284b3a/0x2);_0x18391f>0x1;_0x18391f=Math[_0x4b6d('0x9')](_0x18391f/0x2)){for(var _0xcaa830=0x0;_0xcaa830<_0x557e2e[_0x4b6d('0x46')]/_0x52ba20;_0xcaa830++){if(_0x557e2e[_0x18391f+_0xcaa830*_0x52ba20]){_0xb69eb4['push'](_0x4d4cfb(_0x557e2e[_0x18391f+_0xcaa830*_0x52ba20],_0x18391f+_0xcaa830*_0x52ba20,_0x39acd1++,![],_0x19eb74));}}_0x52ba20=Math['floor'](_0x18391f/0x2);}var _0x542978=[];for(var _0xcaa830=0x0;_0xcaa830<_0xb69eb4[_0x4b6d('0x46')];_0xcaa830++){_0x542978[_0xb69eb4[_0xcaa830][_0x4b6d('0x1d')]]=_0xb69eb4[_0xcaa830][_0x4b6d('0x1d')];}for(var _0xcaa830=0x0;_0xcaa830<_0x557e2e['length'];_0xcaa830++){if(!_0x542978[_0xcaa830]){_0xb69eb4['push'](_0x4d4cfb(_0x557e2e[_0xcaa830],_0xcaa830,_0x39acd1++,![],_0x19eb74));}}function _0x2e884b(_0xc59839,_0x3ecc5a){return _0xc59839[_0x4b6d('0x13')](function(_0x1dabfe,_0x6b2d6d,_0x561320){return _0x561320[_0x4b6d('0x1a')](function(_0xeedf0){return _0xeedf0[_0x3ecc5a];})['indexOf'](_0x1dabfe[_0x3ecc5a])===_0x6b2d6d;});}var _0x229eac=_0x2e884b(_0xb69eb4,_0x4b6d('0x1d'));_0xb69eb4=[];_0x542978=[];return _0x229eac;}}
 
+	/**
+	 * Equirectangular shader
+	 * based on three.js equirect shader
+	 * @author pchen66
+	 */
+
+	/**
+	 * @description Background Shader
+	 * @module BackgroundShader
+	 * @property {object} uniforms
+	 * @property {THREE.Texture} uniforms.texture diffuse map
+	 * @property {number} uniforms.opacity image opacity
+	 * @property {string} vertexShader vertex shader
+	 * @property {string} fragmentShader fragment shader
+	 */
+	const BackgroundShader = {
+
+	    uniforms: {
+
+	        'texture': { value: new THREE.Texture() },
+	        'repeat': { value: new THREE.Vector2( 1.0, 1.0 ) },
+	        'offset': { value: new THREE.Vector2( 0.0, 0.0 ) },
+	        'opacity': { value: 1.0 }
+
+	    },
+
+	    vertexShader: `
+        varying vec2 vUv;
+        #include <common>
+        
+        void main() {
+        
+            vUv = uv;
+            gl_Position = vec4( position, 1.0 );
+            #include <begin_vertex>
+            #include <project_vertex>
+        
+        }
+    `,
+
+	    fragmentShader: `
+        uniform sampler2D texture;
+        uniform vec2 repeat;
+        uniform vec2 offset;
+        uniform float opacity;
+        varying vec2 vUv;
+        
+        void main() {
+
+            vec2 sampleUV = vUv;
+            sampleUV = sampleUV * repeat + offset;
+        
+            gl_FragColor = texture2D( texture, sampleUV );
+            gl_FragColor.a *= opacity;
+        
+        }
+    `
+
+	};
+
+	/**
+	 * PanoMoment Event
+	 */
 	const PANOMOMENT = {
 	    NONE: 'panomoments.none',
 	    FIRST_FRAME_DECODED: 'panomoments.first_frame_decoded',
 	    READY: 'panomoments.ready',
 	    COMPLETED: 'panomoments.completed',
+	};
+
+	/**
+	 * PanoMoment Moment Types
+	 */
+	const PANOMOMENT_TYPE = {
+	    EQUIRECTANGULAR: 0,
+	    REGULAR: 1
 	};
 
 	/**
@@ -6686,6 +6757,7 @@
 	    // Panolens
 	    this.camera = null;
 	    this.controls = null;
+	    this.scale2D = new THREE.Vector2( 1, 1 );
 	    this.defaults = {};
 
 	    // Setup Dispatcher
@@ -6710,6 +6782,39 @@
 	PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
 	    constructor: PanoMomentPanorama,
+
+	    /**
+	     * Create Plane Geometry for Regular PanoMoment
+	     */
+	    create2DGeometry: function () {
+
+	        return new THREE.PlaneBufferGeometry( 1, 1 );
+	        
+	    },
+
+	    /**
+	     * Create Background Shader Material for Regular PanoMoment
+	     */
+	    create2DMaterial: function ( repeat = new THREE.Vector2( 1, 1 ), offset = new THREE.Vector2( 0, 0 ) ) {
+
+	        const { fragmentShader, vertexShader } = BackgroundShader;
+	        const uniforms = THREE.UniformsUtils.clone( BackgroundShader.uniforms );
+	        
+	        uniforms.repeat.value.copy( repeat );
+	        uniforms.offset.value.copy( offset );
+	        uniforms.opacity.value = 0.0;
+
+	        const material = new THREE.ShaderMaterial( {
+
+	            fragmentShader,
+	            vertexShader,
+	            uniforms,
+	            transparent: true
+	    
+	        } );
+
+	        return material;
+	    },
 
 	    /**
 	     * When window is resized
@@ -6744,6 +6849,24 @@
 	        Object.assign( this.defaults, { minPolarAngle, maxPolarAngle } );
 	        
 	        this.controls = controls;
+
+	    },
+
+	    /**
+	     * Setup Mesh by PanoMoment Type
+	     * @param {PANOMOMENT_TYPE} type type of panomoment panorama
+	     */
+	    setupMeshByMomentType: function( type ) {
+
+	        switch( type ) {
+	        
+	            // change geometry and material if it's regular type
+	            case PANOMOMENT_TYPE.REGULAR:
+	                this.geometry = this.create2DGeometry();
+	                this.material = this.create2DMaterial();
+	                break;
+
+	        }
 
 	    },
 
@@ -6817,12 +6940,21 @@
 	     */
 	    resetControlLimits: function( reset = false ) {
 
-	        const { momentData } = this;
+	        if ( !this.momentData ) return;
 
-	        if ( !momentData ) return;
+	        switch( this.momentData.moment_type ) {
 
-	        this.resetFOVLimits( reset );
-	        this.resetAzimuthAngleLimits( reset );
+	            case PANOMOMENT_TYPE.REGULAR: 
+	                this.update2DGeometryScale( reset ); 
+	                break;
+
+	            case PANOMOMENT_TYPE.EQUIRECTANGULAR:
+	            default: 
+	                this.resetFOVLimits( reset );
+	                this.resetAzimuthAngleLimits( reset );
+	                break;
+	    
+	        }
 
 	    },
 
@@ -6833,7 +6965,7 @@
 
 	        if ( !this.momentData ) return;
 
-	        const { momentData: { start_frame, max_horizontal_fov } } = this;
+	        const { momentData: { start_frame, max_horizontal_fov, moment_type } } = this;
 
 	        // reset center to initial lookat
 	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setControlCenter' } );
@@ -6843,10 +6975,42 @@
 	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'rotateControlLeft', data: angle } );
 
 	        // uv offset
-	        this.material.uniforms.offset.value.x = (max_horizontal_fov / 360 + .25) % 1;
+	        if ( moment_type !== PANOMOMENT_TYPE.REGULAR ) {
+
+	            this.material.uniforms.offset.value.x = ( max_horizontal_fov / 360 + .25 ) % 1;
+
+	        }
 
 	        // control update
 	        this.resetControlLimits( false );
+
+	    },
+
+	    /**
+	     * Update 2D Geometry Scale
+	     */
+	    update2DGeometryScale: function ( reset ) {
+
+	        if ( !this.momentData ) return;
+
+	        // reset geometric scale
+	        this.geometry.scale( 1 / this.scale2D.x, 1 / this.scale2D.y, 1 );
+
+	        if ( reset ) {
+
+	            this.scale2D.set( 1, 1 );
+	            return;
+
+	        }
+
+	        const { momentData: { aspect_ratio } } = this;
+
+	        const { fov, aspect } = this.camera;
+	        const scale = 2 * Math.tan( fov * Math.PI / 360 ) * Math.min( aspect_ratio, aspect );
+	 
+	        // update geometric scale
+	        this.scale2D.set( scale, scale / aspect_ratio );
+	        this.geometry.scale( this.scale2D.x, this.scale2D.y, 1 );
 
 	    },
 
@@ -6884,7 +7048,13 @@
 	        if (this.PanoMoments.textureReady()) this.getTexture().needsUpdate = true;
 
 	        this.setPanoMomentYaw( yaw );
-	        
+
+	        if( momentData.moment_type === PANOMOMENT_TYPE.REGULAR ) {
+
+	            this.lookAt(this.camera.getWorldPosition(new THREE.Vector3()));
+	 
+	        }
+
 	    },
 
 	    /**
@@ -6895,6 +7065,8 @@
 	        if ( !this.momentData ) {
 
 	            this.momentData = momentData;
+
+	            this.setupMeshByMomentType( momentData.moment_type );
 
 	            const texture = new THREE.Texture( video );
 	            texture.minFilter = texture.magFilter = THREE.LinearFilter;
@@ -6917,6 +7089,7 @@
 
 	        this.dispatchEvent( { type: PANOMOMENT.READY } );
 	        console.log('PanoMoment Ready');
+
 	    },
 
 	    /**
@@ -7012,7 +7185,7 @@
 	     */
 	    enter: function() {
 
-	        this.updateHeading();
+	        this.updateHeading(); 
 	        this.attachFOVListener( true );
 	        this.resetControlLimits( false );
 
@@ -7665,17 +7838,17 @@
 
 	        switch ( event.keyCode ) {
 
-	        case scope.keys.UP:
-	            break;
+	            case scope.keys.UP:
+	                break;
 
-	        case scope.keys.BOTTOM:
-	            break;
+	            case scope.keys.BOTTOM:
+	                break;
 
-	        case scope.keys.LEFT:
-	            break;
+	            case scope.keys.LEFT:
+	                break;
 
-	        case scope.keys.RIGHT:
-	            break;
+	            case scope.keys.RIGHT:
+	                break;
 
 	        }
 
@@ -7689,21 +7862,21 @@
 
 	        switch ( event.keyCode ) {
 
-	        case scope.keys.UP:
-	            scope.rotateUp( scope.rotateSpeed * updatedMomentumKeydownFactor );
-	            break;
+	            case scope.keys.UP:
+	                scope.rotateUp( scope.rotateSpeed * updatedMomentumKeydownFactor );
+	                break;
 
-	        case scope.keys.BOTTOM:
-	            scope.rotateUp( - scope.rotateSpeed * updatedMomentumKeydownFactor );
-	            break;
+	            case scope.keys.BOTTOM:
+	                scope.rotateUp( - scope.rotateSpeed * updatedMomentumKeydownFactor );
+	                break;
 
-	        case scope.keys.LEFT:
-	            scope.rotateLeft( scope.rotateSpeed * updatedMomentumKeydownFactor );
-	            break;
+	            case scope.keys.LEFT:
+	                scope.rotateLeft( scope.rotateSpeed * updatedMomentumKeydownFactor );
+	                break;
 
-	        case scope.keys.RIGHT:
-	            scope.rotateLeft( - scope.rotateSpeed * updatedMomentumKeydownFactor );
-	            break;
+	            case scope.keys.RIGHT:
+	                scope.rotateLeft( - scope.rotateSpeed * updatedMomentumKeydownFactor );
+	                break;
 
 	        }
 
@@ -7716,41 +7889,41 @@
 
 	        switch ( event.touches.length ) {
 
-	        case 1: // one-fingered touch: rotate
+	            case 1: // one-fingered touch: rotate
 
-	            if ( scope.noRotate === true ) return;
+	                if ( scope.noRotate === true ) return;
 
-	            state = STATE.TOUCH_ROTATE;
+	                state = STATE.TOUCH_ROTATE;
 
-	            rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-	            break;
+	                rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+	                break;
 
-	        case 2: // two-fingered touch: dolly
+	            case 2: // two-fingered touch: dolly
 
-	            if ( scope.noZoom === true ) return;
+	                if ( scope.noZoom === true ) return;
 
-	            state = STATE.TOUCH_DOLLY;
+	                state = STATE.TOUCH_DOLLY;
 
-	            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-	            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-	            const distance = Math.sqrt( dx * dx + dy * dy );
+	                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+	                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+	                const distance = Math.sqrt( dx * dx + dy * dy );
 
-	            dollyStart.set( 0, distance );
+	                dollyStart.set( 0, distance );
 
-	            break;
+	                break;
 
-	        case 3: // three-fingered touch: pan
+	            case 3: // three-fingered touch: pan
 
-	            if ( scope.noPan === true ) return;
+	                if ( scope.noPan === true ) return;
 
-	            state = STATE.TOUCH_PAN;
+	                state = STATE.TOUCH_PAN;
 
-	            panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-	            break;
+	                panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+	                break;
 
-	        default:
+	            default:
 
-	            state = STATE.NONE;
+	                state = STATE.NONE;
 
 	        }
 
@@ -7769,74 +7942,74 @@
 
 	        switch ( event.touches.length ) {
 
-	        case 1: // one-fingered touch: rotate
+	            case 1: // one-fingered touch: rotate
 
-	            if ( scope.noRotate === true ) return;
-	            if ( state !== STATE.TOUCH_ROTATE ) return;
+	                if ( scope.noRotate === true ) return;
+	                if ( state !== STATE.TOUCH_ROTATE ) return;
 
-	            rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-	            rotateDelta.subVectors( rotateEnd, rotateStart );
+	                rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+	                rotateDelta.subVectors( rotateEnd, rotateStart );
 
-	            // rotating across whole screen goes 360 degrees around
-	            scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight * scope.rotateSpeed );
-	            // rotating up and down along whole screen attempts to go 360, but limited to 180
-	            scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
+	                // rotating across whole screen goes 360 degrees around
+	                scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight * scope.rotateSpeed );
+	                // rotating up and down along whole screen attempts to go 360, but limited to 180
+	                scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
 
-	            rotateStart.copy( rotateEnd );
+	                rotateStart.copy( rotateEnd );
 
-	            break;
+	                break;
 
-	        case 2: // two-fingered touch: dolly
+	            case 2: // two-fingered touch: dolly
 
-	            if ( scope.noZoom === true ) return;
-	            if ( state !== STATE.TOUCH_DOLLY ) return;
+	                if ( scope.noZoom === true ) return;
+	                if ( state !== STATE.TOUCH_DOLLY ) return;
 
-	            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-	            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-	            const distance = Math.sqrt( dx * dx + dy * dy );
+	                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+	                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+	                const distance = Math.sqrt( dx * dx + dy * dy );
 
-	            dollyEnd.set( 0, distance );
-	            dollyDelta.subVectors( dollyEnd, dollyStart );
+	                dollyEnd.set( 0, distance );
+	                dollyDelta.subVectors( dollyEnd, dollyStart );
 
-	            if ( dollyDelta.y < 0 ) {
+	                if ( dollyDelta.y < 0 ) {
 
-	                scope.object.fov = ( scope.object.fov < scope.maxFov ) 
-	                    ? scope.object.fov + 1
-	                    : scope.maxFov;
-	                scope.object.updateProjectionMatrix();
+	                    scope.object.fov = ( scope.object.fov < scope.maxFov ) 
+	                        ? scope.object.fov + 1
+	                        : scope.maxFov;
+	                    scope.object.updateProjectionMatrix();
 
-	            } else if ( dollyDelta.y > 0 ) {
+	                } else if ( dollyDelta.y > 0 ) {
 
-	                scope.object.fov = ( scope.object.fov > scope.minFov ) 
-	                    ? scope.object.fov - 1
-	                    : scope.minFov;
-	                scope.object.updateProjectionMatrix();
+	                    scope.object.fov = ( scope.object.fov > scope.minFov ) 
+	                        ? scope.object.fov - 1
+	                        : scope.minFov;
+	                    scope.object.updateProjectionMatrix();
 
-	            }
+	                }
 
-	            dollyStart.copy( dollyEnd );
+	                dollyStart.copy( dollyEnd );
 
-	            scope.dispatchEvent( changeEvent );
-	            scope.dispatchEvent( fovEvent );
-	            break;
+	                scope.dispatchEvent( changeEvent );
+	                scope.dispatchEvent( fovEvent );
+	                break;
 
-	        case 3: // three-fingered touch: pan
+	            case 3: // three-fingered touch: pan
 
-	            if ( scope.noPan === true ) return;
-	            if ( state !== STATE.TOUCH_PAN ) return;
+	                if ( scope.noPan === true ) return;
+	                if ( state !== STATE.TOUCH_PAN ) return;
 
-	            panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-	            panDelta.subVectors( panEnd, panStart );
+	                panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+	                panDelta.subVectors( panEnd, panStart );
 
-	            scope.pan( panDelta.x, panDelta.y );
+	                scope.pan( panDelta.x, panDelta.y );
 
-	            panStart.copy( panEnd );
+	                panStart.copy( panEnd );
 
-	            break;
+	                break;
 
-	        default:
+	            default:
 
-	            state = STATE.NONE;
+	                state = STATE.NONE;
 
 	        }
 
@@ -8720,23 +8893,23 @@
 
 	            switch ( controlIndex ) {
 
-	            case 0:
+	                case 0:
 
-	                item = ControlMenuItem.subMenu.children[ 1 ];
+	                    item = ControlMenuItem.subMenu.children[ 1 ];
 
-	                break;
+	                    break;
 
-	            case 1:
+	                case 1:
 
-	                item = ControlMenuItem.subMenu.children[ 2 ];
+	                    item = ControlMenuItem.subMenu.children[ 2 ];
 
-	                break;
+	                    break;
 						
-	            default:
+	                default:
 
-	                item = ControlMenuItem.subMenu.children[ 1 ];
+	                    item = ControlMenuItem.subMenu.children[ 1 ];
 
-	                break;	
+	                    break;	
 
 	            }
 
@@ -8749,23 +8922,23 @@
 
 	            switch( mode ) {
 
-	            case MODES.CARDBOARD:
+	                case MODES.CARDBOARD:
 
-	                item = ModeMenuItem.subMenu.children[ 2 ];
+	                    item = ModeMenuItem.subMenu.children[ 2 ];
 
-	                break;
+	                    break;
 
-	            case MODES.STEREO:
+	                case MODES.STEREO:
 
-	                item = ModeMenuItem.subMenu.children[ 3 ];
+	                    item = ModeMenuItem.subMenu.children[ 3 ];
 						
-	                break;
+	                    break;
 
-	            default:
+	                default:
 
-	                item = ModeMenuItem.subMenu.children[ 1 ];
+	                    item = ModeMenuItem.subMenu.children[ 1 ];
 
-	                break;
+	                    break;
 	            }
 
 	            ModeMenuItem.subMenu.setActiveItem( item );
@@ -8791,26 +8964,26 @@
 
 	        switch( mode ) {
 
-	        case MODES.CARDBOARD:
+	            case MODES.CARDBOARD:
 
-	            this.effect = this.CardboardEffect;
-	            this.enableReticleControl();
+	                this.effect = this.CardboardEffect;
+	                this.enableReticleControl();
 
-	            break;
+	                break;
 
-	        case MODES.STEREO:
+	            case MODES.STEREO:
 
-	            this.effect = this.StereoEffect;
-	            this.enableReticleControl();
+	                this.effect = this.StereoEffect;
+	                this.enableReticleControl();
 					
-	            break;
+	                break;
 
-	        default:
+	            default:
 
-	            this.effect = null;
-	            this.disableReticleControl();
+	                this.effect = null;
+	                this.disableReticleControl();
 
-	            break;
+	                break;
 
 	        }
 
@@ -9644,13 +9817,13 @@
 
 	            switch ( this.options.output ) {
 
-	            case 'console':
-	                console.info( message );
-	                break;
+	                case 'console':
+	                    console.info( message );
+	                    break;
 
-	            case 'overlay':
-	                this.outputDivElement.textContent = message;
-	                break;
+	                case 'overlay':
+	                    this.outputDivElement.textContent = message;
+	                    break;
 
 	            }
 
