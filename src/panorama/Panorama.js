@@ -144,7 +144,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
     getTexture: function(){
 
-        return this.material.uniforms.tEquirect.value;
+        return this.material.uniforms.texture.value;
 
     },
 
@@ -341,7 +341,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      */
     updateTexture: function ( texture ) {
 
-        this.material.uniforms.tEquirect.value = texture;
+        this.material.uniforms.texture.value = texture;
 
     },
 
@@ -701,7 +701,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
         const { material } = this;
 
-        if ( material && material.uniforms && material.uniforms.tEquirect ) material.uniforms.tEquirect.value.dispose();
+        if ( material && material.uniforms && material.uniforms.texture ) material.uniforms.texture.value.dispose();
 
         this.infospotAnimation.stop();
         this.fadeInAnimation.stop();

@@ -10,7 +10,7 @@ import * as THREE from 'three';
  * @description Equirectangular Shader
  * @module EquirectShader
  * @property {object} uniforms
- * @property {THREE.Texture} uniforms.tEquirect diffuse map
+ * @property {THREE.Texture} uniforms.texture diffuse map
  * @property {number} uniforms.opacity image opacity
  * @property {string} vertexShader vertex shader
  * @property {string} fragmentShader fragment shader
@@ -19,7 +19,7 @@ const EquirectShader = {
 
     uniforms: {
 
-        'tEquirect': { value: new THREE.Texture() },
+        'texture': { value: new THREE.Texture() },
         'repeat': { value: new THREE.Vector2( 1.0, 1.0 ) },
         'offset': { value: new THREE.Vector2( 0.0, 0.0 ) },
         'opacity': { value: 1.0 }
@@ -37,7 +37,7 @@ const EquirectShader = {
     `,
 
     fragmentShader: `
-        uniform sampler2D tEquirect;
+        uniform sampler2D texture;
         uniform vec2 repeat;
         uniform vec2 offset;
         uniform float opacity;
@@ -52,7 +52,7 @@ const EquirectShader = {
             sampleUV += offset;
             sampleUV.x = fract(sampleUV.x);
             sampleUV.y = fract(sampleUV.y);
-            gl_FragColor = vec4(texture2D( tEquirect, sampleUV ).rgb, opacity);
+            gl_FragColor = vec4(texture2D( texture, sampleUV ).rgb, opacity);
         }
     `
 

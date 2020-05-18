@@ -45,7 +45,7 @@ StereoImagePanorama.prototype = Object.assign( Object.create( ImagePanorama.prot
 
         this.stereo.updateUniformByFormat( format, this.material.uniforms );
 
-        this.material.uniforms[ 'tEquirect' ].value = texture;
+        this.material.uniforms[ 'texture' ].value = texture;
 
         ImagePanorama.prototype.onLoad.call( this, texture );
 
@@ -80,7 +80,7 @@ StereoImagePanorama.prototype = Object.assign( Object.create( ImagePanorama.prot
      */
     dispose: function () {	
 
-        const { value } = this.material.uniforms.tEquirect;
+        const { value } = this.material.uniforms.texture;
 
         if ( value instanceof THREE.Texture ) {
 
