@@ -56,7 +56,8 @@
       var infospot1, infospot2, infospot3;
 
       // Main panorama
-      viewer_main = new PANOLENS.Viewer({ enableReticle: false, output: 'console', viewIndicator: true, autoRotate: false, autoRotateSpeed: 2, autoRotateActivationDuration: 5000, dwellTime: 1000 });
+      viewer_main = new PANOLENS.Viewer({ initialLookAt: new THREE.Vector3(-4814.65, -2457.95, -5000.00), enableReticle: false, output: 'console', viewIndicator: true, autoRotate: false, autoRotateSpeed: 2, autoRotateActivationDuration: 5000, dwellTime: 1000 });
+      viewer_main.name = 'main';
 
       const logEvent = ( { type } ) => console.log( type );
       viewer_main.reticle.addEventListener('reticle-start', logEvent );
@@ -105,13 +106,13 @@
       panorama_main_video.add( infospot1 );
 
       panorama_main_video.addEventListener('enter', function(){console.log('enter')
-      viewer_main.setControlCenter( new THREE.Vector3(0, 0, -5000) );
+      //viewer_main.setControlCenter( new THREE.Vector3(0, 0, -5000) );
       });
       
       viewer_main.add( panorama_main_video, panorama_main_image, panorama_main_video2  );
 
       // Test repeated scenario
-      viewer_main.enableControl( PANOLENS.CONTROLS.DEVICEORIENTATION );
+      //viewer_main.enableControl( PANOLENS.CONTROLS.DEVICEORIENTATION );
       viewer_main.enableEffect( PANOLENS.MODES.CARDBOARD );
       viewer_main.enableControl( PANOLENS.CONTROLS.ORBIT );
       viewer_main.enableEffect( PANOLENS.MODES.NORMAL );
