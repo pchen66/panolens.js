@@ -1,12 +1,24 @@
+import * as THREE from 'three';
 import { Panorama } from './Panorama';
 import { PanoMoments } from '../loaders/PanoMoments';
-import * as THREE from 'three';
+import { BackgroundShader } from '../shaders/BackgroundShader';
 
+/**
+ * PanoMoment Event
+ */
 const PANOMOMENT = {
     NONE: 'panomoments.none',
     FIRST_FRAME_DECODED: 'panomoments.first_frame_decoded',
     READY: 'panomoments.ready',
     COMPLETED: 'panomoments.completed',
+};
+
+/**
+ * PanoMoment Moment Types
+ */
+const PANOMOMENT_TYPE = {
+    EQUIRECTANGULAR: 0,
+    REGULAR: 1
 };
 
 /**
@@ -26,6 +38,7 @@ function PanoMomentPanorama ( identifier ) {
     // Panolens
     this.camera = null;
     this.controls = null;
+    this.scale2D = new THREE.Vector2( 1, 1 );
     this.defaults = {};
 
     // Setup Dispatcher
@@ -50,6 +63,39 @@ function PanoMomentPanorama ( identifier ) {
 PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     constructor: PanoMomentPanorama,
+
+    /**
+     * Create Plane Geometry for Regular PanoMoment
+     */
+    create2DGeometry: function () {
+
+        return new THREE.PlaneBufferGeometry( 1, 1 );
+        
+    },
+
+    /**
+     * Create Background Shader Material for Regular PanoMoment
+     */
+    create2DMaterial: function ( repeat = new THREE.Vector2( 1, 1 ), offset = new THREE.Vector2( 0, 0 ) ) {
+
+        const { fragmentShader, vertexShader } = BackgroundShader;
+        const uniforms = THREE.UniformsUtils.clone( BackgroundShader.uniforms );
+        
+        uniforms.repeat.value.copy( repeat );
+        uniforms.offset.value.copy( offset );
+        uniforms.opacity.value = 0.0;
+
+        const material = new THREE.ShaderMaterial( {
+
+            fragmentShader,
+            vertexShader,
+            uniforms,
+            transparent: true
+    
+        } );
+
+        return material;
+    },
 
     /**
      * When window is resized
@@ -84,6 +130,26 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         Object.assign( this.defaults, { minPolarAngle, maxPolarAngle } );
         
         this.controls = controls;
+
+    },
+
+    /**
+     * Setup Mesh by PanoMoment Type
+     * @param {PANOMOMENT_TYPE} type type of panomoment panorama
+     */
+    setupMeshByMomentType: function( type ) {
+
+        switch( type ) {
+        
+            // change geometry and material if it's regular type
+            case PANOMOMENT_TYPE.REGULAR:
+                this.geometry = this.create2DGeometry();
+                this.material = this.create2DMaterial();
+                break;
+
+            default: break;
+
+        }
 
     },
 
@@ -157,12 +223,21 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
      */
     resetControlLimits: function( reset = false ) {
 
-        const { momentData } = this;
+        if ( !this.momentData ) return;
 
-        if ( !momentData ) return;
+        switch( this.momentData.moment_type ) {
 
-        this.resetFOVLimits( reset );
-        this.resetAzimuthAngleLimits( reset );
+        case PANOMOMENT_TYPE.REGULAR: 
+            this.update2DGeometryScale( reset ); 
+            break;
+
+        case PANOMOMENT_TYPE.EQUIRECTANGULAR:
+        default: 
+            this.resetFOVLimits( reset );
+            this.resetAzimuthAngleLimits( reset );
+            break;
+    
+        }
 
     },
 
@@ -173,7 +248,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         if ( !this.momentData ) return;
 
-        const { momentData: { start_frame, max_horizontal_fov } } = this;
+        const { momentData: { start_frame, max_horizontal_fov, moment_type } } = this;
 
         // reset center to initial lookat
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setControlCenter' } );
@@ -183,10 +258,42 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'rotateControlLeft', data: angle } );
 
         // uv offset
-        this.material.uniforms.offset.value.x = (max_horizontal_fov / 360 + .25) % 1;
+        if ( moment_type !== PANOMOMENT_TYPE.REGULAR ) {
+
+            this.material.uniforms.offset.value.x = ( max_horizontal_fov / 360 + .25 ) % 1;
+
+        }
 
         // control update
         this.resetControlLimits( false );
+
+    },
+
+    /**
+     * Update 2D Geometry Scale
+     */
+    update2DGeometryScale: function ( reset ) {
+
+        if ( !this.momentData ) return;
+
+        // reset geometric scale
+        this.geometry.scale( 1 / this.scale2D.x, 1 / this.scale2D.y, 1 );
+
+        if ( reset ) {
+
+            this.scale2D.set( 1, 1 );
+            return;
+
+        }
+
+        const { momentData: { aspect_ratio } } = this;
+
+        const { fov, aspect } = this.camera;
+        const scale = 2 * Math.tan( fov * Math.PI / 360 ) * Math.min( aspect_ratio, aspect );
+ 
+        // update geometric scale
+        this.scale2D.set( scale, scale / aspect_ratio );
+        this.geometry.scale( this.scale2D.x, this.scale2D.y, 1 );
 
     },
 
@@ -224,7 +331,13 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         if (this.PanoMoments.textureReady()) this.getTexture().needsUpdate = true;
 
         this.setPanoMomentYaw( yaw );
-        
+
+        if( momentData.moment_type === PANOMOMENT_TYPE.REGULAR ) {
+
+            this.lookAt(this.camera.getWorldPosition(new THREE.Vector3()));
+ 
+        }
+
     },
 
     /**
@@ -235,6 +348,8 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         if ( !this.momentData ) {
 
             this.momentData = momentData;
+
+            this.setupMeshByMomentType( momentData.moment_type );
 
             const texture = new THREE.Texture( video );
             texture.minFilter = texture.magFilter = THREE.LinearFilter;
@@ -257,6 +372,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         this.dispatchEvent( { type: PANOMOMENT.READY } );
         console.log('PanoMoment Ready');
+
     },
 
     /**
@@ -352,7 +468,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
      */
     enter: function() {
 
-        this.updateHeading();
+        this.updateHeading(); 
         this.attachFOVListener( true );
         this.resetControlLimits( false );
 
