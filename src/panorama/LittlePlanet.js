@@ -137,28 +137,28 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
         switch ( inputCount ) {
 
-        case 1:
+            case 1:
 
-            const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
-            const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+                const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
+                const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
-            this.dragging = true;
-            this.userMouse.set( x, y );
+                this.dragging = true;
+                this.userMouse.set( x, y );
 
-            break;
+                break;
 
-        case 2:
+            case 2:
 
-            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-            const distance = Math.sqrt( dx * dx + dy * dy );
-            this.userMouse.pinchDistance = distance;
+                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+                const distance = Math.sqrt( dx * dx + dy * dy );
+                this.userMouse.pinchDistance = distance;
 
-            break;
+                break;
 
-        default:
+            default:
 
-            break;
+                break;
 
         }
 
@@ -172,36 +172,36 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
         switch ( inputCount ) {
 
-        case 1:
+            case 1:
 
-            const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
-            const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+                const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
+                const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
-            const angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
-            const angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
+                const angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
+                const angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
 
-            if ( this.dragging ) {
-                this.quatA.setFromAxisAngle( this.vectorY, angleX );
-                this.quatB.setFromAxisAngle( this.vectorX, angleY );
-                this.quatCur.multiply( this.quatA ).multiply( this.quatB );
-                this.userMouse.set( x, y );
-            }
+                if ( this.dragging ) {
+                    this.quatA.setFromAxisAngle( this.vectorY, angleX );
+                    this.quatB.setFromAxisAngle( this.vectorX, angleY );
+                    this.quatCur.multiply( this.quatA ).multiply( this.quatB );
+                    this.userMouse.set( x, y );
+                }
 
-            break;
+                break;
 
-        case 2:
+            case 2:
 
-            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-            const distance = Math.sqrt( dx * dx + dy * dy );
+                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+                const distance = Math.sqrt( dx * dx + dy * dy );
 
-            this.addZoomDelta( this.userMouse.pinchDistance - distance );
+                this.addZoomDelta( this.userMouse.pinchDistance - distance );
 
-            break;
+                break;
 
-        default:
+            default:
 
-            break;
+                break;
 
         }
 

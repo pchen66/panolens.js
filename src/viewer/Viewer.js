@@ -483,23 +483,23 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             switch ( controlIndex ) {
 
-            case 0:
+                case 0:
 
-                item = ControlMenuItem.subMenu.children[ 1 ];
+                    item = ControlMenuItem.subMenu.children[ 1 ];
 
-                break;
+                    break;
 
-            case 1:
+                case 1:
 
-                item = ControlMenuItem.subMenu.children[ 2 ];
+                    item = ControlMenuItem.subMenu.children[ 2 ];
 
-                break;
+                    break;
 					
-            default:
+                default:
 
-                item = ControlMenuItem.subMenu.children[ 1 ];
+                    item = ControlMenuItem.subMenu.children[ 1 ];
 
-                break;	
+                    break;	
 
             }
 
@@ -512,23 +512,23 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             switch( mode ) {
 
-            case MODES.CARDBOARD:
+                case MODES.CARDBOARD:
 
-                item = ModeMenuItem.subMenu.children[ 2 ];
+                    item = ModeMenuItem.subMenu.children[ 2 ];
 
-                break;
+                    break;
 
-            case MODES.STEREO:
+                case MODES.STEREO:
 
-                item = ModeMenuItem.subMenu.children[ 3 ];
+                    item = ModeMenuItem.subMenu.children[ 3 ];
 					
-                break;
+                    break;
 
-            default:
+                default:
 
-                item = ModeMenuItem.subMenu.children[ 1 ];
+                    item = ModeMenuItem.subMenu.children[ 1 ];
 
-                break;
+                    break;
             }
 
             ModeMenuItem.subMenu.setActiveItem( item );
@@ -554,26 +554,26 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         switch( mode ) {
 
-        case MODES.CARDBOARD:
+            case MODES.CARDBOARD:
 
-            this.effect = this.CardboardEffect;
-            this.enableReticleControl();
+                this.effect = this.CardboardEffect;
+                this.enableReticleControl();
 
-            break;
+                break;
 
-        case MODES.STEREO:
+            case MODES.STEREO:
 
-            this.effect = this.StereoEffect;
-            this.enableReticleControl();
+                this.effect = this.StereoEffect;
+                this.enableReticleControl();
 				
-            break;
+                break;
 
-        default:
+            default:
 
-            this.effect = null;
-            this.disableReticleControl();
+                this.effect = null;
+                this.disableReticleControl();
 
-            break;
+                break;
 
         }
 
@@ -1407,16 +1407,16 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             switch ( this.options.output ) {
 
-            case 'console':
-                console.info( message );
-                break;
+                case 'console':
+                    console.info( message );
+                    break;
 
-            case 'overlay':
-                this.outputDivElement.textContent = message;
-                break;
+                case 'overlay':
+                    this.outputDivElement.textContent = message;
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
 
             }
 

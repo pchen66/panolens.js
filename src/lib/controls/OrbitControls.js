@@ -609,21 +609,21 @@ function OrbitControls ( object, domElement ) {
 
         switch ( event.keyCode ) {
 
-        case scope.keys.UP:
-            keyUp = false;
-            break;
+            case scope.keys.UP:
+                keyUp = false;
+                break;
 
-        case scope.keys.BOTTOM:
-            keyBottom = false;
-            break;
+            case scope.keys.BOTTOM:
+                keyBottom = false;
+                break;
 
-        case scope.keys.LEFT:
-            keyLeft = false;
-            break;
+            case scope.keys.LEFT:
+                keyLeft = false;
+                break;
 
-        case scope.keys.RIGHT:
-            keyRight = false;
-            break;
+            case scope.keys.RIGHT:
+                keyRight = false;
+                break;
 
         }
 
@@ -637,25 +637,25 @@ function OrbitControls ( object, domElement ) {
 
         switch ( event.keyCode ) {
 
-        case scope.keys.UP:
-            keyUp = true;
-            scope.rotateUp( scope.rotateSpeed * updatedMomentumKeydownFactor );
-            break;
+            case scope.keys.UP:
+                keyUp = true;
+                scope.rotateUp( scope.rotateSpeed * updatedMomentumKeydownFactor );
+                break;
 
-        case scope.keys.BOTTOM:
-            keyBottom = true;
-            scope.rotateUp( - scope.rotateSpeed * updatedMomentumKeydownFactor );
-            break;
+            case scope.keys.BOTTOM:
+                keyBottom = true;
+                scope.rotateUp( - scope.rotateSpeed * updatedMomentumKeydownFactor );
+                break;
 
-        case scope.keys.LEFT:
-            keyLeft = true;
-            scope.rotateLeft( scope.rotateSpeed * updatedMomentumKeydownFactor );
-            break;
+            case scope.keys.LEFT:
+                keyLeft = true;
+                scope.rotateLeft( scope.rotateSpeed * updatedMomentumKeydownFactor );
+                break;
 
-        case scope.keys.RIGHT:
-            keyRight = true;
-            scope.rotateLeft( - scope.rotateSpeed * updatedMomentumKeydownFactor );
-            break;
+            case scope.keys.RIGHT:
+                keyRight = true;
+                scope.rotateLeft( - scope.rotateSpeed * updatedMomentumKeydownFactor );
+                break;
 
         }
 
@@ -668,41 +668,41 @@ function OrbitControls ( object, domElement ) {
 
         switch ( event.touches.length ) {
 
-        case 1: // one-fingered touch: rotate
+            case 1: // one-fingered touch: rotate
 
-            if ( scope.noRotate === true ) return;
+                if ( scope.noRotate === true ) return;
 
-            state = STATE.TOUCH_ROTATE;
+                state = STATE.TOUCH_ROTATE;
 
-            rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-            break;
+                rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+                break;
 
-        case 2: // two-fingered touch: dolly
+            case 2: // two-fingered touch: dolly
 
-            if ( scope.noZoom === true ) return;
+                if ( scope.noZoom === true ) return;
 
-            state = STATE.TOUCH_DOLLY;
+                state = STATE.TOUCH_DOLLY;
 
-            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-            const distance = Math.sqrt( dx * dx + dy * dy );
+                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+                const distance = Math.sqrt( dx * dx + dy * dy );
 
-            dollyStart.set( 0, distance );
+                dollyStart.set( 0, distance );
 
-            break;
+                break;
 
-        case 3: // three-fingered touch: pan
+            case 3: // three-fingered touch: pan
 
-            if ( scope.noPan === true ) return;
+                if ( scope.noPan === true ) return;
 
-            state = STATE.TOUCH_PAN;
+                state = STATE.TOUCH_PAN;
 
-            panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-            break;
+                panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+                break;
 
-        default:
+            default:
 
-            state = STATE.NONE;
+                state = STATE.NONE;
 
         }
 
@@ -721,74 +721,74 @@ function OrbitControls ( object, domElement ) {
 
         switch ( event.touches.length ) {
 
-        case 1: // one-fingered touch: rotate
+            case 1: // one-fingered touch: rotate
 
-            if ( scope.noRotate === true ) return;
-            if ( state !== STATE.TOUCH_ROTATE ) return;
+                if ( scope.noRotate === true ) return;
+                if ( state !== STATE.TOUCH_ROTATE ) return;
 
-            rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-            rotateDelta.subVectors( rotateEnd, rotateStart );
+                rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+                rotateDelta.subVectors( rotateEnd, rotateStart );
 
-            // rotating across whole screen goes 360 degrees around
-            scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight * scope.rotateSpeed );
-            // rotating up and down along whole screen attempts to go 360, but limited to 180
-            scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
+                // rotating across whole screen goes 360 degrees around
+                scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight * scope.rotateSpeed );
+                // rotating up and down along whole screen attempts to go 360, but limited to 180
+                scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
 
-            rotateStart.copy( rotateEnd );
+                rotateStart.copy( rotateEnd );
 
-            break;
+                break;
 
-        case 2: // two-fingered touch: dolly
+            case 2: // two-fingered touch: dolly
 
-            if ( scope.noZoom === true ) return;
-            if ( state !== STATE.TOUCH_DOLLY ) return;
+                if ( scope.noZoom === true ) return;
+                if ( state !== STATE.TOUCH_DOLLY ) return;
 
-            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-            const distance = Math.sqrt( dx * dx + dy * dy );
+                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+                const distance = Math.sqrt( dx * dx + dy * dy );
 
-            dollyEnd.set( 0, distance );
-            dollyDelta.subVectors( dollyEnd, dollyStart );
+                dollyEnd.set( 0, distance );
+                dollyDelta.subVectors( dollyEnd, dollyStart );
 
-            if ( dollyDelta.y < 0 ) {
+                if ( dollyDelta.y < 0 ) {
 
-                scope.object.fov = ( scope.object.fov < scope.maxFov ) 
-                    ? scope.object.fov + 1
-                    : scope.maxFov;
-                scope.object.updateProjectionMatrix();
+                    scope.object.fov = ( scope.object.fov < scope.maxFov ) 
+                        ? scope.object.fov + 1
+                        : scope.maxFov;
+                    scope.object.updateProjectionMatrix();
 
-            } else if ( dollyDelta.y > 0 ) {
+                } else if ( dollyDelta.y > 0 ) {
 
-                scope.object.fov = ( scope.object.fov > scope.minFov ) 
-                    ? scope.object.fov - 1
-                    : scope.minFov;
-                scope.object.updateProjectionMatrix();
+                    scope.object.fov = ( scope.object.fov > scope.minFov ) 
+                        ? scope.object.fov - 1
+                        : scope.minFov;
+                    scope.object.updateProjectionMatrix();
 
-            }
+                }
 
-            dollyStart.copy( dollyEnd );
+                dollyStart.copy( dollyEnd );
 
-            scope.dispatchEvent( changeEvent );
-            scope.dispatchEvent( fovEvent );
-            break;
+                scope.dispatchEvent( changeEvent );
+                scope.dispatchEvent( fovEvent );
+                break;
 
-        case 3: // three-fingered touch: pan
+            case 3: // three-fingered touch: pan
 
-            if ( scope.noPan === true ) return;
-            if ( state !== STATE.TOUCH_PAN ) return;
+                if ( scope.noPan === true ) return;
+                if ( state !== STATE.TOUCH_PAN ) return;
 
-            panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-            panDelta.subVectors( panEnd, panStart );
+                panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+                panDelta.subVectors( panEnd, panStart );
 
-            scope.pan( panDelta.x, panDelta.y );
+                scope.pan( panDelta.x, panDelta.y );
 
-            panStart.copy( panEnd );
+                panStart.copy( panEnd );
 
-            break;
+                break;
 
-        default:
+            default:
 
-            state = STATE.NONE;
+                state = STATE.NONE;
 
         }
 

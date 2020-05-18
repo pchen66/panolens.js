@@ -216,30 +216,30 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         switch( name ) {
 
-        case 'fullscreen':
+            case 'fullscreen':
 
-            element = this.createFullscreenButton();
-            this.fullscreenElement = element; 
+                element = this.createFullscreenButton();
+                this.fullscreenElement = element; 
 
-            break;
+                break;
 
-        case 'setting':
+            case 'setting':
 
-            element = this.createSettingButton();
-            this.settingElement = element;
+                element = this.createSettingButton();
+                this.settingElement = element;
 
-            break;
+                break;
 
-        case 'video':
+            case 'video':
 
-            element = this.createVideoControl();
-            this.videoElement = element;
+                element = this.createVideoControl();
+                this.videoElement = element;
 
-            break;
+                break;
 
-        default:
+            default:
 
-            return;
+                return;
 
         }
 

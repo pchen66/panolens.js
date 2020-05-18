@@ -8,7 +8,7 @@
     "no-unused-expressions": "error",
     "no-unused-vars": "error",
     "semi": 2,
-    "indent": ["error", 4],
+    "indent": ["error", 4, { "SwitchCase": 1 }],
     "spaced-comment": ["error", "always"],
     "multiline-comment-style": ["error", "starred-block"],
     "linebreak-style": ["error", "unix"],

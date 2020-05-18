@@ -227,15 +227,15 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         switch( this.momentData.moment_type ) {
 
-        case PANOMOMENT_TYPE.REGULAR: 
-            this.update2DGeometryScale( reset ); 
-            break;
+            case PANOMOMENT_TYPE.REGULAR: 
+                this.update2DGeometryScale( reset ); 
+                break;
 
-        case PANOMOMENT_TYPE.EQUIRECTANGULAR:
-        default: 
-            this.resetFOVLimits( reset );
-            this.resetAzimuthAngleLimits( reset );
-            break;
+            case PANOMOMENT_TYPE.EQUIRECTANGULAR:
+            default: 
+                this.resetFOVLimits( reset );
+                this.resetAzimuthAngleLimits( reset );
+                break;
     
         }
 
