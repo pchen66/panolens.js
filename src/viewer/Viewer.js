@@ -874,7 +874,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         if ( pano instanceof VideoPanorama ) {
 
             pano.addEventListener( 'enter-fade-start', this.showVideoWidget.bind( this ) );
-            pano.addEventListener( 'leave', function () {
+            pano.addEventListener( 'leave-start', function () {
 
                 if ( !(this.panorama instanceof VideoPanorama) ) {
 

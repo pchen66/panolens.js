@@ -25,7 +25,8 @@
         width: 100%;
         margin: 0 auto;
         position: absolute;
-        bottom: 0;
+        bottom: 40px;
+        left: 10px;
         padding: 10px;
         color: #fff;
         font-size: xx-large;
@@ -138,18 +139,19 @@
       var currentViewerChildIndex = 0;
 
       panomoment0 = new PANOLENS.PanoMomentPanorama( panomoment0_identifier, false );
-      panorama1 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
-      panorama2 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/building.jpg' );
+      panorama_video = new PANOLENS.VideoPanorama( 'asset/textures/video/ClashofClans.mp4', { autoplay: true, muted: false });
       panomoment1 = new PANOLENS.PanoMomentPanorama( panomoment1_identifier, false );
       panomoment2 = new PANOLENS.PanoMomentPanorama( panomoment2_identifier, false );
       panomoment3 = new PANOLENS.PanoMomentPanorama( panomoment3_identifier, false );
       panomoment4 = new PANOLENS.PanoMomentPanorama( panomoment4_identifier, false );
       panomoment5 = new PANOLENS.PanoMomentPanorama( panomoment5_identifier, false );
+      panorama1 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
+      panorama2 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/building.jpg' );
 
       viewer = new PANOLENS.Viewer( { output: 'console', autoHideInfospot: false, momentum: true, dampingFactor: .03, rotateSpeed: -0.15 } );
       //viewer.add( panomoment0, panomoment1, panomoment2, panomoment3, panomoment4, panomoment5);
 
-      const panoramas = [panomoment0, panomoment1, panomoment2, panomoment3, panomoment4, panomoment5, panorama1, panorama2];
+      const panoramas = [panomoment0, panorama_video, panorama1, panomoment1, panomoment2, panomoment3, panomoment4, panomoment5, panorama2];
 
       panoramas.forEach((p, i) => {
         const id = `p${i}`;
@@ -219,6 +221,9 @@
             break;
           case panorama2:
             panorama2.name = text.innerHTML = "panorama2 - 2";
+            break;
+          case panorama_video:
+            panorama_video.name = text.innerHTML = "panorama video - 1";
             break;
         }
 
