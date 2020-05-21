@@ -455,11 +455,11 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
      */
     setPanoMomentYaw: function (yaw) {
 
-        const { status, momentData, PanoMoments: { render, FrameCount } } = this;
+        const { status, momentData, PanoMoments: { render, frameCount } } = this;
 
         if( (status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
 
-        render((yaw / 360) * FrameCount);
+        render((yaw / 360) * frameCount);
 
     },
 
