@@ -150,6 +150,10 @@ const customDocument = function () {
 		appendChild: () => {}
 	};
 
+	this.head = {
+		appendChild: () => {}
+	};
+
 	this.querySelector = function ( selector ) {
 
 		if ( selector === 'panolens-style-addon' || selector === '#panolens-gmapscript' ) { return null; }
