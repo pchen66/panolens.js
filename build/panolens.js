@@ -7108,9 +7108,7 @@
 	        // textureReady() must be called before render() 
 	        if (this.PanoMoments.textureReady()) this.getTexture().needsUpdate = true;
 
-	        this.setPanoMomentYaw( yaw );
-
-	        
+	        this.setPanoMomentYaw( yaw );        
 
 	    },
 
@@ -7129,9 +7127,7 @@
 	            texture.minFilter = texture.magFilter = THREE.LinearFilter;
 	            texture.generateMipmaps = false;
 	            texture.format = THREE.RGBFormat;
-	            
 	            this.updateTexture( texture ); 
-	            texture.needsUpdate = true;
 
 	            this.dispatchEvent( { type: PANOMOMENT.FIRST_FRAME_DECODED } );
 
