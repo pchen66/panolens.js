@@ -33,9 +33,11 @@ function PanoMomentPanorama ( identifier ) {
     this.identifier = identifier;
     this.PanoMoments = null;
     this.momentData = null;
+    this.videoElement = null;
     this.status = PANOMOMENT.NONE;
 
     // Panolens
+    this.container = null;
     this.camera = null;
     this.controls = null;
     this.scale2D = new THREE.Vector2( 1, 1 );
@@ -51,8 +53,9 @@ function PanoMomentPanorama ( identifier ) {
 
     // Event Listeners
     this.addEventListener( 'window-resize', () => this.onWindowResize() );
-    this.addEventListener( 'panolens-camera', data => this.onPanolensCamera( data ) );
-    this.addEventListener( 'panolens-controls', data => this.onPanolensControls( data ) );
+    this.addEventListener( 'panolens-container', ( { container } ) => this.onPanolensContainer( container ) );
+    this.addEventListener( 'panolens-camera', ( { camera } ) => this.onPanolensCamera( camera ) );
+    this.addEventListener( 'panolens-controls', ( { controls } ) => this.onPanolensControls( controls ) );
     this.addEventListener( 'enter-fade-start', () => this.enter() );
     this.addEventListener( 'leave-complete', () => this.leave() );
     this.addEventListener( 'load-start', () => this.disableControl() );
@@ -108,10 +111,20 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
     },
 
     /**
+     * When container reference dispatched
+     * @param {HTMLElement} container 
+     */
+    onPanolensContainer: function( container ) {
+
+        this.container = container;
+
+    },
+
+    /**
      * When camera reference dispatched
      * @param {THREE.Camera} camera 
      */
-    onPanolensCamera: function( { camera } ) {
+    onPanolensCamera: function( camera ) {
 
         Object.assign( this.defaults, { fov: camera.fov } );
 
@@ -123,7 +136,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
      * When control references dispatched
      * @param {THREE.Object[]} controls 
      */
-    onPanolensControls: function( { controls } ) {
+    onPanolensControls: function( controls ) {
 
         const [ { minPolarAngle, maxPolarAngle } ] = controls;
 
@@ -194,6 +207,44 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         const [ OrbitControls ] = this.controls;
 
         OrbitControls.enabled = false;
+
+    },
+
+    /**
+     * Attach Source Video Element for Rendering
+     * Webkit throttles uploading texture 2d to gpu with background video element
+     * explicitly attach to dom tree to avoid throttling
+     * @param {HTMLVideoElement} video 
+     */
+    attachSourceVideo: function( video ) {
+
+        if( !video || !this.container ) return;
+
+        Object.assign( video.style, {
+            position: 'fixed',
+            top: 0, 
+            left: 0, 
+            width: 0, 
+            height: 0, 
+            visibility: 'hidden'
+        } );
+
+        this.videoElement = video;
+        this.container.append( video );
+    },
+
+    /**
+     * Detach Source Video Element
+     */
+    detachSourceVideo: function() {
+
+        const { container, videoElement } = this;
+
+        if( container && videoElement && videoElement.parentElement === container ) {
+
+            container.removeChild( videoElement );
+
+        } 
 
     },
 
@@ -321,8 +372,18 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
     updateCallback: function() {
 
         const { camera, momentData, status } = this;
+        
+        if ( !momentData ) return;
 
-        if( (status !== PANOMOMENT.FIRST_FRAME_DECODED && status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
+        // always facing camera
+        if ( momentData.moment_type === PANOMOMENT_TYPE.REGULAR ) {
+
+            this.lookAt(this.camera.getWorldPosition(new THREE.Vector3()));
+ 
+        }
+
+        // ignore update if not ready
+        if ( status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED ) return;
         
         const rotation = THREE.Math.radToDeg(camera.rotation.y) + 180;
         const yaw = ((momentData.clockwise ? 90 : -90) - rotation) % 360;
@@ -332,11 +393,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         this.setPanoMomentYaw( yaw );
 
-        if( momentData.moment_type === PANOMOMENT_TYPE.REGULAR ) {
-
-            this.lookAt(this.camera.getWorldPosition(new THREE.Vector3()));
- 
-        }
+        
 
     },
 
@@ -346,19 +403,20 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
     renderCallback: function (video, momentData) {
 
         if ( !this.momentData ) {
-
+            
             this.momentData = momentData;
-
+            this.attachSourceVideo( video );
             this.setupMeshByMomentType( momentData.moment_type );
 
             const texture = new THREE.Texture( video );
             texture.minFilter = texture.magFilter = THREE.LinearFilter;
             texture.generateMipmaps = false;
-            texture.format = THREE.RGBFormat;   
+            texture.format = THREE.RGBFormat;
+            
             this.updateTexture( texture ); 
+            texture.needsUpdate = true;
 
             this.dispatchEvent( { type: PANOMOMENT.FIRST_FRAME_DECODED } );
-            console.log('PanoMoments First Frame Decoded');
 
             Panorama.prototype.onLoad.call( this );
 
@@ -371,7 +429,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
     readyCallback: function () {
 
         this.dispatchEvent( { type: PANOMOMENT.READY } );
-        console.log('PanoMoment Ready');
 
     },
 
@@ -381,7 +438,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
     loadedCallback: function () {
 
         this.dispatchEvent( { type: PANOMOMENT.COMPLETED } );
-        console.log('PanoMoment Download Completed');
 
     },
 
@@ -471,6 +527,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         this.updateHeading(); 
         this.attachFOVListener( true );
         this.resetControlLimits( false );
+        this.attachSourceVideo( this.videoElement );
 
         // Add update callback
         this.dispatchEvent( { 
@@ -488,6 +545,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         this.attachFOVListener( false );
         this.resetControlLimits( true );
+        this.detachSourceVideo();
 
         // Remove update callback
         this.dispatchEvent( { 
@@ -508,6 +566,13 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         this.PanoMoments.dispose();
         this.PanoMoments = null;
         this.momentData = null;
+        this.videoElement = null;
+
+        this.container = null;
+        this.camera = null;
+        this.controls = null;
+        this.scale2D = null;
+        this.defaults = null;
 
         Panorama.prototype.dispose.call( this );
 
