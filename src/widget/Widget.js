@@ -470,7 +470,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             const sheet = document.createElement( 'style' );
             sheet.id = stylesheetId;
             sheet.innerHTML = ':-webkit-full-screen { width: 100% !important; height: 100% !important }';
-            document.body.appendChild( sheet );
+            document.head.appendChild( sheet );
         }
 		
         return item;
