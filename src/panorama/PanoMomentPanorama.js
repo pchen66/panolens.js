@@ -211,44 +211,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
     },
 
     /**
-     * Attach Source Video Element for Rendering
-     * Webkit throttles uploading texture 2d to gpu with background video element
-     * explicitly attach to dom tree to avoid throttling
-     * @param {HTMLVideoElement} video 
-     */
-    attachSourceVideo: function( video ) {
-
-        if( !video || !this.container ) return;
-
-        Object.assign( video.style, {
-            position: 'fixed',
-            top: 0, 
-            left: 0, 
-            width: 0, 
-            height: 0, 
-            visibility: 'hidden'
-        } );
-
-        this.videoElement = video;
-        this.container.append( video );
-    },
-
-    /**
-     * Detach Source Video Element
-     */
-    detachSourceVideo: function() {
-
-        const { container, videoElement } = this;
-
-        if( container && videoElement && videoElement.parentElement === container ) {
-
-            container.removeChild( videoElement );
-
-        } 
-
-    },
-
-    /**
      * Attch UI Event Listener to Container
      * @param {boolean} attach 
      */
@@ -403,7 +365,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         if ( !this.momentData ) {
             
             this.momentData = momentData;
-            this.attachSourceVideo( video );
             this.setupMeshByMomentType( momentData.moment_type );
 
             const texture = new THREE.Texture( video );
@@ -523,7 +484,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         this.updateHeading(); 
         this.attachFOVListener( true );
         this.resetControlLimits( false );
-        this.attachSourceVideo( this.videoElement );
 
         // Add update callback
         this.dispatchEvent( { 
@@ -541,7 +501,6 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
 
         this.attachFOVListener( false );
         this.resetControlLimits( true );
-        this.detachSourceVideo();
 
         // Remove update callback
         this.dispatchEvent( { 
