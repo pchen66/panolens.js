@@ -383,7 +383,7 @@ PanoMomentPanorama.prototype = Object.assign( Object.create( Panorama.prototype 
         }
 
         // ignore update if not ready
-        if ( status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED ) return;
+        if ( status !== PANOMOMENT.FIRST_FRAME_DECODED && status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED ) return;
         
         const rotation = THREE.Math.radToDeg(camera.rotation.y) + 180;
         const yaw = ((momentData.clockwise ? 90 : -90) - rotation) % 360;
