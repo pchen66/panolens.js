@@ -25,7 +25,9 @@ export { ImageLittlePlanet } from './panorama/ImageLittlePlanet';
 export { CameraPanorama } from './panorama/CameraPanorama';
 export { StereoImagePanorama } from './panorama/StereoImagePanorama';
 export { StereoVideoPanorama } from './panorama/StereoVideoPanorama';
+export { PanoMoment, PANOMOMENT, PANOMOMENT_TYPE } from './panorama/PanoMoment'; 
 export { PanoMomentPanorama } from './panorama/PanoMomentPanorama';
+export { PanoMomentRegular } from './panorama/PanoMomentRegular';
 export { Viewer } from './viewer/Viewer';
 import './Check';
 
