@@ -6704,7 +6704,7 @@
 	    this.setupDispatcher();
 
 	    // Event Bindings
-	    this.viewerUpdateCallback = () => this.updateCallback();
+	    this.handlerUpdateCallback = () => this.updateCallback();
 	    this.handlerWindowResize = () => this.onWindowResize();
 
 	    // Event Listeners
@@ -6834,14 +6834,28 @@
 	        if ( !this.momentData ) return;
 
 	        const { momentData: { start_frame } } = this;
+	        const angle = ( start_frame + 180 ) / 180 * Math.PI;
 
 	        // reset center to initial lookat
 	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setControlCenter' } );
 
 	        // rotate to initial frame center
-	        const angle = (start_frame + 180) / 180 * Math.PI;
 	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'rotateControlLeft', data: angle } );
 
+	    },
+
+	    /**
+	     * Get Camera Yaw for PanoMoment texture
+	     */
+	    getYaw: function() {
+
+	        const { camera: { rotation: { y } }, momentData: { clockwise } } = this;
+	        
+	        const rotation = THREE.Math.radToDeg( y ) + 180;
+	        const yaw = ( ( clockwise ? 90 : -90 ) - rotation ) % 360;
+
+	        return yaw;
+	        
 	    },
 
 	    /**
@@ -6851,15 +6865,7 @@
 
 	        if ( !this.momentData || this.status === PANOMOMENT.NONE ) return;
 
-	        const { camera, momentData } = this;
-	        
-	        const rotation = THREE.Math.radToDeg(camera.rotation.y) + 180;
-	        const yaw = ((momentData.clockwise ? 90 : -90) - rotation) % 360;
-
-	        // textureReady() must be called before render() 
-	        if (this.PanoMoments.textureReady()) this.getTexture().needsUpdate = true;
-
-	        this.setPanoMomentYaw( yaw );        
+	        this.setPanoMomentYaw( this.getYaw() );        
 
 	    },
 
@@ -6910,7 +6916,10 @@
 	     */
 	    setPanoMomentYaw: function (yaw) {
 
-	        const { status, momentData, PanoMoments: { render, frameCount } } = this;
+	        const { status, momentData, PanoMoments: { render, frameCount, textureReady } } = this;
+
+	        // textureReady() must be called before render() 
+	        if (textureReady()) this.getTexture().needsUpdate = true;
 
 	        if( (status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
 
@@ -6931,7 +6940,7 @@
 	        this.dispatchEvent( { 
 	            type: 'panolens-viewer-handler', 
 	            method: 'addUpdateCallback', 
-	            data: this.viewerUpdateCallback
+	            data: this.handlerUpdateCallback
 	        });
 
 	    },
@@ -6954,7 +6963,7 @@
 	        this.dispatchEvent( { 
 	            type: 'panolens-viewer-handler', 
 	            method: 'removeUpdateCallback', 
-	            data: this.viewerUpdateCallback
+	            data: this.handlerUpdateCallback
 	        });
 
 	    },
@@ -7378,13 +7387,15 @@
 	    this.minPolarAngle = 0; // radians
 	    this.maxPolarAngle = Math.PI; // radians
 
+	    // Coord
+	    this.spherical = new THREE.Spherical();
+
 	    // Momentum
 	    this.momentumKeydownFactor = .05;
-	    this.speedLimit = 0.04;
-	    this.publicSphericalDelta = new THREE.Spherical();
 	    this.momentum = true;
 	    this.momentumFactor = 7.5;
 
+	    this.speedLimit = 0.04;
 	    this.enableDamping = true;
 	    this.dampingFactor = 0.03;
 
@@ -7663,9 +7674,6 @@
 	        theta += thetaDelta;
 	        phi += phiDelta;
 
-	        // DeviceOrientationControl support
-	        scope.publicSphericalDelta.data = { theta }; 
-
 	        // restrict theta to be between desired limits
 	        theta = Math.max( this.minAzimuthAngle, Math.min( this.maxAzimuthAngle, theta ) );
 
@@ -7693,6 +7701,9 @@
 	        position.copy( this.target ).add( offset );
 
 	        this.object.lookAt( this.target );
+
+	        // store spherical data
+	        scope.spherical.set( radius, phi, theta );
 
 	        if ( !this.autoRotate && this.enableDamping === true && ((this.momentum && (state === STATE.ROTATE || state === STATE.TOUCH_ROTATE)) || state === STATE.NONE ) ) {
 
@@ -10345,7 +10356,7 @@
 	        // Control Update
 	        if ( OrbitControls.enabled ) OrbitControls.update();
 	        if ( control === DeviceOrientationControls ) {
-	            DeviceOrientationControls.update(OrbitControls.publicSphericalDelta.data);
+	            DeviceOrientationControls.update(OrbitControls.spherical.theta);
 	        }
 
 	        // Infospot Update
@@ -10736,6 +10747,22 @@
 	        }
 
 	        return item;
+
+	    },
+
+	    /**
+	     * Remove item within the control bar
+	     * @param {HTMLElement} item item to be removed
+	     */
+	    removeControlItem: function( item ) {
+
+	        const { barElement, videoElement } = this.widget;
+
+	        const barElements = Array.prototype.slice.call( barElement.children );
+	        const videoElements = Array.prototype.slice.call( videoElement.children );
+
+	        if ( barElements.includes( item ) ) barElement.removeChild( item );
+	        if ( videoElements.includes( item ) ) videoElement.removeChild( item );
 
 	    },
 
