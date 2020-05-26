@@ -8869,7 +8869,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             if( lp ) {
 
-                if( ep instanceof PanoMomentPanorama ) {
+                if( ep instanceof PanoMoment ) {
 
                     const onLeaveComplete = () => {
     
@@ -8907,7 +8907,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
                 if( !ep.active ) return;
 
-                if( ep instanceof PanoMomentPanorama ) {
+                if( ep instanceof PanoMoment ) {
 
                     if(!lp || (lp && !lp._onLeaveComplete)) ep.fadeIn();
 
