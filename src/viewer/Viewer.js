@@ -9,7 +9,7 @@ import { Infospot } from '../infospot/Infospot';
 import { DataImage } from '../DataImage';
 import { Panorama } from '../panorama/Panorama';
 import { VideoPanorama } from '../panorama/VideoPanorama';
-import { PanoMomentPanorama } from '../panorama/PanoMomentPanorama';
+import { PanoMoment } from '../panorama/PanoMoment';
 import { isAndroid } from '../utils/Utility';
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
@@ -367,7 +367,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             if( lp ) {
 
-                if( ep instanceof PanoMomentPanorama ) {
+                if( ep instanceof PanoMoment ) {
 
                     const onLeaveComplete = () => {
     
@@ -405,7 +405,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
                 if( !ep.active ) return;
 
-                if( ep instanceof PanoMomentPanorama ) {
+                if( ep instanceof PanoMoment ) {
 
                     if(!lp || (lp && !lp._onLeaveComplete)) ep.fadeIn();
 
