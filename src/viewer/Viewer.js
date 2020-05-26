@@ -1853,7 +1853,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         // Control Update
         if ( OrbitControls.enabled ) OrbitControls.update();
         if ( control === DeviceOrientationControls ) {
-            DeviceOrientationControls.update(OrbitControls.publicSphericalDelta.data);
+            DeviceOrientationControls.update(OrbitControls.spherical.theta);
         }
 
         // Infospot Update
@@ -2244,6 +2244,22 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         }
 
         return item;
+
+    },
+
+    /**
+     * Remove item within the control bar
+     * @param {HTMLElement} item item to be removed
+     */
+    removeControlItem: function( item ) {
+
+        const { barElement, videoElement } = this.widget;
+
+        const barElements = Array.prototype.slice.call( barElement.children );
+        const videoElements = Array.prototype.slice.call( videoElement.children );
+
+        if ( barElements.includes( item ) ) barElement.removeChild( item );
+        if ( videoElements.includes( item ) ) videoElement.removeChild( item );
 
     },
 

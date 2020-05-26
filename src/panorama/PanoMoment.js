@@ -44,7 +44,7 @@ function PanoMoment ( identifier ) {
     this.setupDispatcher();
 
     // Event Bindings
-    this.viewerUpdateCallback = () => this.updateCallback();
+    this.handlerUpdateCallback = () => this.updateCallback();
     this.handlerWindowResize = () => this.onWindowResize();
 
     // Event Listeners
@@ -174,14 +174,28 @@ PanoMoment.prototype = Object.assign( Object.create( Panorama.prototype ), {
         if ( !this.momentData ) return;
 
         const { momentData: { start_frame } } = this;
+        const angle = ( start_frame + 180 ) / 180 * Math.PI;
 
         // reset center to initial lookat
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setControlCenter' } );
 
         // rotate to initial frame center
-        const angle = (start_frame + 180) / 180 * Math.PI;
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'rotateControlLeft', data: angle } );
 
+    },
+
+    /**
+     * Get Camera Yaw for PanoMoment texture
+     */
+    getYaw: function() {
+
+        const { camera: { rotation: { y } }, momentData: { clockwise } } = this;
+        
+        const rotation = THREE.Math.radToDeg( y ) + 180;
+        const yaw = ( ( clockwise ? 90 : -90 ) - rotation ) % 360;
+
+        return yaw;
+        
     },
 
     /**
@@ -191,15 +205,7 @@ PanoMoment.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         if ( !this.momentData || this.status === PANOMOMENT.NONE ) return;
 
-        const { camera, momentData } = this;
-        
-        const rotation = THREE.Math.radToDeg(camera.rotation.y) + 180;
-        const yaw = ((momentData.clockwise ? 90 : -90) - rotation) % 360;
-
-        // textureReady() must be called before render() 
-        if (this.PanoMoments.textureReady()) this.getTexture().needsUpdate = true;
-
-        this.setPanoMomentYaw( yaw );        
+        this.setPanoMomentYaw( this.getYaw() );        
 
     },
 
@@ -250,7 +256,10 @@ PanoMoment.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     setPanoMomentYaw: function (yaw) {
 
-        const { status, momentData, PanoMoments: { render, frameCount } } = this;
+        const { status, momentData, PanoMoments: { render, frameCount, textureReady } } = this;
+
+        // textureReady() must be called before render() 
+        if (textureReady()) this.getTexture().needsUpdate = true;
 
         if( (status !== PANOMOMENT.READY && status !== PANOMOMENT.COMPLETED) || !momentData ) return;
 
@@ -271,7 +280,7 @@ PanoMoment.prototype = Object.assign( Object.create( Panorama.prototype ), {
         this.dispatchEvent( { 
             type: 'panolens-viewer-handler', 
             method: 'addUpdateCallback', 
-            data: this.viewerUpdateCallback
+            data: this.handlerUpdateCallback
         });
 
     },
@@ -294,7 +303,7 @@ PanoMoment.prototype = Object.assign( Object.create( Panorama.prototype ), {
         this.dispatchEvent( { 
             type: 'panolens-viewer-handler', 
             method: 'removeUpdateCallback', 
-            data: this.viewerUpdateCallback
+            data: this.handlerUpdateCallback
         });
 
     },

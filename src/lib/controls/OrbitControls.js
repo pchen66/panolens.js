@@ -61,13 +61,15 @@ function OrbitControls ( object, domElement ) {
     this.minPolarAngle = 0; // radians
     this.maxPolarAngle = Math.PI; // radians
 
+    // Coord
+    this.spherical = new THREE.Spherical();
+
     // Momentum
     this.momentumKeydownFactor = .05;
-    this.speedLimit = 0.04;
-    this.publicSphericalDelta = new THREE.Spherical();
     this.momentum = true;
     this.momentumFactor = 7.5;
 
+    this.speedLimit = 0.04;
     this.enableDamping = true;
     this.dampingFactor = 0.03;
 
@@ -349,9 +351,6 @@ function OrbitControls ( object, domElement ) {
         theta += thetaDelta;
         phi += phiDelta;
 
-        // DeviceOrientationControl support
-        scope.publicSphericalDelta.data = { theta }; 
-
         // restrict theta to be between desired limits
         theta = Math.max( this.minAzimuthAngle, Math.min( this.maxAzimuthAngle, theta ) );
 
@@ -379,6 +378,9 @@ function OrbitControls ( object, domElement ) {
         position.copy( this.target ).add( offset );
 
         this.object.lookAt( this.target );
+
+        // store spherical data
+        scope.spherical.set( radius, phi, theta );
 
         if ( !this.autoRotate && this.enableDamping === true && ((this.momentum && (state === STATE.ROTATE || state === STATE.TOUCH_ROTATE)) || state === STATE.NONE ) ) {
 
