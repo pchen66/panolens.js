@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no"
+    />
     <style>
-      html, body {
+      html,
+      body {
         margin: 0;
         width: 100%;
         height: 100%;
@@ -15,7 +19,8 @@
         align-items: center;
       }
 
-      a:link, a:visited{
+      a:link,
+      a:visited {
         color: #bdc3c7;
       }
 
@@ -60,80 +65,139 @@
           transform: rotate(360deg);
         }
       }
-
     </style>
   </head>
 
   <body>
+    <div class="lds-ring hidden">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
 
-    <div class="lds-ring hidden"><div></div><div></div><div></div><div></div></div>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
     <script src="../build/panolens.js"></script>
 
     <script>
-
-      const spinner = document.querySelector('.lds-ring');
-      spinner.show = function() {
-        this.classList.remove('hidden');
+      const spinner = document.querySelector(".lds-ring");
+      spinner.show = function () {
+        this.classList.remove("hidden");
       };
-      spinner.hide = function() {
-        this.classList.add('hidden');
+      spinner.hide = function () {
+        this.classList.add("hidden");
       };
 
       var identifier1 = {
         moment_id: "5d112c0a18417e00162f713e",
         variation: 101,
-        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
       };
 
-     var identifier2 = {
+      var identifier2 = {
         moment_id: "5c95d9843c344e001f1588f6",
         variation: 101,
-        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a"
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
       };
 
-      var panomoment1 = new PANOLENS.PanoMomentPanorama( identifier1 );
-      var panomoment2 = new PANOLENS.PanoMomentRegular( identifier2 );
-      var panorama1 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
-      var panorama2 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/building.jpg' );
+      var panomoment1 = new PANOLENS.PanoMomentPanorama(identifier1);
+      var panomoment2 = new PANOLENS.PanoMomentRegular(identifier2);
+      var panorama1 = new PANOLENS.ImagePanorama(
+        "asset/textures/equirectangular/field.jpg"
+      );
+      var panorama2 = new PANOLENS.ImagePanorama(
+        "asset/textures/equirectangular/building.jpg"
+      );
 
-      var viewer = new PANOLENS.Viewer({output: 'console', autoHideInfospot: false});
+      var viewer = new PANOLENS.Viewer({
+        output: "console",
+        autoHideInfospot: false,
+      });
 
       const panoramas = [panomoment1, panomoment2, panorama1, panorama2];
 
       panoramas.forEach((p, i) => {
         const id = `p${i}`;
-        p.addEventListener('enter', () => console.log(`${id} enter`));
-        p.addEventListener('load-start', () => {
+        p.addEventListener("enter", () => console.log(`${id} enter`));
+        p.addEventListener("load-start", () => {
           console.log(`${id} load-start`);
           spinner.show();
         });
-        if( p instanceof PANOLENS.PanoMomentPanorama ) {
-          p.addEventListener('panomoments.ready', () => {
+        if (p instanceof PANOLENS.PanoMomentPanorama) {
+          p.addEventListener("panomoments.ready", () => {
             console.log(`${id} panomoments.ready`);
             spinner.hide();
           });
         } else {
-          p.addEventListener('loaded', () => {
+          p.addEventListener("loaded", () => {
             console.log(`${id} loaded`);
             spinner.hide();
           });
         }
-        p.addEventListener('leave', () => console.log(`${id} leave`));
+        p.addEventListener("leave", () => console.log(`${id} leave`));
       });
-      
-       viewer.add( panomoment1 );
-       viewer.add( panomoment2 );
-       viewer.add( panorama1 );
-       viewer.add( panorama2 );
 
-       panomoment1.link( panomoment2, new THREE.Vector3( -2935.95, -12.75, -568.03 ) );
-       panomoment2.link( panorama1, new THREE.Vector3( -2935.95, -12.75, -568.03 ) );
-       panorama1.link( panorama2, new THREE.Vector3( -2935.95, -12.75, -568.03 ) );
-       panorama2.link( panomoment1, new THREE.Vector3( -1063.33, 138.97, -4878.72 ) );
+      viewer.add(...panoramas);
+
+      panomoment1.link(
+        panomoment2,
+        new THREE.Vector3(-2935.95, -12.75, -568.03)
+      );
+      panomoment2.link(panorama1, new THREE.Vector3(-0.07, 0.03, 0.04));
+      panorama1.link(panorama2, new THREE.Vector3(-2935.95, -12.75, -568.03));
+      panorama2.link(
+        panomoment1,
+        new THREE.Vector3(-1063.33, 138.97, -4878.72)
+      );
+
+      // custom hover control
+      const { container } = viewer;
+      
+      panomoment2.addEventListener( 'enter', function() {
+
+        let mouseX = null, enabledHover = false;
+
+        const panorama = this;
+        const hoverIcon = `url(data:image/png;base64,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)`;
+        const originalGetYaw = this.getYaw;
+
+        // yaw override
+        const onMouseMove = ({ clientX }) => mouseX = clientX;
+        const onGetYaw = function () {
+          if( mouseX === null ) return;
+          const ratio = mouseX / window.innerWidth;
+          const { momentData: { min_horizontal_fov, max_horizontal_fov } } = this;
+          return ratio * (min_horizontal_fov - max_horizontal_fov);
+        };
+
+        // mouse event listener
+        container.addEventListener( 'mousemove', onMouseMove );
+
+        // on item toggle
+        const onTap = function () {
+          enabledHover = !enabledHover;
+          panorama.getYaw = enabledHover ? onGetYaw : originalGetYaw;
+        };
+
+        // custom item
+        const item = viewer.appendControlItem({
+          style: { backgroundImage: hoverIcon },
+          onTap
+        });
+
+        // provide a reset function
+        this.reset = function() {
+          this.getYaw = originalGetYaw;
+          container.removeEventListener( 'mousemove', onMouseMove );
+          viewer.removeControlItem( item );
+        };
+
+      });
+
+      panomoment2.addEventListener("leave", function() {
+        this.reset();
+      });
 
     </script>
-
   </body>
 </html>
