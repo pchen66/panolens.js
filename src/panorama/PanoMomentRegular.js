@@ -86,27 +86,30 @@ PanoMomentRegular.prototype = Object.assign( Object.create( PanoMoment.prototype
     },
 
     /**
-     * On Panolens update callback
+     * Enter Panorama
      */
-    updateCallback: function() {
+    enter: function() {
 
-        if ( !this.momentData ) return;
+        this.position.set( 0, 0, -1 );
+        this._parent = this.parent;
+        this.camera.add( this );
 
-        // always facing camera
-        this.lookAt( this.camera.getWorldPosition( new THREE.Vector3() ) );
+        this.update2DGeometryScale();
 
-        PanoMoment.prototype.updateCallback.call( this );
+        PanoMoment.prototype.enter.call( this );
 
     },
 
     /**
      * Enter Panorama
      */
-    enter: function() {
+    leave: function() {
 
-        this.update2DGeometryScale();
+        this.position.set( 0, 0, 0 );
+        this._parent.add( this );
+        delete this._parent;
 
-        PanoMoment.prototype.enter.call( this );
+        PanoMoment.prototype.leave.call( this );
 
     }
 
