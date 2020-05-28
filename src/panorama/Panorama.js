@@ -638,8 +638,8 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
                  */
                 this.dispatchEvent( { type: 'leave-start' } );
 
-                this.fadeOut( duration );
-                this.toggleInfospotVisibility( false );
+                this.toggleInfospotVisibility(false);
+                this.fadeOut( 200 );
 
             }.bind( this ) )
             .start();
