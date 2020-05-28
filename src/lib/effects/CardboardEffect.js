@@ -31,7 +31,7 @@ function CardboardEffect ( renderer ) {
 
     const distortion = new THREE.Vector2( 0.441, 0.156 );
 
-    const geometry = new THREE.PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
+    const geometry = new THREE.PlaneBufferGeometry( 1, 1, 10, 20 ).deleteAttribute( 'normal' ).toNonIndexed();
 
     const positions = geometry.attributes.position.array;
     const uvs = geometry.attributes.uv.array;

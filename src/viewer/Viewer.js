@@ -1038,7 +1038,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         this.camera.matrixWorldInverse.getInverse( this.camera.matrixWorld );
         this.cameraViewProjectionMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse );
-        this.cameraFrustum.setFromMatrix( this.cameraViewProjectionMatrix );
+        this.cameraFrustum.setFromProjectionMatrix( this.cameraViewProjectionMatrix );
 
         return sprite.visible && this.cameraFrustum.intersectsSprite( sprite );
 
