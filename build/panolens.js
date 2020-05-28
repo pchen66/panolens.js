@@ -1954,6 +1954,11 @@
 	    const postLoad = function ( texture ) {
 
 	        if ( !this.material ) { return; }
+	        this.material.map = texture;
+	        this.material.needsUpdate = true;
+	        this.material.map.needsUpdate = true;
+	        this.loaded = true;
+
 
 	        const ratio = texture.image.width / texture.image.height;
 	        const textureScale = new THREE.Vector3();
@@ -1973,9 +1978,7 @@
 	            .to( { x: textureScale.x, y: textureScale.y }, duration )
 	            .easing( Tween.Easing.Elastic.Out );
 
-	        this.material.map = texture;
-	        this.material.needsUpdate = true;
-	        setTimeout(() => this.loaded = true, duration*3);
+	        this.show(duration);
 
 	    }.bind( this );
 
@@ -4151,7 +4154,7 @@
 
 	            if ( object instanceof Infospot ) {
 
-	                if ( visible ) {
+	                if ( visible && this.loaded ) {
 
 	                    object.show( delay );
 
@@ -4466,8 +4469,8 @@
 	                 */
 	                this.dispatchEvent( { type: 'leave-start' } );
 
-	                this.fadeOut( duration );
-	                this.toggleInfospotVisibility( false );
+	                this.toggleInfospotVisibility(false);
+	                this.fadeOut( 200 );
 
 	            }.bind( this ) )
 	            .start();
@@ -7751,6 +7754,10 @@
 
 	            // Clear exisiting infospot
 	            this.hideInfospot();
+	            if (leavingPanorama && leavingPanorama.children){
+	                // eslint-disable-next-line no-unused-expressions
+	                leavingPanorama.children.map(c => { c.unlockHoverElement && c.unlockHoverElement(); c.removeHoverElement && c.removeHoverElement(); c.hide(); c.dispose(); });
+	            }
 
 	            const afterEnterComplete = function () {
 

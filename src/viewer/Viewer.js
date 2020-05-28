@@ -360,7 +360,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             this.hideInfospot();
             if (leavingPanorama && leavingPanorama.children){
                 // eslint-disable-next-line no-unused-expressions
-                leavingPanorama.children.map(c => { c.unlockHoverElement && c.unlockHoverElement(); c.removeHoverElement && c.removeHoverElement(); c.hide(); c.dispose(); })
+                leavingPanorama.children.map(c => { c.unlockHoverElement && c.unlockHoverElement(); c.removeHoverElement && c.removeHoverElement(); c.hide(); c.dispose(); });
             }
 
             const afterEnterComplete = function () {
