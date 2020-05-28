@@ -323,7 +323,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
             if ( object instanceof Infospot ) {
 
-                if ( visible ) {
+                if ( visible && this.loaded ) {
 
                     object.show( delay );
 

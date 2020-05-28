@@ -59,6 +59,11 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     const postLoad = function ( texture ) {
 
         if ( !this.material ) { return; }
+        this.material.map = texture;
+        this.material.needsUpdate = true;
+        this.material.map.needsUpdate = true;
+        this.loaded = true;
+
 
         const ratio = texture.image.width / texture.image.height;
         const textureScale = new THREE.Vector3();
@@ -78,9 +83,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
             .to( { x: textureScale.x, y: textureScale.y }, duration )
             .easing( TWEEN.Easing.Elastic.Out );
 
-        this.material.map = texture;
-        this.material.needsUpdate = true;
-        setTimeout(() => this.loaded = true, duration*3);
+        this.show(duration);
 
     }.bind( this );
 

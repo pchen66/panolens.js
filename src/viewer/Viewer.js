@@ -358,6 +358,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             // Clear exisiting infospot
             this.hideInfospot();
+            if (leavingPanorama && leavingPanorama.children){
+                // eslint-disable-next-line no-unused-expressions
+                leavingPanorama.children.map(c => { c.unlockHoverElement && c.unlockHoverElement(); c.removeHoverElement && c.removeHoverElement(); c.hide(); c.dispose(); })
+            }
 
             const afterEnterComplete = function () {
 
