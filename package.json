@@ -127,7 +127,7 @@
     "local-web-server": "^3.0.7",
     "nyc": "^14.1.1",
     "rollup": "^2.3.2",
-    "three": "^0.115.0",
+    "three": "^0.117.0",
     "xmlhttprequest": "^1.8.0"
   },
   "jspm": {
