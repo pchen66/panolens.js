@@ -4154,7 +4154,7 @@
 
 	            if ( object instanceof Infospot ) {
 
-	                if ( visible && this.loaded ) {
+	                if ( visible && object.loaded ) {
 
 	                    object.show( delay );
 
