@@ -28,7 +28,7 @@
     "test": "nyc --reporter=html --reporter=text ava",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "start": "npm run dev",
-    "update:website": "npm run build-closure && cp build/panolens.min.js public/js/panolens/ && cp node_modules/three/build/three.min.js public/js/three/",
+    "update:website": "npm run build-closure && npm run docs && cp build/panolens.min.js public/js/panolens/ && cp node_modules/three/build/three.min.js public/js/three/ && cp -r ./docs ./public/",
     "docs": "node_modules/.bin/jsdoc -c jsdoc.json -d ./docs",
     "travis": "npm run lint && npm test",
     "prepublishOnly": "npm run test && npm run build-closure",
