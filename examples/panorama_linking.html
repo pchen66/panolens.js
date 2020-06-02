@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js panorama linking</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      a:link, a:visited{
+        color: #bdc3c7;
+      }
+
+      .credit{
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        padding: 20px 0;
+        color: #fff;
+      }
+    </style>
+  </head>
+
+  <body>
+    
+    <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> panorama linking example. 360 Video from <a href="http://worldoftanks.com/">World of Tanks</a>. Image from <a href="http://adaptivesamples.com/tag/equirectangular/">Adaptive Samples</a> and Google Streetview API</div>
+
+    <script src="../js/three/three.min.js"></script>
+    <script src="../js/panolens/panolens.min.js"></script>
+
+    <script>
+
+      var panorama1, panorama2, viewer;
+
+      panorama1 = new PANOLENS.GoogleStreetviewPanorama( 'y0rbkep4RBcAAAQqZe0GiQ' );
+
+      panorama2 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
+
+      panorama3 = new PANOLENS.VideoPanorama( 'asset/textures/video/1941-battle-low.mp4' );
+
+      viewer = new PANOLENS.Viewer();
+      viewer.add( panorama1 );
+      viewer.add( panorama2 );
+      viewer.add( panorama3 );
+
+      // Linking between panoramas
+      
+      // Pair
+      panorama1.link( panorama2, new THREE.Vector3( -3145.23, -3704.40, 1149.48 ) );
+      panorama2.link( panorama1, new THREE.Vector3( -3429.01, 1205.85, -3421.88 ) );
+
+      // Pair with custom scale and image
+      panorama1.link( panorama3, new THREE.Vector3( -1106.42, -4277.19, -5000.00 ), 400, 'asset/textures/1941-battle-thumb.png' );
+      panorama3.link( panorama2, new THREE.Vector3( 2092.2, -159.02, -4530.91 ) );
+
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js stereo image panorama</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      a:link, a:visited{
+        color: #bdc3c7;
+      }
+
+      .credit{
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        font-size: 1em;
+        padding: 20px 0;
+        color: #fff;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #progress {
+        width: 0;
+        height: 4px;
+        position: fixed;
+        top: 0;
+        background: #fff;
+        -webkit-transition: opacity 1s ease-out;
+        transition: opacity 1s ease-out;
+      }
+
+      #progress.finish {
+        opacity: 0;
+      }
+
+      .panolens-image {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        width: 200px;
+        height: 200px;
+        display: none;
+      }
+
+      .panolens-image.visible {
+        display: block;
+      }
+
+      .panolens-infospot {
+        max-width: 40% !important;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> stereo image panorama example. Image from <a href="https://www.hellblade.com/">Hellblade</a> by <a href="https://ninjatheory.com">Ninja Theory Ltd</a></div>
+    
+    <div id="progress"></div>
+
+    <script src="../js/three/three.min.js"></script>
+    <script src="../js/panolens/panolens.min.js"></script>
+
+    <script>
+
+      const imageURL = 'https://fd210b1b-b131-4beb-b60f-2e3352887a8e.s3-us-west-1.amazonaws.com/hellblade.jpeg';
+      const { style, classList } = document.querySelector( '#progress' );
+
+      const onEnterFadeStart = ( event ) => {
+        style.width = 0;
+        classList.remove( 'finish' );
+      };
+
+      const onProgress = ( event ) => {
+        style.width = `${event.progress.loaded / event.progress.total * 100}%`;
+        if ( progress === 100 ) {
+          classList.add( 'finish' );
+        }
+      };
+
+      const onLoad = () => {
+        const { image } = panorama.getTexture();
+        image.classList.add( 'panolens-image' );
+        document.body.appendChild( image );
+      };
+
+      const createWidget = () => {
+
+        const onImage = 'url("https://i.imgur.com/wQnaQYj.png")';
+        const offImage = 'url("https://i.imgur.com/atUy07F.png")';
+        let status = 0;
+
+        const widget = { 
+          style: { backgroundImage: onImage },
+          onTap: () => {
+            const { image } = panorama.getTexture();
+            image.classList.toggle( 'visible' );
+            item.style.backgroundImage = status === 0 ? offImage : onImage;
+            status = status === 1 ? 0 : 1;
+          }
+        };
+
+        const item = viewer.appendControlItem( widget );
+
+      };
+
+      const viewer = new PANOLENS.Viewer();
+      const stereo = new PANOLENS.Stereo( 0.02 );
+
+      const treeSpot = new PANOLENS.Infospot( 300 );
+      treeSpot.position.set( -5000.00, 3983.24, 4636.95 );
+      treeSpot.addHoverText( 'Burning Tree' );
+
+      const senuaSpot = new PANOLENS.Infospot( 350 );
+      senuaSpot.position.set( 5000.00, 1803.49, 638.94 );
+      senuaSpot.addHoverText( `Senua is a Pict warrior and protagonist of Hellblade: Senua's Sacrifice. Senua is a young woman with a troubled history and a life amplified by severe psychosis. She finds herself on a personal journey into the depths of Helheim, in order to save the soul of her lover, Dillion.`, 80 );
+
+      const panorama = new PANOLENS.StereoImagePanorama( imageURL, stereo );
+      panorama.addEventListener( 'progress', onProgress );
+      panorama.addEventListener( 'enter-fade-start', onEnterFadeStart );
+      panorama.addEventListener( 'load', onLoad );
+      panorama.add( senuaSpot, treeSpot );
+
+      viewer.add( panorama );
+      viewer.enableEffect( PANOLENS.MODES.STEREO );
+      createWidget();
+
+    </script>
+
+  </body>
+</html>

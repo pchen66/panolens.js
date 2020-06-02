@@ -1,0 +1,265 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oswald:400,300' rel='stylesheet' type='text/css'>
+    <link href='css/style.css' rel='stylesheet'>
+    <title>Panolens.js</title>
+  </head>
+
+  <body>
+    
+    <div id="progress"></div>
+    
+    <main>
+
+      <section class="background full"></section>
+
+      <section class="content">
+
+        <section class="title">
+          <header>PANOLENS.JS</header>
+          <article>A Javascript Panorama Viewer</article>
+        </section>
+
+        <section class="documentation hide">
+          <iframe allowfullscreen></iframe>
+        </section>
+
+        <section class="example hide">
+          <div class="group">
+            <h2 class="group-title">Overview</h2>
+          <figure class="card image" data-url="examples/panorama_image.html">
+            <figcaption>
+              <h4>Image Panorama</h4>
+              <article>Panorama by equirectangular image</article>
+            </figcaption>
+          </figure>
+          <figure class="card cube" data-url="examples/panorama_cube.html">
+            <figcaption>
+              <h4>Cube Panorama</h4>
+              <article>Panorama with a six-face cubemap</article>
+            </figcaption>
+          </figure>
+          <figure class="card basic" data-url="examples/panorama_basic.html">
+            <figcaption>
+              <h4>Basic Panorama</h4>
+              <article>Virtual environment with grid texture</article>
+            </figcaption>
+          </figure>
+          <figure class="card gsv" data-url="examples/panorama_googlestreetview.html">
+            <figcaption>
+              <h4>Google Street View Panorama</h4>
+              <article>Google street view panorama by panoId</article>
+            </figcaption>
+          </figure>
+          <figure class="card video" data-url="examples/panorama_video.html">
+            <figcaption>
+              <h4>Video Panorama</h4>
+              <article>360 video texture with built-in controls (mobile friendly)</article>
+            </figcaption>
+          </figure>
+          <figure class="card infospot" data-url="examples/panorama_infospot.html">
+            <figcaption>
+              <h4>Infospot</h4>
+              <article>Demo of infospots with can be either hovering text or custom DOM element</article>
+            </figcaption>
+          </figure>
+          <figure class="card infospot-focus" data-url="examples/panorama_infospot_focus.html">
+            <figcaption>
+              <h4>Infospot Focus</h4>
+              <article>Tween camera with different curves and easing</article>
+            </figcaption>
+          </figure>
+          <figure class="card linking" data-url="examples/panorama_linking.html">
+            <figcaption>
+              <h4>Panorama Linking</h4>
+              <article>Linking two panoramas with built-in infospot for navigation back and forth</article>
+            </figcaption>
+          </figure>
+          <figure class="card loading" data-url="examples/panorama_loading_progress.html">
+            <figcaption>
+              <h4>Panorama Loading Progress</h4>
+              <article>Event-driven listeners for loading progress tracking</article>
+            </figcaption>
+          </figure>
+          <figure class="card gallery" data-url="examples/panorama_simple_gallery.html">
+            <figcaption>
+              <h4>Simple Panorama Gallery</h4>
+              <article>A simple gallery with dynamic creation and disposal</article>
+            </figcaption>
+          </figure>
+          <figure class="card lp-image" data-url="examples/littleplanet_image.html">
+            <figcaption>
+              <h4>Little Planet Image</h4>
+              <article>Stereographic projection to create little planet effect</article>
+            </figcaption>
+          </figure>
+          <figure class="card reticle" data-url="examples/panorama_reticle.html">
+            <figcaption>
+              <h4>Reticle</h4>
+              <article>Dispatching hoverenter and hoverleave event for mouseless interaction</article>
+            </figcaption>
+          </figure>
+          <figure class="card interactive" data-url="examples/panorama_interactive.html">
+            <figcaption>
+              <h4>Interactive Panorama</h4>
+              <article>A room with interactive 3D model</article>
+            </figcaption>
+          </figure>
+          <figure class="card storytelling" data-url="examples/panorama_storytelling.html">
+            <figcaption>
+              <h4>Storytelling</h4>
+              <article>Telling story through panorama</article>
+            </figcaption>
+          </figure>
+          <figure class="card memory" data-url="examples/panorama_memoryleak_test.html">
+            <figcaption>
+              <h4>Memory Leak Testing</h4>
+              <article>Test dynamic creation and disposal</article>
+            </figcaption>
+          </figure>
+          <!--<figure class="card camera" data-url="examples/panorama_camera.html">
+            <figcaption>
+              <h4>Camera Background</h4>
+              <article>Live camera view as background</article>
+            </figcaption>
+          </figure>-->
+          <figure class="card stereo-image" data-url="examples/panorama_stereo_image.html">
+            <figcaption>
+              <h4>Stereo Image</h4>
+              <article>Stereo Image Panorama</article>
+            </figcaption>
+          </figure>
+          <figure class="card stereo-video" data-url="examples/panorama_stereo_video.html">
+            <figcaption>
+              <h4>Stereo Video</h4>
+              <article>Stereo Video Panorama</article>
+            </figcaption>
+          </figure>
+          <figure class="card panotheater" data-url="http://pchen66.github.io/PanoTheater">
+            <figcaption>
+              <h4>Pano Theater</h4>
+              <article>A panoramic way of browsing movie information</article>
+            </figcaption>
+          </figure>
+          </div>
+          <div class="group">
+            <h2 class="group-title">Codepen Live Editor</h2>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="dmmGKM" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Viewer API"></p>
+              <figcaption>
+                  <h4>Viewer API</h4>
+                <article>Control viewer state via API</article>
+              </figcaption>
+            </figure>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="vZVyYr" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Custom Widget"></p> 
+              <figcaption>
+                <h4>Custom Widget</h4>
+                <article>Create custom widget on control bar</article>
+              </figcaption>
+            </figure>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="yXeWMJ" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Custom Widget"></p> 
+              <figcaption>
+                <h4>Custom Linking</h4>
+                <article>Set panorama by click event on infospot</article>
+              </figcaption>
+            </figure>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="RgxeJM" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Custom Widget"></p> 
+              <figcaption>
+                <h4>Custom Set Panorama</h4>
+                <article>Set panorama with button event</article>
+              </figcaption>
+            </figure>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="gMmggW" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Custom Widget"></p> 
+              <figcaption>
+                <h4>Custom Container</h4>
+                <article>Render panolens on a container</article>
+              </figcaption>
+            </figure>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="vKvWQV" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Custom Widget"></p> 
+              <figcaption>
+                <h4>Custom Hover Element</h4>
+                <article>Show 3D object when hovering infospot</article>
+              </figcaption>
+            </figure>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="LLgxME" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Custom Widget"></p> 
+              <figcaption>
+                <h4>Initial LookAt</h4>
+                <article>Set initial lookat position</article>
+              </figcaption>
+            </figure>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="EZjbXq" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Custom Widget"></p> 
+              <figcaption>
+                <h4>Spatial Audio</h4>
+                <article>Play spatial audio inside panorama</article>
+              </figcaption>
+            </figure>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="YxeYGZ" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Custom Widget"></p> 
+              <figcaption>
+                <h4>Update Texture</h4>
+                <article>Set texture of a panorama</article>
+              </figcaption>
+            </figure>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="rGpoPv" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Custom Widget"></p> 
+              <figcaption>
+                <h4>Auto Rotation</h4>
+                <article>Enable auto rotation</article>
+              </figcaption>
+            </figure>
+            <figure class="card codepen">
+              <p class="codepen" data-height="265" data-theme-id="dark" data-default-tab="result" data-user="pchen66" data-slug-hash="JrMxdV" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="Image Panorama - Custom Widget"></p> 
+              <figcaption>
+                <h4>Custom Orbit Control</h4>
+                <article>Specify control angle for OrbitControl</article>
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+        
+      </section>
+
+    </main>
+
+    <nav>
+      <li class="item selected" name="Home" data-hash="#Home">Home</li>
+      <li class="item" name="Documentation" data-hash="#Documentation">Docs<a href="./docs/" target="_blank"><span class="external"></span></a></li>
+      <li class="item" name="Example" data-hash="#Example">Example</li>
+      <li class="item" name="Github"><a href="https://github.com/pchen66/panolens.js">Github</a></li>
+    </nav>
+
+    <div class="menu-icon">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <footer>background images from flickr<img src="images/cc.svg"></footer>
+
+    <script src="js/three/three.min.js"></script>
+    <script src="js/panolens/panolens.min.js"></script>
+    <script src="js/main.js"></script>
+    <script async src="https://static.codepen.io/assets/embed/ei.js"></script>
+
+    <script>
+		/*(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-74433652-1', 'auto');
+		ga('send', 'pageview');*/
+	</script>
+
+  </body>

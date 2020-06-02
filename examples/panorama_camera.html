@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js panorama camera panorama</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+    </style>
+  </head>
+
+  <body>
+    
+    <script src="../js/three/three.min.js"></script>
+    <script src="../js/panolens/panolens.min.js"></script>
+
+    <script>
+
+      const isIOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/g);
+      const isWebKit = navigator.userAgent.match(/(WebKit)/g);
+      const isVersionExist = navigator.userAgent.match(/(Version)/g);
+
+      const isDeviceOrientationSupported = window.DeviceOrientationEvent && 'ontouchstart' in window;
+      const facingMode = isDeviceOrientationSupported ? { exact: 'environment' } : 'environment'; // Quick hack for demo only
+      const constraints = { video: { width: { ideal: 1920 }, height: { ideal: 1080 }, facingMode } };
+
+      const panorama = new PANOLENS.CameraPanorama( constraints );
+      const viewer = new PANOLENS.Viewer();
+
+      const onListReady = ( list ) => {
+
+        const length = list.length;
+        const radius = panorama.edgeLength / 2;
+
+        list.map( ( image, index ) => {
+
+          const url = image.download_url.split( '/' );
+          url.splice( -2, 2, 256, 256 );
+
+          const infospot = new PANOLENS.Infospot( 1000, url.join( '/' ) );
+
+          const theta = Math.random() * 2 * Math.PI;
+          const phi = Math.random() * Math.PI;
+          const angle = index / length * 2 * Math.PI;
+
+          const randomPos = new THREE.Vector3(
+            radius * Math.sin( phi ) * Math.cos( theta ),
+            radius * Math.sin( phi ) * Math.sin( theta ),
+            radius * Math.cos( phi )
+          );
+
+          const alignPos = new THREE.Vector3(
+            radius * Math.cos( angle ),
+            0,
+            radius * Math.sin( angle )
+          );
+
+          infospot.position.copy( randomPos );
+
+          infospot.align = () => {
+
+            new TWEEN.Tween( infospot.position )
+            .to( alignPos, 1000 )
+            .easing( TWEEN.Easing.Exponential.Out )
+            .start();
+
+          };
+
+          infospot.randomize = () => {
+
+            new TWEEN.Tween( infospot.position )
+            .to( randomPos, 1000 )
+            .easing( TWEEN.Easing.Exponential.Out )
+            .start();
+
+          };
+          
+          panorama.add( infospot );
+
+        } );
+
+        viewer.add( panorama );
+
+        if ( isDeviceOrientationSupported ) {
+
+          viewer.enableControl( PANOLENS.CONTROLS.DEVICEORIENTATION );
+
+        } else {
+
+          panorama.media.ratioScalar = -1;
+
+        }
+
+      };
+
+      const createWidget = () => {
+
+        const onImage = 'url("https://i.imgur.com/k5Mp1Q9.png")';
+        const offImage = 'url("https://i.imgur.com/laX1DBL.png")';
+
+        const widget = { 
+          style: { backgroundImage: onImage },
+          onTap: () => {
+            const enabledGrid = item.style.backgroundImage == onImage;
+            panorama.children.forEach( infospot => infospot[ enabledGrid ? 'align' : 'randomize' ]() );
+            item.style.backgroundImage = enabledGrid ? offImage : onImage;
+          }
+        };
+
+        const item = viewer.appendControlItem( widget );
+
+      };
+
+      const getRandomImageList = ( url ) => {
+
+        return fetch( url )
+          .then( response => response.json() )
+          .then( onListReady )
+          .then( createWidget )
+          .catch( console.error );
+
+      };
+
+      if (isIOS && isWebKit && !isVersionExist) {
+        alert( 'Local Camera Access Not Available. Please open link in Safari' );
+      } else {
+        getRandomImageList( 'https://picsum.photos/v2/list' );
+      }
+
+    </script>
+
+  </body>
+
+</html>

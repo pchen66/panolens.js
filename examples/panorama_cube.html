@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js panorama cube</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      a:link, a:visited{
+        color: #bdc3c7;
+      }
+
+      .credit{
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        padding: 20px 0;
+        color: #fff;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> panorama cube example. Image from <a href="http://paulbourke.net/miscellaneous/">Paul Bourke</a></div>
+    
+    <script src="../js/three/three.min.js"></script>
+    <script src="../js/panolens/panolens.min.js"></script>
+
+    <script>
+
+      let panorama, panorama2, viewer;
+
+      const path = 'asset/textures/cube/sand/';
+      const format = '.png';
+      panorama = new PANOLENS.CubePanorama( [
+          path + 'px' + format, path + 'nx' + format,
+          path + 'py' + format, path + 'ny' + format,
+          path + 'pz' + format, path + 'nz' + format
+      ] );
+
+      panorama2 = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
+
+      panorama.link( panorama2, new THREE.Vector3( -807.50, 604.88, -5000.00 ) );
+      panorama2.link( panorama, new THREE.Vector3( -807.50, 604.88, -5000.00 ) );
+
+      viewer = new PANOLENS.Viewer();
+      viewer.add( panorama, panorama2 );
+
+    </script>
+
+  </body>
+</html>

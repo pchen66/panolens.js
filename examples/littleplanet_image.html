@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+    <title>Panolens.js little planet image</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Open Sans', sans-serif;
+        background-color: #000;
+      }
+
+      .intro {
+        position: fixed;
+        top: 0;
+        right: 0;
+        font-size: 14px;
+        display: block;
+        padding: 20px;
+        color: #fff;
+        text-transform: uppercase;
+        text-shadow: 0 0 2px #000;
+      }
+
+      #drawer-container {
+        position: fixed;
+        width: 100%;
+        bottom: -150px;
+        left: -50px;
+        margin: 0;
+        padding: 0;
+        
+      }
+
+      #drawer {       
+        white-space: nowrap;
+      }
+
+      .photo {
+        width: 8%;
+        height: 200px;
+        margin: 1%;
+        background-color: #f00;
+        display: inline-block;
+        transform: rotateZ(30deg);
+        transition: all 0.2s ease;
+        -webkit-filter: grayscale(1.0);
+        opacity: 0.3;
+        background-position: center;
+        background-size: cover;
+        cursor: pointer;
+        border: 1px solid #fff;
+      }
+
+      .photo:hover {
+        transform: rotateZ(30deg) translateY(-100px);
+        -webkit-filter: grayscale(0.0);
+        opacity: 1;
+      }
+
+    </style>
+  </head>
+
+  <body>
+
+    <div class="intro">Right click to download the image <small>( Chrome / Firefox )</small></div>
+
+    <div id="drawer-container">
+      <div id="drawer"></div>
+    </div>
+    
+    <script src="../js/three/three.min.js"></script>
+    <script src="../js/panolens/panolens.min.js"></script>
+
+    <script>
+
+      var littlePlanet, viewer, lists, path, format, drawerElement;
+
+      drawerElement = document.querySelector( '#drawer' );
+
+      path = 'asset/textures/equirectangular/';
+      format = '.jpg';
+
+      lists = [ 'planet', 'tunnel', 'golf', 'field', 'leaf', 'lookout', 'pier', 'rock', 'suite', 'tent' ];
+
+      for ( var i = 0; i < lists.length; i++ ) {
+
+        var photo = document.createElement( 'div' );
+        var url = path + lists[ i ] + format;
+        photo.classList.add( 'photo' );
+        photo.style.backgroundImage = 'url(' + url + ')';
+        photo.texture = new THREE.TextureLoader().load( url );
+        photo.addEventListener( 'click', function () {
+          littlePlanet.updateTexture( this.texture );
+          littlePlanet.reset();
+        } );
+        drawerElement.appendChild( photo );
+
+      }
+
+      viewer = new PANOLENS.Viewer( { controlBar: false } );
+      littlePlanet = new PANOLENS.ImageLittlePlanet( path + lists[ 0 ] + format );
+
+      viewer.add( littlePlanet );
+
+    </script>
+
+  </body>
+</html>

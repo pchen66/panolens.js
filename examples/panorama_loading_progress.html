@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js panorama loading progress</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      a:link, a:visited{
+        color: #bdc3c7;
+      }
+
+      .credit{
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        padding: 20px 0;
+        color: #fff;
+      }
+
+      #progress {
+        width: 0;
+        height: 5px;
+        position: fixed;
+        top: 0;
+        background: #fff;
+        -webkit-transition: opacity 0.5s ease;
+        transition: opacity 0.5s ease;
+      }
+
+      #progress.finish {
+        opacity: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> loading progress example. Image from <a href="http://adaptivesamples.com/tag/equirectangular/">Adaptive Samples</a></div>
+
+    <div id="progress"></div>
+    
+    <script src="../js/three/three.min.js"></script>
+    <script src="../js/panolens/panolens.min.js"></script>
+
+    <script>
+
+      var panorama, panorama2, panorama3, viewer, progress, progressElement;
+
+      progressElement = document.getElementById( 'progress' );
+
+      function onEnter ( event ) {
+
+        progressElement.style.width = 0;
+        progressElement.classList.remove( 'finish' );
+
+      }
+
+      function onProgress ( event ) {
+
+        progress = event.progress.loaded / event.progress.total * 100;
+        progressElement.style.width = progress + '%';
+        if ( progress === 100 ) {
+          progressElement.classList.add( 'finish' );
+        }
+
+      }
+
+      // First panorama
+      panorama = new PANOLENS.ImagePanorama( 'asset/textures/equirectangular/field.jpg' );
+      panorama.addEventListener( 'progress', onProgress );
+      panorama.addEventListener( 'enter', onEnter );
+      
+      // Second panorama
+      panorama2 = new PANOLENS.GoogleStreetviewPanorama( 'JmSoPsBPhqWvaBmOqfFzgA' );
+      panorama2.addEventListener( 'progress', onProgress );
+      panorama2.addEventListener( 'enter', onEnter );
+
+      // Third panorama
+      var path = 'asset/textures/cube/sand/';
+      var format = '.png';
+      panorama3 = new PANOLENS.CubePanorama( [
+          path + 'px' + format, path + 'nx' + format,
+          path + 'py' + format, path + 'ny' + format,
+          path + 'pz' + format, path + 'nz' + format
+      ] );
+      panorama3.addEventListener( 'progress', onProgress );
+      panorama3.addEventListener( 'enter', onEnter );
+
+      // Linking panoramas
+      panorama.link( panorama2, new THREE.Vector3( -2302.98, 358.27, -4414.74 ) );
+      panorama2.link( panorama, new THREE.Vector3( 4954.53, 319.21, -556.71 ) );
+
+      panorama.link( panorama3, new THREE.Vector3( 4954.53, 319.21, -556.71 ) );
+      panorama3.link( panorama, new THREE.Vector3( -3399.16, 1015.42, -5000.00 ) );
+
+      viewer = new PANOLENS.Viewer();
+      viewer.add( panorama, panorama2, panorama3 );
+
+    </script>
+
+  </body>
+</html>

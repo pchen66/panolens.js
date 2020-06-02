@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+    <title>Panolens.js reticle example</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      a:link, a:visited{
+        color: #bdc3c7;
+      }
+
+      .credit{
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        padding: 20px 0;
+        color: #fff;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="credit"><a href="https://github.com/pchen66/panolens.js">Panolens.js</a> reticle example.</div>
+    
+    <script src="../js/three/three.min.js"></script>
+    <script src="../js/panolens/panolens.min.js"></script>
+
+    <script>
+
+      var panorama, viewer, radius, zodiacs, zodiac, title, desc, egg, eggTexture, fromScale, toScale, duration, easing, font;
+
+      // information from http://iml.jou.ufl.edu/projects/fall07/Bhimani/thezodiac/zodiacsigns.html
+      // image asset from online source
+      zodiacs = [ 
+        { name: 'Aries',
+          desc: 'Aries is the first sign of the zodiac. Those who are Aries are independent and courageous. They enjoy leading others and bringing excitement into the lives of others. An Aries is enthusiastic and very goal-oriented.' }, 
+        { name: 'Taurus',  
+          panorama: new PANOLENS.ImagePanorama('asset/textures/equirectangular/field.jpg'), 
+          desc: 'The second sign of the zodiac, those who are a Taurus are solid and fight for what they want. A Taurus is very easy going but can also be stubborn. A Taurus can be procrastinators but also have a good-work ethic.' },
+        { name: 'Gemini',  
+          desc: 'Gemini is the third sign of the zodiac. Geminis have many sides and are known for their energy. They are very talkative and are considered social butterflies. A Gemini will always take their lives in the direction they want to go.' },
+        { name: 'Cancer', 
+          panorama: new PANOLENS.ImagePanorama('asset/textures/equirectangular/golf.jpg'), 
+          desc: 'Cancer is the fourth sign of the zodiac. This sign is marked by inconsistency. They enjoy security but also seek adventure. A Cancer is not very predictable and always keep others guessing.' },
+        { name: 'Leo',  
+          desc: 'Leo is the fifth sign in the zodiac. Leos have high self esteem and are very devoted. They are also very kind and generous. A Leo is known for being hot tempered yet forgiving.' },
+        { name: 'Virgo',
+          panorama: new PANOLENS.ImagePanorama('asset/textures/equirectangular/lamp.jpg'), 
+          desc: 'The sixth sign of the zodiac, Virgo is very mind oriented. They are constantly analyzing and thinking. They enjoy bettering themselves and those around them.' },
+        { name: 'Libra',  
+          desc: 'The seventh sign of the zodiac, Libras are known for their diplomatic nature. They get along well with everyone and are ambitious. They have very expensive taste and work hard to make money.' },
+        { name: 'Scorpius',
+          panorama: new PANOLENS.ImagePanorama('asset/textures/equirectangular/rock.jpg'),
+          desc: 'The eight sign of the zodiac, Scorpios are very intense. They like to question everything and work hard at making sense of things. Scorpios treat others with kindness and loyalty.' },
+        { name: 'Sagittarius', 
+          desc: 'The ninth sign of the zodiac, a Sagittarius has a very positive outlook on life. They have vibrant personalities and enjoy meeting new people. They can also be reckless.' },
+        { name: 'Capricorn',
+          panorama: new PANOLENS.ImagePanorama('asset/textures/equirectangular/tent.jpg'),
+          desc: 'The 10th sign of the zodiac, those who are Capricorns are marked by their ambitious nature. They have very active minds and always have to be in control of their lives.' },
+        { name: 'Aquarius',  
+          desc: 'Aquarius is the 11th sign of the zodiac. Aquarians don\'t always care what others think about them. They take each opportunity they have and work towards formulating new ideas.' },
+        { name: 'Pisces', 
+          panorama: new PANOLENS.ImagePanorama('asset/textures/equirectangular/leaf.jpg'),
+          desc: 'Pisces is the 12th and last sign of the zodiac. Those who are Pisces are extremely sensitive and reserved. They like to escape from reality. A Pisces is a very good listener and friend.' }
+      ];
+
+      radius = 180;
+      duration = 500;
+      easing = TWEEN.Easing.Elastic.Out;
+      fromScale = new THREE.Vector3( 1, 1.2, 1 );
+      toScale = fromScale.clone().multiplyScalar( 1.2 );
+      eggTexture = PANOLENS.TextureLoader.load( 'asset/textures/noise.png' );
+
+      const visibleObjects = [];
+
+      function fadeInCurrent () {
+
+        zodiacs.forEach( ( { eggMesh, zodiacMesh } ) => {
+
+          const duration = 500;
+          const delay = 1000;
+          const { title } = zodiacMesh;
+
+          new TWEEN.Tween( eggMesh.material )
+            .to({opacity: 1}, duration)
+            .easing(TWEEN.Easing.Exponential.Out)
+            .delay( delay )
+            .start();
+
+          new TWEEN.Tween( title.material )
+            .to({opacity: 1}, duration)
+            .easing(TWEEN.Easing.Exponential.Out)
+            .delay( delay )
+            .start();
+
+        } );
+
+      }
+
+      function fadeOutCurrent () {
+
+        zodiacs.forEach( ( { eggMesh, zodiacMesh } ) => {
+
+          const duration = 500;
+          const { visible } = eggMesh;
+          const { title, desc } = zodiacMesh;
+
+          new TWEEN.Tween( eggMesh.material )
+            .to({opacity: 0}, duration)
+            .easing(TWEEN.Easing.Exponential.Out)
+            .start();
+
+          new TWEEN.Tween( title.material )
+            .to({opacity: 0}, duration)
+            .easing(TWEEN.Easing.Exponential.Out)
+            .start();
+
+          new TWEEN.Tween( desc.material )
+            .to({opacity: 0}, duration)
+            .easing(TWEEN.Easing.Exponential.Out)
+            .start();
+
+        } );
+
+      }
+
+      function onFontLoaded ( _font ) {
+
+        font = _font;
+        panorama = new PANOLENS.BasicPanorama();
+        viewer = new PANOLENS.Viewer( { enableReticle: true, renderer: new THREE.WebGLRenderer({antialias: true}) } );
+        viewer.reticle.setColor( 0x77ffff );
+        viewer.add( panorama );
+
+        panorama.addEventListener( 'enter', fadeInCurrent );
+
+        for ( var i = 0, angle, zodiacPanorama; i < zodiacs.length; i++ ) {
+
+          const zodicObject = zodiacs[ i ];
+
+          angle = Math.PI / 6 * i + Math.PI;
+
+          zodiacPanorama = zodicObject.panorama;
+
+          // Zodiac eggs
+          egg = createEgg( angle );
+
+          // Zodiac as infospots
+          zodiac = createZodiac( angle, i ) ;
+
+          // Zodiac title
+          title = createTitleAndDesc( angle, i );
+
+          // Create zodiac panorama if exists
+          if ( zodiacPanorama ) {
+
+            zodiacPanorama.link( panorama, new THREE.Vector3( 0, 0, -5000 ) ); // One way linking
+
+            zodiac.toPanorama = zodiacPanorama;
+            viewer.add( zodiacPanorama );
+
+          }
+
+          zodiac.title = title;
+          zodiac.desc = title.desc;
+          egg.zodiac = zodiac;
+          
+          panorama.add( egg );
+          panorama.add( title );
+          panorama.add( zodiac );
+
+          zodicObject.eggMesh = egg;
+          zodicObject.zodiacMesh = zodiac;
+
+        }
+      }
+
+      function createEgg ( angle ) {
+
+        var mesh;
+
+        // Zodiac egg
+        mesh = new THREE.Mesh( 
+          new THREE.SphereGeometry( 20, 16, 12 ), 
+          new THREE.MeshBasicMaterial( { transparent: true, map: eggTexture } ) 
+        );
+        mesh.position.set( radius * Math.sin( -angle ), 0, radius * Math.cos( -angle ) );
+        mesh.scale.copy( fromScale );
+        mesh.lookAt( new THREE.Vector3( 0, 0, 0 ) );
+
+        // Egg animation
+        mesh.scaleUpAnimation = new TWEEN.Tween( mesh.scale )
+          .to( toScale, duration )
+          .easing( easing );
+        mesh.scaleDownAnimation = new TWEEN.Tween( mesh.scale )
+          .to( fromScale, duration)
+          .easing( easing );
+        mesh.vanishAnimation = new TWEEN.Tween( mesh.material )
+          .to( { opacity: 0 }, duration )
+          .easing( TWEEN.Easing.Cubic.Out )
+          .onComplete(function(){
+            this.visible = false;
+            this.zodiac.visible = true;
+            this.zodiac.show();
+          }.bind( mesh ) );
+
+        // Egg event listeners
+        mesh.addEventListener( 'hoverenter', function () {
+          this.scaleDownAnimation.stop();
+          this.scaleUpAnimation.start();
+        } );
+        mesh.addEventListener( 'hoverleave', function () {
+          this.scaleUpAnimation.stop();
+          this.scaleDownAnimation.start();
+        } );
+        mesh.addEventListener( 'click', function () {
+          this.vanishAnimation.start();
+        } );
+
+        // Egg auto rotation
+        viewer.addUpdateCallback( function () {
+          this.rotation.y += 0.01;
+        }.bind( mesh ) );
+
+        return mesh;
+
+      }
+
+      function createZodiac ( angle, index ) {
+
+        var mesh, url;
+
+        url = 'asset/textures/zodiac/' + ( index + 1 ) + '.png';
+
+        mesh = new PANOLENS.Infospot( 50, url );
+        mesh.visible = false;
+        mesh.name = zodiacs[ index ].name;
+        mesh.position.set( -radius * Math.sin( angle ), 0, radius * Math.cos( angle ) );
+        mesh.material.opacity = 0;
+        mesh.setCursorHoverStyle( 'default' );
+
+        // Zodiac event listeners
+        mesh.addEventListener( 'hoverenter', function () {
+          // Dynamic set reticle dwelling time
+          this.name === 'Taurus' && setDwellTime( 3000 ); 
+          // Fade in description
+          this.desc.tweens['fadeIn'].start();
+        } );
+        mesh.addEventListener( 'hoverleave', function () {
+          // Reset reticle dwelling time
+          this.name === 'Taurus' && setDwellTime( 1500 ); 
+          // Fade out description
+          this.desc.tweens['fadeOut'].start();
+        } );
+        mesh.addEventListener( 'click', function () {
+
+          this.scaleDownAnimation.start();
+
+          if ( this.toPanorama ) {
+
+            viewer.setPanorama( this.toPanorama );
+            fadeOutCurrent();
+
+          }
+          
+        } );
+
+        return mesh;
+
+      }
+
+      function makeMultiLine ( text = '', count = 40 ) {
+
+        let lineCharacterLimit = 0;
+
+        return text.split(' ').map( word => {
+
+          lineCharacterLimit += word.length;
+          
+          if ( lineCharacterLimit > count ) {
+            word += '\n';
+            
+            lineCharacterLimit = 0;
+          }
+
+          return word;
+
+        }).join(' ').replace( /\n /g, '\n' );
+
+      }
+
+      function createTextShape ( message, size = 10, count ) {
+
+        message = makeMultiLine( message, count );
+
+        var shapes = font.generateShapes( message, size );
+        var geometry = new THREE.ShapeGeometry( shapes );
+        var matLite = new THREE.MeshBasicMaterial( {
+          color: 0xffffff,
+          transparent: true,
+          opacity: 1,
+          side: THREE.DoubleSide
+        } );
+        
+        geometry.computeBoundingBox();
+
+        var xMid = - 0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
+        geometry.translate( xMid, 0, 0 );
+
+        return new THREE.Mesh( geometry, matLite );
+
+      }
+
+      function createTitleAndDesc ( angle, index ) {
+
+        var titleSprite, descSprite, name, description;
+
+        name = zodiacs[ index ].name;
+        description = zodiacs[ index ].desc;
+
+        // Zodiac title
+        titleSprite = createTextShape( name, 6 );
+        titleSprite.position.set( radius * Math.sin( -angle ), 0, radius * Math.cos( -angle ) );
+        titleSprite.position.y += 45;
+        titleSprite.rotation.y = Math.PI - angle;
+        titleSprite.scale.multiplyScalar( 2 );
+        
+        // Zodiac description
+        descSprite = createTextShape( description, 4 );
+        descSprite.material.opacity = 0;
+        descSprite.position.y = -42;
+        descSprite.scale.multiplyScalar( 0.5 );
+        descSprite.tweens = {
+          fadeOut: new TWEEN.Tween( descSprite.material ).to( { opacity: 0 }, 500 ),
+          fadeIn: new TWEEN.Tween( descSprite.material ).to( { opacity: 1 }, 500 )
+        };
+
+        titleSprite.add( descSprite );
+        titleSprite.desc = descSprite;
+
+        return titleSprite;
+
+      }
+
+      function setDwellTime ( time ) {
+
+        viewer.options.dwellTime = time;
+
+      }
+
+      var loader = new THREE.FontLoader();
+      loader.load( 'fonts/helvetiker_regular.typeface.json', onFontLoaded );
+
+    </script>
+
+  </body>
+</html>
