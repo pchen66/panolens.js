@@ -13,8 +13,7 @@
             initialLookPosition: new THREE.Vector3( -5000.00, 167.06, 3449.90 )
         },
         Documentation: { 
-            panorama: new PANOLENS.GoogleStreetviewPanorama( '-OiczBjHvoJdQVTg9tGUTQ' ),
-            initialLookPosition: new THREE.Vector3( -5000.00, -901.09, -74.03 ) 
+            panorama: new PANOLENS.EmptyPanorama()
         },
         Example: { 
             panorama: new PANOLENS.ImagePanorama( assetPath + '/planet.jpg' ),
