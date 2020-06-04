@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      a:link,
+      a:visited {
+        color: #bdc3c7;
+      }
+
+      .lds-ring {
+        display: inline-block;
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        padding-bottom: 40px;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+      }
+      .lds-ring.hidden {
+        opacity: 0;
+      }
+      .lds-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border: 8px solid #fff;
+        border-radius: 50%;
+        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: #fff transparent transparent transparent;
+      }
+      .lds-ring div:nth-child(1) {
+        animation-delay: -0.45s;
+      }
+      .lds-ring div:nth-child(2) {
+        animation-delay: -0.3s;
+      }
+      .lds-ring div:nth-child(3) {
+        animation-delay: -0.15s;
+      }
+      @keyframes lds-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="lds-ring hidden">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
+    <script src="../build/panolens.js"></script>
+
+    <script>
+      const spinner = document.querySelector(".lds-ring");
+      spinner.show = function () {
+        this.classList.remove("hidden");
+      };
+      spinner.hide = function () {
+        this.classList.add("hidden");
+      };
+
+      var identifier1 = {
+        moment_id: "5a9060988ac76a000ec9ee74", // These two examples have different alignment offset values
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
+      };
+
+      var identifier2 = {
+        moment_id: "594034259456f0000ba62f29",
+        variation: 101,
+        public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
+      };
+
+      var panomoment1 = new PANOLENS.PanoMomentPanorama(identifier1);
+      var panomoment2 = new PANOLENS.PanoMomentPanorama(identifier2);
+
+      var viewer = new PANOLENS.Viewer({
+        output: "console",
+        autoHideInfospot: false,
+      });
+
+      const panoramas = [panomoment1, panomoment2];
+
+      panoramas.forEach((p, i) => {
+        const id = `p${i}`;
+        p.addEventListener("enter", () => console.log(`${id} enter`));
+        p.addEventListener("load-start", () => {
+          console.log(`${id} load-start`);
+          spinner.show();
+        });
+        if (p instanceof PANOLENS.PanoMomentPanorama) {
+          p.addEventListener("panomoments.ready", () => {
+            console.log(`${id} panomoments.ready`);
+            spinner.hide();
+          });
+        } else {
+          p.addEventListener("loaded", () => {
+            console.log(`${id} loaded`);
+            spinner.hide();
+          });
+        }
+        p.addEventListener("leave", () => console.log(`${id} leave`));
+      });
+
+      viewer.add(...panoramas);
+      viewer.setCameraFov(100);
+
+      panomoment1.link(
+        panomoment2,
+        new THREE.Vector3(-3341.60, -215.06, 5000.00)
+      );
+      panomoment2.link(panomoment1, new THREE.Vector3(-5000.00, 1415.54, 4654.90));
+
+
+    </script>
+  </body>
+</html>
