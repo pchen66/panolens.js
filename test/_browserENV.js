@@ -935,7 +935,7 @@ const customWebGLContext = function () {
 	this.getBufferParameter = function () {};
 	this.getContextAttributes = function () {};
 	this.getError = function () {};
-	this.getExtension = function () {};
+	this.getExtension = function () {return {}};
 	this.getFramebufferAttachmentParameter = function () {};
 
 	const parameters = {};

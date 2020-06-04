@@ -17,7 +17,7 @@ const images = [
 test.cb('Load Event', t => {
     const panorama = new CubePanorama( images );
     panorama.addEventListener( 'load', () => {
-        t.true(panorama.material.uniforms[ 'tCube' ].value instanceof THREE.CubeTexture);
+        t.true(panorama.material.uniforms[ 'envMap' ].value instanceof THREE.CubeTexture);
         t.end();
     } );
     panorama.load();
