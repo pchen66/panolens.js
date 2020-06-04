@@ -85,6 +85,11 @@ section.content {
   z-index: 1;
 }
 
+section.hide {
+  user-select: none;
+  pointer-events: none;
+}
+
 section.title, section.example, section.documentation {
   position: absolute;
   width: 100%;
@@ -132,9 +137,9 @@ section.documentation {
 }
 
 section.documentation.hide {
-  -webkit-transform: translateY(100%);
+  /*-webkit-transform: translateY(100%);
       -ms-transform: translateY(100%);
-          transform: translateY(100%);
+          transform: translateY(100%);*/
   opacity: 0;
 }
 
