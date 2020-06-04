@@ -9148,7 +9148,6 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
     onChange: function () {
 
         this.update();
-        this.control.update();
         this.render();
 
     },

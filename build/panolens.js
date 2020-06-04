@@ -9152,7 +9152,6 @@
 	    onChange: function () {
 
 	        this.update();
-	        this.control.update();
 	        this.render();
 
 	    },
