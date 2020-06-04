@@ -25,7 +25,7 @@ EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     createGeometry: function() {
 
         const geometry = new THREE.BufferGeometry();
-        geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
+        geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
         return geometry;
 
     },

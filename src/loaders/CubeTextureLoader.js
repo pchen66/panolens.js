@@ -32,13 +32,14 @@ const CubeTextureLoader = {
 		   ImageLoader.load( url, function ( image ) {
 
 			   texture.images[ index ] = image;
-
+  
 			   loaded++;
 
 			   if ( loaded === 6 ) {
 
 				   texture.needsUpdate = true;
 
+				   onProgress( { loaded, total: 6 } );
 				   onLoad( texture );
 
 			   }

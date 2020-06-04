@@ -11,6 +11,9 @@ function CubePanorama ( images = [] ){
 
     Panorama.call( this );
 
+    this.geometry.deleteAttribute( 'normal' );
+    this.geometry.deleteAttribute( 'uv' );
+
     this.images = images;
     this.type = 'cube_panorama';
 
@@ -31,6 +34,7 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         const uniforms = THREE.UniformsUtils.clone( _uniforms );
         
         uniforms.opacity.value = 0;
+        uniforms.envMap.value = new THREE.CubeTexture();
 
         const material = new THREE.ShaderMaterial( {
 
@@ -38,9 +42,19 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             vertexShader,
             uniforms,
             side: THREE.BackSide,
-            transparent: true,
-            opacity: 0
+            opacity: 0,
+            transparent: true
 
+        } );
+
+        Object.defineProperty( material, 'envMap', {
+
+            get: function () {
+
+                return this.uniforms.envMap.value;
+        
+            }
+        
         } );
 
         return material;
@@ -73,8 +87,8 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @instance
      */
     onLoad: function ( texture ) {
-		
-        this.material.uniforms[ 'tCube' ].value = texture;
+
+        this.material.uniforms.envMap.value = texture;
 
         Panorama.prototype.onLoad.call( this );
 
@@ -82,7 +96,7 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     getTexture: function () {
 
-        return this.material.uniforms.tCube.value;
+        return this.material.uniforms.envMap.value;
 
     },
 
@@ -93,7 +107,7 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {	
 
-        const { value } = this.material.uniforms.tCube;
+        const { value } = this.material.uniforms.envMap;
 
         this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
 
