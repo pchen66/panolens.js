@@ -44,7 +44,7 @@ function OrbitControls ( object, domElement ) {
 
     // Set to true to disable this control
     this.noRotate = false;
-    this.rotateSpeed = -0.15;
+    this.rotateSpeed = -0.02;
 
     // Set to true to disable this control
     this.noPan = true;
@@ -62,9 +62,10 @@ function OrbitControls ( object, domElement ) {
     this.maxPolarAngle = Math.PI; // radians
 
     // Momentum
-  	this.momentumDampingFactor = 0.90;
-  	this.momentumScalingFactor = -0.005;
-  	this.momentumKeydownFactor = 20;
+    this.momentumDampingFactor = 0.03;
+    this.momentumKeydownFactor = 1;
+    this.momentumLimit = 0.04;
+    this.publicSphericalDelta = new THREE.Spherical();
 
   	// Fov
   	this.minFov = 30;
@@ -94,7 +95,6 @@ function OrbitControls ( object, domElement ) {
     var scope = this;
 
     var EPS = 10e-8;
-    var MEPS = 10e-5;
 
     var rotateStart = new THREE.Vector2();
     var rotateEnd = new THREE.Vector2();
@@ -120,12 +120,6 @@ function OrbitControls ( object, domElement ) {
 
     var lastPosition = new THREE.Vector3();
     var lastQuaternion = new THREE.Quaternion();
-
-    var momentumLeft = 0, momentumUp = 0;
-    var eventPrevious;
-    var momentumOn = false;
-
-    var keyUp, keyBottom, keyLeft, keyRight;
 
     var STATE = { NONE: -1, ROTATE: 0, DOLLY: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_DOLLY: 4, TOUCH_PAN: 5 };
 
@@ -246,21 +240,9 @@ function OrbitControls ( object, domElement ) {
     };
 
     this.momentum = function(){
-		
-        if ( !momentumOn ) return;
-
-        if ( Math.abs( momentumLeft ) < MEPS && Math.abs( momentumUp ) < MEPS ) { 
-
-            momentumOn = false; 
-            return;
-        }
-
-        momentumUp   *= this.momentumDampingFactor;
-        momentumLeft *= this.momentumDampingFactor;
-
-        thetaDelta -= this.momentumScalingFactor * momentumLeft;
-        phiDelta   -= this.momentumScalingFactor * momentumUp;
-
+        thetaDelta = THREE.Math.clamp(thetaDelta, -this.momentumLimit, this.momentumLimit);
+        phiDelta = THREE.Math.clamp(phiDelta, -this.momentumLimit, this.momentumLimit);
+        scope.publicSphericalDelta.theta = thetaDelta; // for orientation controls
     };
 
     this.dollyIn = function ( dollyScale ) {
@@ -371,8 +353,9 @@ function OrbitControls ( object, domElement ) {
 
         this.object.lookAt( this.target );
 
-        thetaDelta = 0;
-        phiDelta = 0;
+        thetaDelta *= (1 - this.momentumDampingFactor);
+        phiDelta *= (1 - this.momentumDampingFactor);
+
         scale = 1;
         pan.set( 0, 0, 0 );
 
@@ -435,10 +418,6 @@ function OrbitControls ( object, domElement ) {
 
     function onMouseDown( event ) {
 
-        momentumOn = false;
-
-   		momentumLeft = momentumUp = 0;
-
         if ( scope.enabled === false ) return;
         event.preventDefault();
 
@@ -490,20 +469,19 @@ function OrbitControls ( object, domElement ) {
             rotateEnd.set( event.clientX, event.clientY );
             rotateDelta.subVectors( rotateEnd, rotateStart );
 
+            if (rotateStart.x == 0 && rotateStart.y == 0) {
+                rotateStart.set(rotateEnd.x, rotateEnd.y);
+                rotateDelta.subVectors(rotateEnd, rotateStart);
+                return;
+            }
+
             // rotating across whole screen goes 360 degrees around
-            scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
+            scope.rotateLeft(2 * Math.PI * rotateDelta.x / element.clientHeight * scope.rotateSpeed); // element.clientWidth?
 
             // rotating up and down along whole screen attempts to go 360, but limited to 180
             scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
 
             rotateStart.copy( rotateEnd );
-
-            if( eventPrevious ){
-                momentumLeft = event.clientX - eventPrevious.clientX;
-                momentumUp = event.clientY - eventPrevious.clientY;
-            }
-
-            eventPrevious = event;
 
         } else if ( state === STATE.DOLLY ) {
 
@@ -542,10 +520,6 @@ function OrbitControls ( object, domElement ) {
     }
 
     function onMouseUp( /* event */ ) {
-
-        momentumOn = true;
-
-        eventPrevious = undefined;
 
         if ( scope.enabled === false ) return;
 
@@ -605,19 +579,15 @@ function OrbitControls ( object, domElement ) {
         switch ( event.keyCode ) {
 
         case scope.keys.UP:
-            keyUp = false;
             break;
 
         case scope.keys.BOTTOM:
-            keyBottom = false;
             break;
 
         case scope.keys.LEFT:
-            keyLeft = false;
             break;
 
         case scope.keys.RIGHT:
-            keyRight = false;
             break;
 
         }
@@ -631,41 +601,25 @@ function OrbitControls ( object, domElement ) {
         switch ( event.keyCode ) {
 
         case scope.keys.UP:
-            keyUp = true;
+            scope.rotateUp(scope.rotateSpeed * scope.momentumKeydownFactor);
             break;
 
         case scope.keys.BOTTOM:
-            keyBottom = true;
+            scope.rotateUp(- scope.rotateSpeed * scope.momentumKeydownFactor);
             break;
 
         case scope.keys.LEFT:
-            keyLeft = true;
+            scope.rotateLeft(scope.rotateSpeed * scope.momentumKeydownFactor);
             break;
 
         case scope.keys.RIGHT:
-            keyRight = true;
+            scope.rotateLeft(- scope.rotateSpeed * scope.momentumKeydownFactor);
             break;
-
-        }
-
-        if (keyUp || keyBottom || keyLeft || keyRight) {
-
-            momentumOn = true;
-
-            if (keyUp) momentumUp = - scope.rotateSpeed * scope.momentumKeydownFactor;
-            if (keyBottom) momentumUp = scope.rotateSpeed * scope.momentumKeydownFactor;
-            if (keyLeft) momentumLeft = - scope.rotateSpeed * scope.momentumKeydownFactor;
-            if (keyRight) momentumLeft = scope.rotateSpeed * scope.momentumKeydownFactor;
-
         }
 
     }
 
     function touchstart( event ) {
-
-        momentumOn = false;
-
-        momentumLeft = momentumUp = 0;
 
         if ( scope.enabled === false ) return;
 
@@ -733,23 +687,12 @@ function OrbitControls ( object, domElement ) {
             rotateDelta.subVectors( rotateEnd, rotateStart );
 
             // rotating across whole screen goes 360 degrees around
-            scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
+                scope.rotateLeft(2 * Math.PI * rotateDelta.x / element.clientHeight * scope.rotateSpeed); // element.clientWidth?
             // rotating up and down along whole screen attempts to go 360, but limited to 180
             scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
 
             rotateStart.copy( rotateEnd );
 
-            if( eventPrevious ){
-                momentumLeft = event.touches[ 0 ].pageX - eventPrevious.pageX;
-                momentumUp = event.touches[ 0 ].pageY - eventPrevious.pageY;
-            }
-
-            eventPrevious = {
-                pageX: event.touches[ 0 ].pageX,
-                pageY: event.touches[ 0 ].pageY,
-            };
-
-            scope.update();
             break;
 
         case 2: // two-fingered touch: dolly
@@ -810,10 +753,6 @@ function OrbitControls ( object, domElement ) {
     }
 
     function touchend( /* event */ ) {
-
-        momentumOn = true;
-
-        eventPrevious = undefined;
 
         if ( scope.enabled === false ) return;
 
