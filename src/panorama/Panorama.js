@@ -525,6 +525,13 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      */
     fadeIn: function ( duration = this.animationDuration ) {
 
+        /**
+         * Fade in event
+         * @event Panorama#fade-in
+         * @type {object} 
+         */
+        this.dispatchEvent( { type: 'fade-in' } );
+        
         const { opacity } = this.material.uniforms;
         const onStart = function() {
 
@@ -567,6 +574,13 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      * @instance
      */
     fadeOut: function ( duration = this.animationDuration ) {
+
+        /**
+         * Fade out event
+         * @event Panorama#fade-out
+         * @type {object} 
+         */
+        this.dispatchEvent( { type: 'fade-out' } );
 
         const { opacity } = this.material.uniforms;
         const onComplete = function() {

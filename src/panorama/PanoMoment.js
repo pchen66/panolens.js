@@ -51,7 +51,7 @@ function PanoMoment ( identifier ) {
     this.addEventListener( 'panolens-container', ( { container } ) => this.onPanolensContainer( container ) );
     this.addEventListener( 'panolens-camera', ( { camera } ) => this.onPanolensCamera( camera ) );
     this.addEventListener( 'panolens-controls', ( { controls } ) => this.onPanolensControls( controls ) );
-    this.addEventListener( 'enter-fade-start', () => this.enter() );
+    this.addEventListener( 'fade-in', () => this.enter() );
     this.addEventListener( 'leave-complete', () => this.leave() );
     this.addEventListener( 'load-start', () => this.disableControl() );
     this.addEventListener( PANOMOMENT.READY, () => this.enableControl() );
@@ -215,7 +215,7 @@ PanoMoment.prototype = Object.assign( Object.create( Panorama.prototype ), {
     renderCallback: function (video, momentData) {
 
         if ( !this.momentData ) {
-            
+
             this.momentData = momentData;
 
             const texture = new THREE.Texture( video );
