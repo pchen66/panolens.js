@@ -450,8 +450,6 @@ function OrbitControls ( object, domElement ) {
             scope.dispatchEvent( startEvent );
         }
 
-        scope.update();
-
     }
 
     function onMouseMove( event ) {
@@ -515,8 +513,6 @@ function OrbitControls ( object, domElement ) {
 
         }
 
-        if ( state !== STATE.NONE ) scope.update();
-
     }
 
     function onMouseUp( /* event */ ) {
@@ -567,7 +563,6 @@ function OrbitControls ( object, domElement ) {
 
         }
 
-        scope.update();
         scope.dispatchEvent( changeEvent );
         scope.dispatchEvent( startEvent );
         scope.dispatchEvent( endEvent );
@@ -725,7 +720,6 @@ function OrbitControls ( object, domElement ) {
 
             dollyStart.copy( dollyEnd );
 
-            scope.update();
             scope.dispatchEvent( changeEvent );
             break;
 
@@ -741,7 +735,6 @@ function OrbitControls ( object, domElement ) {
 
             panStart.copy( panEnd );
 
-            scope.update();
             break;
 
         default:
