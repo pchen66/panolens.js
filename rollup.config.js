@@ -15,6 +15,13 @@ export default {
             globals: {three: 'THREE'}
         },
         {
+            format: 'umd',
+            name: 'PANOLENS',
+            file: 'public/js/panolens/panolens.js',
+            indent: '\t',
+            globals: {three: 'THREE'}
+        },
+        {
             format: 'es',
             file: 'build/panolens.module.js',
             indent: '\t'
