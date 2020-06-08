@@ -41,7 +41,7 @@ import TWEEN from '@tweenjs/tween.js';
  * @param {THREE.Vector3} [options.initialLookAt=new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )] - Initial looking at vector
  * @param {boolean} [options.momentum=true] - Use momentum even during mouse/touch move
  * @param {number} [options.rotateSpeed=-1.0] - Drag Rotation Speed
- * @param {number} [options.dampingFactor=.1] - Damping factor
+ * @param {number} [options.dampingFactor=.15] - Damping factor
  */
 function Viewer ( options = {} ) {
 
@@ -68,7 +68,7 @@ function Viewer ( options = {} ) {
         initialLookAt: new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER ),
         momentum: true,
         rotateSpeed: -1.0,
-        dampingFactor: 0.1
+        dampingFactor: 0.15
 
     }, options );
 
@@ -142,7 +142,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     setupCamera: function ( cameraFov, ratio, camera = new THREE.PerspectiveCamera( cameraFov, ratio, 1, 10000 ) ) {
-
+        
+        camera.position.set( 0, 0, 1 );
         return camera;
 
     },
@@ -1254,6 +1255,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         duration = duration !== undefined ? duration : 1000;
         easing = easing || TWEEN.Easing.Exponential.Out;
 
+        const MEPS = 10e-5;
+
         const { left, up } = this.calculateCameraDirectionDelta( vector );
         const rotateControlLeft = this.rotateControlLeft.bind( this );
         const rotateControlUp = this.rotateControlUp.bind( this );
@@ -1268,18 +1271,22 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             .to( { left }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                rotateControlLeft( ov.left - nv.left );
+                const diff = ov.left - nv.left;
+                if( Math.abs( diff ) < MEPS ) this.tweenLeftAnimation.stop();
+                rotateControlLeft( diff );
                 nv.left = ov.left;
-            })
+            }.bind(this))
             .start();
 
         this.tweenUpAnimation = new TWEEN.Tween( ov )
             .to( { up }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                rotateControlUp( ov.up - nv.up );
+                const diff = ov.up - nv.up;
+                if( Math.abs( diff ) < MEPS ) this.tweenUpAnimation.stop();
+                rotateControlUp( diff );
                 nv.up = ov.up;
-            })
+            }.bind(this))
             .start();
 
     },
