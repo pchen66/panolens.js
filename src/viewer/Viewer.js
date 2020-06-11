@@ -1154,7 +1154,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             .to( { left: ha }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateLeft( ov.left - nv.left );
+                scope.control.rotateLeftStatic( ov.left - nv.left );
                 nv.left = ov.left;
             })
             .start();
@@ -1163,7 +1163,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             .to( { up: va }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateUp( ov.up - nv.up );
+                scope.control.rotateUpStatic( ov.up - nv.up );
                 nv.up = ov.up;
             })
             .start();

@@ -46,6 +46,8 @@ function OrbitControls ( object, domElement ) {
     this.noRotate = false;
     this.rotateSpeed = -0.02;
 
+    this.enableDamping = true;
+
     // Set to true to disable this control
     this.noPan = true;
     this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
@@ -151,6 +153,24 @@ function OrbitControls ( object, domElement ) {
         return lastPosition;
     };
 
+    this.rotateLeftStatic = function (angle) {
+
+        this.enableDamping = false;
+        thetaDelta -= angle;
+        this.update();
+        this.enableDamping = true;
+
+    };
+
+    this.rotateUpStatic = function (angle) {
+
+        this.enableDamping = false;
+        phiDelta -= angle;
+        this.update();
+        this.enableDamping = true;
+
+    };
+
     this.rotateLeft = function ( angle ) {
 
         if ( angle === undefined ) {
@@ -239,12 +259,6 @@ function OrbitControls ( object, domElement ) {
 
     };
 
-    this.momentum = function(){
-        thetaDelta = THREE.Math.clamp(thetaDelta, -this.momentumLimit, this.momentumLimit);
-        phiDelta = THREE.Math.clamp(phiDelta, -this.momentumLimit, this.momentumLimit);
-        scope.publicSphericalDelta.theta = thetaDelta; // for orientation controls
-    };
-
     this.dollyIn = function ( dollyScale ) {
 
         if ( dollyScale === undefined ) {
@@ -320,7 +334,11 @@ function OrbitControls ( object, domElement ) {
 
         }
 
-        this.momentum();
+        if (this.enableDamping === true) {
+            thetaDelta = THREE.Math.clamp(thetaDelta, -this.momentumLimit, this.momentumLimit);
+            phiDelta = THREE.Math.clamp(phiDelta, -this.momentumLimit, this.momentumLimit);
+            scope.publicSphericalDelta.theta = thetaDelta; // for orientation controls
+        }
 
         theta += thetaDelta;
         phi += phiDelta;
@@ -353,8 +371,17 @@ function OrbitControls ( object, domElement ) {
 
         this.object.lookAt( this.target );
 
-        thetaDelta *= (1 - this.momentumDampingFactor);
-        phiDelta *= (1 - this.momentumDampingFactor);
+        if (this.enableDamping === true) {
+
+            thetaDelta *= (1 - this.momentumDampingFactor);
+            phiDelta *= (1 - this.momentumDampingFactor);
+
+        } else {
+
+            thetaDelta = 0;
+            phiDelta = 0;
+
+        }
 
         scale = 1;
         pan.set( 0, 0, 0 );
