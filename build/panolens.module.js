@@ -6239,6 +6239,8 @@ function OrbitControls ( object, domElement ) {
     this.noRotate = false;
     this.rotateSpeed = -0.02;
 
+    this.enableDamping = true;
+
     // Set to true to disable this control
     this.noPan = true;
     this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
@@ -6344,6 +6346,24 @@ function OrbitControls ( object, domElement ) {
         return lastPosition;
     };
 
+    this.rotateLeftStatic = function (angle) {
+
+        this.enableDamping = false;
+        thetaDelta -= angle;
+        this.update();
+        this.enableDamping = true;
+
+    };
+
+    this.rotateUpStatic = function (angle) {
+
+        this.enableDamping = false;
+        phiDelta -= angle;
+        this.update();
+        this.enableDamping = true;
+
+    };
+
     this.rotateLeft = function ( angle ) {
 
         if ( angle === undefined ) {
@@ -6432,12 +6452,6 @@ function OrbitControls ( object, domElement ) {
 
     };
 
-    this.momentum = function(){
-        thetaDelta = Math$1.clamp(thetaDelta, -this.momentumLimit, this.momentumLimit);
-        phiDelta = Math$1.clamp(phiDelta, -this.momentumLimit, this.momentumLimit);
-        scope.publicSphericalDelta.theta = thetaDelta; // for orientation controls
-    };
-
     this.dollyIn = function ( dollyScale ) {
 
         if ( dollyScale === undefined ) {
@@ -6513,7 +6527,11 @@ function OrbitControls ( object, domElement ) {
 
         }
 
-        this.momentum();
+        if (this.enableDamping === true) {
+            thetaDelta = Math$1.clamp(thetaDelta, -this.momentumLimit, this.momentumLimit);
+            phiDelta = Math$1.clamp(phiDelta, -this.momentumLimit, this.momentumLimit);
+            scope.publicSphericalDelta.theta = thetaDelta; // for orientation controls
+        }
 
         theta += thetaDelta;
         phi += phiDelta;
@@ -6546,8 +6564,17 @@ function OrbitControls ( object, domElement ) {
 
         this.object.lookAt( this.target );
 
-        thetaDelta *= (1 - this.momentumDampingFactor);
-        phiDelta *= (1 - this.momentumDampingFactor);
+        if (this.enableDamping === true) {
+
+            thetaDelta *= (1 - this.momentumDampingFactor);
+            phiDelta *= (1 - this.momentumDampingFactor);
+
+        } else {
+
+            thetaDelta = 0;
+            phiDelta = 0;
+
+        }
 
         scale = 1;
         pan.set( 0, 0, 0 );
@@ -8478,7 +8505,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             .to( { left: ha }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateLeft( ov.left - nv.left );
+                scope.control.rotateLeftStatic( ov.left - nv.left );
                 nv.left = ov.left;
             })
             .start();
@@ -8487,7 +8514,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             .to( { up: va }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateUp( ov.up - nv.up );
+                scope.control.rotateUpStatic( ov.up - nv.up );
                 nv.up = ov.up;
             })
             .start();
