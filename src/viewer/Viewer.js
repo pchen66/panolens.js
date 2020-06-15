@@ -1074,7 +1074,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     reverseDraggingDirection: function () {
 
         this.OrbitControls.rotateSpeed *= -1;
-        this.OrbitControls.momentumScalingFactor *= -1;
+        this.OrbitControls.touchMomentumScalingFactor *= -1;
 
     },
 
