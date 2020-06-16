@@ -4127,6 +4127,8 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
      */
     updateTexture: function ( texture ) {
 
+        if (!this.material) return;
+
         this.material.map = texture;
         this.material.needsUpdate = true;
 
@@ -4334,6 +4336,8 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 
     onFadeAnimationUpdate: function () {
 
+        if (!this.material) return;
+
         const alpha = this.material.opacity;
         const { uniforms } = this.material;
 
@@ -4469,7 +4473,12 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                 this.fadeOut( 200 );
             }.bind( this ) )
             .onComplete(function () {
-			    this.dispose();
+                if ((this instanceof ImageLittlePlanet && this.material.uniforms)) {
+                    setTimeout(() => { this.dispose(); }, 3000);
+                }
+                else if (!(this instanceof ImageLittlePlanet) && this.material) {
+                    this.dispose();
+                }
             }.bind( this ) )
             
             .start();
@@ -5960,6 +5969,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     addZoomDelta: function ( delta ) {
 
+        if (!this.material) return;
+
         const uniforms = this.material.uniforms;
         const lowerBound = this.size * 0.1;
         const upperBound = this.size * 10;
@@ -6007,6 +6018,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
     },
 
     onLoad: function ( texture ) {
+
+        if (!this.material) return;
 
         this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 
@@ -6060,15 +6073,15 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
  * @param {number} [size=10000] - Size of plane geometry
  * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
  */
-function ImageLittlePlanet ( source, size, ratio ) {
+function ImageLittlePlanet$1 ( source, size, ratio ) {
 
     LittlePlanet.call( this, 'image', source, size, ratio );
 
 }
 
-ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
+ImageLittlePlanet$1.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
 
-    constructor: ImageLittlePlanet,
+    constructor: ImageLittlePlanet$1,
 
     /**
      * On loaded with texture
@@ -6091,6 +6104,8 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
      * @instance
      */
     updateTexture: function ( texture ) {
+
+        if (!this.material) return;
 
         texture.minFilter = texture.magFilter = LinearFilter;
 		
@@ -9579,4 +9594,4 @@ if ( REVISION$1 != THREE_REVISION ) {
  */
 window.TWEEN = Tween;
 
-export { BasicPanorama, CONTROLS, CameraPanorama, CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget };
+export { BasicPanorama, CONTROLS, CameraPanorama, CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet$1 as ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget };

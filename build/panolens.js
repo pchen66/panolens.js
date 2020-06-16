@@ -4131,6 +4131,8 @@
 	     */
 	    updateTexture: function ( texture ) {
 
+	        if (!this.material) return;
+
 	        this.material.map = texture;
 	        this.material.needsUpdate = true;
 
@@ -4338,6 +4340,8 @@
 
 	    onFadeAnimationUpdate: function () {
 
+	        if (!this.material) return;
+
 	        const alpha = this.material.opacity;
 	        const { uniforms } = this.material;
 
@@ -4473,7 +4477,12 @@
 	                this.fadeOut( 200 );
 	            }.bind( this ) )
 	            .onComplete(function () {
-				    this.dispose();
+	                if ((this instanceof ImageLittlePlanet && this.material.uniforms)) {
+	                    setTimeout(() => { this.dispose(); }, 3000);
+	                }
+	                else if (!(this instanceof ImageLittlePlanet) && this.material) {
+	                    this.dispose();
+	                }
 	            }.bind( this ) )
 	            
 	            .start();
@@ -5964,6 +5973,8 @@
 
 	    addZoomDelta: function ( delta ) {
 
+	        if (!this.material) return;
+
 	        const uniforms = this.material.uniforms;
 	        const lowerBound = this.size * 0.1;
 	        const upperBound = this.size * 10;
@@ -6011,6 +6022,8 @@
 	    },
 
 	    onLoad: function ( texture ) {
+
+	        if (!this.material) return;
 
 	        this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 
@@ -6064,15 +6077,15 @@
 	 * @param {number} [size=10000] - Size of plane geometry
 	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
 	 */
-	function ImageLittlePlanet ( source, size, ratio ) {
+	function ImageLittlePlanet$1 ( source, size, ratio ) {
 
 	    LittlePlanet.call( this, 'image', source, size, ratio );
 
 	}
 
-	ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
+	ImageLittlePlanet$1.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
 
-	    constructor: ImageLittlePlanet,
+	    constructor: ImageLittlePlanet$1,
 
 	    /**
 	     * On loaded with texture
@@ -6095,6 +6108,8 @@
 	     * @instance
 	     */
 	    updateTexture: function ( texture ) {
+
+	        if (!this.material) return;
 
 	        texture.minFilter = texture.magFilter = THREE.LinearFilter;
 			
@@ -9591,7 +9606,7 @@
 	exports.DataImage = DataImage;
 	exports.EmptyPanorama = EmptyPanorama;
 	exports.GoogleStreetviewPanorama = GoogleStreetviewPanorama;
-	exports.ImageLittlePlanet = ImageLittlePlanet;
+	exports.ImageLittlePlanet = ImageLittlePlanet$1;
 	exports.ImageLoader = ImageLoader;
 	exports.ImagePanorama = ImagePanorama;
 	exports.Infospot = Infospot;
