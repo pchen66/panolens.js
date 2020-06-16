@@ -40,6 +40,8 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
      */
     updateTexture: function ( texture ) {
 
+        if (!this.material) return;
+
         texture.minFilter = texture.magFilter = THREE.LinearFilter;
 		
         this.material.uniforms[ 'tDiffuse' ].value = texture;

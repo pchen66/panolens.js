@@ -300,6 +300,8 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      */
     updateTexture: function ( texture ) {
 
+        if (!this.material) return;
+
         this.material.map = texture;
         this.material.needsUpdate = true;
 
@@ -507,6 +509,8 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
     onFadeAnimationUpdate: function () {
 
+        if (!this.material) return;
+
         const alpha = this.material.opacity;
         const { uniforms } = this.material;
 
@@ -642,7 +646,12 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
                 this.fadeOut( 200 );
             }.bind( this ) )
             .onComplete(function () {
-			    this.dispose();
+                if ((this instanceof ImageLittlePlanet && this.material.uniforms)) {
+                    setTimeout(() => { this.dispose(); }, 3000);
+                }
+                else if (!(this instanceof ImageLittlePlanet) && this.material) {
+                    this.dispose();
+                }
             }.bind( this ) )
             
             .start();
