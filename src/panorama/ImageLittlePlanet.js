@@ -55,7 +55,7 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
      */
     dispose: function () {
 
-        const tDiffuse = this.material.uniforms[ 'tDiffuse' ];
+        const tDiffuse = this.material && this.material.uniforms[ 'tDiffuse' ];
 
         if ( tDiffuse && tDiffuse.value ) {
 

@@ -646,10 +646,10 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
                 this.fadeOut( 200 );
             }.bind( this ) )
             .onComplete(function () {
-                if ((this instanceof ImageLittlePlanet && this.material.uniforms)) {
+                if ((this.material && this.material.uniforms)) { // TinyPlanet has material.uniforms and needs a timeout
                     setTimeout(() => { this.dispose(); }, 3000);
                 }
-                else if (!(this instanceof ImageLittlePlanet) && this.material) {
+                else if (this.material) {
                     this.dispose();
                 }
             }.bind( this ) )
