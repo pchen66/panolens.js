@@ -4477,10 +4477,10 @@
 	                this.fadeOut( 200 );
 	            }.bind( this ) )
 	            .onComplete(function () {
-	                if ((this instanceof ImageLittlePlanet && this.material.uniforms)) {
+	                if ((this.material && this.material.uniforms)) { // TinyPlanet has material.uniforms and needs a timeout
 	                    setTimeout(() => { this.dispose(); }, 3000);
 	                }
-	                else if (!(this instanceof ImageLittlePlanet) && this.material) {
+	                else if (this.material) {
 	                    this.dispose();
 	                }
 	            }.bind( this ) )
@@ -4646,13 +4646,14 @@
 	     */
 	    dispose: function () {
 
-	        const { material: { map } } = this;
+	        if (this.material){
+	            const { material: { map } } = this;
+
+	            if ( map ) { map.dispose(); }}
 
 	        // Release cached image
-	        THREE.Cache.remove( this.src );
-
-	        if ( map ) { map.dispose(); }
-
+	        THREE.Cache.remove(this.src);
+	        
 	        Panorama.prototype.dispose.call( this );
 
 	    }
@@ -5088,15 +5089,15 @@
 	 * @param {number} [size=10000] - Size of plane geometry
 	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
 	 */
-	function ImageLittlePlanet$1 ( source, size, ratio ) {
+	function ImageLittlePlanet ( source, size, ratio ) {
 
 	    LittlePlanet.call( this, 'image', source, size, ratio );
 
 	}
 
-	ImageLittlePlanet$1.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
+	ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
 
-	    constructor: ImageLittlePlanet$1,
+	    constructor: ImageLittlePlanet,
 
 	    /**
 	     * On loaded with texture
@@ -5135,7 +5136,7 @@
 	     */
 	    dispose: function () {
 
-	        const tDiffuse = this.material.uniforms[ 'tDiffuse' ];
+	        const tDiffuse = this.material && this.material.uniforms[ 'tDiffuse' ];
 
 	        if ( tDiffuse && tDiffuse.value ) {
 
@@ -9105,7 +9106,7 @@
 	exports.CubeTextureLoader = CubeTextureLoader;
 	exports.DataImage = DataImage;
 	exports.EmptyPanorama = EmptyPanorama;
-	exports.ImageLittlePlanet = ImageLittlePlanet$1;
+	exports.ImageLittlePlanet = ImageLittlePlanet;
 	exports.ImageLoader = ImageLoader;
 	exports.ImagePanorama = ImagePanorama;
 	exports.Infospot = Infospot;

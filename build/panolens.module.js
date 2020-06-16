@@ -4473,10 +4473,10 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                 this.fadeOut( 200 );
             }.bind( this ) )
             .onComplete(function () {
-                if ((this instanceof ImageLittlePlanet && this.material.uniforms)) {
+                if ((this.material && this.material.uniforms)) { // TinyPlanet has material.uniforms and needs a timeout
                     setTimeout(() => { this.dispose(); }, 3000);
                 }
-                else if (!(this instanceof ImageLittlePlanet) && this.material) {
+                else if (this.material) {
                     this.dispose();
                 }
             }.bind( this ) )
@@ -4642,13 +4642,14 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {
 
-        const { material: { map } } = this;
+        if (this.material){
+            const { material: { map } } = this;
+
+            if ( map ) { map.dispose(); }}
 
         // Release cached image
-        Cache.remove( this.src );
-
-        if ( map ) { map.dispose(); }
-
+        Cache.remove(this.src);
+        
         Panorama.prototype.dispose.call( this );
 
     }
@@ -5084,15 +5085,15 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
  * @param {number} [size=10000] - Size of plane geometry
  * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
  */
-function ImageLittlePlanet$1 ( source, size, ratio ) {
+function ImageLittlePlanet ( source, size, ratio ) {
 
     LittlePlanet.call( this, 'image', source, size, ratio );
 
 }
 
-ImageLittlePlanet$1.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
+ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
 
-    constructor: ImageLittlePlanet$1,
+    constructor: ImageLittlePlanet,
 
     /**
      * On loaded with texture
@@ -5131,7 +5132,7 @@ ImageLittlePlanet$1.prototype = Object.assign( Object.create( LittlePlanet.proto
      */
     dispose: function () {
 
-        const tDiffuse = this.material.uniforms[ 'tDiffuse' ];
+        const tDiffuse = this.material && this.material.uniforms[ 'tDiffuse' ];
 
         if ( tDiffuse && tDiffuse.value ) {
 
@@ -9097,4 +9098,4 @@ if ( REVISION$1 != THREE_REVISION ) {
  */
 window.TWEEN = Tween;
 
-export { CONTROLS, CubeTextureLoader, DataImage, EmptyPanorama, ImageLittlePlanet$1 as ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, Viewer, Widget };
+export { CONTROLS, CubeTextureLoader, DataImage, EmptyPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, Viewer, Widget };
