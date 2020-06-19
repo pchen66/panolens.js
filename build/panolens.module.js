@@ -4565,7 +4565,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 function ImagePanorama ( image, _geometry, _material ) {
 
     const radius = 5000;
-    const geometry = _geometry || new SphereBufferGeometry( radius, 60, 40 );
+    const geometry = _geometry || new SphereBufferGeometry( radius, 100, 80 );
     const material = _material || new MeshBasicMaterial( { opacity: 0, transparent: true } );
 
     Panorama.call( this, geometry, material );
