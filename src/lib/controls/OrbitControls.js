@@ -68,10 +68,10 @@ function OrbitControls ( object, domElement ) {
     this.momentumKeydownFactor = .05;
     this.momentum = true;
     this.momentumFactor = 7.5;
+    this.dampingFactor = 0.9;
 
     this.speedLimit = 0.04;
     this.enableDamping = true;
-    this.dampingFactor = 0.03;
 
     // Fov
     this.minFov = 30;
@@ -384,8 +384,8 @@ function OrbitControls ( object, domElement ) {
 
         if ( !this.autoRotate && this.enableDamping === true && ((this.momentum && (state === STATE.ROTATE || state === STATE.TOUCH_ROTATE)) || state === STATE.NONE ) ) {
 
-            thetaDelta *= ( 1 - this.dampingFactor );
-            phiDelta *= ( 1 - this.dampingFactor );
+            thetaDelta *= this.dampingFactor;
+            phiDelta *= this.dampingFactor;
 
         } else {
 

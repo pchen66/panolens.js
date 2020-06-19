@@ -41,7 +41,7 @@ import TWEEN from '@tweenjs/tween.js';
  * @param {THREE.Vector3} [options.initialLookAt=new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )] - Initial looking at vector
  * @param {boolean} [options.momentum=true] - Use momentum even during mouse/touch move
  * @param {number} [options.rotateSpeed=-1.0] - Drag Rotation Speed
- * @param {number} [options.dampingFactor=.15] - Damping factor
+ * @param {number} [options.dampingFactor=.9] - Damping factor
  */
 function Viewer ( options = {} ) {
 
@@ -68,7 +68,7 @@ function Viewer ( options = {} ) {
         initialLookAt: new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER ),
         momentum: true,
         rotateSpeed: -1.0,
-        dampingFactor: 0.15
+        dampingFactor: 0.9
 
     }, options );
 
