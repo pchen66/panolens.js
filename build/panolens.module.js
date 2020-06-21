@@ -1,4 +1,4 @@
-import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, ShaderMaterial, Math as Math$1, Spherical, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
+import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, Spherical, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
 
 const version="0.11.0";const dependencies={three:"^0.105.2"};
 
@@ -4678,6 +4678,118 @@ EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 } );
 
 /**
+ * @classdesc Cubemap-based panorama
+ * @constructor
+ * @param {array} images - Array of 6 urls to images, one for each side of the CubeTexture. The urls should be specified in the following order: pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
+ */
+function CubePanorama ( images = [] ){
+
+    const edgeLength = 10000;
+    const shader = Object.assign( {}, ShaderLib[ 'cube' ] );
+    const geometry = new BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+    const material = new ShaderMaterial( {
+
+        fragmentShader: shader.fragmentShader,
+        vertexShader: shader.vertexShader,
+        uniforms: shader.uniforms,
+        side: BackSide,
+        transparent: true
+
+    } );
+
+    Panorama.call( this, geometry, material );
+
+    this.images = images;
+    this.edgeLength = edgeLength;
+    this.material.uniforms.opacity.value = 0;
+
+}
+
+CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
+
+    constructor: CubePanorama,
+
+    /**
+     * Load 6 images and bind listeners
+     * @memberOf CubePanorama
+     * @instance
+     */
+    load: function () {
+
+        CubeTextureLoader.load( 	
+
+            this.images, 
+
+            this.onLoad.bind( this ), 
+            this.onProgress.bind( this ), 
+            this.onError.bind( this ) 
+
+        );
+
+    },
+
+    /**
+     * This will be called when 6 textures are ready
+     * @param  {THREE.CubeTexture} texture - Cube texture
+     * @memberOf CubePanorama
+     * @instance
+     */
+    onLoad: function ( texture ) {
+		
+        this.material.uniforms[ 'tCube' ].value = texture;
+
+        Panorama.prototype.onLoad.call( this );
+
+    },
+
+    /**
+     * Dispose
+     * @memberOf CubePanorama
+     * @instance
+     */
+    dispose: function () {	
+
+        const { value } = this.material.uniforms.tCube;
+
+        this.images.forEach( ( image ) => { Cache.remove( image ); } );
+
+        if ( value instanceof CubeTexture ) {
+
+            value.dispose();
+
+        }
+
+        Panorama.prototype.dispose.call( this );
+
+    }
+
+} );
+
+/**
+ * @classdesc Basic panorama with 6 pre-defined grid images
+ * @constructor
+ */
+function BasicPanorama () {
+
+    const images = [];
+
+    for ( let i = 0; i < 6; i++ ) {
+
+        images.push( DataImage.WhiteTile );
+
+    }
+
+    CubePanorama.call( this, images );
+
+}
+
+BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype ), {
+
+    constructor: BasicPanorama
+
+} );
+
+/**
  * Stereographic projection shader
  * based on http://notlion.github.io/streetview-stereographic
  * @author pchen66
@@ -9098,4 +9210,4 @@ if ( REVISION$1 != THREE_REVISION ) {
  */
 window.TWEEN = Tween;
 
-export { CONTROLS, CubeTextureLoader, DataImage, EmptyPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, Viewer, Widget };
+export { BasicPanorama, CONTROLS, CubeTextureLoader, DataImage, EmptyPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, Viewer, Widget };
