@@ -7901,6 +7901,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      * @instance
      */
     setCameraControl: function () {
+        if ( !this.panorama ) return;
 
         this.OrbitControls.target.copy( this.panorama.position );
 
