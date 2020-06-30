@@ -1,0 +1,5 @@
+node_modules
+bower_components
+.idea
+.vscode
+.DS_Store
