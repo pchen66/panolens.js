@@ -121,6 +121,10 @@ section.title {
   letter-spacing: 2px;
 }
 
+section.title > article {
+  font-weight: 400;
+}
+
 section.documentation {
   margin: 0;
   height: 100%;
@@ -188,10 +192,6 @@ section.title.hide header, section.title.hide article {
 }
 
 section.title.hide, section.example.hide {
-  opacity: 0;
-  filter: alpha(opacity=0);
-  pointer-events: none;
-  z-index: -1;
   display: none;
 }
 
@@ -288,7 +288,7 @@ figcaption {
   position: absolute;
   bottom: 0;
   color: #444;
-  padding: 15px;
+  padding: 12px;
   text-align: left;
 }
 
@@ -297,14 +297,15 @@ figcaption > h4 {
   text-transform: uppercase;
 }
 
-figcaption > article {
+figcaption > p {
   margin-top: 7px;
   letter-spacing: 0;
   font-size: 13px;
+  font-family: 'Roboto', sans-serif;
 }
 
 .card {
-  border-radius: 2px;
+  border-radius: 12px;
   cursor: pointer;
   margin: 1em;
   position: relative;
@@ -314,6 +315,10 @@ figcaption > article {
   -webkit-transition: all 0.2s ease-in-out;
           -o-transition: all 0.2s ease-in-out;
           transition: all 0.2s ease-in-out;
+}
+
+.card.hidden {
+  visibility: hidden;
 }
 
 .card.codepen {
@@ -378,6 +383,9 @@ figcaption > article {
 }
 .card.panotheater{
   background-image: url( '../images/PanoTheater.jpg' );
+}
+.card.panomoment-linking{
+  background-image: url( '../images/panomoment_linking.jpg' );
 }
 
 .group {

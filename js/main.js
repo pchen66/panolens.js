@@ -1,44 +1,29 @@
 (function(){
 
-    let viewer, container, title, docSection, docIframe, exampleSection, routePanoramas, assetPath, items, selection, cards, menuIcon, nav, progressElement, progress;
-
     let currentRoute = 'Home';
+    let selection = document.querySelector( '.item.selected' );
 
-    assetPath = 'examples/asset/textures/equirectangular';
-    selection = document.querySelector( '.item.selected' );
-
-    routePanoramas = {
+    const assetPath = 'examples/asset/textures/equirectangular';
+    const routePanoramas = {
         Home: { 
             panorama: new PANOLENS.ImagePanorama( assetPath + '/view.jpg' ), 
             initialLookPosition: new THREE.Vector3( -5000.00, 167.06, 3449.90 )
         },
-        Documentation: { 
-            panorama: new PANOLENS.EmptyPanorama()
-        },
         Example: { 
             panorama: new PANOLENS.ImagePanorama( assetPath + '/planet.jpg' ),
-            initialLookPosition: new THREE.Vector3( 0, 0, -5000 )
+            //initialLookPosition: new THREE.Vector3( 0, 0, -5000 )
         }
     };
 
-    nav = document.querySelector( 'nav' );
-    container = document.querySelector( 'section.background' );
-    title = document.querySelector( 'section.title' );
-    docSection = document.querySelector( 'section.documentation' );
-    docIframe = docSection.querySelector('iframe');
-    exampleSection = document.querySelector( 'section.example' );
-    cards = document.querySelectorAll( '.card' );
-    menuIcon = document.querySelector( '.menu-icon' );
-    items = document.querySelectorAll( '.item' );
-    progressElement = document.getElementById( 'progress' );
+    const nav = document.querySelector( 'nav' );
+    const container = document.querySelector( 'section.background' );
+    const title = document.querySelector( 'section.title' );
+    const exampleSection = document.querySelector( 'section.example' );
+    const menuIcon = document.querySelector( '.menu-icon' );
+    const items = document.querySelectorAll( '.item' );
+    const progressElement = document.getElementById( 'progress' );
 
-    viewer = new PANOLENS.Viewer( { container: container, controlBar: false } );
-
-    const showDocIframe = () => {
-        if(currentRoute === 'Documentation') docSection.classList.remove( 'hide' );
-    };
-
-    docIframe.addEventListener('load', showDocIframe);
+    const viewer = new PANOLENS.Viewer( { container: container, controlBar: false } );
 
     window.addEventListener( 'orientationchange', function () {
         nav.classList.remove('animated');
@@ -81,17 +66,6 @@
         }, false );
 
         nav.classList.add( 'animated' );
-
-        // Add click events
-        for ( var i = 0; i < cards.length; i++ ) {
-
-            cards[i].addEventListener( 'click', function(){
-
-                window.location.assign( this.getAttribute( 'data-url' ) );
-
-            }, false );
-
-        }
 
         // Routing
         for ( var i = 0, hash; i < items.length; i++ ) {
@@ -151,28 +125,17 @@
     function routeTo ( name, element ) {
 
         currentRoute = name;
-
         window.location.hash = '' + name;
-
-        const sections = [ title, docSection, exampleSection ];
-
-        sections.forEach( section => section.classList.add( 'hide' ) );
 
         switch ( name ) {
 
         case 'Home': 
             title.classList.remove( 'hide' ); 
-            break;
-
-        case 'Documentation':
-            if(!docIframe.src) {
-                docIframe.src = './docs/';
-            } else {
-                showDocIframe();
-            }
+            exampleSection.classList.add( 'hide' );
             break;
           
         case 'Example':
+            title.classList.add( 'hide' ); 
             exampleSection.classList.remove( 'hide' );
             break;
 
@@ -185,11 +148,62 @@
         selection = element;
         selection.classList.add( 'selected' );
 
-        viewer.setPanorama( routePanoramas[ name ].panorama );    
+        viewer.setPanorama( routePanoramas[ name ].panorama );
+    }
 
+    async function loadExamples() {
+
+        const { examples } = await fetch('./data.json').then(result => result.json());
+        const fragment = document.createDocumentFragment();
+        const flexBasis = 250 + 16 * 2;
+        const hiddenCards = [];
+        const onWindowResize = () => {
+
+            const columns = ~~(window.innerWidth / flexBasis);
+            const fragment = document.createDocumentFragment();
+            const remainings = Math.ceil(examples.length / columns) * columns - examples.length;
+
+            hiddenCards.forEach( card => exampleSection.removeChild(card) );
+            hiddenCards.length = 0;
+
+            for(let i = 0; i < remainings; i++) {
+                const figure = document.createElement('figure');
+                figure.classList.add('card', 'hidden');
+                hiddenCards.push(figure);
+                fragment.append(figure);
+            }
+
+            exampleSection.append(fragment);
+        
+        };
+
+        examples.forEach(({title, description, type, url}) => {
+            
+            const figure = document.createElement('figure');
+            const figcaption = document.createElement('figcaption');
+            const h4 = document.createElement('h4');
+            const p = document.createElement('p');
+            const openTab = () => window.open( url, '_blank');
+
+            figure.classList.add('card', type);
+            figure.addEventListener('click', openTab);
+            figure.addEventListener('auxclick', openTab);
+            h4.textContent = title;
+            p.textContent = description;
+            figcaption.append(h4, p);
+            figure.append(figcaption);
+            fragment.append(figure);
+        });
+
+        exampleSection.append(fragment);
+
+        onWindowResize();
+
+        window.addEventListener( 'resize', onWindowResize);
     }
 
     addDomEvents();
     setUpInitialState();
+    loadExamples();
 
 })();

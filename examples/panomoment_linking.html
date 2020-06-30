@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no"
+    />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:100' rel='stylesheet' type='text/css'>
+    <style>
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Roboto', sans-serif;
+      }
+
+      a:link,
+      a:visited {
+        color: #bdc3c7;
+      }
+
+      #textHolder {
+        z-index: 9999;
+        display: block;
+        width: 100%;
+        margin: 0 auto;
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        padding: 10px;
+        color: #fff;
+        font-size: xx-large;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+      }
+
+      .lds-ring {
+        display: inline-block;
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        padding-bottom: 40px;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+      }
+      .lds-ring.hidden {
+        opacity: 0;
+      }
+      .lds-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border: 8px solid #fff;
+        border-radius: 50%;
+        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: #fff transparent transparent transparent;
+      }
+      .lds-ring div:nth-child(1) {
+        animation-delay: -0.45s;
+      }
+      .lds-ring div:nth-child(2) {
+        animation-delay: -0.3s;
+      }
+      .lds-ring div:nth-child(3) {
+        animation-delay: -0.15s;
+      }
+      @keyframes lds-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="lds-ring hidden">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <div id="textHolder"><span id="text"></span></div>
+
+    <script src="../js/three/three.min.js"></script>
+    <script src="../js/panolens/panolens.min.js"></script>
+
+    <script>
+
+        // spinner
+        const spinner = document.querySelector(".lds-ring");
+        spinner.show = () => spinner.classList.remove("hidden");
+        spinner.hide = () => spinner.classList.add("hidden");
+
+        const identifiers = [ 
+            {
+                moment_id: "5a90ce21d3df99000e981d11",
+                variation: 101,
+                public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
+                name: "Water Scene"
+            }, 
+            {
+                moment_id: "58a5d20affe5e3000bdb34c0",
+                variation: 101,
+                public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
+                name: "Grand Central"
+            }, 
+            {
+                moment_id: "594034259456f0000ba62f29",
+                variation: 101,
+                public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
+                name: "Kids Jumping"
+            },
+            {
+                moment_id: "58a5f6dd482e59000ba26fee",
+                variation: 101,
+                public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
+                name: "Kitchen"
+            },
+            {
+                moment_id: "5e95b8bf9e48cf0016e5d942",
+                variation: 101,
+                public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
+                name: "Temple"
+            },
+            {
+                moment_id: "5a9060988ac76a000ec9ee74",
+                variation: 101,
+                public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
+                name: "Animation"
+            }
+        ];
+
+        function onEnter() {
+            const text = document.getElementById( 'text' );
+            text.textContent = this.name;
+        }
+
+        const panomoments = identifiers
+        .map( identifier => new PANOLENS.PanoMomentPanorama( identifier ) )
+        .map( (p, i) => {
+
+            const name = identifiers[i].name;
+            p.name = name;
+            p.index = i;
+
+            const { ENTER, LEAVE, LOAD_START, LOADED, PANOMOMENT } = PANOLENS.EVENTS;
+            [ ENTER, LEAVE, LOAD_START, LOADED, PANOMOMENT.READY ]
+              .forEach(eventName => p.addEventListener( 
+                eventName, 
+                () => console.log(`[${eventName}] ${name}`) 
+              ));
+
+            p.addEventListener( ENTER, onEnter );
+            p.addEventListener( LEAVE, () => p.active && spinner.hide() );
+            p.addEventListener( LOAD_START, () => spinner.show() );
+            p.addEventListener( PANOMOMENT.READY, () => p.active && spinner.hide() );
+            p.addEventListener( LOADED, () => {
+                if (!(p instanceof PANOLENS.PanoMomentPanorama)) {
+                    spinner.hide();
+                }
+            });
+            
+            return p;
+        });
+
+        const viewer = new PANOLENS.Viewer({
+            output: "console",
+            autoHideInfospot: false,
+            momentum: true,
+            dampingFactor: 0.97,
+            rotateSpeed: -0.15,
+            speedLimit: 0.04
+        });
+        viewer.add(...panomoments);
+
+        const buttonStyle = {
+            color: "white",
+            fontSize: "xx-large",
+            backgroundColor: "transparent",
+            border: "none",
+            position: "absolute",
+            top: "0px",
+            right: "50px",
+            outline: "none",
+            filter: "none",
+            height: "50px",
+            width: "50px",
+            display: "inline-grid",
+            alignItems: "center"
+        }
+
+        const previousButton = viewer.widget.createCustomItem({
+            onTap: () => {
+                let prevPanoIndex = ( viewer.panorama.index - 1 ) % panomoments.length;
+                prevPanoIndex += prevPanoIndex < 0 ? panomoments.length : 0;
+                viewer.setPanorama( panomoments[ prevPanoIndex ] );
+            },
+            style: buttonStyle,
+        });
+        previousButton.innerHTML = "«";
+
+        const nextButton = viewer.widget.createCustomItem({
+            onTap: () => {
+                const nextPanoIndex = ( viewer.panorama.index + 1 ) % panomoments.length;
+                viewer.setPanorama( panomoments[ nextPanoIndex ] );
+            },
+            style: Object.assign( {}, buttonStyle, { right: "5px" } )
+        });
+        nextButton.innerHTML = "»";
+
+        document.body.appendChild( previousButton );
+        document.body.appendChild( nextButton );
+
+    </script>
+  </body>
+</html>

@@ -4,7 +4,7 @@
 	(global = global || self, factory(global.PANOLENS = {}, global.THREE));
 }(this, (function (exports, THREE) { 'use strict';
 
-	const version="0.11.0";const devDependencies={"@rollup/plugin-commonjs":"^11.0.2","@rollup/plugin-inject":"^4.0.1","@rollup/plugin-json":"^4.0.2","@rollup/plugin-node-resolve":"^7.1.1","@tweenjs/tween.js":"^18.5.0",ava:"^3.5.0","browser-env":"^3.3.0",concurrently:"^5.1.0",coveralls:"^3.0.11",docdash:"^1.2.0",eslint:"^6.8.0",esm:"^3.2.25","google-closure-compiler":"^20200315.0.0","http-server":"^0.12.3",jsdoc:"^3.6.3","local-web-server":"^3.0.7",nyc:"^14.1.1",rollup:"^2.3.2",three:"^0.117.0",xmlhttprequest:"^1.8.0"};
+	const version="0.12.0";const devDependencies={"@rollup/plugin-commonjs":"^11.0.2","@rollup/plugin-inject":"^4.0.1","@rollup/plugin-json":"^4.0.2","@rollup/plugin-node-resolve":"^7.1.1","@tweenjs/tween.js":"^18.5.0",ava:"^3.5.0","babel-eslint":"^10.1.0","browser-env":"^3.3.0",concurrently:"^5.1.0",coveralls:"^3.0.11",docdash:"^1.2.0",eslint:"^6.8.0",esm:"^3.2.25","google-closure-compiler":"^20200315.0.0","http-server":"^0.12.3",jsdoc:"^3.6.3","local-web-server":"^3.0.7",nyc:"^14.1.1",rollup:"^2.3.2",three:"^0.117.0",xmlhttprequest:"^1.8.0"};
 
 	/**
 	 * REVISION
@@ -66,6 +66,58 @@
 	 * @property {number} SBS 1
 	 */
 	const STEREOFORMAT = { TAB: 0, SBS: 1 };
+
+	/**
+	 * EVENTS
+	 * @module EVENTS
+	 * @example PANOLENS.EVENTS.LOAD
+	 * @property {string} LOAD_START 0
+	 * @property {string} INFOSPOT_ANIMATION 0
+	 */
+	const EVENTS = {
+	    CONTAINER: 'panolens-container',
+	    CAMERA: 'panolens-camera',
+	    CONTROLS: 'panolens-controls',
+	    LOAD_START: 'load-start',
+	    LOAD: 'load',
+	    LOADED: 'loaded',
+	    READY: 'ready',
+	    ERROR: 'error',
+	    ENTER: 'enter',
+	    ENTER_START: 'enter-start',
+	    ENTER_FADE_START: 'enter-fade-start',
+	    ENTER_FADE_COMPLETE: 'enter-fade-complete',
+	    ENTER_COMPLETE: 'enter-complete',
+	    FADE_IN: 'fade-in',
+	    FADE_OUT: 'fade-out',
+	    PROGRESS: 'progress',
+	    LEAVE: 'leave',
+	    LEAVE_START: 'leave-start',
+	    LEAVE_COMPLETE: 'leave-complete',
+	    INFOSPOT_ANIMATION_COMPLETE: 'infospot-animation-complete',
+	    VIEWER_HANDLER: 'panolens-viewer-handler',
+	    MODE_CHANGE: 'mode-change',
+	    WIDNOW_RESIZE: 'window-resize',
+	    MEDIA: {
+	        PLAY: 'play',
+	        PAUSE: 'pause',
+	        VOLUME_CHANGE: 'volumechange'
+	    },
+	    RETICLE: {
+	        RETICLE_RIPPLE_START: 'reticle-ripple-start',
+	        RETICLE_RIPPLE_END: 'reticle-ripple-end',
+	        RETICLE_START: 'reticle-start',
+	        RETICLE_END: 'reticle-end',
+	        RETICLE_UPDATE: 'reticle-update'
+	    },
+	    PANOMOMENT: {
+	        NONE: 'panomoments.none',
+	        FIRST_FRAME_DECODED: 'panomoments.first_frame_decoded',
+	        READY: 'panomoments.ready',
+	        COMPLETED: 'panomoments.completed'
+	    }
+	    
+	};
 
 	/**
 	 * Data URI Images
@@ -137,12 +189,12 @@
 		
 	            if ( onLoad ) {
 		
-	                setTimeout( function () {
+	                requestAnimationFrame( () => {
 		
 	                    onProgress( { loaded: 1, total: 1 } );
 	                    onLoad( cached );
 		
-	                }, 0 );
+	                });
 		
 	            }
 		
@@ -558,7 +610,7 @@
 	        if ( element ) {
 
 	            element.play();
-	            this.dispatchEvent( { type: 'play' } );
+	            this.dispatchEvent( { type: EVENTS.MEDIA.PLAY } );
 
 	        }
 
@@ -576,7 +628,7 @@
 	        if ( element ) {
 
 	            element.pause();
-	            this.dispatchEvent( { type: 'pause' } );
+	            this.dispatchEvent( { type: EVENTS.MEDIA.PAUSE } );
 
 	        }
 
@@ -707,19 +759,19 @@
 
 	        switch ( format ) {
 
-	        case STEREOFORMAT.TAB:
-	            repeat.set( 1.0, 0.5 );
-	            offset.set( 0.0, 0.5 );
-	            loffset.set( 0.0, 0.5 );
-	            roffset.set( 0.0, 0.0 );
-	            break;
+	            case STEREOFORMAT.TAB:
+	                repeat.set( 1.0, 0.5 );
+	                offset.set( 0.0, 0.5 );
+	                loffset.set( 0.0, 0.5 );
+	                roffset.set( 0.0, 0.0 );
+	                break;
 
-	        case STEREOFORMAT.SBS:
-	            repeat.set( 0.5, 1.0 );
-	            offset.set( 0.0, 0.0 );
-	            loffset.set( 0.0, 0.0 );
-	            roffset.set( 0.5, 0.0 );
-	            break;
+	            case STEREOFORMAT.SBS:
+	                repeat.set( 0.5, 1.0 );
+	                offset.set( 0.0, 0.0 );
+	                loffset.set( 0.0, 0.0 );
+	                roffset.set( 0.5, 0.0 );
+	                break;
 
 	        }
 
@@ -924,7 +976,7 @@
 	                 * @type {object}
 	                 * @event Reticle#reticle-ripple-end
 	                 */
-	                this.dispatchEvent( { type: 'reticle-ripple-end' } );
+	                this.dispatchEvent( { type: EVENTS.RETICLE.RETICLE_RIPPLE_END } );
 
 	            }
 
@@ -937,7 +989,7 @@
 	         * @type {object}
 	         * @event Reticle#reticle-ripple-start
 	         */
-	        this.dispatchEvent( { type: 'reticle-ripple-start' } );
+	        this.dispatchEvent( { type: EVENTS.RETICLE.RETICLE_RIPPLE_START } );
 
 	        update();
 
@@ -985,7 +1037,7 @@
 	         * @type {object}
 	         * @event Reticle#reticle-start
 	         */
-	        this.dispatchEvent( { type: 'reticle-start' } );
+	        this.dispatchEvent( { type: EVENTS.RETICLE.RETICLE_START } );
 
 	        this.startTimestamp = performance.now();
 	        this.callback = callback;
@@ -1015,7 +1067,7 @@
 	         * @type {object}
 	         * @event Reticle#reticle-end
 	         */
-	        this.dispatchEvent( { type: 'reticle-end' } );
+	        this.dispatchEvent( { type: EVENTS.RETICLE.RETICLE_END } );
 
 	    },
 
@@ -1039,7 +1091,7 @@
 	         * @type {object}
 	         * @event Reticle#reticle-update
 	         */
-	        this.dispatchEvent( { type: 'reticle-update', progress } );
+	        this.dispatchEvent( { type: EVENTS.RETICLE.RETICLE_UPDATE, progress } );
 
 	        if ( progress >= 1.0 ) {
 
@@ -1054,8 +1106,11 @@
 
 	} );
 
-	var version$1 = '18.5.0';
+	function createCommonjsModule(fn, module) {
+		return module = { exports: {} }, fn(module, module.exports), module.exports;
+	}
 
+	var Tween = createCommonjsModule(function (module, exports) {
 	/**
 	 * Tween.js - Licensed under the MIT license
 	 * https://github.com/tweenjs/tween.js
@@ -1110,11 +1165,10 @@
 
 			time = time !== undefined ? time : TWEEN.now();
 
-			// Tweens are updated in "batches". If you add a new tween during an
-			// update, then the new tween will be updated in the next batch.
-			// If you remove a tween during an update, it may or may not be updated.
-			// However, if the removed tween was added during the current batch,
-			// then it will not be updated.
+			// Tweens are updated in "batches". If you add a new tween during an update, then the
+			// new tween will be updated in the next batch.
+			// If you remove a tween during an update, it may or may not be updated. However,
+			// if the removed tween was added during the current batch, then it will not be updated.
 			while (tweenIds.length > 0) {
 				this._tweensAddedDuringUpdate = {};
 
@@ -1179,8 +1233,6 @@
 
 
 	TWEEN.Tween = function (object, group) {
-		this._isPaused = false;
-		this._pauseStart = null;
 		this._object = object;
 		this._valuesStart = {};
 		this._valuesEnd = {};
@@ -1216,10 +1268,6 @@
 			return this._isPlaying;
 		},
 
-		isPaused: function () {
-			return this._isPaused;
-		},
-
 		to: function (properties, duration) {
 
 			this._valuesEnd = Object.create(properties);
@@ -1242,8 +1290,6 @@
 			this._group.add(this);
 
 			this._isPlaying = true;
-
-			this._isPaused = false;
 
 			this._onStartCallbackFired = false;
 
@@ -1270,10 +1316,8 @@
 					continue;
 				}
 
-				// Save the starting value, but only once.
-				if (typeof(this._valuesStart[property]) === 'undefined') {
-					this._valuesStart[property] = this._object[property];
-				}
+				// Save the starting value.
+				this._valuesStart[property] = this._object[property];
 
 				if ((this._valuesStart[property] instanceof Array) === false) {
 					this._valuesStart[property] *= 1.0; // Ensures we're using numbers, not strings
@@ -1294,10 +1338,7 @@
 			}
 
 			this._group.remove(this);
-
 			this._isPlaying = false;
-
-			this._isPaused = false;
 
 			if (this._onStopCallback !== null) {
 				this._onStopCallback(this._object);
@@ -1311,41 +1352,6 @@
 		end: function () {
 
 			this.update(Infinity);
-			return this;
-
-		},
-
-		pause: function(time) {
-
-			if (this._isPaused || !this._isPlaying) {
-				return this;
-			}
-
-			this._isPaused = true;
-
-			this._pauseStart = time === undefined ? TWEEN.now() : time;
-
-			this._group.remove(this);
-
-			return this;
-
-		},
-
-		resume: function(time) {
-
-			if (!this._isPaused || !this._isPlaying) {
-				return this;
-			}
-
-			this._isPaused = false;
-
-			this._startTime += (time === undefined ? TWEEN.now() : time)
-				- this._pauseStart;
-
-			this._pauseStart = 0;
-
-			this._group.add(this);
-
 			return this;
 
 		},
@@ -2015,7 +2021,19 @@
 		}
 
 	};
-	TWEEN.version = version$1;
+
+	// UMD (Universal Module Definition)
+	(function (root) {
+
+		{
+
+			// Node.js
+			module.exports = TWEEN;
+
+		}
+
+	})();
+	});
 
 	/**
 	 * @classdesc Information spot attached to panorama
@@ -2064,8 +2082,8 @@
 	    this.material.transparent = true;
 	    this.material.opacity = 0;
 
-	    this.scaleUpAnimation = new TWEEN.Tween();
-	    this.scaleDownAnimation = new TWEEN.Tween();
+	    this.scaleUpAnimation = new Tween.Tween();
+	    this.scaleDownAnimation = new Tween.Tween();
 
 
 	    const postLoad = function ( texture ) {
@@ -2082,13 +2100,13 @@
 
 	        textureScale.copy( this.scale );
 
-	        this.scaleUpAnimation = new TWEEN.Tween( this.scale )
+	        this.scaleUpAnimation = new Tween.Tween( this.scale )
 	            .to( { x: textureScale.x * scaleFactor, y: textureScale.y * scaleFactor }, duration )
-	            .easing( TWEEN.Easing.Elastic.Out );
+	            .easing( Tween.Easing.Elastic.Out );
 
-	        this.scaleDownAnimation = new TWEEN.Tween( this.scale )
+	        this.scaleDownAnimation = new Tween.Tween( this.scale )
 	            .to( { x: textureScale.x, y: textureScale.y }, duration )
-	            .easing( TWEEN.Easing.Elastic.Out );
+	            .easing( Tween.Easing.Elastic.Out );
 
 	        this.material.map = texture;
 	        this.material.needsUpdate = true;
@@ -2096,15 +2114,15 @@
 	    }.bind( this );
 
 	    // Add show and hide animations
-	    this.showAnimation = new TWEEN.Tween( this.material )
+	    this.showAnimation = new Tween.Tween( this.material )
 	        .to( { opacity: 1 }, duration )
 	        .onStart( this.enableRaycast.bind( this, true ) )
-	        .easing( TWEEN.Easing.Quartic.Out );
+	        .easing( Tween.Easing.Quartic.Out );
 
-	    this.hideAnimation = new TWEEN.Tween( this.material )
+	    this.hideAnimation = new Tween.Tween( this.material )
 	        .to( { opacity: 0 }, duration )
 	        .onStart( this.enableRaycast.bind( this, false ) )
-	        .easing( TWEEN.Easing.Quartic.Out );
+	        .easing( Tween.Easing.Quartic.Out );
 
 	    // Attach event listeners
 	    this.addEventListener( 'click', this.onClick );
@@ -2112,7 +2130,8 @@
 	    this.addEventListener( 'hoverenter', this.onHoverStart );
 	    this.addEventListener( 'hoverleave', this.onHoverEnd );
 	    this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
-	    this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+	    this.addEventListener( EVENTS.CONTAINER, this.setContainer.bind( this ) );
+	    this.addEventListener( 'panorama-leave', this.onDismiss );
 	    this.addEventListener( 'dismiss', this.onDismiss );
 	    this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
 
@@ -2843,7 +2862,7 @@
 
 	                scope.dispatchEvent( { 
 
-	                    type: 'panolens-viewer-handler', 
+	                    type: EVENTS.VIEWER_HANDLER, 
 	                    method: method, 
 	                    data: data 
 
@@ -2903,30 +2922,30 @@
 
 	        switch( name ) {
 
-	        case 'fullscreen':
+	            case 'fullscreen':
 
-	            element = this.createFullscreenButton();
-	            this.fullscreenElement = element; 
+	                element = this.createFullscreenButton();
+	                this.fullscreenElement = element; 
 
-	            break;
+	                break;
 
-	        case 'setting':
+	            case 'setting':
 
-	            element = this.createSettingButton();
-	            this.settingElement = element;
+	                element = this.createSettingButton();
+	                this.settingElement = element;
 
-	            break;
+	                break;
 
-	        case 'video':
+	            case 'video':
 
-	            element = this.createVideoControl();
-	            this.videoElement = element;
+	                element = this.createVideoControl();
+	                this.videoElement = element;
 
-	            break;
+	                break;
 
-	        default:
+	            default:
 
-	            return;
+	                return;
 
 	        }
 
@@ -3129,7 +3148,7 @@
 	             * @event Widget#panolens-viewer-handler
 	             * @property {string} method - 'onWindowResize' function call on Viewer
 	             */
-	            scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onWindowResize' } );
+	            scope.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'onWindowResize' } );
 
 	            tapSkipped = true;
 
@@ -3157,7 +3176,7 @@
 	            const sheet = document.createElement( 'style' );
 	            sheet.id = stylesheetId;
 	            sheet.innerHTML = ':-webkit-full-screen { width: 100% !important; height: 100% !important }';
-	            document.body.appendChild( sheet );
+	            document.head.appendChild( sheet );
 	        }
 			
 	        return item;
@@ -3236,7 +3255,7 @@
 	             * @event Widget#panolens-viewer-handler
 	             * @property {string} method - 'toggleVideoPlay' function call on Viewer
 	             */
-	            scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'toggleVideoPlay', data: !this.paused } );
+	            scope.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'toggleVideoPlay', data: !this.paused } );
 
 	            this.paused = !this.paused;
 
@@ -3334,7 +3353,7 @@
 	                 * @property {string} method - 'setVideoCurrentTime' function call on Viewer
 	                 * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
 	                 */
-	                scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setVideoCurrentTime', data: percentageNext } );
+	                scope.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'setVideoCurrentTime', data: percentageNext } );
 
 	            }
 
@@ -3386,7 +3405,7 @@
 	             * @property {string} method - 'setVideoCurrentTime' function call on Viewer
 	             * @property {number} data - Percentage of current video. Range from 0.0 to 1.0
 	             */
-	            scope.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setVideoCurrentTime', data: percentage } );
+	            scope.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'setVideoCurrentTime', data: percentage } );
 
 	            item.setProgress( event.offsetX / this.clientWidth );
 
@@ -3951,7 +3970,7 @@
 	 * @description Equirectangular Shader
 	 * @module EquirectShader
 	 * @property {object} uniforms
-	 * @property {THREE.Texture} uniforms.tEquirect diffuse map
+	 * @property {THREE.Texture} uniforms.texture diffuse map
 	 * @property {number} uniforms.opacity image opacity
 	 * @property {string} vertexShader vertex shader
 	 * @property {string} fragmentShader fragment shader
@@ -3960,7 +3979,7 @@
 
 	    uniforms: {
 
-	        'tEquirect': { value: new THREE.Texture() },
+	        'texture': { value: new THREE.Texture() },
 	        'repeat': { value: new THREE.Vector2( 1.0, 1.0 ) },
 	        'offset': { value: new THREE.Vector2( 0.0, 0.0 ) },
 	        'opacity': { value: 1.0 }
@@ -3978,7 +3997,7 @@
     `,
 
 	    fragmentShader: `
-        uniform sampler2D tEquirect;
+        uniform sampler2D texture;
         uniform vec2 repeat;
         uniform vec2 offset;
         uniform float opacity;
@@ -3991,11 +4010,9 @@
             sampleUV.x = atan( direction.z, direction.x ) * RECIPROCAL_PI2 + 0.5;
             sampleUV *= repeat;
             sampleUV += offset;
-            vec4 texColor = texture2D( tEquirect, sampleUV );
-            gl_FragColor = mapTexelToLinear( texColor );
-            gl_FragColor.a *= opacity;
-            #include <tonemapping_fragment>
-            #include <encodings_fragment>
+            sampleUV.x = fract(sampleUV.x);
+            sampleUV.y = fract(sampleUV.y);
+            gl_FragColor = vec4(texture2D( texture, sampleUV ).rgb, opacity);
         }
     `
 
@@ -4004,8 +4021,6 @@
 	/**
 	 * @classdesc Base Panorama
 	 * @constructor
-	 * @param {THREE.Geometry} geometry - The geometry for this panorama
-	 * @param {THREE.Material} material - The material for this panorama
 	 */
 	function Panorama () {
 
@@ -4022,28 +4037,22 @@
 	    this.ImageQualitySuperHigh = 5;
 
 	    this.animationDuration = 1000;
-
 	    this.defaultInfospotSize = 350;
-
 	    this.container = undefined;
-
 	    this.loaded = false;
-
 	    this.linkedSpots = [];
-
 	    this.isInfospotVisible = false;
 		
 	    this.linkingImageURL = undefined;
 	    this.linkingImageScale = undefined;
 
 	    this.renderOrder = -1;
-
+	    this.visible = false;
 	    this.active = false;
 
-	    this.infospotAnimation = new TWEEN.Tween( this ).to( {}, this.animationDuration / 2 );
+	    this.infospotAnimation = new Tween.Tween( this ).to( {}, this.animationDuration / 2 );
 
-	    this.addEventListener( 'load', this.fadeIn.bind( this ) );
-	    this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+	    this.addEventListener( EVENTS.CONTAINER, this.setContainer.bind( this ) );
 	    this.addEventListener( 'click', this.onClick.bind( this ) );
 
 	    this.setupTransitions();
@@ -4087,8 +4096,7 @@
 	            vertexShader,
 	            uniforms,
 	            side: THREE.BackSide,
-	            transparent: true,
-	            opacity: 0
+	            transparent: true
 	    
 	        } );
 
@@ -4123,7 +4131,7 @@
 
 	            if ( container ) { 
 	                
-	                object.dispatchEvent( { type: 'panolens-container', container } ); 
+	                object.dispatchEvent( { type: EVENTS.CONTAINER, container } ); 
 	            
 	            }
 	            
@@ -4136,7 +4144,7 @@
 	                 * @property {string} method - Viewer function name
 	                 * @property {*} data - The argument to be passed into the method
 	                 */
-	                this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'tweenControlCenter', data: [ vector, duration, easing ] } );
+	                this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'tweenControlCenter', data: [ vector, duration, easing ] } );
 
 
 	            }.bind( this ) } );
@@ -4149,13 +4157,24 @@
 
 	    getTexture: function(){
 
-	        return this.material.uniforms.tEquirect.value;
+	        return this.material.uniforms.texture.value;
 
 	    },
 
-	    load: function () {
+	    /**
+	     * Load Panorama
+	     * @param {boolean} immediate load immediately
+	     */
+	    load: function ( immediate = true ) {
 
-	        this.onLoad();
+	        /**
+	         * Start loading panorama event
+	         * @type {object}
+	         * @event Panorama#load-start
+	         */
+	        this.dispatchEvent( { type: EVENTS.LOAD_START } );
+
+	        if (immediate) this.onLoad();
 			
 	    },
 
@@ -4218,7 +4237,7 @@
 	                     * @event Infospot#panolens-container
 	                     * @property {HTMLElement} container - The container of this panorama
 	                     */
-	                    child.dispatchEvent( { type: 'panolens-container', container: container } );
+	                    child.dispatchEvent( { type: EVENTS.CONTAINER, container: container } );
 
 	                }
 
@@ -4234,18 +4253,32 @@
 	     * This will be called when panorama is loaded
 	     * @memberOf Panorama
 	     * @instance
-	     * @fires Panorama#load
+	     * @fires Panorama#loaded
 	     */
 	    onLoad: function () {
 
 	        this.loaded = true;
 
 	        /**
-	         * Load panorama event
+	         * Loaded panorama event
+	         * @type {object}
+	         * @event Panorama#loaded
+	         */
+	        this.dispatchEvent( { type: EVENTS.LOADED } );
+
+	        /**
+	         * Alias of loaded event
 	         * @type {object}
 	         * @event Panorama#load
 	         */
-	        this.dispatchEvent( { type: 'load' } );
+	        this.dispatchEvent( { type: EVENTS.LOAD } );
+
+	        /**
+	         * Panorama is ready to be animated
+	         * @event Panorama#ready
+	         * @type {object} 
+	         */
+	        this.dispatchEvent( { type: EVENTS.READY } );
 
 	    },
 
@@ -4263,7 +4296,7 @@
 	         * @event Panorama#progress
 	         * @property {object} progress - The progress object containing loaded and total amount
 	         */
-	        this.dispatchEvent( { type: 'progress', progress: progress } );
+	        this.dispatchEvent( { type: EVENTS.PROGRESS, progress: progress } );
 
 	    },
 
@@ -4280,7 +4313,7 @@
 	         * @type {object}
 	         * @event Panorama#error
 	         */
-	        this.dispatchEvent( { type: 'error' } );
+	        this.dispatchEvent( { type: EVENTS.READY } );
 
 	    },
 
@@ -4328,7 +4361,7 @@
 	     */
 	    updateTexture: function ( texture ) {
 
-	        this.material.uniforms.tEquirect.value = texture;
+	        this.material.uniforms.texture.value = texture;
 
 	    },
 
@@ -4374,7 +4407,7 @@
 	             * @event Panorama#infospot-animation-complete
 	             * @type {object} 
 	             */
-	            this.dispatchEvent( { type: 'infospot-animation-complete', visible: visible } );
+	            this.dispatchEvent( { type: EVENTS.INFOSPOT_ANIMATION_COMPLETE, visible: visible } );
 
 	        }.bind( this ) ).delay( delay ).start();
 
@@ -4461,7 +4494,7 @@
 	             * @property {string} method - Viewer function name
 	             * @property {*} data - The argument to be passed into the method
 	             */
-	            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setPanorama', data: pano } );
+	            this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'setPanorama', data: pano } );
 
 	        }.bind( this ) );
 
@@ -4481,40 +4514,12 @@
 
 	    setupTransitions: function () {
 
-	        this.fadeInAnimation = new TWEEN.Tween( this.material )
-	            .easing( TWEEN.Easing.Quartic.Out )
-	            .onStart( function () {
+	        this.fadeInAnimation = new Tween.Tween();
 
-	                this.visible = true;
-	                // this.material.visible = true;
+	        this.fadeOutAnimation = new Tween.Tween();
 
-	                /**
-	                 * Enter panorama fade in start event
-	                 * @event Panorama#enter-fade-start
-	                 * @type {object} 
-	                 */
-	                this.dispatchEvent( { type: 'enter-fade-start' } );
-
-	            }.bind( this ) );
-
-	        this.fadeOutAnimation = new TWEEN.Tween( this.material )
-	            .easing( TWEEN.Easing.Quartic.Out )
-	            .onComplete( function () {
-
-	                this.visible = false;
-	                // this.material.visible = true;
-
-	                /**
-	                 * Leave panorama complete event
-	                 * @event Panorama#leave-complete
-	                 * @type {object} 
-	                 */
-	                this.dispatchEvent( { type: 'leave-complete' } );
-
-	            }.bind( this ) );
-
-	        this.enterTransition = new TWEEN.Tween( this )
-	            .easing( TWEEN.Easing.Quartic.Out )
+	        this.enterTransition = new Tween.Tween( this )
+	            .easing( Tween.Easing.Quartic.Out )
 	            .onComplete( function () {
 
 	                /**
@@ -4522,24 +4527,13 @@
 	                 * @event Panorama#enter-complete
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'enter-complete' } );
+	                this.dispatchEvent( { type: EVENTS.ENTER_COMPLETE } );
 
 	            }.bind ( this ) )
 	            .start();
 
-	        this.leaveTransition = new TWEEN.Tween( this )
-	            .easing( TWEEN.Easing.Quartic.Out );
-
-	    },
-
-	    onFadeAnimationUpdate: function () {
-
-	        const alpha = this.material.opacity;
-	        const { uniforms } = this.material;
-
-	        if ( uniforms && uniforms.opacity ) {
-	            uniforms.opacity.value = alpha;
-	        }
+	        this.leaveTransition = new Tween.Tween( this )
+	            .easing( Tween.Easing.Quartic.Out );
 
 	    },
 
@@ -4549,28 +4543,49 @@
 	     * @instance
 	     * @fires Panorama#enter-fade-complete
 	     */
-	    fadeIn: function ( duration ) {
+	    fadeIn: function ( duration = this.animationDuration ) {
 
-	        duration = duration >= 0 ? duration : this.animationDuration;
+	        /**
+	         * Fade in event
+	         * @event Panorama#fade-in
+	         * @type {object} 
+	         */
+	        this.dispatchEvent( { type: EVENTS.FADE_IN } );
+
+	        const { opacity } = this.material.uniforms ? this.material.uniforms : { opacity: this.material.opacity };
+	        const onStart = function() {
+
+	            this.visible = true;
+
+	            /**
+	             * Enter panorama fade in start event
+	             * @event Panorama#enter-fade-start
+	             * @type {object} 
+	             */
+	            this.dispatchEvent( { type: EVENTS.ENTER_FADE_START } );
+
+	        }.bind( this );
+	        const onComplete = function() {
+
+	            this.toggleInfospotVisibility( true, duration / 2 );
+
+	            /**
+	             * Enter panorama fade complete event
+	             * @event Panorama#enter-fade-complete
+	             * @type {object} 
+	             */
+	            this.dispatchEvent( { type: EVENTS.ENTER_FADE_COMPLETE } );
+
+	        }.bind( this );
 
 	        this.fadeOutAnimation.stop();
-	        this.fadeInAnimation
-	            .to( { opacity: 1 }, duration )
-	            .onUpdate( this.onFadeAnimationUpdate.bind( this ) )
-	            .onComplete( function () {
-
-	                this.toggleInfospotVisibility( true, duration / 2 );
-
-	                /**
-	                 * Enter panorama fade complete event
-	                 * @event Panorama#enter-fade-complete
-	                 * @type {object} 
-	                 */
-	                this.dispatchEvent( { type: 'enter-fade-complete' } );			
-
-	            }.bind( this ) )
+	        this.fadeInAnimation = new Tween.Tween( opacity )
+	            .to( { value: 1 }, duration )
+	            .easing( Tween.Easing.Quartic.Out )
+	            .onStart( onStart )
+	            .onComplete( onComplete )
 	            .start();
-
+	        
 	    },
 
 	    /**
@@ -4578,14 +4593,34 @@
 	     * @memberOf Panorama
 	     * @instance
 	     */
-	    fadeOut: function ( duration ) {
+	    fadeOut: function ( duration = this.animationDuration ) {
 
-	        duration = duration >= 0 ? duration : this.animationDuration;
+	        /**
+	         * Fade out event
+	         * @event Panorama#fade-out
+	         * @type {object} 
+	         */
+	        this.dispatchEvent( { type: EVENTS.FADE_OUT } );
+
+	        const { opacity } = this.material.uniforms ? this.material.uniforms : { opacity: this.material.opacity };
+	        const onComplete = function() {
+
+	            this.visible = false;
+
+	            /**
+	             * Leave panorama complete event
+	             * @event Panorama#leave-complete
+	             * @type {object} 
+	             */
+	            this.dispatchEvent( { type: EVENTS.LEAVE_COMPLETE } );
+
+	        }.bind( this );
 
 	        this.fadeInAnimation.stop();
-	        this.fadeOutAnimation
-	            .to( { opacity: 0 }, duration )
-	            .onUpdate( this.onFadeAnimationUpdate.bind( this ) )
+	        this.fadeOutAnimation = new Tween.Tween( opacity )
+	            .to( { value: 0 }, duration )
+	            .easing( Tween.Easing.Quartic.Out )
+	            .onComplete( onComplete )
 	            .start();
 
 	    },
@@ -4600,13 +4635,13 @@
 	    onEnter: function () {
 
 	        const duration = this.animationDuration;
-	        
+
 	        /**
 	         * Enter panorama event
 	         * @event Panorama#enter
 	         * @type {object} 
 	         */
-	        this.dispatchEvent( { type: 'enter' } );
+	        this.dispatchEvent( { type: EVENTS.ENTER } );
 
 	        this.leaveTransition.stop();
 	        this.enterTransition
@@ -4618,11 +4653,16 @@
 	                 * @event Panorama#enter-start
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'enter-start' } );
+	                this.dispatchEvent( { type: EVENTS.ENTER_START } );
 					
 	                if ( this.loaded ) {
 
-	                    this.fadeIn( duration );
+	                    /**
+	                     * Panorama is ready to go
+	                     * @event Panorama#ready
+	                     * @type {object} 
+	                     */
+	                    this.dispatchEvent( { type: EVENTS.READY } );
 
 	                } else {
 
@@ -4663,7 +4703,7 @@
 	                 * @event Panorama#leave-start
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'leave-start' } );
+	                this.dispatchEvent( { type: EVENTS.LEAVE_START } );
 
 	                this.fadeOut( duration );
 	                this.toggleInfospotVisibility( false );
@@ -4676,14 +4716,12 @@
 	         * @event Panorama#leave
 	         * @type {object} 
 	         */
-	        this.dispatchEvent( { type: 'leave' } );
+	        this.dispatchEvent( { type: EVENTS.LEAVE } );
 
-	        this.children.forEach( child => {
+	        // dispatch panorama-leave to descendents
+	        this.traverse( child => child.dispatchEvent( { type: 'panorama-leave' } ));
 
-	            child.dispatchEvent( { type: 'panorama-leave' } );
-
-	        } );
-
+	        // mark active
 	        this.active = false;
 
 	    },
@@ -4697,7 +4735,7 @@
 
 	        const { material } = this;
 
-	        if ( material && material.uniforms && material.uniforms.tEquirect ) material.uniforms.tEquirect.value.dispose();
+	        if ( material && material.uniforms && material.uniforms.texture ) material.uniforms.texture.value.dispose();
 
 	        this.infospotAnimation.stop();
 	        this.fadeInAnimation.stop();
@@ -4712,7 +4750,7 @@
 	         * @property {string} method - Viewer function name
 	         * @property {*} data - The argument to be passed into the method
 	         */
-	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onPanoramaDispose', data: this } );
+	        this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'onPanoramaDispose', data: this } );
 
 	        // recursive disposal on 3d objects
 	        function recursiveDispose ( object ) {
@@ -4775,6 +4813,8 @@
 	     */
 	    load: function ( src ) {
 
+	        Panorama.prototype.load.call( this, false );
+
 	        src = src || this.src;
 
 	        if ( !src ) { 
@@ -4804,6 +4844,8 @@
 	    onLoad: function ( texture ) {
 
 	        texture.minFilter = texture.magFilter = THREE.LinearFilter;
+	        texture.generateMipmaps = false;
+	        texture.format = THREE.RGBFormat;
 	        texture.needsUpdate = true;
 			
 	        this.updateTexture( texture );
@@ -4875,7 +4917,7 @@
 	     */
 	    createMaterial: function() {
 
-	        new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+	        return new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
 
 	    },
 
@@ -4952,6 +4994,8 @@
 	     * @instance
 	     */
 	    load: function () {
+
+	        Panorama.prototype.load.call( this, false );
 
 	        CubeTextureLoader.load( 	
 
@@ -5035,6 +5079,29 @@
 	} );
 
 	/**
+	 * User Agent
+	 */
+	const ua = window.navigator.userAgent || window.navigator.vendor || window.opera;
+
+	/**
+	 * Check if mobile device
+	 */
+	const isMobile = (() => {
+
+	    return /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(ua)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(ua.substr(0,4));
+
+	})();
+
+	/**
+	 * Check if Android
+	 */
+	const isAndroid = (() => {
+
+	    return /(android)/i.test(ua);
+
+	})();
+
+	/**
 	 * @classdesc Video Panorama
 	 * @constructor
 	 * @param {string} src - Equirectangular video url
@@ -5068,8 +5135,8 @@
 
 	    this.type = 'video_panorama';
 
-	    this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
-	    this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
+	    this.addEventListener( EVENTS.LEAVE, this.pauseVideo.bind( this ) );
+	    this.addEventListener( EVENTS.ENTER_FADE_START, this.resumeVideoProgress.bind( this ) );
 	    this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 	    this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
@@ -5078,14 +5145,6 @@
 
 	    constructor: VideoPanorama,
 
-	    isMobile: function () {
-
-	        let check = false;
-	        (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})( window.navigator.userAgent || window.navigator.vendor || window.opera );
-	        return check;
-
-	    },
-
 	    /**
 	     * Load video panorama
 	     * @memberOf VideoPanorama
@@ -5093,6 +5152,8 @@
 	     * @fires  Panorama#panolens-viewer-handler
 	     */
 	    load: function () {
+
+	        Panorama.prototype.load.call( this, false );
 
 	        const { muted, loop, autoplay, playsinline, crossOrigin } = this.options;
 	        const video = this.videoElement;
@@ -5124,12 +5185,12 @@
 	                 * @property {string} method - 'updateVideoPlayButton'
 	                 * @property {boolean} data - Pause video or not
 	                 */
-	                this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
+	                this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'updateVideoPlayButton', data: false } );
 
 	            }
 
 	            // For mobile silent autoplay
-	            if ( this.isMobile() ) {
+	            if ( isMobile ) {
 
 	                video.pause();
 
@@ -5141,7 +5202,7 @@
 	                     * @property {string} method - 'updateVideoPlayButton'
 	                     * @property {boolean} data - Pause video or not
 	                     */
-	                    this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
+	                    this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'updateVideoPlayButton', data: false } );
 
 	                } else {
 
@@ -5151,7 +5212,7 @@
 	                     * @property {string} method - 'updateVideoPlayButton'
 	                     * @property {boolean} data - Pause video or not
 	                     */
-	                    this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
+	                    this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'updateVideoPlayButton', data: true } );
 
 	                }
 					
@@ -5205,7 +5266,7 @@
 	             * @property {string} method - 'onVideoUpdate'
 	             * @property {number} data - The percentage of video progress. Range from 0.0 to 1.0
 	             */
-	            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: this.videoProgress } );
+	            this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'onVideoUpdate', data: this.videoProgress } );
 
 	        }.bind( this ) );
 
@@ -5214,7 +5275,7 @@
 	            if ( !loop ) {
 
 	                this.resetVideo();
-	                this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
+	                this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'updateVideoPlayButton', data: true } );
 
 	            }
 
@@ -5243,6 +5304,7 @@
 	        videoTexture.minFilter = THREE.LinearFilter;
 	        videoTexture.magFilter = THREE.LinearFilter;
 	        videoTexture.format = THREE.RGBFormat;
+	        videoTexture.generateMipmaps = false;
 
 	        this.updateTexture( videoTexture );
 
@@ -5304,7 +5366,7 @@
 
 	            video.currentTime = video.duration * percentage;
 
-	            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: percentage } );
+	            this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'onVideoUpdate', data: percentage } );
 
 	        }
 
@@ -5330,7 +5392,7 @@
 	             * @event VideoPanorama#play
 	             *
 	             */
-	            dispatchEvent( { type: 'play' } );
+	            dispatchEvent( { type: EVENTS.MEDIA.PLAY } );
 
 	        };
 	        const onError = ( error ) => {
@@ -5378,7 +5440,7 @@
 	         * @event VideoPanorama#pause
 	         *
 	         */
-	        this.dispatchEvent( { type: 'pause' } );
+	        this.dispatchEvent( { type: EVENTS.MEDIA.PAUSE } );
 
 	    },
 
@@ -5391,7 +5453,7 @@
 
 	        const video = this.videoElement;
 
-	        if ( video.readyState >= 4 && video.autoplay && !this.isMobile() ) {
+	        if ( video.readyState >= 4 && video.autoplay && !isMobile ) {
 
 	            this.playVideo();
 
@@ -5401,7 +5463,7 @@
 	             * @property {string} method - 'updateVideoPlayButton'
 	             * @property {boolean} data - Pause video or not
 	             */
-	            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
+	            this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'updateVideoPlayButton', data: false } );
 
 	        } else {
 
@@ -5413,7 +5475,7 @@
 	             * @property {string} method - 'updateVideoPlayButton'
 	             * @property {boolean} data - Pause video or not
 	             */
-	            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
+	            this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'updateVideoPlayButton', data: true } );
 
 	        }
 
@@ -5465,7 +5527,7 @@
 
 	        }
 
-	        this.dispatchEvent( { type: 'volumechange' } );
+	        this.dispatchEvent( { type: EVENTS.MEDIA.VOLUME_CHANGE } );
 
 	    },
 
@@ -5484,7 +5546,7 @@
 
 	        }
 
-	        this.dispatchEvent( { type: 'volumechange' } );
+	        this.dispatchEvent( { type: EVENTS.MEDIA.VOLUME_CHANGE } );
 
 	    },
 
@@ -5509,8 +5571,8 @@
 
 	        this.pauseVideo();
 			
-	        this.removeEventListener( 'leave', this.pauseVideo.bind( this ) );
-	        this.removeEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
+	        this.removeEventListener( EVENTS.LEAVE, this.pauseVideo.bind( this ) );
+	        this.removeEventListener( EVENTS.ENTER_FADE_START, this.resumeVideoProgress.bind( this ) );
 	        this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
 	        this.removeEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
@@ -5797,6 +5859,8 @@
 	     */
 	    load: function ( panoId ) {
 
+	        Panorama.prototype.load.call( this, false );
+
 	        this.loadRequested = true;
 
 	        panoId = ( panoId || this.panoId ) || {};
@@ -5817,11 +5881,28 @@
 	     */
 	    setupGoogleMapAPI: function ( apiKey ) {
 
+	        const scriptId = 'panolens-gmapscript';
+	        const onScriptLoaded = this.setGSVLoader.bind( this );
+
+	        if( document.querySelector( `#${scriptId}` ) ) {
+	            onScriptLoaded();
+	            return;
+	        }
+
 	        const script = document.createElement( 'script' );
+	        script.id = scriptId;
 	        script.src = 'https://maps.googleapis.com/maps/api/js?';
 	        script.src += apiKey ? 'key=' + apiKey : '';
-	        script.onreadystatechange = this.setGSVLoader.bind( this );
-	        script.onload = this.setGSVLoader.bind( this );
+	        if( script.readyState ) { // IE
+	            script.onreadystatechange = function() {
+	                if ( script.readyState === EVENTS.LOADED || script.readyState === 'complete' ) {
+	                    script.onreadystatechange = null;
+	                    onScriptLoaded();
+	                }
+	            };
+	        } else {
+	            script.onload = onScriptLoaded;
+	        }
 
 	        document.querySelector( 'head' ).appendChild( script );
 
@@ -6012,7 +6093,7 @@
 
 	    this.type = 'little_planet';
 
-	    this.addEventListener( 'window-resize', this.onWindowResize );
+	    this.addEventListener( EVENTS.WIDNOW_RESIZE, this.onWindowResize );
 
 	}
 
@@ -6115,24 +6196,24 @@
 
 	        switch ( inputCount ) {
 
-	        case 1:
+	            case 1:
 
-	            const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
-	            const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+	                const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
+	                const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
-	            this.dragging = true;
-	            this.userMouse.set( x, y );
+	                this.dragging = true;
+	                this.userMouse.set( x, y );
 
-	            break;
+	                break;
 
-	        case 2:
+	            case 2:
 
-	            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-	            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-	            const distance = Math.sqrt( dx * dx + dy * dy );
-	            this.userMouse.pinchDistance = distance;
+	                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+	                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+	                const distance = Math.sqrt( dx * dx + dy * dy );
+	                this.userMouse.pinchDistance = distance;
 
-	            break;
+	                break;
 
 	        }
 
@@ -6146,32 +6227,32 @@
 
 	        switch ( inputCount ) {
 
-	        case 1:
+	            case 1:
 
-	            const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
-	            const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
+	                const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
+	                const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
-	            const angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
-	            const angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
+	                const angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
+	                const angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
 
-	            if ( this.dragging ) {
-	                this.quatA.setFromAxisAngle( this.vectorY, angleX );
-	                this.quatB.setFromAxisAngle( this.vectorX, angleY );
-	                this.quatCur.multiply( this.quatA ).multiply( this.quatB );
-	                this.userMouse.set( x, y );
-	            }
+	                if ( this.dragging ) {
+	                    this.quatA.setFromAxisAngle( this.vectorY, angleX );
+	                    this.quatB.setFromAxisAngle( this.vectorX, angleY );
+	                    this.quatCur.multiply( this.quatA ).multiply( this.quatB );
+	                    this.userMouse.set( x, y );
+	                }
 
-	            break;
+	                break;
 
-	        case 2:
+	            case 2:
 
-	            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-	            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-	            const distance = Math.sqrt( dx * dx + dy * dy );
+	                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+	                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+	                const distance = Math.sqrt( dx * dx + dy * dy );
 
-	            this.addZoomDelta( this.userMouse.pinchDistance - distance );
+	                this.addZoomDelta( this.userMouse.pinchDistance - distance );
 
-	            break;
+	                break;
 
 	        }
 
@@ -6272,7 +6353,7 @@
 	        this.registerMouseEvents();
 	        this.onUpdateCallback();
 			
-	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' } );
+	        this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'disableControl' } );
 
 	        ImagePanorama.prototype.onLoad.call( this, texture );
 			
@@ -6282,7 +6363,7 @@
 
 	        this.unregisterMouseEvents();
 
-	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'enableControl', data: CONTROLS.ORBIT } );
+	        this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'enableControl', data: CONTROLS.ORBIT } );
 
 	        window.cancelAnimationFrame( this.frameId );
 
@@ -6392,9 +6473,9 @@
 
 	    this.type = 'camera_panorama';
 
-	    this.addEventListener( 'enter', this.start.bind( this ) );
-	    this.addEventListener( 'leave', this.stop.bind( this ) );
-	    this.addEventListener( 'panolens-container', this.onPanolensContainer.bind( this ) );
+	    this.addEventListener( EVENTS.ENTER, this.start.bind( this ) );
+	    this.addEventListener( EVENTS.LEAVE, this.stop.bind( this ) );
+	    this.addEventListener( EVENTS.CONTAINER, this.onPanolensContainer.bind( this ) );
 	    this.addEventListener( 'panolens-scene', this.onPanolensScene.bind( this ) );
 
 	}
@@ -6494,7 +6575,7 @@
 
 	        this.stereo.updateUniformByFormat( format, this.material.uniforms );
 
-	        this.material.uniforms[ 'tEquirect' ].value = texture;
+	        this.material.uniforms[ 'texture' ].value = texture;
 
 	        ImagePanorama.prototype.onLoad.call( this, texture );
 
@@ -6529,7 +6610,7 @@
 	     */
 	    dispose: function () {	
 
-	        const { value } = this.material.uniforms.tEquirect;
+	        const { value } = this.material.uniforms.texture;
 
 	        if ( value instanceof THREE.Texture ) {
 
@@ -6586,7 +6667,7 @@
 
 	        this.stereo.updateUniformByFormat( format, this.material.uniforms );
 
-	        this.material.uniforms[ 'tEquirect' ].value = texture;
+	        this.material.uniforms[ 'texture' ].value = texture;
 
 	        VideoPanorama.prototype.onLoad.call( this );
 
@@ -6621,7 +6702,7 @@
 	     */
 	    dispose: function () {	
 
-	        const { value } = this.material.uniforms.tEquirect;
+	        const { value } = this.material.uniforms.texture;
 
 	        if ( value instanceof THREE.Texture ) {
 
@@ -6630,6 +6711,662 @@
 	        }
 
 	        VideoPanorama.prototype.dispose.call( this );
+
+	    }
+
+	} );
+
+	/* eslint-disable */
+	function PanoMoments(_0x7f43d,_0x15393b,_0xafd6c6,_0x4f697b){var _0x317fcf=this;var _0x77f828;var _0x4b83b1;var _0x28fee3=[];var _0x56872a;var _0x51245d=document['createElement']('video');var _0x3cdc1b=[];var _0x8d3da1;var _0x2d980b;var _0x52c0d1;var _0x29bec5;var _0xc61c01;var _0x3cce6c;var _0x107d3b;var _0x5b8589;var _0x3e48cc=[];var _0x5869cc=-0x1;var _0x44e325;var _0xb3fd4=[];var _0x3f75ad=0x0;var _0x626ae7=0x0;var _0x1c4db0;var _0x2ae9f0;var _0xc61c01;var _0x2af0b2={};var _0x31139b;var _0x28b79b;var _0x1f4e8e;var _0x4e8420;var _0x124c48;var _0x4e4077;var _0x593647;var _0x5eba13;var _0x39e97e=[0x70,0x61,0x73,0x70];var _0x19f523=[0x74,0x6b,0x68,0x64];var _0x117cd8;if(navigator['userAgent']['match'](/Android/i)){_0x52c0d1=!![];}else if(navigator['userAgent']['match'](/iPhone|iPad|iPod/i)){_0x2d980b=!![];}if(/Chrome/i['test'](navigator['userAgent']['toLowerCase']())||/Chrome WebView/i['test'](navigator['userAgent']['toLowerCase']())||/Chromium/i['test'](navigator['userAgent']['toLowerCase']())){_0x29bec5=!![];}else if(/Firefox/i['test'](navigator['userAgent']['toLowerCase']())||/Supermedium/i['test'](navigator['userAgent']['toLowerCase']())){_0xc61c01=!![];if(!_0x52c0d1){_0x29bec5=!![];}}else if(/Safari/i['test'](navigator['userAgent']['toLowerCase']())&&!/Chrome/i['test'](navigator['userAgent']['toLowerCase']()));if(!_0x29bec5){_0x51245d['setAttribute']('playsinline','');_0x51245d['muted']=!![];_0x51245d['autoplay']=!![];}else {_0x56872a=new MediaSource();_0x51245d['src']=window['URL']['createObjectURL'](_0x56872a);_0x51245d['preload']='auto';_0x56872a['addEventListener']('sourceopen',_0x2058e3);}fetch('https://my.panomoments.com/sdk/moment',{'method':'POST','body':'private_api_key='+_0x7f43d['private_api_key']+'&public_api_key='+_0x7f43d['public_api_key']+'&moment_id='+_0x7f43d['moment_id']+'&variation='+_0x7f43d['variation']+'&sdk_client_type=web','headers':{'Content-Type':'application/x-www-form-urlencoded'}})['then'](_0x4c841e=>_0x4c841e['json']())['then'](_0x385797=>{_0x2af0b2=_0x385797;_0x31139b=_0x2af0b2['web_mpd_url'];_0x28b79b=_0x2af0b2['web_video_url'];_0x2c8da1();});this['currentIndex']=0x0;this['frameCount']=0x0;this['render']=function(_0x527ec6){if(_0x1c4db0){_0x4e8420=_0x527ec6/_0x317fcf['frameCount']*0x168;_0x124c48=0x168/_0x317fcf['frameCount'];if(!_0x2af0b2['clockwise']){_0x4e8420=-_0x4e8420;_0x4e8420=0x21c+_0x4e8420;}else if(_0x4e8420<0x0){_0x4e8420=0x168+_0x4e8420;}_0x4e8420=_0x4e8420%0x168;_0x1f4e8e=parseInt(Math['round'](_0x4e8420/_0x124c48),0xa);if(_0x1f4e8e==_0x317fcf['frameCount']&&_0x2af0b2['moment_type']){_0x1f4e8e=_0x317fcf['frameCount']-0x1;}else if(_0x1f4e8e==_0x317fcf['frameCount']&&!_0x2af0b2['moment_type']||!_0x1f4e8e){_0x1f4e8e=0x0;}if(_0x317fcf['textureReady']()&&_0x5869cc!=_0x1f4e8e){_0x317fcf['currentIndex']=_0x3edb24();_0x26db5c(_0x317fcf['currentIndex']);_0x5869cc=_0x1f4e8e;}_0x15393b(_0x51245d,_0x2af0b2);}else {console['log']('Render\x20called\x20before\x20download\x20is\x20ready.\x20Wait\x20for\x20Ready\x20callback\x20before\x20calling\x20Render.');}};this['dispose']=function(){_0x51245d['src']='';_0x51245d=null;_0x15393b=null;_0xafd6c6=null;_0x4f697b=null;_0x77f828=null;_0x4b83b1=null;_0x28fee3=[];_0x56872a=null;_0x3cdc1b['splice'](0x0,_0x3cdc1b['length']);_0x8d3da1=null;_0x2d980b=null;_0x52c0d1=null;_0x29bec5=null;_0xc61c01=null;_0x3cce6c=null;_0x107d3b=null;_0x5b8589=null;_0x3e48cc=[];_0x3e48cc['splice'](0x0,_0x3e48cc['length']);_0x5869cc=null;_0x44e325=null;_0xb3fd4['splice'](0x0,_0xb3fd4['length']);_0x3f75ad=null;_0x626ae7=null;_0x1c4db0=null;_0x2ae9f0=null;_0xc61c01=null;_0x2af0b2={};_0x31139b=null;_0x28b79b=null;_0x1f4e8e=null;_0x4e8420=null;_0x124c48=null;_0x4e4077=null;_0x593647=null;_0x5eba13=null;_0x117cd8=null;console['log']('PanoMoment\x20Web\x20SDK\x20Disposed');};this['textureReady']=function(){if(!_0x29bec5&&_0x117cd8==!![]&&_0x51245d['readyState']===_0x51245d['HAVE_ENOUGH_DATA']){return !![];}else if(_0x29bec5&&(_0xc61c01&&_0x51245d['readyState']>=0x3||_0x51245d['readyState']===_0x51245d['HAVE_ENOUGH_DATA'])){return !![];}return ![];};function _0x2058e3(){_0x77f828=_0x56872a['addSourceBuffer']('video/mp4;\x20codecs=\x22avc1.640033\x22');_0x77f828['mode']='sequence';}function _0x2c8da1(){_0x5f2622(_0x31139b,{'responseType':'text','onreadystatechange':_0xcec5cc=>{const _0x17c737=_0xcec5cc['target'];if(_0x17c737&&_0x17c737['readyState']==_0x17c737['DONE']){var _0x52b104=new DOMParser();var _0x1a93a0=_0x52b104['parseFromString'](_0x17c737['response'],'text/xml',0x0);_0x396771(_0x1a93a0);if(!_0x2af0b2['allow_streaming']){_0x8d3da1=_0x317fcf['frameCount'];}else {_0x8d3da1=Math['min'](0x3c,_0x317fcf['frameCount']);}_0x32e123(_0x28b79b);}}});}const _0x32e123=async _0x5db756=>{var _0x3877be=new Headers();const _0x48fe57='bytes='+_0x3e48cc[0x0]['getAttribute']('range')['toString']();_0x2ae9f0=_0x2af0b2['aspect_ratio']?_0x2af0b2['aspect_ratio']:1.7777777;if(_0x5db756['indexOf']('https://data.panomoments.com/')>-0x1){_0x5db756=_0x5db756['replace'](/data.panomoments.com/i,'s3.amazonaws.com/data.panomoments.com');}else if(_0x5db756['indexOf']('https://staging-data.panomoments.com/')>-0x1){_0x5db756=_0x5db756['replace'](/staging-data.panomoments.com/i,'s3.amazonaws.com/staging-data.panomoments.com');}_0x3877be['append']('Range',_0x48fe57);let _0x106cca=0x0;let _0x5c882e=![];while(_0x106cca<0x5&&!_0x5c882e){try{const _0x589391=await fetch(_0x5db756,{'headers':_0x3877be,'method':'GET'});const _0x8cfd03=await _0x589391['arrayBuffer']();_0x5eba13=new Uint8Array(_0x8cfd03);var _0x3843a0=_0x15fc53(_0x5eba13,_0x39e97e);var _0x358dc5=_0x15fc53(_0x5eba13,_0x19f523);if(_0x358dc5>0x0&&_0x3843a0>0x0){var _0x58ed99=new ArrayBuffer(0x2);var _0x1171fb=new DataView(_0x58ed99);_0x1171fb['setInt8'](0x0,_0x5eba13[_0x358dc5+0x50]);_0x1171fb['setInt8'](0x1,_0x5eba13[_0x358dc5+0x51]);var _0x249ab5=_0x1171fb['getUint16'](0x0);_0x249ab5=_0x249ab5['toString']();var _0x127703=new ArrayBuffer(0x2);var _0x3430c6=new DataView(_0x127703);_0x3430c6['setInt8'](0x0,_0x5eba13[_0x358dc5+0x52]);_0x3430c6['setInt8'](0x1,_0x5eba13[_0x358dc5+0x53]);var _0x2bdb25=parseFloat(_0x3430c6['getUint16'](0x0))/Math['pow'](0x2,0x10);_0x2bdb25=_0x2bdb25['toString']()['substr'](0x1);var _0x35e1f=_0x249ab5['toString']()+_0x2bdb25['toString']();var _0x1f8a81=parseFloat(_0x5eba13[_0x3843a0+0x7])/parseFloat(_0x5eba13[_0x3843a0+0xb]);var _0x3cccf8=Math['round'](parseFloat(_0x35e1f)/_0x1f8a81);var _0x215d8b=new Uint8Array([_0x122c6a(_0x3cccf8)[0x2],_0x122c6a(_0x3cccf8)[0x3]]);_0x5eba13[_0x358dc5+0x50]=_0x122c6a(_0x3cccf8)[0x2];_0x5eba13[_0x358dc5+0x51]=_0x122c6a(_0x3cccf8)[0x3];_0x5eba13[_0x358dc5+0x52]=[0x0];_0x5eba13[_0x3843a0+0x7]=[0x1];_0x5eba13[_0x3843a0+0xb]=[0x1];}_0x181edc(_0x28b79b);_0x5c882e=!![];}catch(_0x4bccf0){console['log']('failure\x20during\x20init',_0x106cca,_0x4bccf0);_0x106cca++;}}};const _0x43f147=_0x18e50a=>{_0x3a8cdd(_0x18e50a);};const _0x3a8cdd=_0x5b38b1=>{if((!_0x77f828||_0x77f828&&_0x77f828['updating'])&&_0x626ae7==0x0){console['log']('Buffer\x20not\x20ready.\x20Retrying\x20in\x201\x20second.');_0x4e4077=setTimeout(()=>{_0x3a8cdd(_0x5b38b1);},0x3e8);return;}else if(_0x5b38b1&&_0x77f828&&!_0x77f828['updating']&&_0x626ae7==0x0){_0x51245d['currentTime']+=0x1/_0x4b83b1;_0x77f828['timestampOffset']=_0x51245d['currentTime'];_0x77f828['appendBuffer'](_0x5b38b1);_0x626ae7++;_0x4e4077=setTimeout(()=>{_0x3a8cdd(_0x5b38b1);},0x1f4);}};function _0x396771(_0x2d1894){try{var _0x18f3b0=_0x2d1894['querySelectorAll']('Representation');_0x4b83b1=0x1;_0x28fee3=_0x2d1894['querySelectorAll']('SegmentURL');_0x3e48cc=_0x2d1894['querySelectorAll']('Initialization');_0x317fcf['frameCount']=_0x28fee3['length'];}catch(_0x5c78e3){console['log'](_0x5c78e3);}}function _0x26db5c(_0xd644fe){if(_0x593647==_0xd644fe)return;_0x593647=_0xd644fe;if(!_0x29bec5){if(_0x2d980b||_0xc61c01){if(!_0x2af0b2['aligned']){_0x51245d['fastSeek']((_0xd644fe+framePadding)%_0x317fcf['frameCount']*0x1/_0x4b83b1);}else {_0x51245d['fastSeek'](_0xd644fe*0x1/_0x4b83b1);}}else {_0x51245d['currentTime']=_0xd644fe*0x1/_0x4b83b1;}}else if(_0xb3fd4[_0xd644fe]&&_0x77f828&&!_0x77f828['updating']&&_0x1c4db0){if(_0xd644fe<_0x317fcf['frameCount']){_0x51245d['currentTime']+=0x1/_0x4b83b1;_0x77f828['timestampOffset']=_0x51245d['currentTime'];if(!_0x2af0b2['aligned']){_0x77f828['appendBuffer'](_0xb3fd4[(_0xd644fe+framePadding)%_0x317fcf['frameCount']]);}else {_0x77f828['appendBuffer'](_0xb3fd4[_0xd644fe]);}}else {console['log']('Invalid\x20Index');}}}function _0x5b6490(_0xf98526,_0x950384){_0x3cce6c=_0x44e325['length'];_0x107d3b=0x0;_0x5b8589=0x0;var _0xf33569=0x8;if(_0x52c0d1){_0xf33569=0x4;}for(let _0x47c1b4=0x0;_0x47c1b4<_0xf33569;_0x47c1b4++){_0x3d91b6(_0xf98526,_0x8d3da1,()=>{if(!_0x1c4db0){_0xafd6c6(_0x51245d,_0x2af0b2);_0x1c4db0=!![];}for(let _0x21d89b=0x0;_0x21d89b<_0xf33569;_0x21d89b++){_0x3d91b6(_0xf98526,_0x3cce6c,()=>{_0x4f697b(_0x51245d,_0x2af0b2);});}});}}function _0x3d91b6(_0x36b045,_0x1b972f,_0x2466c9){setTimeout(_0x3fef35,0x0,_0x36b045,_0x1b972f,_0x2466c9);}async function _0x3fef35(_0x4074c9,_0x49508a,_0xc8be1e){while(_0x3f75ad<_0x49508a){let _0x9c76d1=0x0;let _0x3fb543=![];const _0x10e14c=_0x44e325[_0x107d3b++];_0x3f75ad++;while(_0x9c76d1<0x3&&!_0x3fb543){const _0x3878b7=new Headers();_0x3878b7['append']('Range',_0x10e14c['content']);_0x3878b7['append']('cache-control','no-store');_0x3878b7['append']('pragma','no-cache');_0x3878b7['append']('cache-control','no-cache');try{const _0x29df80=await fetch(_0x4074c9,{'headers':_0x3878b7,'method':'GET'});const _0x36e8f6=await _0x29df80['arrayBuffer']();_0x36c88c(_0x36e8f6,_0x10e14c['index']);_0x5b8589++;_0x3fb543=!![];}catch(_0xf1ef57){console['log']('exception\x20during\x20chunk\x20download,\x20retrying',++_0x9c76d1,_0xf1ef57);_0x9c76d1++;}finally{}}}if(_0x5b8589===_0x49508a){_0xc8be1e();}}function _0xc3f286(_0x5ba80d){_0x117cd8=![];_0x51245d['addEventListener']('loadeddata',_0x1ec302,![]);_0x51245d['addEventListener']('canplay',_0x4dd65d,![]);_0x51245d['addEventListener']('timeupdate',_0x2f15b8,![]);var _0x345bc3=new Uint8Array(_0x5ba80d);var _0x1369dd=_0x15fc53(_0x5eba13,_0x39e97e);var _0x12aa06=_0x15fc53(_0x5eba13,_0x19f523);if(_0x12aa06>0x0&&_0x1369dd>0x0){var _0x3e6bd8=new ArrayBuffer(0x2);var _0x4c28e8=new DataView(_0x3e6bd8);_0x4c28e8['setInt8'](0x0,_0x345bc3[_0x12aa06+0x50]);_0x4c28e8['setInt8'](0x1,_0x345bc3[_0x12aa06+0x51]);var _0x108efe=_0x4c28e8['getUint16'](0x0);_0x108efe=_0x108efe['toString']();var _0x5f0c1a=new ArrayBuffer(0x2);var _0x3c5250=new DataView(_0x5f0c1a);_0x3c5250['setInt8'](0x0,_0x345bc3[_0x12aa06+0x52]);_0x3c5250['setInt8'](0x1,_0x345bc3[_0x12aa06+0x53]);var _0x49c033=parseFloat(_0x3c5250['getUint16'](0x0))/Math['pow'](0x2,0x10);_0x49c033=_0x49c033['toString']()['substr'](0x1);var _0x34d52e=_0x108efe['toString']()+_0x49c033['toString']();var _0x691a4d=parseFloat(_0x345bc3[_0x1369dd+0x7])/parseFloat(_0x345bc3[_0x1369dd+0xb]);var _0x4f1010=Math['round'](parseFloat(_0x34d52e)/_0x691a4d);_0x345bc3[_0x12aa06+0x50]=_0x122c6a(_0x4f1010)[0x2];_0x345bc3[_0x12aa06+0x51]=_0x122c6a(_0x4f1010)[0x3];_0x345bc3[_0x12aa06+0x52]=[0x0];_0x345bc3[_0x1369dd+0x7]=[0x1];_0x345bc3[_0x1369dd+0xb]=[0x1];}_0x51245d['src']=window['URL']['createObjectURL'](new Blob([_0x345bc3],{'type':'video/mp4'}));_0x51245d['pause']();}function _0x1ec302(){_0x51245d['removeEventListener']('canplay',_0x4dd65d,![]);_0x51245d['currentTime']=_0x317fcf['currentIndex'];}function _0x4dd65d(){_0x51245d['removeEventListener']('loadeddata',_0x1ec302,![]);_0x51245d['currentTime']=_0x317fcf['currentIndex'];}function _0x2f15b8(){_0x51245d['currentTime']=_0x317fcf['currentIndex'];_0x1c4db0=!![];_0x117cd8=!![];_0xafd6c6(_0x51245d,_0x2af0b2);_0x4f697b(_0x51245d,_0x2af0b2);_0x51245d['removeEventListener']('loadeddata',_0x1ec302,![]);_0x51245d['removeEventListener']('canplay',_0x4dd65d,![]);_0x51245d['removeEventListener']('timeupdate',_0x2f15b8,![]);}function _0x5f2622(_0x5c7f13,_0x1c293e){if(_0x5c7f13!=null&&_0x5c7f13!==''){var _0x59d5d6=new XMLHttpRequest();_0x59d5d6['open']('GET',_0x5c7f13,!![]);if(_0x1c293e){_0x59d5d6['responseType']=_0x1c293e['responseType'];if(_0x1c293e['onreadystatechange']){_0x59d5d6['onreadystatechange']=_0x1c293e['onreadystatechange']['bind'](_0x59d5d6);}if(_0x1c293e['onload']){_0x59d5d6['onload']=_0x1c293e['onload'];}}_0x59d5d6['addEventListener']('error',function(_0x3e8922){console['log']('Error:\x20'+_0x3e8922+'\x20Could\x20not\x20load\x20url.');},![]);_0x59d5d6['send']();return _0x59d5d6;}}const _0x181edc=async _0x2f62e8=>{var _0x1d0fc0=new Headers();var _0x1bbbec=_0x2af0b2['start_frame']+0x5a;_0x124c48=0x168/_0x317fcf['frameCount'];if(!_0x2af0b2['clockwise']){_0x1bbbec=-_0x1bbbec;}if(_0x1bbbec<0x0){_0x1bbbec=0x168+_0x1bbbec;}_0x317fcf['currentIndex']=parseInt(Math['round'](_0x1bbbec/_0x124c48),0xa);const _0x4db74a='bytes='+_0x28fee3[_0x317fcf['currentIndex']]['getAttribute']('mediaRange')['toString']();_0x1d0fc0['append']('Range',_0x4db74a);if(_0x2f62e8['indexOf']('https://data.panomoments.com/')>-0x1){_0x2f62e8=_0x2f62e8['replace'](/data.panomoments.com/i,'s3.amazonaws.com/data.panomoments.com');}else if(_0x2f62e8['indexOf']('https://staging-data.panomoments.com/')>-0x1){_0x2f62e8=_0x2f62e8['replace'](/staging-data.panomoments.com/i,'s3.amazonaws.com/staging-data.panomoments.com');}let _0x36341f=0x0;let _0xc27971=![];while(_0x36341f<0x5&&!_0xc27971){try{const _0x39223a=await fetch(_0x2f62e8,{'headers':_0x1d0fc0,'method':'GET'});const _0x56487c=await _0x39223a['arrayBuffer']();var _0x6292b5=new Uint8Array(_0x56487c);var _0x30e016=new Int8Array(_0x5eba13['length']+_0x6292b5['length']);_0x30e016['set'](_0x5eba13);_0x30e016['set'](_0x6292b5,_0x5eba13['length']);if(!_0x29bec5){_0x51245d['addEventListener']('loadeddata',_0x2db252);_0x51245d['addEventListener']('canplay',_0x326727);_0x51245d['src']=window['URL']['createObjectURL'](new Blob([_0x30e016],{'type':'video/mp4'}));_0x51245d['pause']();}else {_0x36c88c(_0x56487c,_0x317fcf['currentIndex']);_0x43f147(_0x30e016);_0x15393b(_0x51245d,_0x2af0b2);_0x44e325=_0x45f0fa(_0x28fee3,_0x8d3da1,_0x3cdc1b,![]);}if(window['self']!==window['top']){_0x4b2f6d(_0x2f62e8);}else {_0x40845c(_0x2f62e8);}_0xc27971=!![];}catch(_0x5a3512){console['log']('failure\x20during\x20first\x20frame\x20download',_0x36341f,_0x5a3512);_0x36341f++;}}};const _0x4b2f6d=_0x1761ea=>{var _0x5c05be=document['createElement']('div');_0x5c05be['style']['margin']='1px';_0x5c05be['style']['height']='100%';_0x5c05be['style']['width']='100%';_0x5c05be['style']['pointerEvents']='none';_0x5c05be['style']['zIndex']=-0x1;_0x5c05be['style']['position']='fixed';_0x5c05be['style']['top']=0x0;document['body']['appendChild'](_0x5c05be);var _0x11a7f8=new IntersectionObserver(function(_0x5f1c5a){var _0x5f42ee=_0x5f1c5a[0x0]['isIntersecting'];if(_0x5f42ee){_0x11a7f8['disconnect']();document['body']['removeChild'](_0x5c05be);_0x40845c();}});_0x11a7f8['observe'](_0x5c05be);};const _0x40845c=_0x383490=>{if(!_0x29bec5){fetch(_0x28b79b)['then'](function(_0x3ba439){_0x3ba439['arrayBuffer']()['then'](function(_0x507bbc){_0xc3f286(_0x507bbc);});});}else {_0x5b6490(_0x28b79b);}};const _0x2db252=()=>{_0x117cd8=!![];_0x51245d['removeEventListener']('loadeddata',_0x2db252);_0x51245d['removeEventListener']('canplay',_0x326727);_0x15393b(_0x51245d,_0x2af0b2);};const _0x326727=()=>{_0x117cd8=!![];_0x51245d['removeEventListener']('canplay',_0x326727);_0x51245d['removeEventListener']('loadeddata',_0x2db252);_0x15393b(_0x51245d,_0x2af0b2);};function _0x36c88c(_0x459d6e,_0x424d4c){_0xb3fd4[_0x424d4c]=_0x459d6e;}const _0x3edb24=()=>{var _0x3f3557;if(!_0x29bec5){return _0x1f4e8e;}_0x3f3557=_0x1f4e8e;if(_0x44e325['length']!=0x0&&!_0xb3fd4[_0x1f4e8e]){var _0x15d0e4,_0x8d53d1,_0x533cf2,_0x13f6fa=![],_0x4e3100=![];_0x15d0e4=_0x1f4e8e;while(!_0x13f6fa&&_0x15d0e4<_0x317fcf['frameCount']){if(_0xb3fd4[_0x15d0e4]){_0x13f6fa=!![];_0x8d53d1=_0x15d0e4;}else {_0x15d0e4++;}}_0x15d0e4=_0x1f4e8e;while(!_0x4e3100&&_0x15d0e4>=0x0){if(_0xb3fd4[_0x15d0e4]){_0x4e3100=!![];_0x533cf2=_0x15d0e4;}else {_0x15d0e4--;}}if(!_0x8d53d1){_0x8d53d1=_0x317fcf['frameCount'];}if(Math['abs'](_0x1f4e8e-_0x8d53d1)<=Math['abs'](_0x1f4e8e-_0x533cf2)&&_0x8d53d1==_0x317fcf['frameCount']){_0x3f3557=0x0;}else if(Math['abs'](_0x1f4e8e-_0x8d53d1)<=Math['abs'](_0x1f4e8e-_0x533cf2)){_0x3f3557=_0x8d53d1;}else {_0x3f3557=_0x533cf2;}}else {_0x3f3557=_0x1f4e8e;}if(!_0x3f3557){_0x3f3557=0x0;}return _0x3f3557;};function _0x4a34e4(_0x523717,_0x4cbc29,_0x25557f,_0x17a741,_0x1e7e74){return {'header':'Range','content':'bytes='+_0x523717['getAttribute']('mediaRange')['toString'](),'index':_0x4cbc29,'countPosition':_0x25557f,'firstPass':_0x17a741,'firstPassCompleteIndex':_0x1e7e74};}function _0x45f0fa(_0x42bf5b,_0x12fdd9,_0x3d894d,_0x38bd6a=![]){var _0x1c9be3=[];var _0x364621=0x0;if(_0x38bd6a){for(var _0x236818=0x0;_0x236818<_0x42bf5b['length'];_0x236818++){_0x1c9be3['push'](_0x4a34e4(_0x42bf5b[_0x236818],_0x236818,![]));}return _0x1c9be3;}const _0x228433=parseInt(Math['round'](_0x42bf5b['length']/_0x12fdd9),0xa);const _0x493ee5=Math['ceil'](_0x42bf5b['length']/_0x12fdd9);var _0x457d47=_0x12fdd9+_0x493ee5;for(var _0x236818=0x0;_0x236818<_0x457d47;_0x236818++){if(_0x42bf5b[_0x236818*_0x228433]){_0x1c9be3['push'](_0x4a34e4(_0x42bf5b[_0x236818*_0x228433],_0x236818*_0x228433,_0x364621++,!![],_0x457d47));_0x3d894d['push'](_0x236818*_0x228433);}}_0x457d47=_0x1c9be3['length'];for(var _0x236818=0x0;_0x236818<_0x1c9be3['length'];_0x236818++){_0x1c9be3[_0x236818]['firstPassCompleteIndex']=_0x457d47;}var _0x7af6ec=_0x228433;_0x364621=0x0;for(var _0x4fcde5=Math['floor'](_0x228433/0x2);_0x4fcde5>0x1;_0x4fcde5=Math['floor'](_0x4fcde5/0x2)){for(var _0x236818=0x0;_0x236818<_0x42bf5b['length']/_0x7af6ec;_0x236818++){if(_0x42bf5b[_0x4fcde5+_0x236818*_0x7af6ec]){_0x1c9be3['push'](_0x4a34e4(_0x42bf5b[_0x4fcde5+_0x236818*_0x7af6ec],_0x4fcde5+_0x236818*_0x7af6ec,_0x364621++,![],_0x457d47));}}_0x7af6ec=Math['floor'](_0x4fcde5/0x2);}var _0x29f5c6=[];for(var _0x236818=0x0;_0x236818<_0x1c9be3['length'];_0x236818++){_0x29f5c6[_0x1c9be3[_0x236818]['index']]=_0x1c9be3[_0x236818]['index'];}for(var _0x236818=0x0;_0x236818<_0x42bf5b['length'];_0x236818++){if(!_0x29f5c6[_0x236818]){_0x1c9be3['push'](_0x4a34e4(_0x42bf5b[_0x236818],_0x236818,_0x364621++,![],_0x457d47));}}function _0x5606ab(_0x3441ce,_0x157e5a){return _0x3441ce['filter'](function(_0x396f24,_0x13c558,_0x517f7e){return _0x517f7e['map'](function(_0x4b9301){return _0x4b9301[_0x157e5a];})['indexOf'](_0x396f24[_0x157e5a])===_0x13c558;});}var _0x23af9d=_0x5606ab(_0x1c9be3,'index');_0x1c9be3=[];_0x29f5c6=[];return _0x23af9d;}function _0x122c6a(_0x1c6deb){var _0x466b45=new Uint8Array([(_0x1c6deb&0xff000000)>>0x18,(_0x1c6deb&0xff0000)>>0x10,(_0x1c6deb&0xff00)>>0x8,_0x1c6deb&0xff]);return _0x466b45;}const _0x15fc53=function(_0x44677b,_0x3b03ce,_0x57ede5){_0x57ede5=_0x57ede5||0x0;var _0x2acdf8=_0x44677b['indexOf'](_0x3b03ce[0x0],_0x57ede5);if(_0x3b03ce['length']===0x1||_0x2acdf8===-0x1){return _0x2acdf8;}for(var _0x2217b3=_0x2acdf8,_0x38e0ff=0x0;_0x38e0ff<_0x3b03ce['length']&&_0x2217b3<_0x44677b['length'];_0x2217b3++,_0x38e0ff++){if(_0x44677b[_0x2217b3]!==_0x3b03ce[_0x38e0ff]){return _0x15fc53(_0x5eba13,_0x3b03ce,_0x2acdf8+0x1);}}return _0x2217b3===_0x2acdf8+_0x3b03ce['length']?_0x2acdf8:-0x1;};}
+
+	/**
+	 * PanoMoments Panorama
+	 * @param {object} identifier PanoMoment identifier
+	 */
+	function PanoMoment ( identifier ) {
+
+	    Panorama.call( this );
+
+	    // PanoMoments
+	    this.identifier = identifier;
+	    this.PanoMoments = null;
+	    this.momentData = null;
+	    this.status = EVENTS.PANOMOMENT.NONE;
+
+	    // Panolens
+	    this.container = null;
+	    this.camera = null;
+	    this.controls = null;
+	    this.defaults = {};
+
+	    // Setup Dispatcher
+	    this.setupDispatcher();
+
+	    // Event Bindings
+	    this.handlerUpdateCallback = () => this.updateCallback();
+	    this.handlerWindowResize = () => this.onWindowResize();
+
+	    // Event Listeners
+	    this.addEventListener( EVENTS.CONTAINER, ( { container } ) => this.onPanolensContainer( container ) );
+	    this.addEventListener( EVENTS.CAMERA, ( { camera } ) => this.onPanolensCamera( camera ) );
+	    this.addEventListener( EVENTS.CONTROLS, ( { controls } ) => this.onPanolensControls( controls ) );
+	    this.addEventListener( EVENTS.FADE_IN, () => this.enter() );
+	    this.addEventListener( EVENTS.LEAVE_COMPLETE, () => this.leave() );
+	    this.addEventListener( EVENTS.LOAD_START, () => this.disableControl() );
+	    this.addEventListener( EVENTS.PANOMOMENT.READY, () => this.enableControl() );
+
+	}
+
+	PanoMoment.prototype = Object.assign( Object.create( Panorama.prototype ), {
+
+	    constructor: PanoMoment,
+
+	    /**
+	     * When window is resized
+	     * @virtual
+	     */
+	    onWindowResize: function() {},
+
+	    /**
+	     * When container reference dispatched
+	     * @param {HTMLElement} container 
+	     */
+	    onPanolensContainer: function( container ) {
+
+	        this.container = container;
+
+	    },
+
+	    /**
+	     * When camera reference dispatched
+	     * @param {THREE.Camera} camera 
+	     */
+	    onPanolensCamera: function( camera ) {
+
+	        Object.assign( this.defaults, { fov: camera.fov } );
+
+	        this.camera = camera;
+
+	    },
+
+	    /**
+	     * When control references dispatched
+	     * @param {THREE.Object[]} controls 
+	     */
+	    onPanolensControls: function( controls ) {
+
+	        const [ { minPolarAngle, maxPolarAngle } ] = controls;
+
+	        Object.assign( this.defaults, { minPolarAngle, maxPolarAngle } );
+	        
+	        this.controls = controls;
+
+	    },
+
+	    /**
+	     * Intercept default dispatcher
+	     */
+	    setupDispatcher: function() {
+
+	        const dispatch = this.dispatchEvent.bind( this );
+	        const values = Object.values( EVENTS.PANOMOMENT );
+	  
+	        this.dispatchEvent = function( event ) {
+	 
+	            if ( values.includes( event.type ) ) {
+
+	                this.status = event.type;
+
+	            }
+
+	            dispatch( event );
+
+	        };
+
+	    },
+
+	    /**
+	     * Enable Control
+	     */
+	    enableControl: function() {
+	        
+	        if ( !this.active ) return;
+
+	        const [ OrbitControls ] = this.controls;
+
+	        OrbitControls.enabled = true;
+
+	    },
+
+	    /**
+	     * Disable Control
+	     */
+	    disableControl: function() {
+
+	        if ( !this.active ) return;
+
+	        const [ OrbitControls ] = this.controls;
+
+	        OrbitControls.enabled = false;
+
+	    },
+
+	    /**
+	     * Load Pano Moment Panorama
+	     */
+	    load: function () {
+
+	        Panorama.prototype.load.call( this, false );
+	        
+	        const { identifier, renderCallback, readyCallback, loadedCallback } = this;
+
+	        this.PanoMoments = new PanoMoments(
+	            identifier, 
+	            renderCallback.bind( this ), 
+	            readyCallback.bind( this ), 
+	            loadedCallback.bind( this )
+	        );
+
+	    },
+
+	    /**
+	     * Update intial heading based on moment data
+	     */
+	    updateHeading: function() {
+
+	        if ( !this.momentData ) return;
+
+	        const { momentData: { start_frame } } = this;
+	        const angle = ( start_frame + 180 ) / 180 * Math.PI;
+
+	        // reset center to initial lookat
+	        this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'setControlCenter' } );
+
+	        // rotate to initial frame center
+	        this.dispatchEvent( { type: EVENTS.VIEWER_HANDLER, method: 'rotateControlLeft', data: angle } );
+
+	    },
+
+	    /**
+	     * Get Camera Yaw for PanoMoment texture
+	     */
+	    getYaw: function() {
+
+	        const { camera: { rotation: { y } }, momentData: { clockwise } } = this;
+	        
+	        const rotation = THREE.Math.radToDeg( y ) + 180;
+	        const yaw = ( ( clockwise ? 90 : -90 ) - rotation ) % 360;
+
+	        return yaw;
+	        
+	    },
+
+	    /**
+	     * On Panolens update callback
+	     */
+	    updateCallback: function() {
+
+	        if ( !this.momentData || this.status === EVENTS.PANOMOMENT.NONE ) return;
+
+	        this.setPanoMomentYaw( this.getYaw() );        
+
+	    },
+
+	    /**
+	     * On Pano Moment Render Callback
+	     */
+	    renderCallback: function (video, momentData) {
+
+	        if ( !this.momentData ) {
+
+	            this.momentData = momentData;
+
+	            const texture = new THREE.Texture( video );
+	            texture.minFilter = texture.magFilter = THREE.LinearFilter;
+	            texture.generateMipmaps = false;
+	            texture.format = THREE.RGBFormat;
+	            this.updateTexture( texture ); 
+
+	            this.dispatchEvent( { type: EVENTS.PANOMOMENT.FIRST_FRAME_DECODED } );
+
+	            Panorama.prototype.onLoad.call( this );
+
+	        }
+	    },
+
+	    /**
+	     * On Pano Moment Ready Callback
+	     */
+	    readyCallback: function () {
+
+	        this.dispatchEvent( { type: EVENTS.PANOMOMENT.READY } );
+
+	    },
+
+	    /**
+	     * On Pano Moment Loaded Callback
+	     */
+	    loadedCallback: function () {
+
+	        this.dispatchEvent( { type: EVENTS.PANOMOMENT.COMPLETED } );
+
+	    },
+
+	    /**
+	     * Set PanoMoment yaw
+	     * @memberOf PanoMomentPanorama
+	     * @param {number} yaw - yaw value from 0 to 360 in degree
+	     */
+	    setPanoMomentYaw: function (yaw) {
+
+	        const { status, momentData, PanoMoments: { render, frameCount, textureReady } } = this;
+
+	        // textureReady() must be called before render() 
+	        if (textureReady()) this.getTexture().needsUpdate = true;
+
+	        if( (status !== EVENTS.PANOMOMENT.READY && status !== EVENTS.PANOMOMENT.COMPLETED) || !momentData ) return;
+
+	        render((yaw / 360) * frameCount);
+
+	    },
+
+	    /**
+	     * Enter Panorama
+	     */
+	    enter: function() {
+
+	        this.updateHeading();
+
+	        this.addEventListener( EVENTS.WIDNOW_RESIZE, this.handlerWindowResize );
+
+	        // Add update callback
+	        this.dispatchEvent( { 
+	            type: EVENTS.VIEWER_HANDLER, 
+	            method: 'addUpdateCallback', 
+	            data: this.handlerUpdateCallback
+	        });
+
+	    },
+
+	    /**
+	     * Leave Panorama
+	     */
+	    leave: function() {
+
+	        const { camera, controls: [ OrbitControls ], defaults: { minPolarAngle, maxPolarAngle, fov } } = this;
+
+	        Object.assign( OrbitControls, { minPolarAngle, maxPolarAngle } );
+
+	        camera.fov = fov;
+	        camera.updateProjectionMatrix();
+
+	        this.removeEventListener( EVENTS.WIDNOW_RESIZE, this.handlerWindowResize );
+
+	        // Remove update callback
+	        this.dispatchEvent( { 
+	            type: EVENTS.VIEWER_HANDLER, 
+	            method: 'removeUpdateCallback', 
+	            data: this.handlerUpdateCallback
+	        });
+
+	    },
+
+	    /**
+	     * Dispose Panorama
+	     */
+	    dispose: function() {
+
+	        this.leave();
+
+	        this.PanoMoments.dispose();
+	        this.PanoMoments = null;
+	        this.momentData = null;
+
+	        this.container = null;
+	        this.camera = null;
+	        this.controls = null;
+	        this.defaults = null;
+
+	        Panorama.prototype.dispose.call( this );
+
+	    }
+
+	} );
+
+	/**
+	 * PanoMoment Panorama
+	 * @param {object} identifier PanoMoment identifier
+	 */
+	function PanoMomentPanorama ( identifier ) {
+
+	    PanoMoment.call( this, identifier );
+
+	    // Event Bindings
+	    this.viewerResetControlLimits = () => this.resetControlLimits( false );
+
+	}
+
+	PanoMomentPanorama.prototype = Object.assign( Object.create( PanoMoment.prototype ), {
+
+	    constructor: PanoMomentPanorama,
+
+	    /**
+	     * When window is resized
+	     */
+	    onWindowResize: function() {
+
+	        this.resetControlLimits( false );
+
+	    },
+
+	    /**
+	     * Attch UI Event Listener to Container
+	     * @param {boolean} attach 
+	     */
+	    attachFOVListener: function( attach = true ) {
+
+	        const [ OrbitControls ] = this.controls;
+
+	        if ( attach ) {
+
+	            OrbitControls.addEventListener( 'fov', this.viewerResetControlLimits );
+
+	        } else {
+
+	            OrbitControls.removeEventListener( 'fov', this.viewerResetControlLimits );
+
+	        }
+	        
+	    },
+
+	    /**
+	     * Update intial heading with texture offset
+	     */
+	    updateHeading: function() {
+
+	        if ( !this.momentData ) return;
+
+	        const { momentData: { max_horizontal_fov } } = this;
+
+	        this.material.uniforms.offset.value.x = ( max_horizontal_fov / 360 + .25 ) % 1;
+
+	        // control update
+	        this.resetControlLimits( false );
+
+	        PanoMoment.prototype.updateHeading.call( this );
+
+	    },
+
+	    /**
+	     * Reset Polar Angle Limit by momentData or default
+	     * @param {boolean} reset 
+	     */
+	    resetAzimuthAngleLimits: function( reset = false ) {
+
+	        const { 
+	            controls: [ OrbitControls ], 
+	            momentData: { contains_parallax, min_vertical_fov }, 
+	            defaults: { minPolarAngle, maxPolarAngle }, 
+	            camera 
+	        } = this;
+
+	        if ( !contains_parallax && !reset ) return;
+
+	        const delta = THREE.Math.degToRad( ( 0.95 * min_vertical_fov - camera.fov ) / 2 );
+	        const angles = {
+	            minPolarAngle: Math.PI / 2 - delta,
+	            maxPolarAngle: Math.PI / 2 + delta
+	        };
+
+	        Object.assign( OrbitControls, reset ? { minPolarAngle, maxPolarAngle } : angles );
+
+	    },
+
+	    /**
+	     * Calculate FOV limit
+	     * @param {number} fov 
+	     * @param {boolean} horizontal 
+	     */
+	    calculateFOV: function( fov, horizontal ) {
+
+	        const { camera: { aspect } } = this;
+	        const factor = horizontal ? aspect : ( 1 / aspect );
+
+	        return 2 * Math.atan( Math.tan( fov * Math.PI / 360 ) * factor ) / Math.PI * 180;
+
+	    },
+
+	    /**
+	     * Set FOV Limit by momentData or default
+	     * @param {boolean} reset 
+	     */
+	    resetFOVLimits: function ( reset = false ) {
+
+	        const { momentData, camera, controls: [ OrbitControls ], defaults: { fov } } = this;
+	        const fovH = this.calculateFOV( camera.fov, true ) ;
+
+	        if ( fovH > ( momentData.min_horizontal_fov * .95 ) ) {
+
+	            camera.fov = this.calculateFOV( momentData.min_horizontal_fov * .95, false );
+	        
+	        } else if ( fovH < OrbitControls.minFov ) {
+
+	            camera.fov = this.calculateFOV( OrbitControls.minFov, false );
+
+	        }
+
+	        camera.fov = reset ? fov : camera.fov;
+	        camera.updateProjectionMatrix();
+
+	    },
+
+	    /**
+	     * Reset Polar Angle and FOV Limits
+	     * @param {boolean} reset
+	     */
+	    resetControlLimits: function( reset = false ) {
+
+	        if ( !this.momentData ) return;
+
+	        this.resetFOVLimits( reset );
+	        this.resetAzimuthAngleLimits( reset );
+
+	    },
+
+	    /**
+	     * Enter Panorama
+	     */
+	    enter: function() {
+
+	        this.attachFOVListener( true );
+	        this.resetControlLimits( false );
+
+	        PanoMoment.prototype.enter.call( this );
+
+	    },
+
+	    /**
+	     * Leave Panorama
+	     */
+	    leave: function() {
+
+	        this.attachFOVListener( false );
+	        this.resetControlLimits( true );
+
+	        PanoMoment.prototype.leave.call( this );
+
+	    }
+
+	} );
+
+	/**
+	 * Equirectangular shader
+	 * based on three.js equirect shader
+	 * @author pchen66
+	 */
+
+	/**
+	 * @description Background Shader
+	 * @module BackgroundShader
+	 * @property {object} uniforms
+	 * @property {THREE.Texture} uniforms.texture diffuse map
+	 * @property {number} uniforms.opacity image opacity
+	 * @property {string} vertexShader vertex shader
+	 * @property {string} fragmentShader fragment shader
+	 */
+	const BackgroundShader = {
+
+	    uniforms: {
+
+	        'texture': { value: new THREE.Texture() },
+	        'repeat': { value: new THREE.Vector2( 1.0, 1.0 ) },
+	        'offset': { value: new THREE.Vector2( 0.0, 0.0 ) },
+	        'opacity': { value: 1.0 }
+
+	    },
+
+	    vertexShader: `
+        varying vec2 vUv;
+        #include <common>
+        
+        void main() {
+        
+            vUv = uv;
+            gl_Position = vec4( position, 1.0 );
+            #include <begin_vertex>
+            #include <project_vertex>
+        
+        }
+    `,
+
+	    fragmentShader: `
+        uniform sampler2D texture;
+        uniform vec2 repeat;
+        uniform vec2 offset;
+        uniform float opacity;
+        varying vec2 vUv;
+        
+        void main() {
+
+            vec2 sampleUV = vUv;
+            sampleUV = sampleUV * repeat + offset;
+        
+            gl_FragColor = texture2D( texture, sampleUV );
+            gl_FragColor.a *= opacity;
+        
+        }
+    `
+
+	};
+
+	function PanoMomentRegular ( identifier ) {
+
+	    PanoMoment.call( this, identifier );
+
+	    this.scale2D = new THREE.Vector2( 1, 1 );
+
+	}
+
+	PanoMomentRegular.prototype = Object.assign( Object.create( PanoMoment.prototype ), {
+
+	    constructor: PanoMomentRegular,
+
+	    /**
+	     * When window is resized
+	     */
+	    onWindowResize: function() {
+
+	        this.update2DGeometryScale( false );
+
+	    },
+
+	    /**
+	     * Create Plane Geometry for Regular PanoMoment
+	     */
+	    createGeometry: function () {
+
+	        return new THREE.PlaneBufferGeometry( 1, 1 );
+	        
+	    },
+
+	    /**
+	     * Create Background Shader Material for Regular PanoMoment
+	     */
+	    createMaterial: function ( repeat = new THREE.Vector2( 1, 1 ), offset = new THREE.Vector2( 0, 0 ) ) {
+
+	        const { fragmentShader, vertexShader } = BackgroundShader;
+	        const uniforms = THREE.UniformsUtils.clone( BackgroundShader.uniforms );
+	        
+	        uniforms.repeat.value.copy( repeat );
+	        uniforms.offset.value.copy( offset );
+	        uniforms.opacity.value = 0.0;
+
+	        const material = new THREE.ShaderMaterial( {
+
+	            fragmentShader,
+	            vertexShader,
+	            uniforms,
+	            transparent: true
+	    
+	        } );
+
+	        return material;
+	    },
+
+	    /**
+	     * Update 2D Geometry Scale
+	     * @param [reset=false] whether to reset scale
+	     */
+	    update2DGeometryScale: function ( reset = false ) {
+
+	        if ( !this.momentData ) return;
+
+	        // reset geometric scale
+	        this.geometry.scale( 1 / this.scale2D.x, 1 / this.scale2D.y, 1 );
+
+	        if ( reset ) {
+
+	            this.scale2D.set( 1, 1 );
+	            return;
+
+	        }
+
+	        const { momentData: { aspect_ratio } } = this;
+
+	        const { fov, aspect } = this.camera;
+	        const scale = 2 * Math.tan( fov * Math.PI / 360 ) * Math.min( aspect_ratio, aspect );
+	 
+	        // update geometric scale
+	        this.scale2D.set( scale, scale / aspect_ratio );
+	        this.geometry.scale( this.scale2D.x, this.scale2D.y, 1 );
+
+	    },
+
+	    /**
+	     * Enter Panorama
+	     */
+	    enter: function() {
+
+	        this.position.set( 0, 0, -1 );
+	        this._parent = this.parent;
+	        this.camera.add( this );
+
+	        this.update2DGeometryScale();
+
+	        PanoMoment.prototype.enter.call( this );
+
+	    },
+
+	    /**
+	     * Enter Panorama
+	     */
+	    leave: function() {
+
+	        this.position.set( 0, 0, 0 );
+	        this._parent.add( this );
+	        delete this._parent;
+
+	        PanoMoment.prototype.leave.call( this );
 
 	    }
 
@@ -6683,7 +7420,7 @@
 
 	    // Set to true to disable this control
 	    this.noPan = true;
-	    this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
+	    this.keyPanSpeed = 7.0; // pixels moved per arrow key push
 
 	    // Set to true to automatically rotate around the target
 	    this.autoRotate = false;
@@ -6696,14 +7433,21 @@
 	    this.minPolarAngle = 0; // radians
 	    this.maxPolarAngle = Math.PI; // radians
 
-	    // Momentum
-	  	this.momentumDampingFactor = 0.90;
-	  	this.momentumScalingFactor = -0.005;
-	  	this.momentumKeydownFactor = 20;
+	    // Coord
+	    this.spherical = new THREE.Spherical();
 
-	  	// Fov
-	  	this.minFov = 30;
-	  	this.maxFov = 120;
+	    // Momentum
+	    this.momentumKeydownFactor = .05;
+	    this.momentum = true;
+	    this.momentumFactor = 7.5;
+	    this.dampingFactor = 0.9;
+
+	    this.speedLimit = Number.MAX_VALUE;
+	    this.enableDamping = true;
+
+	    // Fov
+	    this.minFov = 30;
+	    this.maxFov = 120;
 
 	    /*
 	     * How far you can orbit horizontally, upper and lower limits.
@@ -6729,7 +7473,6 @@
 	    const scope = this;
 
 	    const EPS = 10e-8;
-	    const MEPS = 10e-5;
 
 	    const rotateStart = new THREE.Vector2();
 	    const rotateEnd = new THREE.Vector2();
@@ -6756,12 +7499,6 @@
 	    const lastPosition = new THREE.Vector3();
 	    const lastQuaternion = new THREE.Quaternion();
 
-	    let momentumLeft = 0, momentumUp = 0;
-	    let eventPrevious;
-	    let momentumOn = false;
-
-	    let keyUp, keyBottom, keyLeft, keyRight;
-
 	    const STATE = { NONE: -1, ROTATE: 0, DOLLY: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_DOLLY: 4, TOUCH_PAN: 5 };
 
 	    let state = STATE.NONE;
@@ -6782,6 +7519,7 @@
 	    const changeEvent = { type: 'change' };
 	    const startEvent = { type: 'start' };
 	    const endEvent = { type: 'end' };
+	    const fovEvent = { type: 'fov' };
 
 	    this.setLastQuaternion = function ( quaternion ) {
 	        lastQuaternion.copy( quaternion );
@@ -6800,8 +7538,8 @@
 
 	        }
 
+	        angle = this.momentum && !this.autoRotate ? angle /= this.momentumFactor : angle; 
 	        thetaDelta -= angle;
-
 
 	    };
 
@@ -6813,7 +7551,26 @@
 
 	        }
 
+	        angle = this.momentum && !this.autoRotate ? angle /= this.momentumFactor : angle; 
 	        phiDelta -= angle;
+
+	    };
+
+	    this.rotateLeftStatic = function ( angle ) {
+
+	        this.enableDamping = false;
+	        thetaDelta -= angle;
+	        this.update();
+	        this.enableDamping = true;
+
+	    };
+
+	    this.rotateUpStatic = function ( angle ) {
+
+	        this.enableDamping = false;
+	        phiDelta -= angle;
+	        this.update();
+	        this.enableDamping = true;
 
 	    };
 
@@ -6877,24 +7634,6 @@
 	            console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
 
 	        }
-
-	    };
-
-	    this.momentum = function(){
-			
-	        if ( !momentumOn ) return;
-
-	        if ( Math.abs( momentumLeft ) < MEPS && Math.abs( momentumUp ) < MEPS ) { 
-
-	            momentumOn = false; 
-	            return;
-	        }
-
-	        momentumUp   *= this.momentumDampingFactor;
-	        momentumLeft *= this.momentumDampingFactor;
-
-	        thetaDelta -= this.momentumScalingFactor * momentumLeft;
-	        phiDelta   -= this.momentumScalingFactor * momentumUp;
 
 	    };
 
@@ -6973,8 +7712,12 @@
 
 	        }
 
-	        this.momentum();
-
+	        // speed limit
+	        if (this.enableDamping === true && this.speedLimit !== Number.MAX_VALUE) {
+	            thetaDelta = THREE.Math.clamp(thetaDelta, -this.speedLimit, this.speedLimit);
+	            phiDelta = THREE.Math.clamp(phiDelta, -this.speedLimit, this.speedLimit);
+	        }
+	        
 	        theta += thetaDelta;
 	        phi += phiDelta;
 
@@ -6994,7 +7737,7 @@
 
 	        // move target to panned location
 	        this.target.add( pan );
-
+	        
 	        offset.x = radius * Math.sin( phi ) * Math.sin( theta );
 	        offset.y = radius * Math.cos( phi );
 	        offset.z = radius * Math.sin( phi ) * Math.cos( theta );
@@ -7006,8 +7749,21 @@
 
 	        this.object.lookAt( this.target );
 
-	        thetaDelta = 0;
-	        phiDelta = 0;
+	        // store spherical data
+	        scope.spherical.set( radius, phi, theta );
+
+	        if ( !this.autoRotate && this.enableDamping === true && ((this.momentum && (state === STATE.ROTATE || state === STATE.TOUCH_ROTATE)) || state === STATE.NONE ) ) {
+
+	            thetaDelta *= this.dampingFactor;
+	            phiDelta *= this.dampingFactor;
+
+	        } else {
+
+	            thetaDelta = 0;
+	            phiDelta = 0;
+
+	        }
+
 	        scale = 1;
 	        pan.set( 0, 0, 0 );
 
@@ -7017,7 +7773,7 @@
 	         * using small-angle approximation cos(x/2) = 1 - x^2 / 8
 	         */
 	        if ( lastPosition.distanceToSquared( this.object.position ) > EPS
-			    || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
+	            || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
 
 	            if ( ignoreUpdate !== true ) { this.dispatchEvent( changeEvent ); }
 
@@ -7027,7 +7783,6 @@
 	        }
 
 	    };
-
 
 	    this.reset = function () {
 
@@ -7070,10 +7825,6 @@
 
 	    function onMouseDown( event ) {
 
-	        momentumOn = false;
-
-	   		momentumLeft = momentumUp = 0;
-
 	        if ( scope.enabled === false ) return;
 	        event.preventDefault();
 
@@ -7106,8 +7857,6 @@
 	            scope.dispatchEvent( startEvent );
 	        }
 
-	        scope.update();
-
 	    }
 
 	    function onMouseMove( event ) {
@@ -7125,20 +7874,19 @@
 	            rotateEnd.set( event.clientX, event.clientY );
 	            rotateDelta.subVectors( rotateEnd, rotateStart );
 
+	            if (rotateStart.x == 0 && rotateStart.y == 0) {
+	                rotateStart.set(rotateEnd.x, rotateEnd.y);
+	                rotateDelta.subVectors( rotateEnd, rotateStart );
+	                return;
+	            }
+
 	            // rotating across whole screen goes 360 degrees around
-	            scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
+	            scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight * scope.rotateSpeed );
 
 	            // rotating up and down along whole screen attempts to go 360, but limited to 180
 	            scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
 
 	            rotateStart.copy( rotateEnd );
-
-	            if( eventPrevious ){
-	                momentumLeft = event.clientX - eventPrevious.clientX;
-	                momentumUp = event.clientY - eventPrevious.clientY;
-	            }
-
-	            eventPrevious = event;
 
 	        } else if ( state === STATE.DOLLY ) {
 
@@ -7172,15 +7920,9 @@
 
 	        }
 
-	        if ( state !== STATE.NONE ) scope.update();
-
 	    }
 
 	    function onMouseUp( /* event */ ) {
-
-	        momentumOn = true;
-
-	        eventPrevious = undefined;
 
 	        if ( scope.enabled === false ) return;
 
@@ -7228,10 +7970,10 @@
 
 	        }
 
-	        scope.update();
 	        scope.dispatchEvent( changeEvent );
 	        scope.dispatchEvent( startEvent );
 	        scope.dispatchEvent( endEvent );
+	        scope.dispatchEvent( fovEvent );
 
 	    }
 
@@ -7239,21 +7981,17 @@
 
 	        switch ( event.keyCode ) {
 
-	        case scope.keys.UP:
-	            keyUp = false;
-	            break;
+	            case scope.keys.UP:
+	                break;
 
-	        case scope.keys.BOTTOM:
-	            keyBottom = false;
-	            break;
+	            case scope.keys.BOTTOM:
+	                break;
 
-	        case scope.keys.LEFT:
-	            keyLeft = false;
-	            break;
+	            case scope.keys.LEFT:
+	                break;
 
-	        case scope.keys.RIGHT:
-	            keyRight = false;
-	            break;
+	            case scope.keys.RIGHT:
+	                break;
 
 	        }
 
@@ -7261,36 +7999,27 @@
 
 	    function onKeyDown( event ) {
 
-	        if ( scope.enabled === false || scope.noKeys === true || scope.noRotate === true ) return;
+	        if ( scope.enabled === false || scope.noKeys === true || scope.noRotate === true || scope.autoRotate) return;
+
+	        const updatedMomentumKeydownFactor = scope.momentum && !scope.autoRotate ? scope.momentumKeydownFactor * scope.momentumFactor : scope.momentumKeydownFactor; // Handle difference in necessary rotateSpeed constants.
 
 	        switch ( event.keyCode ) {
 
-	        case scope.keys.UP:
-	            keyUp = true;
-	            break;
+	            case scope.keys.UP:
+	                scope.rotateUp( scope.rotateSpeed * updatedMomentumKeydownFactor );
+	                break;
 
-	        case scope.keys.BOTTOM:
-	            keyBottom = true;
-	            break;
+	            case scope.keys.BOTTOM:
+	                scope.rotateUp( - scope.rotateSpeed * updatedMomentumKeydownFactor );
+	                break;
 
-	        case scope.keys.LEFT:
-	            keyLeft = true;
-	            break;
+	            case scope.keys.LEFT:
+	                scope.rotateLeft( scope.rotateSpeed * updatedMomentumKeydownFactor );
+	                break;
 
-	        case scope.keys.RIGHT:
-	            keyRight = true;
-	            break;
-
-	        }
-
-	        if (keyUp || keyBottom || keyLeft || keyRight) {
-
-	            momentumOn = true;
-
-	            if (keyUp) momentumUp = - scope.rotateSpeed * scope.momentumKeydownFactor;
-	            if (keyBottom) momentumUp = scope.rotateSpeed * scope.momentumKeydownFactor;
-	            if (keyLeft) momentumLeft = - scope.rotateSpeed * scope.momentumKeydownFactor;
-	            if (keyRight) momentumLeft = scope.rotateSpeed * scope.momentumKeydownFactor;
+	            case scope.keys.RIGHT:
+	                scope.rotateLeft( - scope.rotateSpeed * updatedMomentumKeydownFactor );
+	                break;
 
 	        }
 
@@ -7298,49 +8027,46 @@
 
 	    function touchstart( event ) {
 
-	        momentumOn = false;
-
-	        momentumLeft = momentumUp = 0;
 
 	        if ( scope.enabled === false ) return;
 
 	        switch ( event.touches.length ) {
 
-	        case 1:	// one-fingered touch: rotate
+	            case 1: // one-fingered touch: rotate
 
-	            if ( scope.noRotate === true ) return;
+	                if ( scope.noRotate === true ) return;
 
-	            state = STATE.TOUCH_ROTATE;
+	                state = STATE.TOUCH_ROTATE;
 
-	            rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-	            break;
+	                rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+	                break;
 
-	        case 2:	// two-fingered touch: dolly
+	            case 2: // two-fingered touch: dolly
 
-	            if ( scope.noZoom === true ) return;
+	                if ( scope.noZoom === true ) return;
 
-	            state = STATE.TOUCH_DOLLY;
+	                state = STATE.TOUCH_DOLLY;
 
-	            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-	            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-	            const distance = Math.sqrt( dx * dx + dy * dy );
+	                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+	                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+	                const distance = Math.sqrt( dx * dx + dy * dy );
 
-	            dollyStart.set( 0, distance );
+	                dollyStart.set( 0, distance );
 
-	            break;
+	                break;
 
-	        case 3: // three-fingered touch: pan
+	            case 3: // three-fingered touch: pan
 
-	            if ( scope.noPan === true ) return;
+	                if ( scope.noPan === true ) return;
 
-	            state = STATE.TOUCH_PAN;
+	                state = STATE.TOUCH_PAN;
 
-	            panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-	            break;
+	                panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+	                break;
 
-	        default:
+	            default:
 
-	            state = STATE.NONE;
+	                state = STATE.NONE;
 
 	        }
 
@@ -7359,96 +8085,80 @@
 
 	        switch ( event.touches.length ) {
 
-	        case 1: // one-fingered touch: rotate
+	            case 1: // one-fingered touch: rotate
 
-	            if ( scope.noRotate === true ) return;
-	            if ( state !== STATE.TOUCH_ROTATE ) return;
+	                if ( scope.noRotate === true ) return;
+	                if ( state !== STATE.TOUCH_ROTATE ) return;
 
-	            rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-	            rotateDelta.subVectors( rotateEnd, rotateStart );
+	                rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+	                rotateDelta.subVectors( rotateEnd, rotateStart );
 
-	            // rotating across whole screen goes 360 degrees around
-	            scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
-	            // rotating up and down along whole screen attempts to go 360, but limited to 180
-	            scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
+	                // rotating across whole screen goes 360 degrees around
+	                scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight * scope.rotateSpeed );
+	                // rotating up and down along whole screen attempts to go 360, but limited to 180
+	                scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
 
-	            rotateStart.copy( rotateEnd );
+	                rotateStart.copy( rotateEnd );
 
-	            if( eventPrevious ){
-	                momentumLeft = event.touches[ 0 ].pageX - eventPrevious.pageX;
-	                momentumUp = event.touches[ 0 ].pageY - eventPrevious.pageY;
-	            }
+	                break;
 
-	            eventPrevious = {
-	                pageX: event.touches[ 0 ].pageX,
-	                pageY: event.touches[ 0 ].pageY,
-	            };
+	            case 2: // two-fingered touch: dolly
 
-	            scope.update();
-	            break;
+	                if ( scope.noZoom === true ) return;
+	                if ( state !== STATE.TOUCH_DOLLY ) return;
 
-	        case 2: // two-fingered touch: dolly
+	                const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+	                const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+	                const distance = Math.sqrt( dx * dx + dy * dy );
 
-	            if ( scope.noZoom === true ) return;
-	            if ( state !== STATE.TOUCH_DOLLY ) return;
+	                dollyEnd.set( 0, distance );
+	                dollyDelta.subVectors( dollyEnd, dollyStart );
 
-	            const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-	            const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-	            const distance = Math.sqrt( dx * dx + dy * dy );
+	                if ( dollyDelta.y < 0 ) {
 
-	            dollyEnd.set( 0, distance );
-	            dollyDelta.subVectors( dollyEnd, dollyStart );
+	                    scope.object.fov = ( scope.object.fov < scope.maxFov ) 
+	                        ? scope.object.fov + 1
+	                        : scope.maxFov;
+	                    scope.object.updateProjectionMatrix();
 
-	            if ( dollyDelta.y < 0 ) {
+	                } else if ( dollyDelta.y > 0 ) {
 
-	                scope.object.fov = ( scope.object.fov < scope.maxFov ) 
-	                    ? scope.object.fov + 1
-	                    : scope.maxFov;
-	                scope.object.updateProjectionMatrix();
+	                    scope.object.fov = ( scope.object.fov > scope.minFov ) 
+	                        ? scope.object.fov - 1
+	                        : scope.minFov;
+	                    scope.object.updateProjectionMatrix();
 
-	            } else if ( dollyDelta.y > 0 ) {
+	                }
 
-	                scope.object.fov = ( scope.object.fov > scope.minFov ) 
-	                    ? scope.object.fov - 1
-	                    : scope.minFov;
-	                scope.object.updateProjectionMatrix();
+	                dollyStart.copy( dollyEnd );
 
-	            }
+	                scope.dispatchEvent( changeEvent );
+	                scope.dispatchEvent( fovEvent );
+	                break;
 
-	            dollyStart.copy( dollyEnd );
+	            case 3: // three-fingered touch: pan
 
-	            scope.update();
-	            scope.dispatchEvent( changeEvent );
-	            break;
+	                if ( scope.noPan === true ) return;
+	                if ( state !== STATE.TOUCH_PAN ) return;
 
-	        case 3: // three-fingered touch: pan
+	                panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+	                panDelta.subVectors( panEnd, panStart );
 
-	            if ( scope.noPan === true ) return;
-	            if ( state !== STATE.TOUCH_PAN ) return;
+	                scope.pan( panDelta.x, panDelta.y );
 
-	            panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-	            panDelta.subVectors( panEnd, panStart );
+	                panStart.copy( panEnd );
 
-	            scope.pan( panDelta.x, panDelta.y );
+	                break;
 
-	            panStart.copy( panEnd );
+	            default:
 
-	            scope.update();
-	            break;
-
-	        default:
-
-	            state = STATE.NONE;
+	                state = STATE.NONE;
 
 	        }
 
 	    }
 
 	    function touchend( /* event */ ) {
-
-	        momentumOn = true;
-
-	        eventPrevious = undefined;
 
 	        if ( scope.enabled === false ) return;
 
@@ -7498,68 +8208,54 @@
 	 * @classdesc Device Orientation Control
 	 * @constructor
 	 * @external DeviceOrientationControls
-	 * @param {THREE.Camera} camera 
-	 * @param {HTMLElement} domElement 
+	 * @param {THREE.Object} object 
 	 */
-	function DeviceOrientationControls ( camera, domElement ) {
+	function DeviceOrientationControls ( object ) {
 
 	    const scope = this;
-	    const changeEvent = { type: 'change' };
 
-	    let rotX = 0;
-	    let tempX = 0;
-	    let tempY = 0;
-
-	    this.camera = camera;
-	    this.camera.rotation.reorder( 'YXZ' );
-	    this.domElement = ( domElement !== undefined ) ? domElement : document;
+	    this.object = object;
+	    this.object.rotation.reorder( 'YXZ' );
 
 	    this.enabled = true;
 
 	    this.deviceOrientation = null;
 	    this.screenOrientation = 0;
 
-	    this.alpha = 0;
-	    this.alphaOffsetAngle = 0;
+	    this.alphaOffset = 0; // radians
+	    this.initialOffset = null;
 
-	    const onDeviceOrientationChangeEvent = function( event ) {
+	    const onDeviceOrientationChangeEvent = function ( { alpha, beta, gamma } ) {
 
-	        scope.deviceOrientation = event;
+	        if( scope.initialOffset === null ) {
+	            scope.initialOffset = alpha;
+	        }
+
+	        alpha = alpha - scope.initialOffset;
+
+	        if(alpha < 0) alpha += 360;
+
+	        scope.deviceOrientation = { alpha, beta, gamma };
 
 	    };
 
-	    const onScreenOrientationChangeEvent = function() {
+	    const onScreenOrientationChangeEvent = function () {
 
 	        scope.screenOrientation = window.orientation || 0;
 
 	    };
 
-	    const onTouchStartEvent = function (event) {
+	    const onRegisterEvent = function() {
 
-	        event.preventDefault();
-	        event.stopPropagation();
+	        window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
+	        window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
 
-	        tempX = event.touches[ 0 ].pageX;
-	        tempY = event.touches[ 0 ].pageY;
+	    }.bind( this );
 
-	    };
-
-	    const onTouchMoveEvent = function (event) {
-
-	        event.preventDefault();
-	        event.stopPropagation();
-
-	        rotX += THREE.Math.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
-	        scope.rotateLeft( -THREE.Math.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 ) );
-
-	        tempX = event.touches[ 0 ].pageX;
-	        tempY = event.touches[ 0 ].pageY;
-
-	    };
 
 	    // The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
 
-	    const setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
+	    const setObjectQuaternion = function () {
 
 	        const zee = new THREE.Vector3( 0, 0, 1 );
 
@@ -7569,119 +8265,107 @@
 
 	        const q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
 
-	        let vectorFingerY;
-	        const fingerQY = new THREE.Quaternion();
-	        const fingerQX = new THREE.Quaternion();
+	        return function ( quaternion, alpha, beta, gamma, orient ) {
 
-	        if ( scope.screenOrientation == 0 ) {
+	            euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
 
-	            vectorFingerY = new THREE.Vector3( 1, 0, 0 );
-	            fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
+	            quaternion.setFromEuler( euler ); // orient the device
 
-	        } else if ( scope.screenOrientation == 180 ) {
+	            quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
 
-	            vectorFingerY = new THREE.Vector3( 1, 0, 0 );
-	            fingerQY.setFromAxisAngle( vectorFingerY, rotX );
+	            quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
 
-	        } else if ( scope.screenOrientation == 90 ) {
+	        };
 
-	            vectorFingerY = new THREE.Vector3( 0, 1, 0 );
-	            fingerQY.setFromAxisAngle( vectorFingerY, rotX );
+	    }();
 
-	        } else if ( scope.screenOrientation == - 90) {
-
-	            vectorFingerY = new THREE.Vector3( 0, 1, 0 );
-	            fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
-
-	        }
-
-	        q1.multiply( fingerQY );
-	        q1.multiply( fingerQX );
-
-	        euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
-
-	        quaternion.setFromEuler( euler ); // orient the device
-
-	        quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
-
-	        quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
-
-	    };
-
-	    this.connect = function() {
+	    this.connect = function () {
 
 	        onScreenOrientationChangeEvent(); // run once on load
 
-	        window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, { passive: true } );
-	        window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, { passive: true } );
-	        window.addEventListener( 'deviceorientation', this.update.bind( this ), { passive: true } );
+	        // iOS 13+
 
-	        scope.domElement.addEventListener( 'touchstart', onTouchStartEvent, { passive: false } );
-	        scope.domElement.addEventListener( 'touchmove', onTouchMoveEvent, { passive: false } );
+	        if ( window.DeviceOrientationEvent !== undefined && typeof window.DeviceOrientationEvent.requestPermission === 'function' ) {
+
+	            window.DeviceOrientationEvent.requestPermission().then( function ( response ) {
+
+	                if ( response == 'granted' ) {
+
+	                    onRegisterEvent();
+
+	                }
+
+	            } ).catch( function ( error ) {
+
+	                console.error( 'THREE.DeviceOrientationControls: Unable to use DeviceOrientation API:', error );
+
+	            } );
+
+	        } else {
+
+	            onRegisterEvent();
+
+	        }
 
 	        scope.enabled = true;
 
 	    };
 
-	    this.disconnect = function() {
+	    this.disconnect = function () {
 
 	        window.removeEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
 	        window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
-	        window.removeEventListener( 'deviceorientation', this.update.bind( this ), false );
-
-	        scope.domElement.removeEventListener( 'touchstart', onTouchStartEvent, false );
-	        scope.domElement.removeEventListener( 'touchmove', onTouchMoveEvent, false );
 
 	        scope.enabled = false;
+	        scope.deviceOrientation = null;
+	        scope.initialOffset = null;
+	        
+	    };
+
+	    this.update = function ({ theta = 0 } = { theta: 0 }) {
+
+	        if ( scope.enabled === false ) return;
+
+	        const device = scope.deviceOrientation;
+
+	        if ( device ) {
+
+	            const alpha = device.alpha ? THREE.Math.degToRad( device.alpha ) + scope.alphaOffset : 0; // Z
+	            
+	            const beta = device.beta ? THREE.Math.degToRad( device.beta ) : 0; // X'
+
+	            const gamma = device.gamma ? THREE.Math.degToRad( device.gamma ) : 0; // Y''
+
+	            const orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
+
+	            setObjectQuaternion( scope.object.quaternion, alpha + theta, beta, gamma, orient );
+
+	        }
+
 
 	    };
 
-	    this.update = function( ignoreUpdate ) {
+	    this.dispose = function () {
 
-	        if ( scope.enabled === false || !scope.deviceOrientation ) return;
-
-	        const alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
-	        const beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
-	        const gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
-	        const orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
-
-	        setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
-	        scope.alpha = alpha;
-
-	        if ( ignoreUpdate !== true ) { scope.dispatchEvent( changeEvent ); }
+	        scope.disconnect();
 
 	    };
 
-	    this.updateAlphaOffsetAngle = function( angle ) {
+	    this.getAlpha = function() {
 
-	        this.alphaOffsetAngle = angle;
+	        const { deviceOrientation: device } = scope;
 
-	    };
-
-	    this.updateRotX = function( angle ) {
-
-	        rotX = angle;
+	        return device && device.alpha ? THREE.Math.degToRad( device.alpha ) + scope.alphaOffset : 0;
 
 	    };
 
-	    this.rotateLeft = function( angle ) {
+	    this.getBeta = function() {
 
-	        this.updateAlphaOffsetAngle( this.alphaOffsetAngle - angle );
-	    };
+	        const { deviceOrientation: device } = scope;
 
-	    this.rotateUp = function( angle ) {
-
-	        this.updateRotX( rotX + angle );
+	        return device && device.beta ? THREE.Math.degToRad( device.beta ) : 0;
 
 	    };
-
-	    this.dispose = function() {
-
-	        this.disconnect();
-
-	    };
-
-	    this.connect();
 
 	}
 	DeviceOrientationControls.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype), {
@@ -7899,7 +8583,6 @@
 	 * @param {boolean} [options.horizontalView=false] - Allow only horizontal camera control
 	 * @param {number}  [options.clickTolerance=10] - Distance tolerance to tigger click / tap event
 	 * @param {number}  [options.cameraFov=60] - Camera field of view value
-	 * @param {boolean} [options.reverseDragging=false] - Reverse dragging direction
 	 * @param {boolean} [options.enableReticle=false] - Enable reticle for mouseless interaction other than VR mode
 	 * @param {number}  [options.dwellTime=1500] - Dwell time for reticle selection in ms
 	 * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
@@ -7910,6 +8593,10 @@
 	 * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
 	 * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
 	 * @param {THREE.Vector3} [options.initialLookAt=new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )] - Initial looking at vector
+	 * @param {boolean} [options.momentum=true] - Use momentum even during mouse/touch move
+	 * @param {number} [options.rotateSpeed=-1.0] - Drag Rotation Speed
+	 * @param {number} [options.dampingFactor=.9] - Damping factor
+	 * @param {number} [options.speedLimit=Number.MAX_VALUE] - Speed limit for rotation, defaults to unlimited
 	 */
 	function Viewer ( options = {} ) {
 
@@ -7933,8 +8620,11 @@
 	        autoRotate: false,
 	        autoRotateSpeed: 2.0,
 	        autoRotateActivationDuration: 5000,
-	        initialLookAt: new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER )
-
+	        initialLookAt: new THREE.Vector3( 0, 0, -Number.MAX_SAFE_INTEGER ),
+	        momentum: true,
+	        rotateSpeed: -1.0,
+	        dampingFactor: 0.9,
+	        speedLimit: Number.MAX_VALUE
 	    }, options );
 
 	    const { container, cameraFov, controlBar, controlButtons, viewIndicator, indicatorSize, enableReticle, reverseDragging, output, scene, camera, renderer } = this.options;
@@ -7966,11 +8656,15 @@
 	    this.autoRotateRequestId = null;
 	    this.outputDivElement = null;
 	    this.touchSupported = 'ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch;
-	    this.tweenLeftAnimation = new TWEEN.Tween();
-	    this.tweenUpAnimation = new TWEEN.Tween();
+	    this.tweenLeftAnimation = new Tween.Tween();
+	    this.tweenUpAnimation = new Tween.Tween();
+	    this.tweenCanvasOpacityOut = new Tween.Tween();
+	    this.tweenCanvasOpacityIn = new Tween.Tween();
 	    this.outputEnabled = false;
 	    this.viewIndicatorSize = indicatorSize;
 	    this.tempEnableReticle = enableReticle;
+
+	    this.setupTween();
 
 	    this.handlerMouseUp = this.onMouseUp.bind( this );
 	    this.handlerMouseDown = this.onMouseDown.bind( this );
@@ -8002,7 +8696,8 @@
 	    },
 
 	    setupCamera: function ( cameraFov, ratio, camera = new THREE.PerspectiveCamera( cameraFov, ratio, 1, 10000 ) ) {
-
+	        
+	        camera.position.set( 0, 0, 1 );
 	        return camera;
 
 	    },
@@ -8017,6 +8712,7 @@
 	        renderer.autoClear = false;
 	        renderer.domElement.classList.add( 'panolens-canvas' );
 	        renderer.domElement.style.display = 'block';
+	        renderer.domElement.style.transition = 'opacity 0.5s ease';
 	        container.style.backgroundColor = '#000';
 	        container.appendChild( renderer.domElement );
 
@@ -8026,15 +8722,22 @@
 
 	    setupControls: function ( camera, container ) {
 
-	        const { autoRotate, autoRotateSpeed, horizontalView } = this.options;
+	        const { autoRotate, autoRotateSpeed, momentum, rotateSpeed, dampingFactor, speedLimit, horizontalView } = this.options;
 
-	        const orbit = new OrbitControls( camera, container );
-	        orbit.id = 'orbit';
-	        orbit.index = CONTROLS.ORBIT;
-	        orbit.minDistance = 1;
-	        orbit.noPan = true;
-	        orbit.autoRotate = autoRotate;
-	        orbit.autoRotateSpeed = autoRotateSpeed;
+	        const orbit = Object.assign( new OrbitControls( camera, container ), {
+
+	            id: 'orbit',
+	            index: CONTROLS.ORBIT,
+	            noPan: true,
+	            minDistance: 1.0,
+	            autoRotate, 
+	            autoRotateSpeed, 
+	            momentum, 
+	            rotateSpeed, 
+	            dampingFactor, 
+	            speedLimit
+
+	        } );
 
 	        if ( horizontalView ) {
 
@@ -8043,10 +8746,13 @@
 
 	        }
 
-	        const orient = new DeviceOrientationControls( camera, container );
-	        orient.id = 'device-orientation';
-	        orient.index = CONTROLS.DEVICEORIENTATION;
-	        orient.enabled = false;
+	        const orient = Object.assign( new DeviceOrientationControls( camera ), {
+
+	            id: 'device-orientation',
+	            index: CONTROLS.DEVICEORIENTATION,
+	            enabled: false
+
+	        } );
 
 	        this.controls = [ orbit, orient ];
 	        this.OrbitControls = orbit;
@@ -8083,7 +8789,7 @@
 	        } else {
 
 	            const element = document.createElement( 'div' );
-	            element.classList.add( 'panolens-container' );
+	            element.classList.add( EVENTS.CONTAINER );
 	            element.style.width = '100%';
 	            element.style.height = '100%';
 	            document.body.appendChild( element );
@@ -8091,6 +8797,15 @@
 	            return element;
 	            
 	        }
+
+	    },
+
+	    setupTween: function() {
+
+	        this.tweenCanvasOpacityOut.to({}, 500).easing(Tween.Easing.Exponential.Out);
+	        this.tweenCanvasOpacityIn.to({}, 500).easing(Tween.Easing.Exponential.Out);
+
+	        this.tweenCanvasOpacityOut.chain(this.tweenCanvasOpacityIn);
 
 	    },
 
@@ -8104,6 +8819,8 @@
 	     */
 	    add: function ( object ) {
 
+	        const { container, scene, camera, controls, options: { initialLookAt } } = this;
+
 	        if ( arguments.length > 1 ) {
 
 	            for ( let i = 0; i < arguments.length; i ++ ) {
@@ -8116,36 +8833,27 @@
 
 	        }
 
-	        this.scene.add( object );
+	        scene.add( object );
 
-	        // All object added to scene has 'panolens-viewer-handler' event to handle viewer communication
+	        // All object added to scene has EVENTS.VIEWER_HANDLER event to handle viewer communication
 	        if ( object.addEventListener ) {
 
-	            object.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+	            object.addEventListener( EVENTS.VIEWER_HANDLER, this.eventHandler.bind( this ) );
 
 	        }
 
-	        // All object added to scene being passed with container
-	        if ( object instanceof Panorama && object.dispatchEvent ) {
-
-	            object.dispatchEvent( { type: 'panolens-container', container: this.container } );
-
-	        }
-
-	        if ( object instanceof CameraPanorama ) {
-
-	            object.dispatchEvent( { type: 'panolens-scene', scene: this.scene } );
-
-	        }
-
-	        // Hookup default panorama event listeners
 	        if ( object instanceof Panorama ) {
 
+	            // Dispatch viewer variables to panorama
+	            object.dispatchEvent( { type: EVENTS.CONTAINER, container } );
+	            object.dispatchEvent( { type: 'panolens-scene', scene } );
+	            object.dispatchEvent( { type: EVENTS.CAMERA, camera } );
+	            object.dispatchEvent( { type: EVENTS.CONTROLS, controls } );
+
+	            // Hookup default panorama event listeners
 	            this.addPanoramaEventListener( object );
 
 	            if ( !this.panorama ) {
-
-	                const { initialLookAt } = this.options;
 
 	                this.setPanorama( object );
 	                this.setControlCenter( initialLookAt );
@@ -8166,7 +8874,7 @@
 
 	        if ( object.removeEventListener ) {
 
-	            object.removeEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+	            object.removeEventListener( EVENTS.VIEWER_HANDLER, this.eventHandler.bind( this ) );
 
 	        }
 
@@ -8190,7 +8898,7 @@
 	        }
 
 	        const widget = new Widget( this.container );
-	        widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
+	        widget.addEventListener( EVENTS.VIEWER_HANDLER, this.eventHandler.bind( this ) );
 	        widget.addControlBar();
 	        array.forEach( buttonName => {
 
@@ -8208,26 +8916,84 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    setPanorama: function ( pano ) {
+	    setPanorama: function ( ep ) {
 
-	        const leavingPanorama = this.panorama;
+	        const lp = this.panorama;
 
-	        if ( pano instanceof Panorama && leavingPanorama !== pano ) {
+	        if ( ep instanceof Panorama && lp !== ep ) {
 
 	            // Clear exisiting infospot
 	            this.hideInfospot();
 
-	            const afterEnterComplete = function () {
+	            if( lp ) {
 
-	                if ( leavingPanorama ) { leavingPanorama.onLeave(); }
-	                pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
+	                if( ep instanceof PanoMoment ) {
+
+	                    const onLeaveComplete = () => {
+	    
+	                        lp.removeEventListener( EVENTS.LEAVE_COMPLETE, onLeaveComplete );
+	                        delete lp._onLeaveComplete;
+	                        if ( ep.active && ep.loaded ) ep.fadeIn();
+	        
+	                    };
+	    
+	                    lp._onLeaveComplete = onLeaveComplete;
+	                    lp.addEventListener( EVENTS.LEAVE_COMPLETE, onLeaveComplete );
+
+	                    if(lp instanceof PanoMoment) lp.onLeave();
+	                }
+
+	                if ( lp._onReady ) {
+
+	                    lp.removeEventListener( EVENTS.READY, lp._onReady );
+	                    delete lp._onReady;
+
+	                }
+
+	                if ( lp._onEnterFadeStart ) {
+
+	                    lp.removeEventListener( EVENTS.ENTER_FADE_START, lp._onEnterFadeStart );
+	                    delete lp._onEnterFadeStart;
+
+	                }
+
+	            }
+
+	            if( ep._onLeaveComplete ) {
+
+	                ep.removeEventListener( EVENTS.LEAVE_COMPLETE, ep._onLeaveComplete );
+	                delete ep._onLeaveComplete;
+	    
+	            }
+
+	            const onReady = () => {        
+
+	                ep.removeEventListener( EVENTS.READY, onReady );
+	                delete ep._onReady;
+
+	                if( !ep.active ) return;
+	                if( !(ep instanceof PanoMoment) || (ep instanceof PanoMoment && !(lp instanceof PanoMoment && lp._onLeaveComplete))) {
+	                    ep.fadeIn();
+	                }
 
 	            };
 
-	            pano.addEventListener( 'enter-fade-start', afterEnterComplete );
+	            const onEnterFadeStart = function () {
 
-	            // Assign and enter panorama
-	            (this.panorama = pano).onEnter();
+	                if ( lp && lp.active ) { lp.onLeave(); }
+	                ep.removeEventListener( EVENTS.ENTER_FADE_START, onEnterFadeStart );
+	                delete ep._onEnterFadeStart;
+
+	            };
+
+	            ep.addEventListener( EVENTS.READY, onReady );
+	            ep.addEventListener( EVENTS.ENTER_FADE_START, onEnterFadeStart );
+	            ep._onReady = onReady;
+	            ep._onEnterFadeStart = onEnterFadeStart;
+
+	            this.panorama = ep;
+
+	            requestAnimationFrame(() => ep.onEnter());
 				
 	        }
 
@@ -8289,23 +9055,23 @@
 
 	            switch ( controlIndex ) {
 
-	            case 0:
+	                case 0:
 
-	                item = ControlMenuItem.subMenu.children[ 1 ];
+	                    item = ControlMenuItem.subMenu.children[ 1 ];
 
-	                break;
+	                    break;
 
-	            case 1:
+	                case 1:
 
-	                item = ControlMenuItem.subMenu.children[ 2 ];
+	                    item = ControlMenuItem.subMenu.children[ 2 ];
 
-	                break;
+	                    break;
 						
-	            default:
+	                default:
 
-	                item = ControlMenuItem.subMenu.children[ 1 ];
+	                    item = ControlMenuItem.subMenu.children[ 1 ];
 
-	                break;	
+	                    break;	
 
 	            }
 
@@ -8318,23 +9084,23 @@
 
 	            switch( mode ) {
 
-	            case MODES.CARDBOARD:
+	                case MODES.CARDBOARD:
 
-	                item = ModeMenuItem.subMenu.children[ 2 ];
+	                    item = ModeMenuItem.subMenu.children[ 2 ];
 
-	                break;
+	                    break;
 
-	            case MODES.STEREO:
+	                case MODES.STEREO:
 
-	                item = ModeMenuItem.subMenu.children[ 3 ];
+	                    item = ModeMenuItem.subMenu.children[ 3 ];
 						
-	                break;
+	                    break;
 
-	            default:
+	                default:
 
-	                item = ModeMenuItem.subMenu.children[ 1 ];
+	                    item = ModeMenuItem.subMenu.children[ 1 ];
 
-	                break;
+	                    break;
 	            }
 
 	            ModeMenuItem.subMenu.setActiveItem( item );
@@ -8360,26 +9126,26 @@
 
 	        switch( mode ) {
 
-	        case MODES.CARDBOARD:
+	            case MODES.CARDBOARD:
 
-	            this.effect = this.CardboardEffect;
-	            this.enableReticleControl();
+	                this.effect = this.CardboardEffect;
+	                this.enableReticleControl();
 
-	            break;
+	                break;
 
-	        case MODES.STEREO:
+	            case MODES.STEREO:
 
-	            this.effect = this.StereoEffect;
-	            this.enableReticleControl();
+	                this.effect = this.StereoEffect;
+	                this.enableReticleControl();
 					
-	            break;
+	                break;
 
-	        default:
+	            default:
 
-	            this.effect = null;
-	            this.disableReticleControl();
+	                this.effect = null;
+	                this.disableReticleControl();
 
-	            break;
+	                break;
 
 	        }
 
@@ -8405,7 +9171,7 @@
 	         * @event Viewer#mode-change
 	         * @property {MODES} mode - Current display mode
 	         */
-	        this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
+	        this.dispatchEvent( { type: EVENTS.MODE_CHANGE, mode: this.mode } );
 
 	    },
 
@@ -8440,7 +9206,7 @@
 	         * @event Viewer#mode-change
 	         * @property {MODES} mode - Current display mode
 	         */
-	        this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
+	        this.dispatchEvent( { type: EVENTS.MODE_CHANGE, mode: this.mode } );
 	    },
 
 	    /**
@@ -8674,13 +9440,13 @@
 	    addPanoramaEventListener: function ( pano ) {
 
 	        // Set camera control on every panorama
-	        pano.addEventListener( 'enter', this.setCameraControl.bind( this ) );
+	        pano.addEventListener( EVENTS.ENTER, this.setCameraControl.bind( this ) );
 
 	        // Show and hide widget event only when it's VideoPanorama
 	        if ( pano instanceof VideoPanorama ) {
 
-	            pano.addEventListener( 'enter-fade-start', this.showVideoWidget.bind( this ) );
-	            pano.addEventListener( 'leave', function () {
+	            pano.addEventListener( EVENTS.ENTER_FADE_START, this.showVideoWidget.bind( this ) );
+	            pano.addEventListener( EVENTS.LEAVE_START, function () {
 
 	                if ( !(this.panorama instanceof VideoPanorama) ) {
 
@@ -8701,7 +9467,7 @@
 	     */
 	    setCameraControl: function () {
 
-	        this.OrbitControls.target.copy( this.panorama.position );
+	        if( this.panorama ) this.OrbitControls.target.copy( this.panorama.position );
 
 	    },
 
@@ -8841,18 +9607,59 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    enableControl: function ( index ) {
+	    enableControl: function ( index = CONTROLS.ORBIT ) {
 
-	        index = ( index >= 0 && index < this.controls.length ) ? index : 0;
+	        const { control: { index: currentControlIndex }, OrbitControls, DeviceOrientationControls, container } = this;
+	        const canvas = container.querySelector('canvas');
 
-	        this.control.enabled = false;
+	        if( index === currentControlIndex ) {                   // ignore
+
+	            return;
+
+	        } else if( index === CONTROLS.DEVICEORIENTATION ) {     // device orientation
+
+	            this.tweenCanvasOpacityOut.onStart(() => {
+	                OrbitControls.enabled = false;
+	                DeviceOrientationControls.enabled = false;
+	                canvas.style.opacity = 0;
+	            });
+
+	            this.tweenCanvasOpacityIn.onStart(() => {
+	                OrbitControls.enabled = true;
+	                DeviceOrientationControls.connect();
+	                canvas.style.opacity = 1;
+	            });
+
+	            this.tweenCanvasOpacityOut.start();
+
+
+	        } else {
+
+	            const { getAlpha, getBeta } = DeviceOrientationControls;
+	            const alpha = -getAlpha();
+	            const beta = Math.PI / 2 - getBeta();
+	            const center = this.getRaycastViewCenter();
+
+	            this.tweenCanvasOpacityOut.onStart(() => {
+	                OrbitControls.enabled = false;
+	                DeviceOrientationControls.disconnect();
+	                canvas.style.opacity = 0;
+	            });
+
+	            this.tweenCanvasOpacityIn.onStart(function() {
+	                OrbitControls.enabled = true;
+	                this.rotateControlLeft(alpha);
+	                this.rotateControlUp(beta);
+	                this.setControlCenter(center);
+	                canvas.style.opacity = 1;
+	            }.bind(this));
+
+	            this.tweenCanvasOpacityOut.start();
+
+	        }
+
 	        this.control = this.controls[ index ];
-	        this.control.enabled = true;
-	        this.control.update();
-	        
-	        this.setControlCenter( this.getRaycastViewCenter() );
 	        this.activateWidgetItem( index, undefined );
-	        this.onChange();
 
 	    },
 
@@ -8921,8 +9728,8 @@
 	     */
 	    reverseDraggingDirection: function () {
 
+	        console.warn('reverseDragging option is deprecated. Please use rotateSpeed to indicate strength and direction');
 	        this.OrbitControls.rotateSpeed *= -1;
-	        this.OrbitControls.momentumScalingFactor *= -1;
 
 	    },
 
@@ -8944,13 +9751,13 @@
 
 	    rotateControlLeft: function ( left ) {
 
-	        this.control.rotateLeft( left );
+	        this.OrbitControls.rotateLeftStatic( left );
 
 	    },
 
 	    rotateControlUp: function ( up ) {
 
-	        this.control.rotateUp( up );
+	        this.OrbitControls.rotateUpStatic( up );
 
 	    },
 
@@ -8991,7 +9798,7 @@
 	     * Set control center
 	     * @param {THREE.Vector3} vector - Vector to be looked at the center
 	     */
-	    setControlCenter: function( vector ) {
+	    setControlCenter: function( vector = this.options.initialLookAt ) {
 
 	        const { left, up } = this.calculateCameraDirectionDelta( vector );
 	        this.rotateOrbitControl( left, up );
@@ -9010,14 +9817,16 @@
 
 	        if ( vector instanceof Array ) {
 
-	            vector = vector[ 0 ];
-	            duration = vector[ 1 ];
 	            easing = vector[ 2 ];
+	            duration = vector[ 1 ];
+	            vector = vector[ 0 ];
 
 	        }
 
 	        duration = duration !== undefined ? duration : 1000;
-	        easing = easing || TWEEN.Easing.Exponential.Out;
+	        easing = easing || Tween.Easing.Exponential.Out;
+
+	        const MEPS = 10e-5;
 
 	        const { left, up } = this.calculateCameraDirectionDelta( vector );
 	        const rotateControlLeft = this.rotateControlLeft.bind( this );
@@ -9029,22 +9838,26 @@
 	        this.tweenLeftAnimation.stop();
 	        this.tweenUpAnimation.stop();
 
-	        this.tweenLeftAnimation = new TWEEN.Tween( ov )
+	        this.tweenLeftAnimation = new Tween.Tween( ov )
 	            .to( { left }, duration )
 	            .easing( easing )
 	            .onUpdate(function(ov){
-	                rotateControlLeft( ov.left - nv.left );
+	                const diff = ov.left - nv.left;
+	                if( Math.abs( diff ) < MEPS ) this.tweenLeftAnimation.stop();
+	                rotateControlLeft( diff );
 	                nv.left = ov.left;
-	            })
+	            }.bind(this))
 	            .start();
 
-	        this.tweenUpAnimation = new TWEEN.Tween( ov )
+	        this.tweenUpAnimation = new Tween.Tween( ov )
 	            .to( { up }, duration )
 	            .easing( easing )
 	            .onUpdate(function(ov){
-	                rotateControlUp( ov.up - nv.up );
+	                const diff = ov.up - nv.up;
+	                if( Math.abs( diff ) < MEPS ) this.tweenUpAnimation.stop();
+	                rotateControlUp( diff );
 	                nv.up = ov.up;
-	            })
+	            }.bind(this))
 	            .start();
 
 	    },
@@ -9075,7 +9888,7 @@
 
 	        let width, height;
 
-	        const expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
+	        const expand = this.container.classList.contains( EVENTS.CONTAINER ) || this.container.isFullscreen;
 
 	        if ( windowWidth !== undefined && windowHeight !== undefined ) {
 
@@ -9085,8 +9898,6 @@
 	            this.container._height = windowHeight;
 
 	        } else {
-
-	            const isAndroid = /(android)/i.test(window.navigator.userAgent);
 
 	            const adjustWidth = isAndroid 
 	                ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 
@@ -9123,12 +9934,12 @@
 	         * @property {number} width  - Width of the window
 	         * @property {number} height - Height of the window
 	         */
-	        this.dispatchEvent( { type: 'window-resize', width: width, height: height });
+	        this.dispatchEvent( { type: EVENTS.WIDNOW_RESIZE, width: width, height: height });
 	        this.scene.traverse( function ( object ) {
 
 	            if ( object.dispatchEvent ) {
 
-	                object.dispatchEvent( { type: 'window-resize', width: width, height: height });
+	                object.dispatchEvent( { type: EVENTS.WIDNOW_RESIZE, width: width, height: height });
 
 	            }
 
@@ -9174,13 +9985,13 @@
 
 	            switch ( this.options.output ) {
 
-	            case 'console':
-	                console.info( message );
-	                break;
+	                case 'console':
+	                    console.info( message );
+	                    break;
 
-	            case 'overlay':
-	                this.outputDivElement.textContent = message;
-	                break;
+	                case 'overlay':
+	                    this.outputDivElement.textContent = message;
+	                    break;
 
 	            }
 
@@ -9606,26 +10417,37 @@
 	     */
 	    update: function () {
 
-	        TWEEN.update();
+	        const { scene, control, OrbitControls, DeviceOrientationControls } = this;
 
-	        this.updateCallbacks.forEach( function( callback ){ callback(); } );
+	        // Tween Update
+	        Tween.update();
 
-	        this.control.update();
+	        // Callbacks Update
+	        this.updateCallbacks.forEach( callback => callback() );
 
-	        this.scene.traverse( function( child ){
+	        // Control Update
+	        if ( OrbitControls.enabled ) OrbitControls.update();
+	        if ( control === DeviceOrientationControls ) {
+	            DeviceOrientationControls.update(OrbitControls.spherical.theta);
+	        }
+
+	        // Infospot Update
+	        const v3 = new THREE.Vector3();
+
+	        scene.traverse( function( child ){
 	            if ( child instanceof Infospot 
-					&& child.element 
-					&& ( this.hoverObject === child 
-						|| child.element.style.display !== 'none' 
-						|| (child.element.left && child.element.left.style.display !== 'none')
-						|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
+	                && child.element 
+	                && ( this.hoverObject === child 
+	                    || child.element.style.display !== 'none' 
+	                    || (child.element.left && child.element.left.style.display !== 'none')
+	                    || (child.element.right && child.element.right.style.display !== 'none') ) ) {
 	                if ( this.checkSpriteInViewport( child ) ) {
-	                    const { x, y } = this.getScreenVector( child.getWorldPosition( new THREE.Vector3() ) );
+	                    const { x, y } = this.getScreenVector( child.getWorldPosition( v3 ) );
 	                    child.translateElement( x, y );
 	                } else {
 	                    child.onDismiss();
 	                }
-					
+	                
 	            }
 	        }.bind( this ) );
 
@@ -9861,11 +10683,25 @@
 	     */
 	    onPanoramaDispose: function ( panorama ) {
 
+	        const { scene } = this;
+	        const infospotDisposeMapper = infospot => infospot.toPanorama !== panorama ? infospot : infospot.dispose();
+
 	        if ( panorama instanceof VideoPanorama ) {
 
 	            this.hideVideoWidget();
 
 	        }
+
+	        // traverse the scene to find association
+	        scene.traverse( object => {
+
+	            if ( object instanceof Panorama ) {
+
+	                object.linkedSpots = object.linkedSpots.map( infospotDisposeMapper ).filter( infospot => !!infospot );
+
+	            }
+
+	        } );
 
 	        if ( panorama === this.panorama ) {
 
@@ -9987,6 +10823,22 @@
 	    },
 
 	    /**
+	     * Remove item within the control bar
+	     * @param {HTMLElement} item item to be removed
+	     */
+	    removeControlItem: function( item ) {
+
+	        const { barElement, videoElement } = this.widget;
+
+	        const barElements = Array.prototype.slice.call( barElement.children );
+	        const videoElements = Array.prototype.slice.call( videoElement.children );
+
+	        if ( barElements.includes( item ) ) barElement.removeChild( item );
+	        if ( videoElements.includes( item ) ) videoElement.removeChild( item );
+
+	    },
+
+	    /**
 	     * Clear all cached files
 	     * @memberOf Viewer
 	     * @instance
@@ -10010,7 +10862,7 @@
 	 * @author pchen66
 	 * @namespace PANOLENS
 	 */
-	window.TWEEN = TWEEN;
+	window.TWEEN = Tween;
 
 	exports.BasicPanorama = BasicPanorama;
 	exports.CONTROLS = CONTROLS;
@@ -10018,6 +10870,7 @@
 	exports.CubePanorama = CubePanorama;
 	exports.CubeTextureLoader = CubeTextureLoader;
 	exports.DataImage = DataImage;
+	exports.EVENTS = EVENTS;
 	exports.EmptyPanorama = EmptyPanorama;
 	exports.GoogleStreetviewPanorama = GoogleStreetviewPanorama;
 	exports.ImageLittlePlanet = ImageLittlePlanet;
@@ -10027,6 +10880,9 @@
 	exports.LittlePlanet = LittlePlanet;
 	exports.MODES = MODES;
 	exports.Media = Media;
+	exports.PanoMoment = PanoMoment;
+	exports.PanoMomentPanorama = PanoMomentPanorama;
+	exports.PanoMomentRegular = PanoMomentRegular;
 	exports.Panorama = Panorama;
 	exports.REVISION = REVISION;
 	exports.Reticle = Reticle;
