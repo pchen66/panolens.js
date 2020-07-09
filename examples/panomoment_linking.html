@@ -23,7 +23,8 @@
 
       a:link,
       a:visited {
-        color: #bdc3c7;
+        color: #e7f2f3;
+        text-decoration: none;
       }
 
       #textHolder {
@@ -32,16 +33,22 @@
         width: 100%;
         margin: 0 auto;
         position: absolute;
-        bottom: 40px;
-        left: 40px;
-        padding: 10px;
+        bottom: 10px;
+        left: 20px;
         color: #fff;
-        font-size: xx-large;
+        font-size: x-large;
         -webkit-box-align: center;
         -ms-flex-align: center;
         align-items: center;
+        pointer-events: none;
       }
-
+      .credit {
+        position: fixed;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+      }
       .lds-ring {
         display: inline-block;
         position: absolute;
@@ -83,17 +90,29 @@
           transform: rotate(360deg);
         }
       }
+      @media only screen and (max-width: 640px) {
+        .credit {
+          font-size: x-small;
+          padding-bottom: 2px;
+        }
+      }
     </style>
   </head>
 
   <body>
+
     <div class="lds-ring hidden">
       <div></div>
       <div></div>
       <div></div>
       <div></div>
     </div>
+
     <div id="textHolder"><span id="text"></span></div>
+
+    <div class="credit">
+      <a target="_blank"></a>
+    </div>
 
     <script src="../js/three/three.min.js"></script>
     <script src="../js/panolens/panolens.min.js"></script>
@@ -105,56 +124,85 @@
         spinner.show = () => spinner.classList.remove("hidden");
         spinner.hide = () => spinner.classList.add("hidden");
 
+        const creditAnchor = document.querySelector(".credit > a");
+
         const identifiers = [ 
             {
                 moment_id: "5a90ce21d3df99000e981d11",
                 variation: 101,
                 public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
-                name: "Water Scene"
+                name: "Water Scene",
+                credit: {
+                  text: 'Credit: 360 Image by PanoMoments.com',
+                  link: 'https://panomoments.com'
+                }
             }, 
             {
                 moment_id: "58a5d20affe5e3000bdb34c0",
                 variation: 101,
                 public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
-                name: "Grand Central"
+                name: "Grand Central",
+                credit: {
+                  text: 'Credit: 360 Image by PanoMoments.com',
+                  link: 'https://panomoments.com'
+                }
             }, 
             {
                 moment_id: "594034259456f0000ba62f29",
                 variation: 101,
                 public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
-                name: "Kids Jumping"
+                name: "Kids Jumping",
+                credit: {
+                  text: 'Credit: 360 Image by PanoMoments.com',
+                  link: 'https://panomoments.com'
+                }
             },
             {
                 moment_id: "58a5f6dd482e59000ba26fee",
                 variation: 101,
                 public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
-                name: "Kitchen"
+                name: "Kitchen",
+                credit: {
+                  text: 'Credit: 360 Image by PanoMoments.com',
+                  link: 'https://panomoments.com'
+                }
             },
             {
                 moment_id: "5e95b8bf9e48cf0016e5d942",
                 variation: 101,
                 public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
-                name: "Temple"
+                name: "Temple",
+                credit: {
+                  text: 'Credit: 360 Video Conversion by Mettle.com',
+                  link: 'https://www.mettle.com/'
+                }
             },
             {
                 moment_id: "5a9060988ac76a000ec9ee74",
                 variation: 101,
                 public_api_key: "63b130be-2f20-40a2-8211-355b607f340a",
-                name: "Animation"
+                name: "Animation",
+                credit: {
+                  text: 'Credit: PHILIPPE A. COLLIN + CLÉMENT LÉOTARD',
+                  link: '#'
+                }
             }
         ];
 
         function onEnter() {
             const text = document.getElementById( 'text' );
             text.textContent = this.name;
+            creditAnchor.href = this.credit.link;
+            creditAnchor.textContent = this.credit.text;
         }
 
         const panomoments = identifiers
         .map( identifier => new PANOLENS.PanoMomentPanorama( identifier ) )
         .map( (p, i) => {
 
-            const name = identifiers[i].name;
+            const { name, credit } = identifiers[i];
             p.name = name;
+            p.credit = credit;
             p.index = i;
 
             const { ENTER, LEAVE, LOAD_START, LOADED, PANOMOMENT } = PANOLENS.EVENTS;
@@ -180,6 +228,7 @@
         const viewer = new PANOLENS.Viewer({
             output: "console",
             autoHideInfospot: false,
+            cameraFov: 80,
             momentum: true,
             dampingFactor: 0.97,
             rotateSpeed: -0.15,
