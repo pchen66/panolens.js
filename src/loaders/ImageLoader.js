@@ -21,7 +21,7 @@ const ImageLoader = {
         // Enable cache
         THREE.Cache.enabled = true;
 
-        let cached, request, arrayBufferView, blob, urlCreator, image, reference, validatedUrl;
+        let cached, request, arrayBufferView, blob, urlCreator, image, reference;
 	
         // Reference key
         for ( let iconName in DataImage ) {
@@ -35,8 +35,7 @@ const ImageLoader = {
         }
 	
         // Cached
-        validatedUrl = url.indexOf('http') != -1 ? url : null;
-        cached = THREE.Cache.get( reference ? reference : validatedUrl );
+        cached = THREE.Cache.get( reference ? reference : url );
 	
         if ( cached !== undefined ) {
 	
@@ -58,13 +57,12 @@ const ImageLoader = {
         // Construct a new XMLHttpRequest
         urlCreator = window.URL || window.webkitURL;
         image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
-	
-        // Add to cache
-        THREE.Cache.add( reference ? reference : url, image );
-	
+		
         const onImageLoaded = () => {
 	
             urlCreator.revokeObjectURL( image.src );
+            // Add to cache
+            if (cached == undefined) THREE.Cache.add(reference ? reference : url, image);
             onLoad( image );
 	
         };

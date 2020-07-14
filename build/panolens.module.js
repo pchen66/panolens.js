@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, ShaderMaterial, Math as Math$1, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
+=======
+import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, Spherical, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
+>>>>>>> cp-v0.1
 
 const version="0.11.0";const dependencies={three:"^0.105.2"};
 
@@ -104,7 +108,7 @@ const ImageLoader = {
         // Enable cache
         Cache.enabled = true;
 
-        let cached, request, arrayBufferView, blob, urlCreator, image, reference, validatedUrl;
+        let cached, request, arrayBufferView, blob, urlCreator, image, reference;
 	
         // Reference key
         for ( let iconName in DataImage ) {
@@ -118,8 +122,7 @@ const ImageLoader = {
         }
 	
         // Cached
-        validatedUrl = url.indexOf('http') != -1 ? url : null;
-        cached = Cache.get( reference ? reference : validatedUrl );
+        cached = Cache.get( reference ? reference : url );
 	
         if ( cached !== undefined ) {
 	
@@ -141,13 +144,12 @@ const ImageLoader = {
         // Construct a new XMLHttpRequest
         urlCreator = window.URL || window.webkitURL;
         image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
-	
-        // Add to cache
-        Cache.add( reference ? reference : url, image );
-	
+		
         const onImageLoaded = () => {
 	
             urlCreator.revokeObjectURL( image.src );
+            // Add to cache
+            if (cached == undefined) Cache.add(reference ? reference : url, image);
             onLoad( image );
 	
         };
@@ -1952,6 +1954,11 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     const postLoad = function ( texture ) {
 
         if ( !this.material ) { return; }
+        this.material.map = texture;
+        this.material.needsUpdate = true;
+        this.material.map.needsUpdate = true;
+        this.loaded = true;
+
 
         const ratio = texture.image.width / texture.image.height;
         const textureScale = new Vector3();
@@ -1971,9 +1978,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
             .to( { x: textureScale.x, y: textureScale.y }, duration )
             .easing( Tween.Easing.Elastic.Out );
 
-        this.material.map = texture;
-        this.material.needsUpdate = true;
-        setTimeout(() => this.loaded = true, duration*3);
+        this.show(duration);
 
     }.bind( this );
 
@@ -4126,6 +4131,8 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
      */
     updateTexture: function ( texture ) {
 
+        if (!this.material) return;
+
         this.material.map = texture;
         this.material.needsUpdate = true;
 
@@ -4149,7 +4156,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 
             if ( object instanceof Infospot ) {
 
-                if ( visible ) {
+                if ( visible && object.loaded ) {
 
                     object.show( delay );
 
@@ -4333,6 +4340,8 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 
     onFadeAnimationUpdate: function () {
 
+        if (!this.material) return;
+
         const alpha = this.material.opacity;
         const { uniforms } = this.material;
 
@@ -4464,10 +4473,18 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                  */
                 this.dispatchEvent( { type: 'leave-start' } );
 
-                this.fadeOut( duration );
-                this.toggleInfospotVisibility( false );
-
+                this.toggleInfospotVisibility(false);
+                this.fadeOut( 200 );
             }.bind( this ) )
+            .onComplete(function () {
+                if ((this.material && this.material.uniforms)) { // TinyPlanet has material.uniforms and needs a timeout
+                    setTimeout(() => { this.dispose(); }, 3000);
+                }
+                else if (this.material) {
+                    this.dispose();
+                }
+            }.bind( this ) )
+            
             .start();
 
         /**
@@ -4552,7 +4569,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 function ImagePanorama ( image, _geometry, _material ) {
 
     const radius = 5000;
-    const geometry = _geometry || new SphereBufferGeometry( radius, 60, 40 );
+    const geometry = _geometry || new SphereBufferGeometry( radius, 100, 80 );
     const material = _material || new MeshBasicMaterial( { opacity: 0, transparent: true } );
 
     Panorama.call( this, geometry, material );
@@ -4629,13 +4646,14 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {
 
-        const { material: { map } } = this;
+        if (this.material){
+            const { material: { map } } = this;
+
+            if ( map ) { map.dispose(); }}
 
         // Release cached image
-        Cache.remove( this.src );
-
-        if ( map ) { map.dispose(); }
-
+        Cache.remove(this.src);
+        
         Panorama.prototype.dispose.call( this );
 
     }
@@ -4778,6 +4796,7 @@ EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
  * based on http://notlion.github.io/streetview-stereographic
  * @author pchen66
  */
+<<<<<<< HEAD
 
 /**
  * @description Stereograhpic Shader
@@ -4888,6 +4907,118 @@ function LittlePlanet ( type = 'image', source, size = 10000, ratio = 0.5 ) {
 
     this.addEventListener( 'window-resize', this.onWindowResize );
 
+=======
+
+/**
+ * @description Stereograhpic Shader
+ * @module StereographicShader
+ * @property {object} uniforms
+ * @property {THREE.Texture} uniforms.tDiffuse diffuse map
+ * @property {number} uniforms.resolution image resolution
+ * @property {THREE.Matrix4} uniforms.transform transformation matrix
+ * @property {number} uniforms.zoom image zoom factor
+ * @property {number} uniforms.opacity image opacity
+ * @property {string} vertexShader vertex shader
+ * @property {string} fragmentShader fragment shader
+ */
+const StereographicShader = {
+
+    uniforms: {
+
+        'tDiffuse': { value: new Texture() },
+        'resolution': { value: 1.0 },
+        'transform': { value: new Matrix4() },
+        'zoom': { value: 1.0 },
+        'opacity': { value: 1.0 }
+
+    },
+
+    vertexShader: [
+
+        'varying vec2 vUv;',
+
+        'void main() {',
+
+        'vUv = uv;',
+        'gl_Position = vec4( position, 1.0 );',
+
+        '}' 
+
+    ].join( '\n' ),
+
+    fragmentShader: [
+
+        'uniform sampler2D tDiffuse;',
+        'uniform float resolution;',
+        'uniform mat4 transform;',
+        'uniform float zoom;',
+        'uniform float opacity;',
+
+        'varying vec2 vUv;',
+
+        'const float PI = 3.141592653589793;',
+
+        'void main(){',
+
+        'vec2 position = -1.0 +  2.0 * vUv;',
+
+        'position *= vec2( zoom * resolution, zoom * 0.5 );',
+
+        'float x2y2 = position.x * position.x + position.y * position.y;',
+        'vec3 sphere_pnt = vec3( 2. * position, x2y2 - 1. ) / ( x2y2 + 1. );',
+
+        'sphere_pnt = vec3( transform * vec4( sphere_pnt, 1.0 ) );',
+
+        'vec2 sampleUV = vec2(',
+        '(atan(sphere_pnt.y, sphere_pnt.x) / PI + 1.0) * 0.5,',
+        '(asin(sphere_pnt.z) / PI + 0.5)',
+        ');',
+
+        'gl_FragColor = texture2D( tDiffuse, sampleUV );',
+
+        'gl_FragColor.a *= opacity;',
+
+        '}'
+
+    ].join( '\n' )
+
+};
+
+/**
+ * @classdesc Little Planet
+ * @constructor
+ * @param {string} type 		- Type of little planet basic class
+ * @param {string} source 		- URL for the image source
+ * @param {number} [size=10000] - Size of plane geometry
+ * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
+ */
+function LittlePlanet ( type = 'image', source, size = 10000, ratio = 0.5 ) {
+
+    if ( type === 'image' ) {
+
+        ImagePanorama.call( this, source, this.createGeometry( size, ratio ), this.createMaterial( size ) );
+
+    }
+
+    this.size = size;
+    this.ratio = ratio;
+    this.EPS = 0.000001;
+    this.frameId = null;
+
+    this.dragging = false;
+    this.userMouse = new Vector2();
+
+    this.quatA = new Quaternion();
+    this.quatB = new Quaternion();
+    this.quatCur = new Quaternion();
+    this.quatSlerp = new Quaternion();
+
+    this.vectorX = new Vector3( 1, 0, 0 );
+    this.vectorY = new Vector3( 0, 1, 0 );
+
+    this.addEventListener( 'window-resize', this.onWindowResize );
+
+>>>>>>> cp-v0.1
 }
 
 LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype ), {
@@ -5054,6 +5185,11 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
     },
 
     onMouseWheel: function ( event ) {
+<<<<<<< HEAD
+
+        event.preventDefault();
+        event.stopPropagation();
+=======
 
         event.preventDefault();
         event.stopPropagation();
@@ -5072,9 +5208,46 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
         this.addZoomDelta( delta );
         this.onUpdateCallback();
+>>>>>>> cp-v0.1
+
+        let delta = 0;
+
+<<<<<<< HEAD
+        if ( event.wheelDelta !== undefined ) { // WebKit / Opera / Explorer 9
+
+            delta = event.wheelDelta;
+
+        } else if ( event.detail !== undefined ) { // Firefox
+
+            delta = - event.detail;
+=======
+    addZoomDelta: function ( delta ) {
+
+        if (!this.material) return;
+
+        const uniforms = this.material.uniforms;
+        const lowerBound = this.size * 0.1;
+        const upperBound = this.size * 10;
+
+        uniforms.zoom.value += delta;
+
+        if ( uniforms.zoom.value <= lowerBound ) {
+
+            uniforms.zoom.value = lowerBound;
+
+        } else if ( uniforms.zoom.value >= upperBound ) {
+
+            uniforms.zoom.value = upperBound;
+>>>>>>> cp-v0.1
+
+        }
+
+        this.addZoomDelta( delta );
+        this.onUpdateCallback();
 
     },
 
+<<<<<<< HEAD
     addZoomDelta: function ( delta ) {
 
         const uniforms = this.material.uniforms;
@@ -5104,6 +5277,23 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         if ( this.material ) {
 
             this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
+=======
+    onUpdateCallback: function () {
+
+        this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
+
+        this.quatSlerp.slerp( this.quatCur, 0.1 );
+
+        if ( this.material ) {
+
+            this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
+
+        }
+        
+        if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
+			
+            window.cancelAnimationFrame( this.frameId );
+>>>>>>> cp-v0.1
 
         }
         
@@ -5111,8 +5301,11 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 			
             window.cancelAnimationFrame( this.frameId );
 
+<<<<<<< HEAD
         }
 
+=======
+>>>>>>> cp-v0.1
     },
 
     reset: function () {
@@ -5125,8 +5318,15 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     onLoad: function ( texture ) {
 
+<<<<<<< HEAD
         this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 
+=======
+        if (!this.material) return;
+
+        this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
+
+>>>>>>> cp-v0.1
         this.registerMouseEvents();
         this.onUpdateCallback();
 		
@@ -5208,6 +5408,11 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
      * @instance
      */
     updateTexture: function ( texture ) {
+<<<<<<< HEAD
+=======
+
+        if (!this.material) return;
+>>>>>>> cp-v0.1
 
         texture.minFilter = texture.magFilter = LinearFilter;
 		
@@ -5221,6 +5426,7 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
      * @instance
      */
     dispose: function () {
+<<<<<<< HEAD
 
         const tDiffuse = this.material.uniforms[ 'tDiffuse' ];
 
@@ -5290,12 +5496,86 @@ function OrbitControls ( object, domElement ) {
     this.autoRotate = false;
     this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
 
+=======
+
+        const tDiffuse = this.material && this.material.uniforms[ 'tDiffuse' ];
+
+        if ( tDiffuse && tDiffuse.value ) {
+
+            tDiffuse.value.dispose();
+
+        }
+
+        LittlePlanet.prototype.dispose.call( this );
+
+    }
+
+} );
+
+/**
+ * @classdesc Orbit Controls
+ * @constructor
+ * @external OrbitControls
+ * @param {THREE.Object} object 
+ * @param {HTMLElement} domElement 
+ */
+function OrbitControls ( object, domElement ) {
+
+    this.object = object;
+    this.domElement = ( domElement !== undefined ) ? domElement : document;
+    this.frameId = null;
+
+    // API
+
+    // Set to false to disable this control
+    this.enabled = true;
+
+    /*
+     * "target" sets the location of focus, where the control orbits around
+     * and where it pans with respect to.
+     */
+    this.target = new Vector3();
+
+    // center is old, deprecated; use "target" instead
+    this.center = this.target;
+
+    /*
+     * This option actually enables dollying in and out; left as "zoom" for
+     * backwards compatibility
+     */
+    this.noZoom = false;
+    this.zoomSpeed = 1.0;
+
+    // Limits to how far you can dolly in and out ( PerspectiveCamera only )
+    this.minDistance = 0;
+    this.maxDistance = Infinity;
+
+    // Limits to how far you can zoom in and out ( OrthographicCamera only )
+    this.minZoom = 0;
+    this.maxZoom = Infinity;
+
+    // Set to true to disable this control
+    this.noRotate = false;
+    this.rotateSpeed = -0.02;
+
+    this.enableDamping = true;
+
+    // Set to true to disable this control
+    this.noPan = true;
+    this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
+
+    // Set to true to automatically rotate around the target
+    this.autoRotate = false;
+    this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
+
+>>>>>>> cp-v0.1
     /*
      * How far you can orbit vertically, upper and lower limits.
      * Range is 0 to Math.PI radians.
      */
     this.minPolarAngle = 0; // radians
     this.maxPolarAngle = Math.PI; // radians
+<<<<<<< HEAD
 
     // Momentum
   	this.momentumDampingFactor = 0.90;
@@ -5439,11 +5719,165 @@ function OrbitControls ( object, domElement ) {
         // get Y column of matrix
         panOffset.set( te[ 4 ], te[ 5 ], te[ 6 ] );
         panOffset.multiplyScalar( distance );
+=======
+
+    // Mouse Momentum
+    this.dampingFactor = 0.03;
+    this.momentumKeydownFactor = 1;
+    this.momentumLimit = 0.04;
+    this.publicSphericalDelta = new Spherical();
+
+    // Touch Momentum
+    this.touchMomentumDampingFactor = 0.9;
+    this.touchMomentumScalingFactor = -0.004;
+    var momentumLeft = 0, momentumUp = 0;
+    var eventPrevious;
+    var momentumOn = false;
+
+  	// Fov
+  	this.minFov = 30;
+  	this.maxFov = 120;
+
+    /*
+     * How far you can orbit horizontally, upper and lower limits.
+     * If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+     */
+    this.minAzimuthAngle = - Infinity; // radians
+    this.maxAzimuthAngle = Infinity; // radians
+
+    // Set to true to disable use of the keys
+    this.noKeys = false;
+
+    // The four arrow keys
+    this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
+
+    // Mouse buttons
+    this.mouseButtons = { ORBIT: MOUSE.LEFT, ZOOM: MOUSE.MIDDLE, PAN: MOUSE.RIGHT };
+
+    /*
+     * //////////
+     * internals
+     */
+
+    var scope = this;
+
+    var EPS = 10e-8;
+    var MEPS = 10e-5;
+
+    var rotateStart = new Vector2();
+    var rotateEnd = new Vector2();
+    var rotateDelta = new Vector2();
+
+    var panStart = new Vector2();
+    var panEnd = new Vector2();
+    var panDelta = new Vector2();
+    var panOffset = new Vector3();
+
+    var offset = new Vector3();
+
+    var dollyStart = new Vector2();
+    var dollyEnd = new Vector2();
+    var dollyDelta = new Vector2();
+
+    var theta = 0;
+    var phi = 0;
+    var phiDelta = 0;
+    var thetaDelta = 0;
+    var scale = 1;
+    var pan = new Vector3();
+
+    var lastPosition = new Vector3();
+    var lastQuaternion = new Quaternion();
+
+    var STATE = { NONE: -1, ROTATE: 0, DOLLY: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_DOLLY: 4, TOUCH_PAN: 5 };
+    var INPUT = { MOUSE: 0, TOUCH: 1, KEY: 2, OTHER: 3 };
+    var state = STATE.NONE;
+    var input = INPUT.MOUSE;
+
+    // for reset
+
+    this.target0 = this.target.clone();
+    this.position0 = this.object.position.clone();
+    this.zoom0 = this.object.zoom;
+
+    // so camera.up is the orbit axis
+
+    var quat = new Quaternion().setFromUnitVectors( object.up, new Vector3( 0, 1, 0 ) );
+    var quatInverse = quat.clone().inverse();
+
+    // events
+
+    var changeEvent = { type: 'change' };
+    var startEvent = { type: 'start' };
+    var endEvent = { type: 'end' };
+
+    this.setLastQuaternion = function ( quaternion ) {
+        lastQuaternion.copy( quaternion );
+        scope.object.quaternion.copy( quaternion );
+    };
+
+    this.getLastPosition = function () {
+        return lastPosition;
+    };
+
+    this.rotateLeftStatic = function (angle) {
+
+        this.enableDamping = false;
+        thetaDelta -= angle;
+        this.update();
+        this.enableDamping = true;
+
+    };
+
+    this.rotateUpStatic = function (angle) {
+
+        this.enableDamping = false;
+        phiDelta -= angle;
+        this.update();
+        this.enableDamping = true;
+
+    };
+
+    this.rotateLeft = function ( angle ) {
+
+        if ( angle === undefined ) {
+
+            angle = getAutoRotationAngle();
+
+        }
+
+        thetaDelta -= angle;
+
+
+    };
+
+    this.rotateUp = function ( angle ) {
+
+        if ( angle === undefined ) {
+
+            angle = getAutoRotationAngle();
+
+        }
+
+        phiDelta -= angle;
+
+    };
+
+    // pass in distance in world space to move left
+    this.panLeft = function ( distance ) {
+
+        var te = this.object.matrix.elements;
+
+        // get X column of matrix
+        panOffset.set( te[ 0 ], te[ 1 ], te[ 2 ] );
+        panOffset.multiplyScalar( - distance );
+>>>>>>> cp-v0.1
 
         pan.add( panOffset );
 
     };
 
+<<<<<<< HEAD
     /*
      * pass in x,y of change desired in pixel space,
      * right and down are positive
@@ -5542,9 +5976,109 @@ function OrbitControls ( object, domElement ) {
             scope.object.zoom = Math.max( this.minZoom, Math.min( this.maxZoom, this.object.zoom / dollyScale ) );
             scope.object.updateProjectionMatrix();
             scope.dispatchEvent( changeEvent );
+=======
+    // pass in distance in world space to move up
+    this.panUp = function ( distance ) {
+
+        var te = this.object.matrix.elements;
+
+        // get Y column of matrix
+        panOffset.set( te[ 4 ], te[ 5 ], te[ 6 ] );
+        panOffset.multiplyScalar( distance );
+
+        pan.add( panOffset );
+
+    };
+
+    /*
+     * pass in x,y of change desired in pixel space,
+     * right and down are positive
+     */
+    this.pan = function ( deltaX, deltaY ) {
+
+        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+
+        if ( scope.object instanceof PerspectiveCamera ) {
+
+            // perspective
+            var position = scope.object.position;
+            var offset = position.clone().sub( scope.target );
+            var targetDistance = offset.length();
+
+            // half of the fov is center to top of screen
+            targetDistance *= Math.tan( ( scope.object.fov / 2 ) * Math.PI / 180.0 );
+
+            // we actually don't use screenWidth, since perspective camera is fixed to screen height
+            scope.panLeft( 2 * deltaX * targetDistance / element.clientHeight );
+            scope.panUp( 2 * deltaY * targetDistance / element.clientHeight );
+
+        } else if ( scope.object instanceof OrthographicCamera ) {
+
+            // orthographic
+            scope.panLeft( deltaX * (scope.object.right - scope.object.left) / element.clientWidth );
+            scope.panUp( deltaY * (scope.object.top - scope.object.bottom) / element.clientHeight );
 
         } else {
 
+            // camera neither orthographic or perspective
+            console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
+
+        }
+
+    };
+
+    this.dollyIn = function ( dollyScale ) {
+
+        if ( dollyScale === undefined ) {
+
+            dollyScale = getZoomScale();
+
+        }
+
+        if ( scope.object instanceof PerspectiveCamera ) {
+
+            scale /= dollyScale;
+
+        } else if ( scope.object instanceof OrthographicCamera ) {
+
+            scope.object.zoom = Math.max( this.minZoom, Math.min( this.maxZoom, this.object.zoom * dollyScale ) );
+            scope.object.updateProjectionMatrix();
+            scope.dispatchEvent( changeEvent );
+
+        } else {
+
+            console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
+
+        }
+
+    };
+
+    this.dollyOut = function ( dollyScale ) {
+
+        if ( dollyScale === undefined ) {
+
+            dollyScale = getZoomScale();
+
+        }
+
+        if ( scope.object instanceof PerspectiveCamera ) {
+
+            scale *= dollyScale;
+
+        } else if ( scope.object instanceof OrthographicCamera ) {
+
+            scope.object.zoom = Math.max( this.minZoom, Math.min( this.maxZoom, this.object.zoom / dollyScale ) );
+            scope.object.updateProjectionMatrix();
+            scope.dispatchEvent( changeEvent );
+
+        } else {
+
+            console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
+>>>>>>> cp-v0.1
+
+        } else {
+
+<<<<<<< HEAD
             console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
 
         }
@@ -5624,9 +6158,84 @@ function OrbitControls ( object, domElement ) {
 
             lastPosition.copy( this.object.position );
             lastQuaternion.copy (this.object.quaternion );
+=======
+    };
+
+    this.momentum = function () {
+        if (input != INPUT.TOUCH) return; // only if touch input
+        if (!momentumOn) return; // only if touch event is touchend()
+
+        if (Math.abs(momentumLeft) < MEPS && Math.abs(momentumUp) < MEPS) {
+
+            momentumOn = false;
+            return;
 
         }
 
+        momentumUp *= this.touchMomentumDampingFactor;
+        momentumLeft *= this.touchMomentumDampingFactor;
+
+        thetaDelta -= this.touchMomentumScalingFactor * momentumLeft;
+        phiDelta -= this.touchMomentumScalingFactor * momentumUp;
+    };
+
+    this.update = function ( ignoreUpdate ) {
+
+        var position = this.object.position;
+
+        offset.copy( position ).sub( this.target );
+
+        // rotate offset to "y-axis-is-up" space
+        offset.applyQuaternion( quat );
+
+        // angle from z-axis around y-axis
+
+        theta = Math.atan2( offset.x, offset.z );
+
+        // angle from y-axis
+
+        phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
+
+        if ( this.autoRotate && state === STATE.NONE ) {
+
+            this.rotateLeft( getAutoRotationAngle() );
+
+        }
+
+        if (this.enableDamping === true && input !== INPUT.TOUCH) {
+            thetaDelta = Math$1.clamp(thetaDelta, -this.momentumLimit, this.momentumLimit);
+            phiDelta = Math$1.clamp(phiDelta, -this.momentumLimit, this.momentumLimit);
+            scope.publicSphericalDelta.theta = thetaDelta; // for orientation controls
+        } else if (input == INPUT.TOUCH) {
+            this.momentum();
+        }
+
+        theta += thetaDelta;
+        phi += phiDelta;
+
+        // restrict theta to be between desired limits
+        theta = Math.max( this.minAzimuthAngle, Math.min( this.maxAzimuthAngle, theta ) );
+
+        // restrict phi to be between desired limits
+        phi = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, phi ) );
+
+        // restrict phi to be betwee EPS and PI-EPS
+        phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
+
+        var radius = offset.length() * scale;
+
+        // restrict radius to be between desired limits
+        radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
+
+        // move target to panned location
+        this.target.add( pan );
+>>>>>>> cp-v0.1
+
+        offset.x = radius * Math.sin( phi ) * Math.sin( theta );
+        offset.y = radius * Math.cos( phi );
+        offset.z = radius * Math.sin( phi ) * Math.cos( theta );
+
+<<<<<<< HEAD
     };
 
 
@@ -5826,16 +6435,229 @@ function OrbitControls ( object, domElement ) {
                 ? scope.object.fov - 1
                 : scope.minFov;
             scope.object.updateProjectionMatrix();
+=======
+        // rotate offset back to "camera-up-vector-is-up" space
+        offset.applyQuaternion( quatInverse );
+
+        position.copy( this.target ).add( offset );
+
+        this.object.lookAt( this.target );
+
+        if (this.enableDamping === true && input != INPUT.TOUCH) {
+
+            thetaDelta *= (1 - this.dampingFactor);
+            phiDelta *= (1 - this.dampingFactor);
+
+        } else {
+
+            thetaDelta = 0;
+            phiDelta = 0;
 
         }
 
+        scale = 1;
+        pan.set( 0, 0, 0 );
+
+        /*
+         * update condition is:
+         * min(camera displacement, camera rotation in radians)^2 > EPS
+         * using small-angle approximation cos(x/2) = 1 - x^2 / 8
+         */
+        if ( lastPosition.distanceToSquared( this.object.position ) > EPS
+		    || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
+
+            if ( ignoreUpdate !== true ) { this.dispatchEvent( changeEvent ); }
+
+            lastPosition.copy( this.object.position );
+            lastQuaternion.copy (this.object.quaternion );
+
+        }
+
+    };
+
+
+    this.reset = function () {
+
+        state = STATE.NONE;
+        input = INPUT.MOUSE;
+
+        this.target.copy( this.target0 );
+        this.object.position.copy( this.position0 );
+        this.object.zoom = this.zoom0;
+
+        this.object.updateProjectionMatrix();
+        this.dispatchEvent( changeEvent );
+
+        this.update();
+
+    };
+
+    this.getPolarAngle = function () {
+
+        return phi;
+
+    };
+
+    this.getAzimuthalAngle = function () {
+
+        return theta;
+
+    };
+
+    function getAutoRotationAngle() {
+
+        return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
+
+    }
+
+    function getZoomScale() {
+
+        return Math.pow( 0.95, scope.zoomSpeed );
+
+    }
+
+    function onMouseDown( event ) {
+
+        if ( scope.enabled === false ) return;
+        event.preventDefault();
+
+        input = INPUT.MOUSE;
+
+        if ( event.button === scope.mouseButtons.ORBIT ) {
+            if ( scope.noRotate === true ) return;
+
+            state = STATE.ROTATE;
+
+            rotateStart.set( event.clientX, event.clientY );
+
+        } else if ( event.button === scope.mouseButtons.ZOOM ) {
+            if ( scope.noZoom === true ) return;
+
+            state = STATE.DOLLY;
+
+            dollyStart.set( event.clientX, event.clientY );
+
+        } else if ( event.button === scope.mouseButtons.PAN ) {
+            if ( scope.noPan === true ) return;
+
+            state = STATE.PAN;
+
+            panStart.set( event.clientX, event.clientY );
+
+        }
+
+        if ( state !== STATE.NONE ) {
+            document.addEventListener( 'mousemove', onMouseMove, false );
+            document.addEventListener( 'mouseup', onMouseUp, false );
+            scope.dispatchEvent( startEvent );
+        }
+
+    }
+
+    function onMouseMove( event ) {
+
+        if ( scope.enabled === false ) return;
+
+        event.preventDefault();
+
+        input = INPUT.MOUSE;
+
+        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+
+        if ( state === STATE.ROTATE ) {
+
+            if ( scope.noRotate === true ) return;
+
+            rotateEnd.set( event.clientX, event.clientY );
+            rotateDelta.subVectors( rotateEnd, rotateStart );
+
+            if (rotateStart.x == 0 && rotateStart.y == 0) {
+                rotateStart.set(rotateEnd.x, rotateEnd.y);
+                rotateDelta.subVectors(rotateEnd, rotateStart);
+                return;
+            }
+
+            // rotating across whole screen goes 360 degrees around
+            scope.rotateLeft(2 * Math.PI * rotateDelta.x / element.clientHeight * scope.rotateSpeed); // element.clientWidth?
+
+            // rotating up and down along whole screen attempts to go 360, but limited to 180
+            scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
+
+            rotateStart.copy( rotateEnd );
+
+        } else if ( state === STATE.DOLLY ) {
+
+            if ( scope.noZoom === true ) return;
+
+            dollyEnd.set( event.clientX, event.clientY );
+            dollyDelta.subVectors( dollyEnd, dollyStart );
+
+            if ( dollyDelta.y > 0 ) {
+
+                scope.dollyIn();
+
+            } else if ( dollyDelta.y < 0 ) {
+
+                scope.dollyOut();
+
+            }
+
+            dollyStart.copy( dollyEnd );
+
+        } else if ( state === STATE.PAN ) {
+
+            if ( scope.noPan === true ) return;
+
+            panEnd.set( event.clientX, event.clientY );
+            panDelta.subVectors( panEnd, panStart );
+
+            scope.pan( panDelta.x, panDelta.y );
+
+            panStart.copy( panEnd );
+
+        }
+
+    }
+
+    function onMouseUp( /* event */ ) {
+
+        if ( scope.enabled === false ) return;
+
+        input = INPUT.MOUSE;
+
+        document.removeEventListener( 'mousemove', onMouseMove, false );
+        document.removeEventListener( 'mouseup', onMouseUp, false );
+        scope.dispatchEvent( endEvent );
+        state = STATE.NONE;
+
+    }
+
+    function onMouseWheel( event ) {
+
+        if ( scope.enabled === false || scope.noZoom === true || state !== STATE.NONE ) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        input = INPUT.MOUSE;
+
+        var delta = 0;
+>>>>>>> cp-v0.1
+
+        if ( event.wheelDelta !== undefined ) { // WebKit / Opera / Explorer 9
+
+<<<<<<< HEAD
         scope.update();
         scope.dispatchEvent( changeEvent );
         scope.dispatchEvent( startEvent );
         scope.dispatchEvent( endEvent );
+=======
+            delta = event.wheelDelta;
+>>>>>>> cp-v0.1
 
-    }
+        } else if ( event.detail !== undefined ) { // Firefox
 
+<<<<<<< HEAD
     function onKeyUp ( event ) {
 
         switch ( event.keyCode ) {
@@ -6092,9 +6914,268 @@ function OrbitControls ( object, domElement ) {
 OrbitControls.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     constructor: OrbitControls
+=======
+            delta = - event.detail;
+
+        }
+
+        if ( delta > 0 ) {
+
+            // scope.dollyOut();
+            scope.object.fov = ( scope.object.fov < scope.maxFov ) 
+                ? scope.object.fov + 1
+                : scope.maxFov;
+            scope.object.updateProjectionMatrix();
+
+        } else if ( delta < 0 ) {
+
+            // scope.dollyIn();
+            scope.object.fov = ( scope.object.fov > scope.minFov ) 
+                ? scope.object.fov - 1
+                : scope.minFov;
+            scope.object.updateProjectionMatrix();
+
+        }
+
+        scope.dispatchEvent( changeEvent );
+        scope.dispatchEvent( startEvent );
+        scope.dispatchEvent( endEvent );
+
+    }
+
+    function onKeyUp ( event ) {
+
+        input = INPUT.KEY;
+
+        switch ( event.keyCode ) {
+
+        case scope.keys.UP:
+            break;
+
+        case scope.keys.BOTTOM:
+            break;
+
+        case scope.keys.LEFT:
+            break;
+
+        case scope.keys.RIGHT:
+            break;
+
+        }
+
+    }
+
+    function onKeyDown( event ) {
+
+        if ( scope.enabled === false || scope.noKeys === true || scope.noRotate === true ) return;
+
+        input = INPUT.KEY;
+
+        switch ( event.keyCode ) {
+
+        case scope.keys.UP:
+            scope.rotateUp(scope.rotateSpeed * scope.momentumKeydownFactor);
+            break;
+
+        case scope.keys.BOTTOM:
+            scope.rotateUp(- scope.rotateSpeed * scope.momentumKeydownFactor);
+            break;
+
+        case scope.keys.LEFT:
+            scope.rotateLeft(scope.rotateSpeed * scope.momentumKeydownFactor);
+            break;
+
+        case scope.keys.RIGHT:
+            scope.rotateLeft(- scope.rotateSpeed * scope.momentumKeydownFactor);
+            break;
+        }
+
+    }
+
+    function touchstart( event ) {
+
+        if ( scope.enabled === false ) return;
+
+        input = INPUT.TOUCH;
+
+        this.momentumOn = false;
+        this.enableDamping = false;
+
+        momentumLeft = momentumUp = 0;
+
+        switch ( event.touches.length ) {
+
+        case 1:	// one-fingered touch: rotate
+
+            if ( scope.noRotate === true ) return;
+
+            state = STATE.TOUCH_ROTATE;
+
+            rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+            break;
+
+        case 2:	// two-fingered touch: dolly
+
+            if ( scope.noZoom === true ) return;
+
+            state = STATE.TOUCH_DOLLY;
+
+            var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+            var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+            var distance = Math.sqrt( dx * dx + dy * dy );
+
+            dollyStart.set( 0, distance );
+
+            break;
+
+        case 3: // three-fingered touch: pan
+
+            if ( scope.noPan === true ) return;
+
+            state = STATE.TOUCH_PAN;
+
+            panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+            break;
+
+        default:
+
+            state = STATE.NONE;
+
+        }
+
+        if ( state !== STATE.NONE ) scope.dispatchEvent( startEvent );
+
+    }
+
+    function touchmove( event ) {
+
+        if ( scope.enabled === false ) return;
+
+        input = INPUT.TOUCH;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+
+        switch ( event.touches.length ) {
+
+        case 1: // one-fingered touch: rotate
+
+            if ( scope.noRotate === true ) return;
+            if ( state !== STATE.TOUCH_ROTATE ) return;
+
+            rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+            rotateDelta.subVectors( rotateEnd, rotateStart );
+
+            const speedMultiplier = 10.5; // magic number - default rotateSpeed is too slow for our touch momentum
+
+            // rotating across whole screen goes 360 degrees around
+            scope.rotateLeft(2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed * speedMultiplier ); // TODO: Should probably be clientHeight
+            // rotating up and down along whole screen attempts to go 360, but limited to 180
+            scope.rotateUp(2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed * speedMultiplier );
+
+            rotateStart.copy( rotateEnd );
+
+            if (eventPrevious) {
+                momentumLeft = event.touches[0].pageX - eventPrevious.pageX;
+                momentumUp = event.touches[0].pageY - eventPrevious.pageY;
+            }
+
+            eventPrevious = {
+                pageX: event.touches[0].pageX,
+                pageY: event.touches[0].pageY,
+            };
+
+            break;
+
+        case 2: // two-fingered touch: dolly
+
+            if ( scope.noZoom === true ) return;
+            if ( state !== STATE.TOUCH_DOLLY ) return;
+
+            var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+            var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+            var distance = Math.sqrt( dx * dx + dy * dy );
+
+            dollyEnd.set( 0, distance );
+            dollyDelta.subVectors( dollyEnd, dollyStart );
+
+            if ( dollyDelta.y < 0 ) {
+
+                scope.object.fov = ( scope.object.fov < scope.maxFov ) 
+                    ? scope.object.fov + 1
+                    : scope.maxFov;
+                scope.object.updateProjectionMatrix();
+
+            } else if ( dollyDelta.y > 0 ) {
+
+                scope.object.fov = ( scope.object.fov > scope.minFov ) 
+                    ? scope.object.fov - 1
+                    : scope.minFov;
+                scope.object.updateProjectionMatrix();
+
+            }
+
+            dollyStart.copy( dollyEnd );
+
+            scope.dispatchEvent( changeEvent );
+            break;
+
+        case 3: // three-fingered touch: pan
+
+            if ( scope.noPan === true ) return;
+            if ( state !== STATE.TOUCH_PAN ) return;
+
+            panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+            panDelta.subVectors( panEnd, panStart );
+
+            scope.pan( panDelta.x, panDelta.y );
+
+            panStart.copy( panEnd );
+
+            break;
+
+        default:
+
+            state = STATE.NONE;
+
+        }
+
+    }
+
+    function touchend( /* event */ ) {
+
+        if ( scope.enabled === false ) return;
+
+        input = INPUT.TOUCH;
+
+        momentumOn = true;
+
+        eventPrevious = undefined;
+
+        scope.dispatchEvent( endEvent );
+        state = STATE.NONE;
+
+    }
+
+    this.dispose = function() {
+
+        this.domElement.removeEventListener( 'mousedown', onMouseDown );
+        this.domElement.removeEventListener( 'mousewheel', onMouseWheel );
+        this.domElement.removeEventListener( 'DOMMouseScroll', onMouseWheel );
+
+        this.domElement.removeEventListener( 'touchstart', touchstart );
+        this.domElement.removeEventListener( 'touchend', touchend );
+        this.domElement.removeEventListener( 'touchmove', touchmove );
+
+        window.removeEventListener( 'keyup', onKeyUp );
+        window.removeEventListener( 'keydown', onKeyDown );
+>>>>>>> cp-v0.1
 
 } );
 
+<<<<<<< HEAD
 /**
  * @classdesc Device Orientation Control
  * @constructor
@@ -6156,6 +7237,127 @@ function DeviceOrientationControls ( camera, domElement ) {
         rotX += Math$1.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
 
         scope.updateAlphaOffsetAngle( rotY );
+=======
+    // this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
+    this.domElement.addEventListener( 'mousedown', onMouseDown, { passive: false } );
+    this.domElement.addEventListener( 'mousewheel', onMouseWheel, { passive: false } );
+    this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, { passive: false } ); // firefox
+
+    this.domElement.addEventListener( 'touchstart', touchstart, { passive: false } );
+    this.domElement.addEventListener( 'touchend', touchend, { passive: false } );
+    this.domElement.addEventListener( 'touchmove', touchmove, { passive: false } );
+
+    window.addEventListener( 'keyup', onKeyUp, { passive: false } );
+    window.addEventListener( 'keydown', onKeyDown, { passive: false } );
+
+    // force an update at start
+    this.update();
+
+}
+OrbitControls.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
+
+    constructor: OrbitControls
+
+} );
+
+/**
+ * @classdesc Device Orientation Control
+ * @constructor
+ * @external DeviceOrientationControls
+ * @param {THREE.Camera} camera 
+ * @param {HTMLElement} domElement 
+ */
+function DeviceOrientationControls ( camera, domElement ) {
+
+    var scope = this;
+    var changeEvent = { type: 'change' };
+
+    var rotY = 0;
+    var rotX = 0;
+    var tempX = 0;
+    var tempY = 0;
+
+    this.camera = camera;
+    this.camera.rotation.reorder( 'YXZ' );
+    this.domElement = ( domElement !== undefined ) ? domElement : document;
+
+    this.enabled = true;
+
+    this.deviceOrientation = {};
+    this.screenOrientation = 0;
+
+    this.alpha = 0;
+    this.alphaOffsetAngle = 0;
+
+
+    var onDeviceOrientationChangeEvent = function( event ) {
+
+        scope.deviceOrientation = event;
+
+    };
+
+    var onScreenOrientationChangeEvent = function() {
+
+        scope.screenOrientation = window.orientation || 0;
+
+    };
+
+    var onTouchStartEvent = function (event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+>>>>>>> cp-v0.1
+
+        tempX = event.touches[ 0 ].pageX;
+        tempY = event.touches[ 0 ].pageY;
+
+    };
+
+<<<<<<< HEAD
+    // The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
+
+    var setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
+
+        var zee = new Vector3( 0, 0, 1 );
+
+        var euler = new Euler();
+
+        var q0 = new Quaternion();
+
+        var q1 = new Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
+
+        var vectorFingerY;
+        var fingerQY = new Quaternion();
+        var fingerQX = new Quaternion();
+
+        if ( scope.screenOrientation == 0 ) {
+
+            vectorFingerY = new Vector3( 1, 0, 0 );
+            fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
+
+        } else if ( scope.screenOrientation == 180 ) {
+
+            vectorFingerY = new Vector3( 1, 0, 0 );
+            fingerQY.setFromAxisAngle( vectorFingerY, rotX );
+
+        } else if ( scope.screenOrientation == 90 ) {
+
+            vectorFingerY = new Vector3( 0, 1, 0 );
+            fingerQY.setFromAxisAngle( vectorFingerY, rotX );
+
+        } else if ( scope.screenOrientation == - 90) {
+
+            vectorFingerY = new Vector3( 0, 1, 0 );
+=======
+    var onTouchMoveEvent = function (event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        rotY += Math$1.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 );
+        rotX += Math$1.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
+
+        scope.updateAlphaOffsetAngle( rotY );
 
         tempX = event.touches[ 0 ].pageX;
         tempY = event.touches[ 0 ].pageY;
@@ -6181,10 +7383,67 @@ function DeviceOrientationControls ( camera, domElement ) {
         if ( scope.screenOrientation == 0 ) {
 
             vectorFingerY = new Vector3( 1, 0, 0 );
+>>>>>>> cp-v0.1
             fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
 
         } else if ( scope.screenOrientation == 180 ) {
 
+<<<<<<< HEAD
+        q1.multiply( fingerQY );
+        q1.multiply( fingerQX );
+
+        euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
+
+        quaternion.setFromEuler( euler ); // orient the device
+
+        quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
+
+        quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
+
+    };
+
+    this.connect = function() {
+
+        onScreenOrientationChangeEvent(); // run once on load
+
+        window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, { passive: true } );
+        window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, { passive: true } );
+        window.addEventListener( 'deviceorientation', this.update.bind( this ), { passive: true } );
+
+        scope.domElement.addEventListener( 'touchstart', onTouchStartEvent, { passive: false } );
+        scope.domElement.addEventListener( 'touchmove', onTouchMoveEvent, { passive: false } );
+
+        scope.enabled = true;
+
+    };
+
+    this.disconnect = function() {
+
+        window.removeEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
+        window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
+        window.removeEventListener( 'deviceorientation', this.update.bind( this ), false );
+
+        scope.domElement.removeEventListener( 'touchstart', onTouchStartEvent, false );
+        scope.domElement.removeEventListener( 'touchmove', onTouchMoveEvent, false );
+
+        scope.enabled = false;
+
+    };
+
+    this.update = function( ignoreUpdate ) {
+
+        if ( scope.enabled === false ) return;
+
+        var alpha = scope.deviceOrientation.alpha ? Math$1.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
+        var beta = scope.deviceOrientation.beta ? Math$1.degToRad( scope.deviceOrientation.beta ) : 0; // X'
+        var gamma = scope.deviceOrientation.gamma ? Math$1.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
+        var orient = scope.screenOrientation ? Math$1.degToRad( scope.screenOrientation ) : 0; // O
+
+        setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
+        scope.alpha = alpha;
+
+        if ( ignoreUpdate !== true ) { scope.dispatchEvent( changeEvent ); }
+=======
             vectorFingerY = new Vector3( 1, 0, 0 );
             fingerQY.setFromAxisAngle( vectorFingerY, rotX );
 
@@ -6242,9 +7501,249 @@ function DeviceOrientationControls ( camera, domElement ) {
     };
 
     this.update = function( ignoreUpdate ) {
+>>>>>>> cp-v0.1
 
         if ( scope.enabled === false ) return;
 
+<<<<<<< HEAD
+    this.updateAlphaOffsetAngle = function( angle ) {
+
+        this.alphaOffsetAngle = angle;
+        this.update();
+
+    };
+
+    this.dispose = function() {
+
+        this.disconnect();
+
+    };
+
+    this.connect();
+
+}
+DeviceOrientationControls.prototype = Object.assign( Object.create( EventDispatcher.prototype), {
+
+    constructor: DeviceOrientationControls
+
+} );
+
+/**
+ * @classdesc Google Cardboard Effect Composer
+ * @constructor
+ * @external CardboardEffect
+ * @param {THREE.WebGLRenderer} renderer 
+ */
+function CardboardEffect ( renderer ) {
+
+    var _camera = new OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+
+    var _scene = new Scene();
+
+    var _stereo = new StereoCamera();
+    _stereo.aspect = 0.5;
+
+    var _params = { minFilter: LinearFilter, magFilter: NearestFilter, format: RGBAFormat };
+
+    var _renderTarget = new WebGLRenderTarget( 512, 512, _params );
+    _renderTarget.scissorTest = true;
+    _renderTarget.texture.generateMipmaps = false;
+
+    /*
+     * Distortion Mesh ported from:
+     * https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
+     */
+
+    var distortion = new Vector2( 0.441, 0.156 );
+
+    var geometry = new PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
+
+    var positions = geometry.attributes.position.array;
+    var uvs = geometry.attributes.uv.array;
+
+    // duplicate
+    geometry.attributes.position.count *= 2;
+    geometry.attributes.uv.count *= 2;
+
+    var positions2 = new Float32Array( positions.length * 2 );
+    positions2.set( positions );
+    positions2.set( positions, positions.length );
+
+    var uvs2 = new Float32Array( uvs.length * 2 );
+    uvs2.set( uvs );
+    uvs2.set( uvs, uvs.length );
+
+    var vector = new Vector2();
+    var length = positions.length / 3;
+
+    for ( var i = 0, l = positions2.length / 3; i < l; i ++ ) {
+
+        vector.x = positions2[ i * 3 + 0 ];
+        vector.y = positions2[ i * 3 + 1 ];
+
+        var dot = vector.dot( vector );
+        var scalar = 1.5 + ( distortion.x + distortion.y * dot ) * dot;
+
+        var offset = i < length ? 0 : 1;
+
+        positions2[ i * 3 + 0 ] = ( vector.x / scalar ) * 1.5 - 0.5 + offset;
+        positions2[ i * 3 + 1 ] = ( vector.y / scalar ) * 3.0;
+
+        uvs2[ i * 2 ] = ( uvs2[ i * 2 ] + offset ) * 0.5;
+
+    }
+
+    geometry.attributes.position.array = positions2;
+    geometry.attributes.uv.array = uvs2;
+
+    //
+
+    var material = new MeshBasicMaterial( { map: _renderTarget.texture } );
+    var mesh = new Mesh( geometry, material );
+    _scene.add( mesh );
+
+    //
+
+    this.setSize = function ( width, height ) {
+
+        renderer.setSize( width, height );
+
+        var pixelRatio = renderer.getPixelRatio();
+
+        _renderTarget.setSize( width * pixelRatio, height * pixelRatio );
+
+    };
+
+    this.render = function ( scene, camera ) {
+
+        scene.updateMatrixWorld();
+
+        if ( camera.parent === null ) camera.updateMatrixWorld();
+
+        _stereo.update( camera );
+
+        var width = _renderTarget.width / 2;
+        var height = _renderTarget.height;
+
+        if ( renderer.autoClear ) renderer.clear();
+
+        _renderTarget.scissor.set( 0, 0, width, height );
+        _renderTarget.viewport.set( 0, 0, width, height );
+        renderer.setRenderTarget( _renderTarget );
+        renderer.render( scene, _stereo.cameraL );
+
+        renderer.clearDepth();
+
+        _renderTarget.scissor.set( width, 0, width, height );
+        _renderTarget.viewport.set( width, 0, width, height );
+        renderer.setRenderTarget( _renderTarget );
+        renderer.render( scene, _stereo.cameraR );
+
+        renderer.clearDepth();
+
+        renderer.setRenderTarget( null );
+        renderer.render( _scene, _camera );
+    };
+
+}
+
+/**
+ * @classdesc Stereo Effect Composer
+ * @constructor
+ * @external StereoEffect
+ * @param {THREE.WebGLRenderer} renderer 
+ */
+const StereoEffect = function ( renderer ) {
+
+    var _stereo = new StereoCamera();
+    _stereo.aspect = 0.5;
+    var size = new Vector2();
+
+    this.setEyeSeparation = function ( eyeSep ) {
+
+        _stereo.eyeSep = eyeSep;
+
+    };
+
+    this.setSize = function ( width, height ) {
+
+        renderer.setSize( width, height );
+
+    };
+
+    this.render = function ( scene, camera ) {
+
+        scene.updateMatrixWorld();
+
+        if ( camera.parent === null ) camera.updateMatrixWorld();
+
+        _stereo.update( camera );
+
+        renderer.getSize( size );
+
+        if ( renderer.autoClear ) renderer.clear();
+        renderer.setScissorTest( true );
+
+        renderer.setScissor( 0, 0, size.width / 2, size.height );
+        renderer.setViewport( 0, 0, size.width / 2, size.height );
+        renderer.render( scene, _stereo.cameraL );
+
+        renderer.setScissor( size.width / 2, 0, size.width / 2, size.height );
+        renderer.setViewport( size.width / 2, 0, size.width / 2, size.height );
+        renderer.render( scene, _stereo.cameraR );
+
+        renderer.setScissorTest( false );
+
+    };
+
+};
+
+/**
+ * @classdesc Video Panorama
+ * @constructor
+ * @param {string} src - Equirectangular video url
+ * @param {object} [options] - Option for video settings
+ * @param {HTMLElement} [options.videoElement] - HTML5 video element contains the video
+ * @param {boolean} [options.loop=true] - Specify if the video should loop in the end
+ * @param {boolean} [options.muted=true] - Mute the video or not. Need to be true in order to autoplay on some browsers
+ * @param {boolean} [options.autoplay=false] - Specify if the video should auto play
+ * @param {boolean} [options.playsinline=true] - Specify if video should play inline for iOS. If you want it to auto play inline, set both autoplay and muted options to true
+ * @param {string} [options.crossOrigin="anonymous"] - Sets the cross-origin attribute for the video, which allows for cross-origin videos in some browsers (Firefox, Chrome). Set to either "anonymous" or "use-credentials".
+ * @param {number} [radius=5000] - The minimum radius for this panoram
+ */
+function VideoPanorama ( src, options = {} ) {
+
+    const radius = 5000;
+    const geometry = new SphereBufferGeometry( radius, 60, 40 );
+    const material = new MeshBasicMaterial( { opacity: 0, transparent: true } );
+
+    Panorama.call( this, geometry, material );
+
+    this.src = src;
+
+    this.options = {
+
+        videoElement: document.createElement( 'video' ),
+        loop: true,
+        muted: true,
+        autoplay: false,
+        playsinline: true,
+        crossOrigin: 'anonymous'
+
+    };
+
+    Object.assign( this.options, options );
+
+    this.videoElement = this.options.videoElement;
+    this.videoProgress = 0;
+    this.radius = radius;
+
+    this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
+    this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
+    this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
+    this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
+
+=======
         var alpha = scope.deviceOrientation.alpha ? Math$1.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
         var beta = scope.deviceOrientation.beta ? Math$1.degToRad( scope.deviceOrientation.beta ) : 0; // X'
         var gamma = scope.deviceOrientation.gamma ? Math$1.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
@@ -6494,6 +7993,7 @@ function VideoPanorama ( src, options = {} ) {
     this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
     this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
 
+>>>>>>> cp-v0.1
 }
 VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
@@ -6539,6 +8039,156 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             this.setVideoTexture( video );
 
             if ( autoplay ) {
+<<<<<<< HEAD
+
+                /**
+                 * Viewer handler event
+                 * @type {object}
+                 * @property {string} method - 'updateVideoPlayButton'
+                 * @property {boolean} data - Pause video or not
+                 */
+                this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
+
+            }
+
+            // For mobile silent autoplay
+            if ( this.isMobile() ) {
+
+                video.pause();
+
+                if ( autoplay && muted ) {
+
+                    /**
+                     * Viewer handler event
+                     * @type {object}
+                     * @property {string} method - 'updateVideoPlayButton'
+                     * @property {boolean} data - Pause video or not
+                     */
+                    this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: false } );
+
+                } else {
+
+                    /**
+                     * Viewer handler event
+                     * @type {object}
+                     * @property {string} method - 'updateVideoPlayButton'
+                     * @property {boolean} data - Pause video or not
+                     */
+                    this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
+
+                }
+				
+            }
+
+            const loaded = () => {
+
+                // Fix for threejs r89 delayed update
+                material.map.needsUpdate = true;
+
+                onProgress( { loaded: 1, total: 1 } );
+                onLoad();
+
+            };
+
+            window.requestAnimationFrame( loaded );
+			
+        };
+
+        /**
+         * Ready state of the audio/video element
+         * 0 = HAVE_NOTHING - no information whether or not the audio/video is ready
+         * 1 = HAVE_METADATA - metadata for the audio/video is ready
+         * 2 = HAVE_CURRENT_DATA - data for the current playback position is available, but not enough data to play next frame/millisecond
+         * 3 = HAVE_FUTURE_DATA - data for the current and at least the next frame is available
+         * 4 = HAVE_ENOUGH_DATA - enough data available to start playing
+         */
+        if ( video.readyState > 2 ) {
+
+            onloadeddata.call( this );
+
+        } else {
+
+            if ( video.querySelectorAll( 'source' ).length === 0 ) {
+
+                const source = document.createElement( 'source' );
+                source.src = this.src;
+                video.appendChild( source );
+
+            }
+
+            video.load();
+        }
+
+        video.addEventListener( 'loadeddata', onloadeddata.bind( this ) );
+		
+        video.addEventListener( 'timeupdate', function () {
+
+            this.videoProgress = video.duration >= 0 ? video.currentTime / video.duration : 0;
+
+            /**
+             * Viewer handler event
+             * @type {object}
+             * @property {string} method - 'onVideoUpdate'
+             * @property {number} data - The percentage of video progress. Range from 0.0 to 1.0
+             */
+            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: this.videoProgress } );
+
+        }.bind( this ) );
+
+        video.addEventListener( 'ended', function () {
+			
+            if ( !loop ) {
+
+                this.resetVideo();
+                this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
+
+            }
+
+        }.bind( this ), false ); 
+
+    },
+
+    /**
+     * Set video texture
+     * @memberOf VideoPanorama
+     * @instance
+     * @param {HTMLVideoElement} video  - The html5 video element
+     * @fires Panorama#panolens-viewer-handler
+     */
+    setVideoTexture: function ( video ) {
+
+        if ( !video ) return;
+
+        const videoTexture = new VideoTexture( video );
+        videoTexture.minFilter = LinearFilter;
+        videoTexture.magFilter = LinearFilter;
+        videoTexture.format = RGBFormat;
+
+        this.updateTexture( videoTexture );
+	
+    },
+
+    /**
+     * Reset
+     * @memberOf VideoPanorama
+     * @instance
+     */
+    reset: function () {
+
+        this.videoElement = undefined;	
+
+        Panorama.prototype.reset.call( this );
+
+    },
+
+    /**
+     * Check if video is paused
+     * @memberOf VideoPanorama
+     * @instance
+     * @return {boolean} - is video paused or not
+     */
+    isVideoPaused: function () {
+=======
 
                 /**
                  * Viewer handler event
@@ -6722,10 +8372,49 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             video.currentTime = video.duration * percentage;
 
             this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: percentage } );
+>>>>>>> cp-v0.1
+
+        return this.videoElement.paused;
+
+    },
+<<<<<<< HEAD
+
+    /**
+     * Toggle video to play or pause
+     * @memberOf VideoPanorama
+     * @instance
+     */
+    toggleVideo: function () {
+
+        const video = this.videoElement;
+
+        if ( !video ) { return; }
+
+        video[ video.paused ? 'play' : 'pause' ]();
+
+    },
+
+    /**
+     * Set video currentTime
+     * @memberOf VideoPanorama
+     * @instance
+     * @param {object} event - Event contains percentage. Range from 0.0 to 1.0
+     */
+    setVideoCurrentTime: function ( { percentage } ) {
+
+        const video = this.videoElement;
+
+        if ( video && !Number.isNaN( percentage ) && percentage !== 1 ) {
+
+            video.currentTime = video.duration * percentage;
+
+            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onVideoUpdate', data: percentage } );
 
         }
 
     },
+=======
+>>>>>>> cp-v0.1
 
     /**
      * Play video
@@ -7362,6 +9051,10 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             // Clear exisiting infospot
             this.hideInfospot();
+            if (leavingPanorama && leavingPanorama.children){
+                // eslint-disable-next-line no-unused-expressions
+                leavingPanorama.children.map(c => { c.unlockHoverElement && c.unlockHoverElement(); c.removeHoverElement && c.removeHoverElement(); c.hide(); c.dispose(); });
+            }
 
             const afterEnterComplete = function () {
 
@@ -7847,6 +9540,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      * @instance
      */
     setCameraControl: function () {
+        if ( !this.panorama ) return;
 
         this.OrbitControls.target.copy( this.panorama.position );
 
@@ -8074,7 +9768,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
     reverseDraggingDirection: function () {
 
         this.OrbitControls.rotateSpeed *= -1;
-        this.OrbitControls.momentumScalingFactor *= -1;
+        this.OrbitControls.touchMomentumScalingFactor *= -1;
 
     },
 
@@ -8154,7 +9848,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             .to( { left: ha }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateLeft( ov.left - nv.left );
+                scope.control.rotateLeftStatic( ov.left - nv.left );
                 nv.left = ov.left;
             })
             .start();
@@ -8163,7 +9857,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             .to( { up: va }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateUp( ov.up - nv.up );
+                scope.control.rotateUpStatic( ov.up - nv.up );
                 nv.up = ov.up;
             })
             .start();
@@ -9156,4 +10850,8 @@ if ( REVISION$1 != THREE_REVISION ) {
  */
 window.TWEEN = Tween;
 
+<<<<<<< HEAD
 export { CONTROLS, CubeTextureLoader, DataImage, EmptyPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, ImagePartialPanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, Viewer, Widget };
+=======
+export { BasicPanorama, CONTROLS, CubeTextureLoader, DataImage, EmptyPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, Viewer, Widget };
+>>>>>>> cp-v0.1

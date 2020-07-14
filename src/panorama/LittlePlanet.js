@@ -227,6 +227,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     addZoomDelta: function ( delta ) {
 
+        if (!this.material) return;
+
         const uniforms = this.material.uniforms;
         const lowerBound = this.size * 0.1;
         const upperBound = this.size * 10;
@@ -274,6 +276,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
     },
 
     onLoad: function ( texture ) {
+
+        if (!this.material) return;
 
         this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 

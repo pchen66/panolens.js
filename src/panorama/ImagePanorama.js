@@ -10,7 +10,7 @@ import * as THREE from 'three';
 function ImagePanorama ( image, _geometry, _material ) {
 
     const radius = 5000;
-    const geometry = _geometry || new THREE.SphereBufferGeometry( radius, 60, 40 );
+    const geometry = _geometry || new THREE.SphereBufferGeometry( radius, 100, 80 );
     const material = _material || new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
     Panorama.call( this, geometry, material );
@@ -87,13 +87,14 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {
 
-        const { material: { map } } = this;
+        if (this.material){
+            const { material: { map } } = this;
+
+            if ( map ) { map.dispose(); }}
 
         // Release cached image
-        THREE.Cache.remove( this.src );
-
-        if ( map ) { map.dispose(); }
-
+        THREE.Cache.remove(this.src);
+        
         Panorama.prototype.dispose.call( this );
 
     }

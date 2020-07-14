@@ -358,6 +358,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             // Clear exisiting infospot
             this.hideInfospot();
+            if (leavingPanorama && leavingPanorama.children){
+                // eslint-disable-next-line no-unused-expressions
+                leavingPanorama.children.map(c => { c.unlockHoverElement && c.unlockHoverElement(); c.removeHoverElement && c.removeHoverElement(); c.hide(); c.dispose(); });
+            }
 
             const afterEnterComplete = function () {
 
@@ -843,6 +847,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      */
     setCameraControl: function () {
+        if ( !this.panorama ) return;
 
         this.OrbitControls.target.copy( this.panorama.position );
 
@@ -1070,7 +1075,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     reverseDraggingDirection: function () {
 
         this.OrbitControls.rotateSpeed *= -1;
-        this.OrbitControls.momentumScalingFactor *= -1;
+        this.OrbitControls.touchMomentumScalingFactor *= -1;
 
     },
 
@@ -1150,7 +1155,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             .to( { left: ha }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateLeft( ov.left - nv.left );
+                scope.control.rotateLeftStatic( ov.left - nv.left );
                 nv.left = ov.left;
             })
             .start();
@@ -1159,7 +1164,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             .to( { up: va }, duration )
             .easing( easing )
             .onUpdate(function(ov){
-                scope.control.rotateUp( ov.up - nv.up );
+                scope.control.rotateUpStatic( ov.up - nv.up );
                 nv.up = ov.up;
             })
             .start();

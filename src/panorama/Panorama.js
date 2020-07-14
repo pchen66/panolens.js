@@ -300,6 +300,8 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      */
     updateTexture: function ( texture ) {
 
+        if (!this.material) return;
+
         this.material.map = texture;
         this.material.needsUpdate = true;
 
@@ -323,7 +325,7 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
             if ( object instanceof Infospot ) {
 
-                if ( visible ) {
+                if ( visible && object.loaded ) {
 
                     object.show( delay );
 
@@ -507,6 +509,8 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
     onFadeAnimationUpdate: function () {
 
+        if (!this.material) return;
+
         const alpha = this.material.opacity;
         const { uniforms } = this.material;
 
@@ -638,10 +642,18 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
                  */
                 this.dispatchEvent( { type: 'leave-start' } );
 
-                this.fadeOut( duration );
-                this.toggleInfospotVisibility( false );
-
+                this.toggleInfospotVisibility(false);
+                this.fadeOut( 200 );
             }.bind( this ) )
+            .onComplete(function () {
+                if ((this.material && this.material.uniforms)) { // TinyPlanet has material.uniforms and needs a timeout
+                    setTimeout(() => { this.dispose(); }, 3000);
+                }
+                else if (this.material) {
+                    this.dispose();
+                }
+            }.bind( this ) )
+            
             .start();
 
         /**
