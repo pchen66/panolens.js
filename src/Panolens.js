@@ -16,6 +16,7 @@ export { Panorama } from './panorama/Panorama';
 export { ImagePanorama } from './panorama/ImagePanorama';
 export { EmptyPanorama } from './panorama/EmptyPanorama';
 export { BasicPanorama } from './panorama/BasicPanorama';
+export { SliderPanorama } from './panorama/SliderPanorama';
 export { LittlePlanet } from './panorama/LittlePlanet';
 export { ImageLittlePlanet } from './panorama/ImageLittlePlanet';
 export { Viewer } from './viewer/Viewer';

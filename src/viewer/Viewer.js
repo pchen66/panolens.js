@@ -248,7 +248,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      */
     add: function ( object ) {
-
+        
         if ( arguments.length > 1 ) {
 
             for ( let i = 0; i < arguments.length; i ++ ) {
@@ -260,7 +260,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             return this;
 
         }
-
+       
         this.scene.add( object );
 
         // All object added to scene has 'panolens-viewer-handler' event to handle viewer communication
@@ -353,6 +353,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     setPanorama: function ( pano ) {
 
         const leavingPanorama = this.panorama;
+
+     
+        var _this = this;
+        setTimeout(function() {
+            _this.scene.background = pano.slides[0];
+            _this.scene.background.index = 0;
+        },100);
 
         if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
 
@@ -1250,6 +1257,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
 
+        if (this.scene.background!==null) {
+            var relAspect = this.camera.aspect / (this.scene.background.image.naturalWidth / this.scene.background.image.naturalHeight);
+
+            this.scene.background.repeat = new THREE.Vector2( Math.min(relAspect, 1), Math.min(1/relAspect,1) ); 
+            this.scene.background.offset = new THREE.Vector2( -Math.min(relAspect-1, 0)/2, -Math.min(1/relAspect-1, 0)/2 ); 
+        }
+
         this.renderer.setSize( width, height );
 
         // Update reticle
@@ -1350,6 +1364,19 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         this.userMouse.type = 'mousedown';
         this.onTap( event );
 
+        if (this.scene.background!==null && typeof this.scene.background !== 'undefined') {
+            
+            var index = this.scene.background.index;
+            index++;
+            if (this.scene.children[0].slides.length<=index) index = 0;
+
+            this.scene.background = this.scene.children[0].slides[index];
+            this.scene.background.index = index;
+            var relAspect = this.camera.aspect / (this.scene.background.image.naturalWidth / this.scene.background.image.naturalHeight);
+
+            this.scene.background.repeat = new THREE.Vector2( Math.min(relAspect, 1), Math.min(1/relAspect,1) ); 
+            this.scene.background.offset = new THREE.Vector2( -Math.min(relAspect-1, 0)/2, -Math.min(1/relAspect-1, 0)/2 ); 
+        }
     },
 
     /**
