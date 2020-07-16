@@ -1630,7 +1630,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         }
 
         // Auto rotate
-        if ( this.options.autoRotate && this.userMouse.type !== 'mousemove' ) {
+        const clickIsValidOrAHotspot = (!this.infospot || this.infospot && this.infospot.type != 'toScene');
+        if (this.options.autoRotate && this.userMouse.type !== 'mousemove' && clickIsValidOrAHotspot ) {
 
             // Auto-rotate idle timer
             clearTimeout( this.autoRotateRequestId );
