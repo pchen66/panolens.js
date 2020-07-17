@@ -299,7 +299,6 @@ Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
      * @param {THREE.Texture} texture - Texture to be updated
      */
     updateTexture: function ( texture ) {
-
         if (!this.material) return;
 
         this.material.map = texture;

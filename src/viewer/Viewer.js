@@ -10,6 +10,7 @@ import { DataImage } from '../DataImage';
 import { Panorama } from '../panorama/Panorama';
 import { VideoPanorama } from '../panorama/VideoPanorama';
 import { CameraPanorama } from '../panorama/CameraPanorama';
+import { SliderPanorama } from '../panorama/SliderPanorama';
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
 
@@ -295,7 +296,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             }
 
         }
-
+        // Show image if use SliderPanorama
+        if (object instanceof SliderPanorama) {
+            object.addEventListener( 'load',  this.setBackground.bind(this));
+        }
     },
 
     /**
@@ -353,13 +357,6 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     setPanorama: function ( pano ) {
 
         const leavingPanorama = this.panorama;
-
-     
-        var _this = this;
-        setTimeout(function() {
-            _this.scene.background = pano.slides[0];
-            _this.scene.background.index = 0;
-        },100);
 
         if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
 
@@ -422,7 +419,14 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         });
 
     },
-
+    /**
+     * Set scene background
+     * @memberOf Viewer
+     * @instance
+     */
+    setBackground: function(pano) {
+        this.scene.background = pano.target.material.map;
+    },
     /**
      * Set widget content
      * @method activateWidgetItem
@@ -1363,20 +1367,6 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         this.userMouse.y = ( event.clientY >= 0 ) ? event.clientY : event.touches[0].clientY;
         this.userMouse.type = 'mousedown';
         this.onTap( event );
-
-        if (this.scene.background!==null && typeof this.scene.background !== 'undefined') {
-            
-            var index = this.scene.background.index;
-            index++;
-            if (this.scene.children[0].slides.length<=index) index = 0;
-
-            this.scene.background = this.scene.children[0].slides[index];
-            this.scene.background.index = index;
-            var relAspect = this.camera.aspect / (this.scene.background.image.naturalWidth / this.scene.background.image.naturalHeight);
-
-            this.scene.background.repeat = new THREE.Vector2( Math.min(relAspect, 1), Math.min(1/relAspect,1) ); 
-            this.scene.background.offset = new THREE.Vector2( -Math.min(relAspect-1, 0)/2, -Math.min(1/relAspect-1, 0)/2 ); 
-        }
     },
 
     /**
@@ -1517,7 +1507,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             this.pressObject = undefined;
 
         }
-
+       
         if ( type === 'click' ) {
 
             this.panorama.dispatchEvent( { type: 'click', intersects: intersects, mouseEvent: event } );
@@ -2064,7 +2054,6 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         request.send( null );
 
     },
-
     /**
      * View indicator in upper left
      * @memberOf Viewer

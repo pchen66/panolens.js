@@ -4130,7 +4130,6 @@
 	     * @param {THREE.Texture} texture - Texture to be updated
 	     */
 	    updateTexture: function ( texture ) {
-
 	        if (!this.material) return;
 
 	        this.material.map = texture;
@@ -4798,10 +4797,9 @@
 	 * @constructor
 	 * @param {array} images - Array of 6 urls to images, one for each side of the CubeTexture. The urls should be specified in the following order: pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
 	 */
-	function SliderPanorama ( images = [] ){
+	function SliderPanorama ( image ){
 
-	    this.images = images;
-	    this.slides = [];
+	    this.image = image;
 	    
 	    const geometry = new THREE.BufferGeometry();
 	    const material = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
@@ -4816,12 +4814,12 @@
 	    constructor: SliderPanorama,
 
 	    /**
-	     * Load 6 images and bind listeners
+	     * Load image and bind listeners
 	     * @memberOf SliderPanorama
 	     * @instance
 	     */
 	    load: function () {
-	        this.images.forEach( ( image ) => { TextureLoader.load( image, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) ); } );
+	        TextureLoader.load( this.image, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
 	    },
 
 	    /**
@@ -4831,21 +4829,17 @@
 	     * @instance
 	     */
 	    onLoad: function ( texture ) {
-	        var bgWidth = texture.image.naturalWidth;
-	        var bgHeight = texture.image.naturalHeight;
-
-	        var aspect = window.innerWidth / window.innerHeight;
-	        var texAspect = bgWidth / bgHeight;
-	        var relAspect = aspect / texAspect;
+	        var relAspect = (window.innerWidth / window.innerHeight) / ( texture.image.naturalWidth / texture.image.naturalHeight);
 
 	        texture.repeat = new THREE.Vector2( Math.min(relAspect, 1), Math.min(1/relAspect,1) ); 
 	        texture.offset = new THREE.Vector2( -Math.min(relAspect-1, 0)/2, -Math.min(1/relAspect-1, 0)/2 ); 
 
 	        texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
-	        this.slides.push(texture);
+	        texture.needsUpdate = true;
 
-	        Panorama.prototype.onLoad.call( this );
+	        this.updateTexture( texture );
 
+	        window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
 	    },
 
 	    /**
@@ -4857,7 +4851,7 @@
 
 	        const { value } = this.material.uniforms.tCube;
 
-	        this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
+	        THREE.Cache.remove( this.image );
 
 	        if ( value instanceof THREE.CubeTexture ) {
 
@@ -7431,7 +7425,10 @@
 	            }
 
 	        }
-
+	        // Show image if use SliderPanorama
+	        if (object instanceof SliderPanorama) {
+	            object.addEventListener( 'load',  this.setBackground.bind(this));
+	        }
 	    },
 
 	    /**
@@ -7489,13 +7486,6 @@
 	    setPanorama: function ( pano ) {
 
 	        const leavingPanorama = this.panorama;
-
-	     
-	        var _this = this;
-	        setTimeout(function() {
-	            _this.scene.background = pano.slides[0];
-	            _this.scene.background.index = 0;
-	        },100);
 
 	        if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
 
@@ -7558,7 +7548,14 @@
 	        });
 
 	    },
-
+	    /**
+	     * Set scene background
+	     * @memberOf Viewer
+	     * @instance
+	     */
+	    setBackground: function(pano) {
+	        this.scene.background = pano.target.material.map;
+	    },
 	    /**
 	     * Set widget content
 	     * @method activateWidgetItem
@@ -8499,20 +8496,6 @@
 	        this.userMouse.y = ( event.clientY >= 0 ) ? event.clientY : event.touches[0].clientY;
 	        this.userMouse.type = 'mousedown';
 	        this.onTap( event );
-
-	        if (this.scene.background!==null && typeof this.scene.background !== 'undefined') {
-	            
-	            var index = this.scene.background.index;
-	            index++;
-	            if (this.scene.children[0].slides.length<=index) index = 0;
-
-	            this.scene.background = this.scene.children[0].slides[index];
-	            this.scene.background.index = index;
-	            var relAspect = this.camera.aspect / (this.scene.background.image.naturalWidth / this.scene.background.image.naturalHeight);
-
-	            this.scene.background.repeat = new THREE.Vector2( Math.min(relAspect, 1), Math.min(1/relAspect,1) ); 
-	            this.scene.background.offset = new THREE.Vector2( -Math.min(relAspect-1, 0)/2, -Math.min(1/relAspect-1, 0)/2 ); 
-	        }
 	    },
 
 	    /**
@@ -8653,7 +8636,7 @@
 	            this.pressObject = undefined;
 
 	        }
-
+	       
 	        if ( type === 'click' ) {
 
 	            this.panorama.dispatchEvent( { type: 'click', intersects: intersects, mouseEvent: event } );
@@ -9200,7 +9183,6 @@
 	        request.send( null );
 
 	    },
-
 	    /**
 	     * View indicator in upper left
 	     * @memberOf Viewer

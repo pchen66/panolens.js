@@ -7,10 +7,9 @@ import * as THREE from 'three';
  * @constructor
  * @param {array} images - Array of 6 urls to images, one for each side of the CubeTexture. The urls should be specified in the following order: pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
  */
-function SliderPanorama ( images = [] ){
+function SliderPanorama ( image ){
 
-    this.images = images;
-    this.slides = [];
+    this.image = image;
     
     const geometry = new THREE.BufferGeometry();
     const material = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
@@ -25,12 +24,12 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     constructor: SliderPanorama,
 
     /**
-     * Load 6 images and bind listeners
+     * Load image and bind listeners
      * @memberOf SliderPanorama
      * @instance
      */
     load: function () {
-        this.images.forEach( ( image ) => { TextureLoader.load( image, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) ); } );
+        TextureLoader.load( this.image, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
     },
 
     /**
@@ -40,21 +39,17 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @instance
      */
     onLoad: function ( texture ) {
-        var bgWidth = texture.image.naturalWidth;
-        var bgHeight = texture.image.naturalHeight;
-
-        var aspect = window.innerWidth / window.innerHeight;
-        var texAspect = bgWidth / bgHeight;
-        var relAspect = aspect / texAspect;
+        var relAspect = (window.innerWidth / window.innerHeight) / ( texture.image.naturalWidth / texture.image.naturalHeight);
 
         texture.repeat = new THREE.Vector2( Math.min(relAspect, 1), Math.min(1/relAspect,1) ); 
         texture.offset = new THREE.Vector2( -Math.min(relAspect-1, 0)/2, -Math.min(1/relAspect-1, 0)/2 ); 
 
         texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
-        this.slides.push(texture);
+        texture.needsUpdate = true;
 
-        Panorama.prototype.onLoad.call( this );
+        this.updateTexture( texture );
 
+        window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
     },
 
     /**
@@ -66,7 +61,7 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         const { value } = this.material.uniforms.tCube;
 
-        this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
+        THREE.Cache.remove( this.image );
 
         if ( value instanceof THREE.CubeTexture ) {
 
