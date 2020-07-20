@@ -4795,7 +4795,7 @@ BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype )
  */
 function SliderPanorama ( image ){
 
-    this.image = image;
+    // this.image = image;
     
     const geometry = new BufferGeometry();
     const material = new MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
@@ -4803,6 +4803,8 @@ function SliderPanorama ( image ){
     geometry.addAttribute( 'position', new BufferAttribute( new Float32Array(), 1 ) );
 
     Panorama.call( this, geometry, material );
+
+    this.src = image;
 }
 
 SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
@@ -4814,8 +4816,25 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @memberOf SliderPanorama
      * @instance
      */
-    load: function () {
-        TextureLoader.load( this.image, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
+    load: function ( src ) {
+        src = src || this.src;
+
+        if (!src) {
+
+            console.warn('Image source undefined');
+
+            return;
+
+        } else if (typeof src === 'string') {
+
+            TextureLoader.load(src, this.onLoad.bind(this), this.onProgress.bind(this), this.onError.bind(this));
+
+        } else if (src instanceof HTMLImageElement) {
+
+            this.onLoad(new Texture(src));
+
+        }
+        // TextureLoader.load( this.image, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
     },
 
     /**
@@ -7422,6 +7441,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         // Show image if use SliderPanorama
         if (object instanceof SliderPanorama) {
             object.addEventListener( 'load',  this.setBackground.bind(this));
+            // this.control.enabled = false; // TODO: consider doing this if we continue to use background property
         }
     },
 
