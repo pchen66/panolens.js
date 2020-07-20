@@ -59,16 +59,14 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {	
 
-        const { value } = this.material.uniforms.tCube;
+        if (this.material){
+            const { material: { map } } = this;
 
-        THREE.Cache.remove( this.image );
+            if ( map ) { map.dispose(); }}
 
-        if ( value instanceof THREE.CubeTexture ) {
-
-            value.dispose();
-
-        }
-
+        // Release cached image
+        THREE.Cache.remove(this.src);
+        
         Panorama.prototype.dispose.call( this );
 
     }

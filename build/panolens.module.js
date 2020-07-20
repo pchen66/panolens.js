@@ -4845,16 +4845,14 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     dispose: function () {	
 
-        const { value } = this.material.uniforms.tCube;
+        if (this.material){
+            const { material: { map } } = this;
 
-        Cache.remove( this.image );
+            if ( map ) { map.dispose(); }}
 
-        if ( value instanceof CubeTexture ) {
-
-            value.dispose();
-
-        }
-
+        // Release cached image
+        Cache.remove(this.src);
+        
         Panorama.prototype.dispose.call( this );
 
     }
@@ -9082,6 +9080,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         this.tweenLeftAnimation.stop();
         this.tweenUpAnimation.stop();
+        this.scene.background = null;
 
         // Unregister dom event listeners
         this.unregisterEventListeners();

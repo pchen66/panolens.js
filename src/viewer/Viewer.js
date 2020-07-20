@@ -1957,6 +1957,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         this.tweenLeftAnimation.stop();
         this.tweenUpAnimation.stop();
+        this.scene.background = null;
 
         // Unregister dom event listeners
         this.unregisterEventListeners();

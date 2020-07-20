@@ -4849,16 +4849,14 @@
 	     */
 	    dispose: function () {	
 
-	        const { value } = this.material.uniforms.tCube;
+	        if (this.material){
+	            const { material: { map } } = this;
 
-	        THREE.Cache.remove( this.image );
+	            if ( map ) { map.dispose(); }}
 
-	        if ( value instanceof THREE.CubeTexture ) {
-
-	            value.dispose();
-
-	        }
-
+	        // Release cached image
+	        THREE.Cache.remove(this.src);
+	        
 	        Panorama.prototype.dispose.call( this );
 
 	    }
@@ -9086,6 +9084,7 @@
 
 	        this.tweenLeftAnimation.stop();
 	        this.tweenUpAnimation.stop();
+	        this.scene.background = null;
 
 	        // Unregister dom event listeners
 	        this.unregisterEventListeners();
