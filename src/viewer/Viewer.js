@@ -299,6 +299,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         // Show image if use SliderPanorama
         if (object instanceof SliderPanorama) {
             object.addEventListener( 'load',  this.setBackground.bind(this));
+            // this.control.enabled = false; // TODO: consider doing this if we continue to use background property
         }
     },
 
