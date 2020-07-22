@@ -1,4 +1,4 @@
-import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Vector2, MirroredRepeatWrapping, Matrix4, Quaternion, PlaneBufferGeometry, Math as Math$1, Spherical, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
+import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, Spherical, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
 
 const version="0.11.0";const dependencies={three:"^0.105.2"};
 
@@ -4789,22 +4789,24 @@ BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype )
 } );
 
 /**
- * @classdesc Cubemap-based panorama
+ * @classdesc SliderPanorama
  * @constructor
- * @param {array} images - Array of 6 urls to images, one for each side of the CubeTexture. The urls should be specified in the following order: pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
+ * @param {string} image - image src
  */
-function SliderPanorama ( image ){
+function SliderPanorama ( image ) {
 
     // this.image = image;
     
     const geometry = new BufferGeometry();
     const material = new MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+    
 
     geometry.addAttribute( 'position', new BufferAttribute( new Float32Array(), 1 ) );
 
     Panorama.call( this, geometry, material );
 
     this.src = image;
+    this.spriteMaterial = new SpriteMaterial( { sizeAttenuation: false} );
 }
 
 SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
@@ -4836,7 +4838,20 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         }
         // TextureLoader.load( this.image, this.onLoad.bind( this ), this.onProgress.bind( this ), this.onError.bind( this ) );
     },
+    /**
+     * Update texture of a panorama
+     * @memberOf Panorama
+     * @instance
+     * @param {THREE.Texture} texture - Texture to be updated
+     */
+    updateTexture: function ( texture ) {
+        if (!this.material) return;
 
+        this.spriteMaterial.map = texture;
+        this.width = texture.image.width;
+        this.height = texture.image.height;
+        this.spriteMaterial.needsUpdate = true;
+    },
     /**
      * This will be called when 6 textures are ready
      * @param  {THREE.CubeTexture} texture - List texture
@@ -4844,18 +4859,10 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @instance
      */
     onLoad: function ( texture ) {
-        var relAspect = (window.innerWidth / window.innerHeight) / ( texture.image.naturalWidth / texture.image.naturalHeight);
-
-        texture.repeat = new Vector2( Math.min(relAspect, 1), Math.min(1/relAspect,1) ); 
-        texture.offset = new Vector2( -Math.min(relAspect-1, 0)/2, -Math.min(1/relAspect-1, 0)/2 ); 
-
-        texture.wrapS = texture.wrapT = MirroredRepeatWrapping;
-        texture.needsUpdate = true;
-
         this.updateTexture( texture );
-
         window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
     },
+    
 
     /**
      * Dispose
@@ -7440,11 +7447,27 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         }
         // Show image if use SliderPanorama
         if (object instanceof SliderPanorama) {
-            object.addEventListener( 'load',  this.setBackground.bind(this));
-            // this.control.enabled = false; // TODO: consider doing this if we continue to use background property
+            object.addEventListener( 'load',  this.setSlider.bind(this));
         }
     },
-
+    /**
+     * Set scene background
+     * @memberOf Viewer
+     * @instance
+     */
+    setSlider: function(event) {
+        var object = event.target;
+       
+        this.slide = new Sprite( object.spriteMaterial );
+        
+        var ratio = object.width/object.height;
+        
+        var scale = 0.16;
+        
+        this.slide.scale.set(ratio + scale , 1 + scale, 1);
+        this.slide.center.set( 0.5, 0.5 );
+        object.add(this.slide);
+    },
     /**
      * Remove an object from the scene
      * @param  {THREE.Object3D} object - Object to be removed
@@ -7562,14 +7585,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         });
 
     },
-    /**
-     * Set scene background
-     * @memberOf Viewer
-     * @instance
-     */
-    setBackground: function(pano) {
-        this.scene.background = pano.target.material.map;
-    },
+   
     /**
      * Set widget content
      * @method activateWidgetItem
@@ -8403,13 +8419,6 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
-
-        if (this.scene.background!==null) {
-            var relAspect = this.camera.aspect / (this.scene.background.image.naturalWidth / this.scene.background.image.naturalHeight);
-
-            this.scene.background.repeat = new Vector2( Math.min(relAspect, 1), Math.min(1/relAspect,1) ); 
-            this.scene.background.offset = new Vector2( -Math.min(relAspect-1, 0)/2, -Math.min(1/relAspect-1, 0)/2 ); 
-        }
 
         this.renderer.setSize( width, height );
 
