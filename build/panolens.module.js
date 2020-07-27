@@ -1,4 +1,4 @@
-import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, Spherical, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
+import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, NeverDepth, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, Spherical, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
 
 const version="0.11.0";const dependencies={three:"^0.105.2"};
 
@@ -4799,14 +4799,19 @@ function SliderPanorama ( image ) {
     
     const geometry = new BufferGeometry();
     const material = new MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
-    
 
     geometry.addAttribute( 'position', new BufferAttribute( new Float32Array(), 1 ) );
 
     Panorama.call( this, geometry, material );
 
     this.src = image;
-    this.spriteMaterial = new SpriteMaterial( { sizeAttenuation: false} );
+    this.spriteMaterial = new SpriteMaterial( { sizeAttenuation: true} );
+    this.spriteMaterial.transparent = true;
+    this.spriteMaterial.opacity = 1;
+    this.spriteMaterial.depthFunc = NeverDepth;
+    this.spriteMaterial.depthWrite = false;
+    this.spriteMaterial.depthTest = false;
+    this.spriteMaterial.needsUpdate = true;
 }
 
 SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
@@ -4851,6 +4856,7 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         this.width = texture.image.width;
         this.height = texture.image.height;
         this.spriteMaterial.needsUpdate = true;
+        this.spriteMaterial.map.needsUpdate = true;
     },
     /**
      * This will be called when 6 textures are ready
@@ -7459,14 +7465,33 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         var object = event.target;
        
         this.slide = new Sprite( object.spriteMaterial );
-        
+        this.slide.renderOrder = -1;
         var ratio = object.width/object.height;
-        
+        this.ratioSlider = ratio;
         var scale = 0.16;
-        
+       
         this.slide.scale.set(ratio + scale , 1 + scale, 1);
         this.slide.center.set( 0.5, 0.5 );
-        object.add(this.slide);
+
+        this.fitCameraToSlider(this.camera,this.control,0.78,this.ratioSlider);
+        this.scene.add(this.slide);
+        object.position.set(0, 0, 0);
+        this.slide.position.set(0, 0, 0);
+
+        this.controls.enabled = false;
+    },
+    fitCameraToSlider: function ( camera, controls, fitOffset = 0.78, imageRatio ) {
+        const fitHeightDistance = 1.16 / ( 2 * Math.atan( Math.PI * camera.fov / 360 ) );
+        
+        const fitWidthDistance = fitHeightDistance / camera.aspect * imageRatio;
+       
+        const distance = fitOffset * Math.max( fitHeightDistance, fitWidthDistance );
+        
+        const direction = controls.target.clone().sub( camera.position ).normalize().multiplyScalar( distance );
+        
+        camera.position.copy( controls.target ).sub(direction);
+        controls.update();
+        
     },
     /**
      * Remove an object from the scene
@@ -7483,7 +7508,6 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         }
 
         this.scene.remove( object );
-
     },
 
     /**
@@ -8421,6 +8445,8 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         this.camera.updateProjectionMatrix();
 
         this.renderer.setSize( width, height );
+        
+        if (typeof this.ratioSlider !='undefined') this.fitCameraToSlider(this.camera,this.control,0.78,this.ratioSlider);
 
         // Update reticle
         if ( this.options.enableReticle || this.tempEnableReticle ) {

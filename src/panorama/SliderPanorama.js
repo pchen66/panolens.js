@@ -13,14 +13,19 @@ function SliderPanorama ( image ) {
     
     const geometry = new THREE.BufferGeometry();
     const material = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
-    
 
     geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
 
     Panorama.call( this, geometry, material );
 
     this.src = image;
-    this.spriteMaterial = new THREE.SpriteMaterial( { sizeAttenuation: false} );
+    this.spriteMaterial = new THREE.SpriteMaterial( { sizeAttenuation: true} );
+    this.spriteMaterial.transparent = true;
+    this.spriteMaterial.opacity = 1;
+    this.spriteMaterial.depthFunc = THREE.NeverDepth;
+    this.spriteMaterial.depthWrite = false;
+    this.spriteMaterial.depthTest = false;
+    this.spriteMaterial.needsUpdate = true;
 }
 
 SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
@@ -65,6 +70,7 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         this.width = texture.image.width;
         this.height = texture.image.height;
         this.spriteMaterial.needsUpdate = true;
+        this.spriteMaterial.map.needsUpdate = true;
     },
     /**
      * This will be called when 6 textures are ready
