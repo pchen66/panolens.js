@@ -602,7 +602,12 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      */
     hide: function ( delay = 0 ) {
 
-        const { animated, hideAnimation, showAnimation, material } = this;
+        const { animated, hideAnimation, showAnimation, material, element } = this;
+
+        if ( element ) {
+          const { style } = element;
+          style.display = 'none';
+        }
 
         if ( animated ) {
 
