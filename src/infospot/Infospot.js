@@ -605,8 +605,8 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
         const { animated, hideAnimation, showAnimation, material, element } = this;
 
         if ( element ) {
-          const { style } = element;
-          style.display = 'none';
+            const { style } = element;
+            style.display = 'none';
         }
 
         if ( animated ) {
