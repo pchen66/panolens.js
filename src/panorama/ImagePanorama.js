@@ -59,7 +59,7 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @instance
      */
     onLoad: function ( texture ) {
-
+        
         texture.minFilter = texture.magFilter = THREE.LinearFilter;
         texture.needsUpdate = true;
 		

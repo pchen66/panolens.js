@@ -9,29 +9,35 @@ import * as THREE from 'three';
  */
 function SliderPanorama ( image ) {
 
-    // this.image = image;
-    
-    const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+    const radius = 5000;
+
+    const geometry = new THREE.SphereBufferGeometry( radius, 100, 80 );
+    const material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
     geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
 
     Panorama.call( this, geometry, material );
 
     this.src = image;
-    this.spriteMaterial = new THREE.SpriteMaterial( { sizeAttenuation: true} );
+    this.spriteMaterial = new THREE.SpriteMaterial();
+    this.spriteMaterial.sizeAttenuation = false;
     this.spriteMaterial.transparent = true;
     this.spriteMaterial.opacity = 1;
     this.spriteMaterial.depthFunc = THREE.NeverDepth;
     this.spriteMaterial.depthWrite = false;
     this.spriteMaterial.depthTest = false;
     this.spriteMaterial.needsUpdate = true;
+
+    this.radius = radius;
 }
 
 SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     constructor: SliderPanorama,
+    
+    hide: function() {
 
+    },
     /**
      * Load image and bind listeners
      * @memberOf SliderPanorama
@@ -66,6 +72,9 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
     updateTexture: function ( texture ) {
         if (!this.material) return;
 
+        this.material.map = texture;
+        this.material.needsUpdate = true;
+
         this.spriteMaterial.map = texture;
         this.width = texture.image.width;
         this.height = texture.image.height;
@@ -82,7 +91,17 @@ SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         this.updateTexture( texture );
         window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
     },
-    
+    /**
+     * Reset
+     * @memberOf SliderPanorama
+     * @instance
+     */
+    reset: function () {
+
+        Panorama.prototype.reset.call( this );
+
+    },
+
 
     /**
      * Dispose

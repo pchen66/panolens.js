@@ -4617,7 +4617,7 @@
 	     * @instance
 	     */
 	    onLoad: function ( texture ) {
-
+	        
 	        texture.minFilter = texture.magFilter = THREE.LinearFilter;
 	        texture.needsUpdate = true;
 			
@@ -4799,29 +4799,35 @@
 	 */
 	function SliderPanorama ( image ) {
 
-	    // this.image = image;
-	    
-	    const geometry = new THREE.BufferGeometry();
-	    const material = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+	    const radius = 5000;
+
+	    const geometry = new THREE.SphereBufferGeometry( radius, 100, 80 );
+	    const material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
 	    geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
 
 	    Panorama.call( this, geometry, material );
 
 	    this.src = image;
-	    this.spriteMaterial = new THREE.SpriteMaterial( { sizeAttenuation: true} );
+	    this.spriteMaterial = new THREE.SpriteMaterial();
+	    this.spriteMaterial.sizeAttenuation = false;
 	    this.spriteMaterial.transparent = true;
 	    this.spriteMaterial.opacity = 1;
 	    this.spriteMaterial.depthFunc = THREE.NeverDepth;
 	    this.spriteMaterial.depthWrite = false;
 	    this.spriteMaterial.depthTest = false;
 	    this.spriteMaterial.needsUpdate = true;
+
+	    this.radius = radius;
 	}
 
 	SliderPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
 	    constructor: SliderPanorama,
+	    
+	    hide: function() {
 
+	    },
 	    /**
 	     * Load image and bind listeners
 	     * @memberOf SliderPanorama
@@ -4856,6 +4862,9 @@
 	    updateTexture: function ( texture ) {
 	        if (!this.material) return;
 
+	        this.material.map = texture;
+	        this.material.needsUpdate = true;
+
 	        this.spriteMaterial.map = texture;
 	        this.width = texture.image.width;
 	        this.height = texture.image.height;
@@ -4872,7 +4881,17 @@
 	        this.updateTexture( texture );
 	        window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
 	    },
-	    
+	    /**
+	     * Reset
+	     * @memberOf SliderPanorama
+	     * @instance
+	     */
+	    reset: function () {
+
+	        Panorama.prototype.reset.call( this );
+
+	    },
+
 
 	    /**
 	     * Dispose
@@ -7254,6 +7273,8 @@
 
 	    this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
 	    this.scene = options.scene || new THREE.Scene();
+	    this.sliders = new THREE.Group();
+	    this.scene.add(this.sliders);
 	    this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
 	    this.sceneReticle = new THREE.Scene();
 
@@ -7461,7 +7482,7 @@
 	        }
 	    },
 	    /**
-	     * Set scene background
+	     * Set scene SliderPanorama
 	     * @memberOf Viewer
 	     * @instance
 	     */
@@ -7477,25 +7498,33 @@
 	        this.slide.scale.set(ratio + scale , 1 + scale, 1);
 	        this.slide.center.set( 0.5, 0.5 );
 
-	        this.fitCameraToSlider(this.camera,this.control,0.78,this.ratioSlider);
-	        this.scene.add(this.slide);
-	        object.position.set(0, 0, 0);
+	        this.updateSprite(this.camera, this.slide);
+
+	        this.sliders.remove(...this.sliders.children);
+	        this.sliders.add(this.slide);
+
 	        this.slide.position.set(0, 0, 0);
 
 	        this.controls.enabled = false;
 	    },
-	    fitCameraToSlider: function ( camera, controls, fitOffset = 0.78, imageRatio ) {
-	        const fitHeightDistance = 1.16 / ( 2 * Math.atan( Math.PI * camera.fov / 360 ) );
+	    updateSprite: function (camera, sprite) {
+	        var texture = sprite.material.map;
+	        var img_w = texture.image.width;
+	        var img_h = texture.image.height;
 	        
-	        const fitWidthDistance = fitHeightDistance / camera.aspect * imageRatio;
-	       
-	        const distance = fitOffset * Math.max( fitHeightDistance, fitWidthDistance );
+	        var image_ratio = img_w/img_h;
 	        
-	        const direction = controls.target.clone().sub( camera.position ).normalize().multiplyScalar( distance );
+	        var _scale = 1;
+	        const fitHeightDistance = 2 * Math.tan( Math.PI * (camera.fov) / 360 );
 	        
-	        camera.position.copy( controls.target ).sub(direction);
-	        controls.update();
-	        
+	        const fitWidthDistance = fitHeightDistance / camera.aspect * image_ratio;
+	        if (fitHeightDistance > fitWidthDistance) {
+	            _scale = fitHeightDistance;
+	        } else {
+	            _scale = fitHeightDistance * camera.aspect / image_ratio;
+	        }
+	      
+	        sprite.scale.set(_scale * image_ratio,_scale,1);
 	    },
 	    /**
 	     * Remove an object from the scene
@@ -7510,7 +7539,7 @@
 	            object.removeEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
 
 	        }
-
+	        
 	        this.scene.remove( object );
 	    },
 
@@ -8450,7 +8479,7 @@
 
 	        this.renderer.setSize( width, height );
 	        
-	        if (typeof this.ratioSlider !='undefined') this.fitCameraToSlider(this.camera,this.control,0.78,this.ratioSlider);
+	        if (typeof this.ratioSlider !='undefined') this.updateSprite(this.camera,this.slide);
 
 	        // Update reticle
 	        if ( this.options.enableReticle || this.tempEnableReticle ) {
