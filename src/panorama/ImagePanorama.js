@@ -9,16 +9,17 @@ import * as THREE from 'three';
  */
 let counter = 0;
 function ImagePanorama ( image, _geometry, _material ) {
-
-    let radius = 5000;
-    radius -= counter;
-    const geometry = _geometry || new THREE.SphereBufferGeometry( radius, 100, 80 );
+    
+    const radius = 5000;
+    const geometry = _geometry || new THREE.SphereBufferGeometry( radius + counter, 100, 80 );
     const material = _material || new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
+
 
     Panorama.call( this, geometry, material );
 
     this.src = image;
-    this.radius = radius;
+    this.radius = radius + counter;
+
     counter -= 10;
 }
 

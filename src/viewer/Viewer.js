@@ -369,10 +369,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             // Clear exisiting infospot
             this.hideInfospot();
-            if (leavingPanorama && leavingPanorama.children){
-                // eslint-disable-next-line no-unused-expressions
-                leavingPanorama.children.map(c => { c.unlockHoverElement && c.unlockHoverElement(); c.removeHoverElement && c.removeHoverElement(); c.hide(); c.dispose(); });
-            }
+            // if (leavingPanorama && leavingPanorama.children){
+            //     // eslint-disable-next-line no-unused-expressions
+            //     leavingPanorama.children.map(c => { c.unlockHoverElement && c.unlockHoverElement(); c.removeHoverElement && c.removeHoverElement();/* c.hide(); c.dispose(); */});
+            // }
 
             const afterEnterComplete = function () {
 
@@ -383,8 +383,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             pano.addEventListener( 'enter-fade-start', afterEnterComplete );
 
-            // Assign and enter panorama
-            if ( leavingPanorama ) { leavingPanorama.onLeave(); }
+            /*
+             * Assign and enter panorama
+             * if ( leavingPanorama ) { leavingPanorama.onLeave(); }
+             */
             (this.panorama = pano).onEnter();
 			
         }
