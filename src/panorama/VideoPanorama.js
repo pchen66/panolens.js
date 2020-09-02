@@ -14,10 +14,11 @@ import * as THREE from 'three';
  * @param {string} [options.crossOrigin="anonymous"] - Sets the cross-origin attribute for the video, which allows for cross-origin videos in some browsers (Firefox, Chrome). Set to either "anonymous" or "use-credentials".
  * @param {number} [radius=5000] - The minimum radius for this panoram
  */
+let counter = 0;
 function VideoPanorama ( src, options = {} ) {
 
     const radius = 5000;
-    const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
+    const geometry = new THREE.SphereBufferGeometry( radius + counter, 60, 40 );
     const material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
     Panorama.call( this, geometry, material );
@@ -39,8 +40,9 @@ function VideoPanorama ( src, options = {} ) {
 
     this.videoElement = this.options.videoElement;
     this.videoProgress = 0;
-    this.radius = radius;
-
+    this.radius = radius + counter;
+    counter -= 10;
+    
     this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
     this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
     this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );

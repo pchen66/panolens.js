@@ -4689,11 +4689,12 @@
 	 * @constructor
 	 * @param {array} images - Array of 6 urls to images, one for each side of the CubeTexture. The urls should be specified in the following order: pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
 	 */
+	let counter$1 = 0;
 	function CubePanorama ( images = [] ){
 
 	    const edgeLength = 10000;
 	    const shader = Object.assign( {}, THREE.ShaderLib[ 'cube' ] );
-	    const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+	    const geometry = new THREE.BoxBufferGeometry( edgeLength + counter$1, edgeLength + counter$1, edgeLength + counter$1 );
 	    const material = new THREE.ShaderMaterial( {
 
 	        fragmentShader: shader.fragmentShader,
@@ -4707,8 +4708,9 @@
 	    Panorama.call( this, geometry, material );
 
 	    this.images = images;
-	    this.edgeLength = edgeLength;
+	    this.edgeLength = edgeLength + counter$1;
 	    this.material.uniforms.opacity.value = 0;
+	    counter$1 -= 10;
 
 	}
 
@@ -7271,10 +7273,11 @@
 	 * @param {string} [options.crossOrigin="anonymous"] - Sets the cross-origin attribute for the video, which allows for cross-origin videos in some browsers (Firefox, Chrome). Set to either "anonymous" or "use-credentials".
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
+	let counter$2 = 0;
 	function VideoPanorama ( src, options = {} ) {
 
 	    const radius = 5000;
-	    const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
+	    const geometry = new THREE.SphereBufferGeometry( radius + counter$2, 60, 40 );
 	    const material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
 	    Panorama.call( this, geometry, material );
@@ -7296,8 +7299,9 @@
 
 	    this.videoElement = this.options.videoElement;
 	    this.videoProgress = 0;
-	    this.radius = radius;
-
+	    this.radius = radius + counter$2;
+	    counter$2 -= 10;
+	    
 	    this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
 	    this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
 	    this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
@@ -7756,17 +7760,20 @@
 	 * @param {object} - camera constraints
 	 * @constructor
 	 */
+	let counter$3 = 0;
 	function CameraPanorama ( constraints ) {
 
 	    const radius = 5000;
-	    const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
+	    const geometry = new THREE.SphereBufferGeometry( radius + counter$3, 60, 40 );
 	    const material = new THREE.MeshBasicMaterial( { visible: false });
 
 	    Panorama.call( this, geometry, material );
 
 	    this.media = new Media( constraints );
-	    this.radius = radius;
+	    this.radius = radius + counter$3;
 
+	    counter$3 -= 10;
+	    
 	    this.addEventListener( 'enter', this.start.bind( this ) );
 	    this.addEventListener( 'leave', this.stop.bind( this ) );
 	    this.addEventListener( 'panolens-container', this.onPanolensContainer.bind( this ) );

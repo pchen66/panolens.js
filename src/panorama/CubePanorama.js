@@ -7,11 +7,12 @@ import * as THREE from 'three';
  * @constructor
  * @param {array} images - Array of 6 urls to images, one for each side of the CubeTexture. The urls should be specified in the following order: pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
  */
+let counter = 0;
 function CubePanorama ( images = [] ){
 
     const edgeLength = 10000;
     const shader = Object.assign( {}, THREE.ShaderLib[ 'cube' ] );
-    const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+    const geometry = new THREE.BoxBufferGeometry( edgeLength + counter, edgeLength + counter, edgeLength + counter );
     const material = new THREE.ShaderMaterial( {
 
         fragmentShader: shader.fragmentShader,
@@ -25,8 +26,9 @@ function CubePanorama ( images = [] ){
     Panorama.call( this, geometry, material );
 
     this.images = images;
-    this.edgeLength = edgeLength;
+    this.edgeLength = edgeLength + counter;
     this.material.uniforms.opacity.value = 0;
+    counter -= 10;
 
 }
 

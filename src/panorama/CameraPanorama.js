@@ -8,17 +8,20 @@ import * as THREE from 'three';
  * @param {object} - camera constraints
  * @constructor
  */
+let counter = 0;
 function CameraPanorama ( constraints ) {
 
     const radius = 5000;
-    const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
+    const geometry = new THREE.SphereBufferGeometry( radius + counter, 60, 40 );
     const material = new THREE.MeshBasicMaterial( { visible: false });
 
     Panorama.call( this, geometry, material );
 
     this.media = new Media( constraints );
-    this.radius = radius;
+    this.radius = radius + counter;
 
+    counter -= 10;
+    
     this.addEventListener( 'enter', this.start.bind( this ) );
     this.addEventListener( 'leave', this.stop.bind( this ) );
     this.addEventListener( 'panolens-container', this.onPanolensContainer.bind( this ) );
