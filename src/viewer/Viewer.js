@@ -1,5 +1,6 @@
 import { MODES, CONTROLS } from '../Constants';
 import { OrbitControls } from '../lib/controls/OrbitControls';
+import { SphericalControls } from '../lib/controls/SphericalControls';
 import { DeviceOrientationControls } from '../lib/controls/DeviceOrientationControls';
 import { CardboardEffect } from '../lib/effects/CardboardEffect';
 import { StereoEffect } from '../lib/effects/StereoEffect';
@@ -157,13 +158,23 @@ function Viewer ( options ) {
     this.container.style.backgroundColor = '#000';
     this.container.appendChild( this.renderer.domElement );
 
-    // Camera Controls
+    /*
+     * Camera Controls
+     * Old Controls
+     */
+
     this.OrbitControls = new OrbitControls( this.camera, this.container );
     this.OrbitControls.id = 'orbit';
     this.OrbitControls.minDistance = 1;
     this.OrbitControls.noPan = true;
     this.OrbitControls.autoRotate = this.options.autoRotate;
     this.OrbitControls.autoRotateSpeed = this.options.autoRotateSpeed;
+
+    // New Controls
+    this.SphericalControls = new SphericalControls( this.camera, this.scene, this.container ); 
+    this.SphericalControls.id = 'sperical';
+    this.SphericalControls.autoRotate = this.options.autoRotate;
+    this.SphericalControls.autoRotateSpeed = this.options.autoRotateSpeed;
 
     this.DeviceOrientationControls = new DeviceOrientationControls( this.camera, this.container );
     this.DeviceOrientationControls.id = 'device-orientation';
@@ -178,8 +189,8 @@ function Viewer ( options ) {
     }
 
     // Controls
-    this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
-    this.control = this.OrbitControls;
+    this.controls = [ this.OrbitControls, this.DeviceOrientationControls, this.SphericalControls ];
+    this.control = this.SphericalControls;
 
     // Cardboard effect
     this.CardboardEffect = new CardboardEffect( this.renderer );
@@ -852,6 +863,17 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         this.OrbitControls.target.copy( this.panorama.position );
 
     },
+    /**
+     * Set current camera control
+     * @param {number} id {0 = THREE.OrbitControls, 1 = THREE.DeviceOrientationControls,2 = THREE.SphericalControls}
+     * @memberOf Viewer
+     * @instance
+     */
+    setControl: function (id) {
+
+        this.control = this.controls[id];
+
+    },
 
     /**
      * Get current camera control
@@ -1088,8 +1110,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         this.reticle = new Reticle( 0xffffff, true, this.options.dwellTime );
         this.reticle.hide();
-        this.camera.add( this.reticle );
-        this.sceneReticle.add( this.camera );
+        // this.camera.add( this.reticle );
+        /*
+         * this.sceneReticle.add( this.camera );
+         */
 
     },
 

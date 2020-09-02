@@ -7,9 +7,11 @@ import * as THREE from 'three';
  * @constructor
  * @param {string} image - Image url or HTMLImageElement
  */
+let counter = 0;
 function ImagePanorama ( image, _geometry, _material ) {
 
-    const radius = 5000;
+    let radius = 5000;
+    radius -= counter;
     const geometry = _geometry || new THREE.SphereBufferGeometry( radius, 100, 80 );
     const material = _material || new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
@@ -17,7 +19,7 @@ function ImagePanorama ( image, _geometry, _material ) {
 
     this.src = image;
     this.radius = radius;
-
+    counter -= 10;
 }
 
 ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
