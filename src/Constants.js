@@ -51,3 +51,24 @@ export const CONTROLS = { ORBIT: 0, DEVICEORIENTATION: 1 };
  * @property {number} STEREO 3
  */
 export const MODES = { UNKNOWN: 0, NORMAL: 1, CARDBOARD: 2, STEREO: 3 };
+
+/**
+ * CONTROL_BUTTONS
+ * @module CONTROL_BUTTONS
+ * @example PANOLENS.VIEWER.CONTROL_BUTTONS
+ * @property {string} FULLSCREEN
+ * @property {string} SETTING
+ * @property {string} VIDEO
+ */
+export const CONTROL_BUTTONS = { FULLSCREEN: 'fullscreen', SETTING: 'setting', VIDEO: 'video' };
+
+/**
+ * OUTPUTS
+ * @module OUTPUTS
+ * @example PANOLENS.VIEWER.OUTPUTS
+ * @property {string} NONE
+ * @property {string} CONSOLE
+ * @property {string} OVERLAY
+ */
+export const OUTPUTS = { NONE: 'none', CONSOLE: 'console', OVERLAY: 'overlay' };
+
