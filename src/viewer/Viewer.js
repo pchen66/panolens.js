@@ -385,8 +385,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         if ( event.method && this[ event.method ] ) {
 
-            // Fix for iOS 13+
-            if (event.method === 'enableControl' && data === 1 && DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+            // Fix for iOS 13+  - Must request permission to access device motion
+            if (event.method === 'enableControl' && event.data === 1 && DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
 
                 DeviceOrientationEvent.requestPermission().then((response) => {
                     if (response === 'granted') {
