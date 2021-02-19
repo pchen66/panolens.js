@@ -1319,7 +1319,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             switch ( this.options.output ) {
 
             case 'event':
-                this.dispatchEvent( { type: 'position-update', position: position } );
+                /**
+                 * Dispatch raycast position as event
+                 * @type {object}
+                 * @event Viewer#position-output
+                 */
+                this.dispatchEvent( { type: 'position-output', position: position } );
                 break;
 
             case 'console':
@@ -1466,6 +1471,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             this.outputPosition(); 
 
         }
+
 
         const intersects = this.raycaster.intersectObjects( this.panorama.children, true );
         const intersect_entity = this.getConvertedIntersect( intersects );
