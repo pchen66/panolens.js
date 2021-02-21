@@ -1,6 +1,6 @@
 import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
 
-const version="0.12.0";const dependencies={three:"^0.105.2"};
+const version="0.12.1";const dependencies={three:"^0.105.2"};
 
 /**
  * REVISION
@@ -105,63 +105,70 @@ const ImageLoader = {
         Cache.enabled = true;
 
         let cached, request, arrayBufferView, blob, urlCreator, image, reference;
-	
+
         // Reference key
-        for ( let iconName in DataImage ) {
-	
-            if ( DataImage.hasOwnProperty( iconName ) && url === DataImage[ iconName ] ) {
-	
+        for (let iconName in DataImage) {
+
+            if (DataImage.hasOwnProperty(iconName) && url === DataImage[iconName]) {
+
                 reference = iconName;
-	
+
             }
-	
+
         }
-	
+
         // Cached
-        cached = Cache.get( reference ? reference : url );
-	
-        if ( cached !== undefined ) {
-	
-            if ( onLoad ) {
-	
-                setTimeout( function () {
-	
-                    onProgress( { loaded: 1, total: 1 } );
-                    onLoad( cached );
-	
-                }, 0 );
-	
+        cached = Cache.get(reference ? reference : url);
+
+        if (cached !== undefined) {
+
+            if (onLoad) {
+
+                setTimeout(function () {
+
+                    onProgress({loaded: 1, total: 1});
+                    onLoad(cached);
+
+                }, 0);
+
             }
-	
+
             return cached;
-	
+
         }
-		
+
         // Construct a new XMLHttpRequest
         urlCreator = window.URL || window.webkitURL;
-        image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
-	
+        image = document.createElementNS('http://www.w3.org/1999/xhtml', 'img');
+
         // Add to cache
-        Cache.add( reference ? reference : url, image );
-	
+        Cache.add(reference ? reference : url, image);
+
         const onImageLoaded = () => {
-	
-            urlCreator.revokeObjectURL( image.src );
-            onLoad( image );
-	
+
+            urlCreator.revokeObjectURL(image.src);
+            onLoad(image);
+
         };
 
-        if ( url.indexOf( 'data:' ) === 0 ) {
+        if (url.indexOf('data:') === 0) {
 
-            image.addEventListener( 'load', onImageLoaded, false );
+            image.addEventListener('load', onImageLoaded, false);
             image.src = url;
             return image;
         }
-	
+
         image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
-	
+
         request = new window.XMLHttpRequest();
-        request.open( 'GET', url, true );
+        request.open('GET', url, true);
+        if (process.env.npm_lifecycle_event !== 'test') {
+            request.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status >= 400) {
+                    onError();
+                }
+            };
+        }
         request.responseType = 'arraybuffer';
         request.addEventListener( 'error', onError );
         request.addEventListener( 'progress', event => {
