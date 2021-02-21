@@ -207,6 +207,24 @@ test.cb('Output positions with mouse events - console', t => {
 
 });
 
+test.cb('Output positions with mouse events - event', t => {
+
+    const viewer = new Viewer( { output: 'event' } );
+    const panorama = new ImagePanorama( cabinImageURL );
+
+    viewer.add( panorama );
+
+    t.context.viewer = viewer;
+    t.context.end = () => {
+        window.dispatchEvent( keyboardUpEvent );
+        t.end();
+    };
+    t.context.start();
+
+    window.dispatchEvent( keyboardDownEvent );
+
+});
+
 test.cb('Output positions with mouse events - overlay', t => {
     
     const viewer = new Viewer( { output: 'overlay' } );

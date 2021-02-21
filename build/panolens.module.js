@@ -1,6 +1,6 @@
 import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
 
-const version="0.11.0";const dependencies={three:"^0.105.2"};
+const version="0.12.0";const dependencies={three:"^0.105.2"};
 
 /**
  * REVISION
@@ -2493,7 +2493,12 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      */
     hide: function ( delay = 0 ) {
 
-        const { animated, hideAnimation, showAnimation, material } = this;
+        const { animated, hideAnimation, showAnimation, material, element } = this;
+
+        if ( element ) {
+            const { style } = element;
+            style.display = 'none';
+        }
 
         if ( animated ) {
 
@@ -7416,7 +7421,7 @@ const StereoEffect = function ( renderer ) {
  * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
  * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
  * @param {number}  [options.indicatorSize=30] - Size of View Indicator
- * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
+ * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'event', 'console' or 'overlay'.
  * @param {boolean} [options.autoRotate=false] - Auto rotate
  * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
  * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
@@ -8687,11 +8692,26 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             const world = this.panorama.getWorldPosition( new Vector3() );
             point.sub( world ).multiply( converter );
 
-            const message = `${point.x.toFixed(2)}, ${point.y.toFixed(2)}, ${point.z.toFixed(2)}`;
+            const position = {
+                x: point.x.toFixed(2),
+                y: point.y.toFixed(2),
+                z: point.z.toFixed(2),
+            };
+
+            const message = `${position.x}, ${position.y}, ${position.z}`;
 
             if ( point.length() === 0 ) { return; }
 
             switch ( this.options.output ) {
+
+            case 'event':
+                /**
+                 * Dispatch raycast position as event
+                 * @type {object}
+                 * @event Viewer#position-output
+                 */
+                this.dispatchEvent( { type: 'position-output', position: position } );
+                break;
 
             case 'console':
                 console.info( message );
@@ -8837,6 +8857,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             this.outputPosition(); 
 
         }
+
 
         const intersects = this.raycaster.intersectObjects( this.panorama.children, true );
         const intersect_entity = this.getConvertedIntersect( intersects );
