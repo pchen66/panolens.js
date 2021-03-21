@@ -41,12 +41,21 @@ const ImageLoader = {
 
             if (onLoad) {
 
-                setTimeout(function () {
+                if ( cached.complete && cached.src ) {
+                    setTimeout( function () {
 
-                    onProgress({loaded: 1, total: 1});
-                    onLoad(cached);
+                        onProgress( { loaded: 1, total: 1 } );
+                        onLoad( cached );
 
-                }, 0);
+                    }, 0 );
+                } else {
+                    cached.addEventListener( 'load', function () {
+
+                        onProgress( { loaded: 1, total: 1 } );
+                        onLoad( cached );
+
+                    }, false );
+                }
 
             }
 
