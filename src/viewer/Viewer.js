@@ -370,7 +370,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             // Assign and enter panorama
             (this.panorama = pano).onEnter();
-			
+
         }
 
     },
@@ -385,7 +385,18 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         if ( event.method && this[ event.method ] ) {
 
-            this[ event.method ]( event.data );
+            // Fix for iOS 13+  - Must request permission to access device motion
+            if (event.method === 'enableControl' && event.data === 1 && DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+
+                DeviceOrientationEvent.requestPermission().then((response) => {
+                    if (response === 'granted') {
+                        this[event.method](event.data);
+                    }
+                });
+
+            } else {
+                this[event.method](event.data);
+            }
 
         }
 
@@ -442,12 +453,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
                 item = ControlMenuItem.subMenu.children[ 2 ];
 
                 break;
-					
+
             default:
 
                 item = ControlMenuItem.subMenu.children[ 1 ];
 
-                break;	
+                break;
 
             }
 
@@ -469,7 +480,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             case MODES.STEREO:
 
                 item = ModeMenuItem.subMenu.children[ 3 ];
-					
+
                 break;
 
             default:
@@ -513,7 +524,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             this.effect = this.StereoEffect;
             this.enableReticleControl();
-				
+
             break;
 
         default:
@@ -791,7 +802,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     /**
      * Update video play button
-     * @param {boolean} paused 
+     * @param {boolean} paused
      * @memberOf Viewer
      * @instance
      */
@@ -829,7 +840,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
                     this.hideVideoWidget.call( this );
 
                 }
-				
+
             }.bind( this ) );
 
         }
@@ -1074,7 +1085,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
     },
 
     /**
-     * Add reticle 
+     * Add reticle
      * @memberOf Viewer
      * @instance
      */
@@ -1225,12 +1236,12 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             const isAndroid = /(android)/i.test(window.navigator.userAgent);
 
-            const adjustWidth = isAndroid 
-                ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 
+            const adjustWidth = isAndroid
+                ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0)
                 : Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 
-            const adjustHeight = isAndroid 
-                ? Math.min(document.documentElement.clientHeight, window.innerHeight || 0) 
+            const adjustHeight = isAndroid
+                ? Math.min(document.documentElement.clientHeight, window.innerHeight || 0)
                 : Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 
             width = expand ? adjustWidth : this.container.clientWidth;
@@ -1346,7 +1357,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     /**
      * On mouse down
-     * @param {MouseEvent} event 
+     * @param {MouseEvent} event
      * @memberOf Viewer
      * @instance
      */
@@ -1363,7 +1374,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     /**
      * On mouse move
-     * @param {MouseEvent} event 
+     * @param {MouseEvent} event
      * @memberOf Viewer
      * @instance
      */
@@ -1377,7 +1388,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     /**
      * On mouse up
-     * @param {MouseEvent} event 
+     * @param {MouseEvent} event
      * @memberOf Viewer
      * @instance
      */
@@ -1387,15 +1398,15 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         this.userMouse.type = 'mouseup';
 
-        const type = ( this.userMouse.x >= event.clientX - this.options.clickTolerance 
+        const type = ( this.userMouse.x >= event.clientX - this.options.clickTolerance
 				&& this.userMouse.x <= event.clientX + this.options.clickTolerance
 				&& this.userMouse.y >= event.clientY - this.options.clickTolerance
-				&& this.userMouse.y <= event.clientY + this.options.clickTolerance ) 
-				||  ( event.changedTouches 
+				&& this.userMouse.y <= event.clientY + this.options.clickTolerance )
+				||  ( event.changedTouches
 				&& this.userMouse.x >= event.changedTouches[0].clientX - this.options.clickTolerance
-				&& this.userMouse.x <= event.changedTouches[0].clientX + this.options.clickTolerance 
+				&& this.userMouse.x <= event.changedTouches[0].clientX + this.options.clickTolerance
 				&& this.userMouse.y >= event.changedTouches[0].clientY - this.options.clickTolerance
-				&& this.userMouse.y <= event.changedTouches[0].clientY + this.options.clickTolerance ) 
+				&& this.userMouse.y <= event.changedTouches[0].clientY + this.options.clickTolerance )
             ? 'click' : undefined;
 
         // Event should happen on canvas
@@ -1406,7 +1417,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         if ( event.changedTouches && event.changedTouches.length === 1 ) {
 
             onTarget = this.onTap( { clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY }, type );
-		
+
         } else {
 
             onTarget = this.onTap( event, type );
@@ -1415,9 +1426,9 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         this.userMouse.type = 'none';
 
-        if ( onTarget ) { 
+        if ( onTarget ) {
 
-            return; 
+            return;
 
         }
 
@@ -1443,8 +1454,8 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     /**
      * On tap eveny frame
-     * @param {MouseEvent} event 
-     * @param {string} type 
+     * @param {MouseEvent} event
+     * @param {string} type
      * @memberOf Viewer
      * @instance
      */
@@ -1458,17 +1469,17 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
-        // Return if no panorama 
-        if ( !this.panorama ) { 
+        // Return if no panorama
+        if ( !this.panorama ) {
 
-            return; 
+            return;
 
         }
 
         // output infospot information
-        if ( event.type !== 'mousedown' && this.touchSupported || this.OUTPUT_INFOSPOT ) { 
+        if ( event.type !== 'mousedown' && this.touchSupported || this.OUTPUT_INFOSPOT ) {
 
-            this.outputPosition(); 
+            this.outputPosition();
 
         }
 
@@ -1625,13 +1636,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         if ( intersect && intersect instanceof Infospot ) {
 
             this.infospot = intersect;
-			
+
             if ( type === 'click' ) {
 
                 return true;
 
             }
-			
+
 
         } else if ( this.infospot ) {
 
@@ -1652,13 +1663,13 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
             }
 
-        }		
+        }
 
     },
 
     /**
      * Get converted intersect
-     * @param {array} intersects 
+     * @param {array} intersects
      * @memberOf Viewer
      * @instance
      */
@@ -1730,7 +1741,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     /**
      * On key down
-     * @param {KeyboardEvent} event 
+     * @param {KeyboardEvent} event
      * @memberOf Viewer
      * @instance
      */
@@ -1746,7 +1757,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
     /**
      * On key up
-     * @param {KeyboardEvent} event 
+     * @param {KeyboardEvent} event
      * @memberOf Viewer
      * @instance
      */
@@ -1770,10 +1781,10 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         this.control.update();
 
         this.scene.traverse( function( child ){
-            if ( child instanceof Infospot 
-				&& child.element 
-				&& ( this.hoverObject === child 
-					|| child.element.style.display !== 'none' 
+            if ( child instanceof Infospot
+				&& child.element
+				&& ( this.hoverObject === child
+					|| child.element.style.display !== 'none'
 					|| (child.element.left && child.element.left.style.display !== 'none')
 					|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
                 if ( this.checkSpriteInViewport( child ) ) {
@@ -1782,7 +1793,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
                 } else {
                     child.onDismiss();
                 }
-				
+
             }
         }.bind( this ) );
 
@@ -1801,7 +1812,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             this.renderer.clear();
             this.effect.render( this.scene, this.camera );
             this.effect.render( this.sceneReticle, this.camera );
-			
+
 
         } else {
 
@@ -2005,7 +2016,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         this.dispose();
         this.render();
-        window.cancelAnimationFrame( this.requestAnimationId );		
+        window.cancelAnimationFrame( this.requestAnimationId );
 
     },
 
@@ -2125,7 +2136,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      */
     appendControlItem: function ( option ) {
 
-        const item = this.widget.createCustomItem( option );		
+        const item = this.widget.createCustomItem( option );
 
         if ( option.group === 'video' ) {
 
