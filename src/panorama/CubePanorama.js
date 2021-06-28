@@ -16,7 +16,7 @@ function CubePanorama ( images = [] ){
 
         fragmentShader: shader.fragmentShader,
         vertexShader: shader.vertexShader,
-        uniforms: shader.uniforms,
+        uniforms: { ...shader.uniforms, opacity:{ ...shader.uniforms.opacity }},
         side: THREE.BackSide,
         transparent: true
 
