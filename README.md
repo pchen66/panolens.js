@@ -26,7 +26,7 @@ Panolens.js is an event-driven and WebGL based panorama viewer. Lightweight and 
 
 Include `three.min.js` and `panolens.min.js`
 
-To find the correct supported versions, please check `dependencies` section in `package.json` or acess `PANOLENS.VERSION` or `PANOLENS.THREE_VERSION` at runtime.
+To find the correct supported versions, please check `dependencies` section in `package.json` or access `PANOLENS.VERSION` or `PANOLENS.THREE_VERSION` at runtime.
 
 ```html
 <script src="js/three.min.js"></script>
