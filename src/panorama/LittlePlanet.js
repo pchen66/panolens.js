@@ -12,42 +12,38 @@ import * as THREE from 'three';
  * @param {number} [size=10000] - Size of plane geometry
  * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
  */
-function LittlePlanet ( type = 'image', source, size = 10000, ratio = 0.5 ) {
+class LittlePlanet extends ImagePanorama {
+    constructor( type = 'image', source, size = 10000, ratio = 0.5 ) {
+        if ( type === 'image' ) {
+            super(source, LittlePlanet.createGeometry( size, ratio ), LittlePlanet.createMaterial( size ) );
+        }
+        else {
+            super();
+        }
 
-    if ( type === 'image' ) {
+        this.size = size;
+        this.ratio = ratio;
+        this.EPS = 0.000001;
+        this.frameId = null;
 
-        ImagePanorama.call( this, source, this.createGeometry( size, ratio ), this.createMaterial( size ) );
+        this.dragging = false;
+        this.userMouse = new THREE.Vector2();
 
+        this.quatA = new THREE.Quaternion();
+        this.quatB = new THREE.Quaternion();
+        this.quatCur = new THREE.Quaternion();
+        this.quatSlerp = new THREE.Quaternion();
+
+        this.vectorX = new THREE.Vector3( 1, 0, 0 );
+        this.vectorY = new THREE.Vector3( 0, 1, 0 );
+
+        this.addEventListener( 'window-resize', this.onWindowResize );
     }
 
-    this.size = size;
-    this.ratio = ratio;
-    this.EPS = 0.000001;
-    this.frameId = null;
-
-    this.dragging = false;
-    this.userMouse = new THREE.Vector2();
-
-    this.quatA = new THREE.Quaternion();
-    this.quatB = new THREE.Quaternion();
-    this.quatCur = new THREE.Quaternion();
-    this.quatSlerp = new THREE.Quaternion();
-
-    this.vectorX = new THREE.Vector3( 1, 0, 0 );
-    this.vectorY = new THREE.Vector3( 0, 1, 0 );
-
-    this.addEventListener( 'window-resize', this.onWindowResize );
-
-}
-
-LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype ), {
-
-    constructor: LittlePlanet,
-
-    add: function ( object ) {
+    add ( object ) {
 
         if ( arguments.length > 1 ) {
-			
+  
             for ( let i = 0; i < arguments.length; i ++ ) {
 
                 this.add( arguments[ i ] );
@@ -61,20 +57,20 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         if ( object instanceof Infospot ) {
 
             object.material.depthTest = false;
-			
+  
         }
 
         ImagePanorama.prototype.add.call( this, object );
 
-    },
+    }
 
-    createGeometry: function ( size, ratio ) {
+    static createGeometry ( size, ratio ) {
 
         return new THREE.PlaneBufferGeometry( size, size * ratio );
 
-    },
+    }
 
-    createMaterial: function ( size ) {
+    static createMaterial ( size ) {
 
         const shader = Object.assign( {}, StereographicShader ), uniforms = shader.uniforms;
 
@@ -90,10 +86,10 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
             transparent: true
 
         } );
-		
-    },
 
-    registerMouseEvents: function () {
+    }
+
+    registerMouseEvents () {
 
         this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), { passive: true } );
         this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), { passive: true } );
@@ -104,10 +100,10 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         this.container.addEventListener( 'mousewheel', this.onMouseWheel.bind( this ), { passive: false } );
         this.container.addEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), { passive: false } );
         this.container.addEventListener( 'contextmenu', this.onContextMenu.bind( this ), { passive: true } );
-		
-    },
 
-    unregisterMouseEvents: function () {
+    }
+
+    unregisterMouseEvents () {
 
         this.container.removeEventListener( 'mousedown', this.onMouseDown.bind( this ), false );
         this.container.removeEventListener( 'mousemove', this.onMouseMove.bind( this ), false );
@@ -118,10 +114,10 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         this.container.removeEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
         this.container.removeEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
         this.container.removeEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
-		
-    },
 
-    onMouseDown: function ( event ) {
+    }
+
+    onMouseDown ( event ) {
 
         const inputCount = ( event.touches && event.touches.length ) || 1 ;
 
@@ -154,9 +150,9 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
         this.onUpdateCallback();
 
-    },
+    }
 
-    onMouseMove: function ( event ) {
+    onMouseMove ( event ) {
 
         const inputCount = ( event.touches && event.touches.length ) || 1 ;
 
@@ -195,15 +191,15 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
         }
 
-    },
+    }
 
-    onMouseUp: function () {
+    onMouseUp () {
 
         this.dragging = false;
 
-    },
+    }
 
-    onMouseWheel: function ( event ) {
+    onMouseWheel ( event ) {
 
         event.preventDefault();
         event.stopPropagation();
@@ -223,9 +219,9 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         this.addZoomDelta( delta );
         this.onUpdateCallback();
 
-    },
+    }
 
-    addZoomDelta: function ( delta ) {
+    addZoomDelta ( delta ) {
 
         const uniforms = this.material.uniforms;
         const lowerBound = this.size * 0.1;
@@ -242,10 +238,9 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
             uniforms.zoom.value = upperBound;
 
         }
+    }
 
-    },
-
-    onUpdateCallback: function () {
+    onUpdateCallback () {
 
         this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
 
@@ -256,37 +251,37 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
             this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
 
         }
-        
+    
         if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
-			
+  
             window.cancelAnimationFrame( this.frameId );
 
         }
 
-    },
+    }
 
-    reset: function () {
+    reset () {
 
         this.quatCur.set( 0, 0, 0, 1 );
         this.quatSlerp.set( 0, 0, 0, 1 );
         this.onUpdateCallback();
 
-    },
+    }
 
-    onLoad: function ( texture ) {
+    onLoad ( texture ) {
 
         this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 
         this.registerMouseEvents();
         this.onUpdateCallback();
-		
+
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' } );
 
         ImagePanorama.prototype.onLoad.call( this, texture );
-		
-    },
 
-    onLeave: function () {
+    }
+
+    onLeave () {
 
         this.unregisterMouseEvents();
 
@@ -295,22 +290,20 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         window.cancelAnimationFrame( this.frameId );
 
         ImagePanorama.prototype.onLeave.call( this );
-		
-    },
 
-    onWindowResize: function () {
+    }
 
+    onWindowResize () {
         this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
+    }
 
-    },
-
-    onContextMenu: function () {
+    onContextMenu () {
 
         this.dragging = false;
 
-    },
+    }
 
-    dispose: function () {	
+    dispose () {	
 
         this.unregisterMouseEvents();
 
@@ -318,6 +311,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     }
 
-});
+ 
+
+}
 
 export { LittlePlanet };

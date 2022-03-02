@@ -85,9 +85,6 @@ class ImagePanorama extends Panorama {
         Panorama.prototype.dispose.call( this );
 
     }
-
-
-
 }
 
 export { ImagePanorama };

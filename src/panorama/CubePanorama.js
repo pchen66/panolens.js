@@ -7,39 +7,36 @@ import * as THREE from 'three';
  * @constructor
  * @param {array} images - Array of 6 urls to images, one for each side of the CubeTexture. The urls should be specified in the following order: pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
  */
-function CubePanorama ( images = [] ){
+class CubePanorama extends Panorama {
+    constructor ( images = [] ) {
 
-    const edgeLength = 10000;
-    const shader = Object.assign( {}, THREE.ShaderLib[ 'cube' ] );
-    const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
-    const material = new THREE.ShaderMaterial( {
+        const edgeLength = 10000;
+        const shader = Object.assign( {}, THREE.ShaderLib[ 'cube' ] );
+        const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+        const material = new THREE.ShaderMaterial( {
 
-        fragmentShader: shader.fragmentShader,
-        vertexShader: shader.vertexShader,
-        uniforms: shader.uniforms,
-        side: THREE.BackSide,
-        transparent: true
+            fragmentShader: shader.fragmentShader,
+            vertexShader: shader.vertexShader,
+            uniforms: shader.uniforms,
+            side: THREE.BackSide,
+            transparent: true
 
-    } );
+        } );
 
-    Panorama.call( this, geometry, material );
+        super(geometry, material);
 
-    this.images = images;
-    this.edgeLength = edgeLength;
-    this.material.uniforms.opacity.value = 0;
+        this.images = images;
+        this.edgeLength = edgeLength;
+        this.material.uniforms.opacity.value = 0;
 
-}
-
-CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
-
-    constructor: CubePanorama,
+    }
 
     /**
      * Load 6 images and bind listeners
      * @memberOf CubePanorama
      * @instance
      */
-    load: function () {
+    load () {
 
         CubeTextureLoader.load( 	
 
@@ -51,7 +48,7 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         );
 
-    },
+    }
 
     /**
      * This will be called when 6 textures are ready
@@ -59,20 +56,20 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @memberOf CubePanorama
      * @instance
      */
-    onLoad: function ( texture ) {
+    onLoad ( texture ) {
 		
         this.material.uniforms[ 'tCube' ].value = texture;
 
         Panorama.prototype.onLoad.call( this );
 
-    },
+    }
 
     /**
      * Dispose
      * @memberOf CubePanorama
      * @instance
      */
-    dispose: function () {	
+    dispose () {	
 
         const { value } = this.material.uniforms.tCube;
 
@@ -87,7 +84,6 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         Panorama.prototype.dispose.call( this );
 
     }
-
-} );
+}
 
 export { CubePanorama };

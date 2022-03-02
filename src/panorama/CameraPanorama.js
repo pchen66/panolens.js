@@ -8,27 +8,23 @@ import * as THREE from 'three';
  * @param {object} - camera constraints
  * @constructor
  */
-function CameraPanorama ( constraints ) {
+class CameraPanorama extends Panorama {
+    constructor( constraints ) {
+        const radius = 5000;
+        const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
+        const material = new THREE.MeshBasicMaterial( { visible: false });
+    
+        super(geometry, material);
 
-    const radius = 5000;
-    const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
-    const material = new THREE.MeshBasicMaterial( { visible: false });
+        this.media = new Media( constraints );
+        this.radius = radius;
 
-    Panorama.call( this, geometry, material );
+        this.addEventListener( 'enter', this.start.bind( this ) );
+        this.addEventListener( 'leave', this.stop.bind( this ) );
+        this.addEventListener( 'panolens-container', this.onPanolensContainer.bind( this ) );
+        this.addEventListener( 'panolens-scene', this.onPanolensScene.bind( this ) );
 
-    this.media = new Media( constraints );
-    this.radius = radius;
-
-    this.addEventListener( 'enter', this.start.bind( this ) );
-    this.addEventListener( 'leave', this.stop.bind( this ) );
-    this.addEventListener( 'panolens-container', this.onPanolensContainer.bind( this ) );
-    this.addEventListener( 'panolens-scene', this.onPanolensScene.bind( this ) );
-
-}
-
-CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
-
-    constructor: CameraPanorama,
+    }
 
     /**
      * On container event
@@ -36,11 +32,9 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @memberOf CameraPanorama
      * @instance
      */
-    onPanolensContainer: function ( { container } ) {
-
+    onPanolensContainer ( { container } ) {
         this.media.setContainer( container );
-
-    },
+    }
 
     /**
      * On scene event
@@ -48,11 +42,9 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @memberOf CameraPanorama
      * @instance
      */
-    onPanolensScene: function ( { scene } ) {
-
+    onPanolensScene( { scene } ) {
         this.media.setScene( scene );
-
-    },
+    }
 
     /**
      * Start camera streaming
@@ -60,23 +52,18 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @instance
      * @returns {Promise}
      */
-    start: function () {
-
+    start() {
         return this.media.start();
-
-    },
+    }
 
     /**
      * Stop camera streaming
      * @memberOf CameraPanorama
      * @instance
      */
-    stop: function () {
-
+    stop() {
         this.media.stop();
-
-    },
-
-} );
+    }
+}
 
 export { CameraPanorama };

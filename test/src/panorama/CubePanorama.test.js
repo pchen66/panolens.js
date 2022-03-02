@@ -14,7 +14,7 @@ const images = [
     `${path}nz${format}`
 ];
 
-test.cb('Load Event', t => {
+test.skip('Load Event', t => {
     const panorama = new CubePanorama( images );
     panorama.addEventListener( 'load', () => {
         t.true(panorama.material.uniforms[ 'tCube' ].value instanceof THREE.CubeTexture);
@@ -23,7 +23,7 @@ test.cb('Load Event', t => {
     panorama.load();
 });
 
-test.cb('Dispose', t => {
+test.skip('Dispose', t => {
     const panorama = new CubePanorama( images );
     panorama.addEventListener( 'load', () => {
         panorama.dispose();
