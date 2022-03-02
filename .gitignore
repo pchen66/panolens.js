@@ -5,4 +5,3 @@ bower_components
 coverage/
 .nyc_output
 .vscode/
-build/
