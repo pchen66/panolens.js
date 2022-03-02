@@ -5,24 +5,16 @@ import { DataImage } from '../DataImage';
  * @classdesc Basic panorama with 6 pre-defined grid images
  * @constructor
  */
-function BasicPanorama () {
+class BasicPanorama extends CubePanorama {
 
-    const images = [];
+    constructor() {
+        super();
+        const images = [];
 
-    for ( let i = 0; i < 6; i++ ) {
-
-        images.push( DataImage.WhiteTile );
-
+        for ( let i = 0; i < 6; i++ ) {
+            images.push( DataImage.WhiteTile );
+        }
     }
-
-    CubePanorama.call( this, images );
-
 }
-
-BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype ), {
-
-    constructor: BasicPanorama
-
-} );
 
 export { BasicPanorama };

@@ -7,48 +7,43 @@ import * as THREE from 'three';
  * @constructor
  * @param {HTMLElement} container - A domElement where default control widget will be attached to
  */
-function Widget ( container ) {
+class Widget extends THREE.EventDispatcher {
 
-    if ( !container ) {
+    constructor( container ) {
+        super();
+        if ( !container ) {
 
-        console.warn( 'PANOLENS.Widget: No container specified' );
+            console.warn( 'PANOLENS.Widget: No container specified' );
 
+        }
+
+        this.DEFAULT_TRANSITION  = 'all 0.27s ease';
+        this.TOUCH_ENABLED = !!(( 'ontouchstart' in window ) || window.DocumentTouch && document instanceof DocumentTouch);
+        this.PREVENT_EVENT_HANDLER = function ( event ) {
+            event.preventDefault();
+            event.stopPropagation();
+        };
+
+        this.container = container;
+
+        this.barElement = null;
+        this.fullscreenElement = null;
+        this.videoElement = null;
+        this.settingElement = null;
+
+        this.mainMenu = null;
+
+        this.activeMainItem = null;
+        this.activeSubMenu = null;
+        this.mask = null;
     }
-
-    THREE.EventDispatcher.call( this );
-
-    this.DEFAULT_TRANSITION  = 'all 0.27s ease';
-    this.TOUCH_ENABLED = !!(( 'ontouchstart' in window ) || window.DocumentTouch && document instanceof DocumentTouch);
-    this.PREVENT_EVENT_HANDLER = function ( event ) {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-
-    this.container = container;
-
-    this.barElement = null;
-    this.fullscreenElement = null;
-    this.videoElement = null;
-    this.settingElement = null;
-
-    this.mainMenu = null;
-
-    this.activeMainItem = null;
-    this.activeSubMenu = null;
-    this.mask = null;
-
-}
-
-Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
-
-    constructor: Widget,
 
     /**
      * Add control bar
      * @memberOf Widget
      * @instance
      */
-    addControlBar: function () {
+    addControlBar () {
 
         if ( !this.container ) {
 
@@ -141,14 +136,14 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         this.barElement = bar;
 
-    },
+    }
 
     /**
      * Create default menu
      * @memberOf Widget
      * @instance
      */
-    createDefaultMenu: function () {
+    createDefaultMenu () {
 
         var scope = this, handler;
 
@@ -204,7 +199,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         ];
 
-    },
+    }
 
     /**
      * Add buttons on top of control bar
@@ -212,7 +207,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @memberOf Widget
      * @instance
      */
-    addControlButton: function ( name ) {
+    addControlButton ( name ) {
 
         let element;
 
@@ -253,14 +248,14 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         this.barElement.appendChild( element );
 
-    },
+    }
 
     /**
      * Create modal mask
      * @memberOf Widget
      * @instance
      */
-    createMask: function () {
+    createMask () {
 
         const element = document.createElement( 'div' );
         element.style.position = 'absolute';
@@ -285,14 +280,14 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         return element;
 
-    },
+    }
 
     /**
      * Create Setting button to toggle menu
      * @memberOf Widget
      * @instance
      */
-    createSettingButton: function () {
+    createSettingButton () {
 
         let scope = this, item;
 
@@ -304,7 +299,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             scope.mainMenu.toggle();
 
             if ( this.activated ) {
-	
+
                 this.deactivate();
 
             } else {
@@ -346,7 +341,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             if ( scope.mainMenu && scope.mainMenu.visible ) {
 
                 scope.mainMenu.hide();
-				
+      
             }
 
             if ( scope.activeSubMenu && scope.activeSubMenu.visible ) {
@@ -361,14 +356,14 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
                 scope.mainMenu.unslideAll();
 
             }
-			
+    
         };
 
         item.activated = false;
 
         return item;
 
-    },
+    }
 
     /**
      * Create Fullscreen button
@@ -377,7 +372,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @fires Widget#panolens-viewer-handler
      */
-    createFullscreenButton: function () {
+    createFullscreenButton () {
 
         let scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
 
@@ -387,9 +382,9 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         // Don't create button if no support
         if ( !document.fullscreenEnabled       && 
-			!document.webkitFullscreenEnabled &&
-			!document.mozFullScreenEnabled    &&
-			!document.msFullscreenEnabled ) {
+    !document.webkitFullscreenEnabled &&
+    !document.mozFullScreenEnabled    &&
+    !document.msFullscreenEnabled ) {
             return;
         }
 
@@ -406,7 +401,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
                 if ( container.msRequestFullscreen ) { container.msRequestFullscreen(); }
                 if ( container.mozRequestFullScreen ) { container.mozRequestFullScreen(); }
                 if ( container.webkitRequestFullscreen ) { container.webkitRequestFullscreen( Element.ALLOW_KEYBOARD_INPUT ); }
-              
+            
                 isFullscreen = true;
 
             } else {
@@ -474,10 +469,10 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             sheet.innerHTML = ':-webkit-full-screen { width: 100% !important; height: 100% !important }';
             document.body.appendChild( sheet );
         }
-		
+  
         return item;
 
-    },
+    }
 
     /**
      * Create video control container
@@ -485,7 +480,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @return {HTMLSpanElement} - The dom element icon for video control
      */
-    createVideoControl: function () {
+    createVideoControl () {
 
         const item = document.createElement( 'span' );
         item.style.display = 'none';
@@ -505,7 +500,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         item.controlButton = this.createVideoControlButton();
         item.seekBar = this.createVideoControlSeekbar();
-		
+  
         item.appendChild( item.controlButton );
         item.appendChild( item.seekBar );
 
@@ -527,7 +522,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         return item;
 
-    },
+    }
 
     /**
      * Create video control button
@@ -536,7 +531,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @return {HTMLSpanElement} - The dom element icon for video control
      * @fires Widget#panolens-viewer-handler
      */
-    createVideoControlButton: function () {
+    createVideoControlButton () {
 
         const scope = this;
 
@@ -586,7 +581,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         return item;
 
-    },
+    }
 
     /**
      * Create video seekbar
@@ -595,7 +590,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @return {HTMLSpanElement} - The dom element icon for video seekbar
      * @fires Widget#panolens-viewer-handler
      */
-    createVideoControlSeekbar: function () {
+    createVideoControlSeekbar () {
 
         let scope = this, item, progressElement, progressElementControl,
             isDragging = false, mouseX, percentageNow, percentageNext;
@@ -619,9 +614,9 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         function onMouseDown ( event ) {
 
             event.stopPropagation();
-			
+    
             isDragging = true;
-			
+    
             mouseX = event.clientX || ( event.changedTouches && event.changedTouches[0].clientX );
 
             percentageNow = parseInt( progressElement.style.width ) / 100;
@@ -634,7 +629,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             if( isDragging ){
 
                 const clientX = event.clientX || ( event.changedTouches && event.changedTouches[0].clientX );
-				
+      
                 percentageNext = ( clientX - mouseX ) / item.clientWidth;
 
                 percentageNext = percentageNow + percentageNext;
@@ -754,7 +749,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         return item;
 
-    },
+    }
 
     /**
      * Create menu item
@@ -763,7 +758,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @return {HTMLElement} - An anchor tag element
      */
-    createMenuItem: function ( title ) {
+    createMenuItem ( title ) {
 
         const scope = this; 
         const item = document.createElement( 'a' );
@@ -808,7 +803,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         };
 
         item.addSelection = function ( name ) {
-			
+    
             const selection = document.createElement( 'span' );
             selection.style.fontSize = '13px';
             selection.style.fontWeight = '300';
@@ -817,13 +812,13 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             this.selection = selection;
             this.setSelectionTitle( name );
             this.appendChild( selection );
-			
+    
             return this;
 
         };
 
         item.addIcon = function ( url = DataImage.ChevronRight, left = false, flip = false ) {
-			
+    
             const element = document.createElement( 'span' );
             element.style.float = left ? 'left' : 'right';
             element.style.width = '17px';
@@ -854,20 +849,20 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         };
 
         item.addEventListener( 'mouseenter', function () {
-			
+    
             this.style.backgroundColor = '#e0e0e0';
 
         }, false );
 
         item.addEventListener( 'mouseleave', function () {
-			
+    
             this.style.backgroundColor = '#fafafa';
 
         }, false );
 
         return item;
 
-    },
+    }
 
     /**
      * Create menu item header
@@ -876,7 +871,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @return {HTMLElement} - An anchor tag element
      */
-    createMenuItemHeader: function ( title ) {
+    createMenuItemHeader ( title ) {
 
         const header = this.createMenuItem( title );
 
@@ -885,7 +880,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         return header;
 
-    },
+    }
 
     /**
      * Create main menu
@@ -894,8 +889,8 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @return {HTMLElement} - A span element
      */
-    createMainMenu: function ( menus ) {
-		
+    createMainMenu ( menus ) {
+  
         let scope = this, menu = this.createMenu();
 
         menu._width = 200;
@@ -949,7 +944,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         return menu;
 
-    },
+    }
 
     /**
      * Create sub menu
@@ -959,7 +954,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @return {HTMLElement} - A span element
      */
-    createSubMenu: function ( title, items ) {
+    createSubMenu ( title, items ) {
 
         let scope = this, menu, subMenu = this.createMenu();
 
@@ -1011,8 +1006,8 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         subMenu.slideAll( true );
 
         return subMenu;
-		
-    },
+  
+    }
 
     /**
      * Create general menu
@@ -1020,7 +1015,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @return {HTMLElement} - A span element
      */
-    createMenu: function () {
+    createMenu () {
 
         const scope = this;
         const menu = document.createElement( 'span' );
@@ -1160,7 +1155,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         return menu;
 
-    },
+    }
 
     /**
      * Create custom item element
@@ -1168,7 +1163,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @return {HTMLSpanElement} - The dom element icon
      */
-    createCustomItem: function ( options = {} ) {
+    createCustomItem ( options = {} ) {
 
         const scope = this;
         const item = options.element || document.createElement( 'span' );
@@ -1182,19 +1177,19 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         item.style.backgroundRepeat = 'no-repeat';
         item.style.backgroundPosition = 'center';
         item.style.webkitUserSelect = 
-		item.style.MozUserSelect = 
-		item.style.userSelect = 'none';
+  item.style.MozUserSelect = 
+  item.style.userSelect = 'none';
         item.style.position = 'relative';
         item.style.pointerEvents = 'auto';
 
         // White glow on icon
         item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
             item.style.filter = 
-			item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
+    item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
         }, { passive: true });
         item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'mouseleave', function() {
             item.style.filter = 
-			item.style.webkitFilter = '';
+    item.style.webkitFilter = '';
         }, { passive: true });
 
         this.mergeStyleOptions( item, options.style );
@@ -1212,10 +1207,10 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
             if ( onDispose ) { options.onDispose(); }
 
         };
-		
+  
         return item;
 
-    },
+    }
 
     /**
      * Merge item css style
@@ -1225,7 +1220,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * @instance
      * @return {HTMLElement} - The same element with merged styles
      */
-    mergeStyleOptions: function ( element, options = {} ) {
+    mergeStyleOptions ( element, options = {} ) {
 
         for ( let property in options ){
 
@@ -1239,14 +1234,14 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         return element;
 
-    },
+    }
 
     /**
      * Dispose widgets by detaching dom elements from container
      * @memberOf Widget
      * @instance
      */
-    dispose: function () {
+    dispose () {
 
         if ( this.barElement ) {
             this.container.removeChild( this.barElement );
@@ -1256,7 +1251,7 @@ Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
         }
 
     }
-	
-} );
+
+}
 
 export { Widget };

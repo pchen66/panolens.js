@@ -11,105 +11,101 @@ import TWEEN from '@tweenjs/tween.js';
  * @param {string} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
  * @param {boolean} [animated=true] - Enable default hover animation
  */
-function Infospot ( scale = 300, imageSrc, animated ) {
+class Infospot extends THREE.Sprite {
+
+    constructor( scale = 300, imageSrc, animated ) {
+        super();
+        const duration = 500, scaleFactor = 1.3;
+
+        imageSrc = imageSrc || DataImage.Info;
+
+        this.type = 'infospot';
+
+        this.animated = animated !== undefined ? animated : true;
+        this.isHovering = false;
+
+        /*
+         * TODO: Three.js bug hotfix for sprite raycasting r104
+         * https://github.com/mrdoob/three.js/issues/14624
+         */
+        this.frustumCulled = false;
+
+        this.element = null;
+        this.toPanorama = null;
+        this.cursorStyle = null;
+
+        this.mode = MODES.NORMAL;
+
+        this.scale.set( scale, scale, 1 );
+        this.rotation.y = Math.PI;
+
+        this.container = null;
+
+        this.originalRaycast = this.raycast;
+
+        // Event Handler
+        this.HANDLER_FOCUS = null;	
+
+        this.material.side = THREE.DoubleSide;
+        this.material.depthTest = false;
+        this.material.transparent = true;
+        this.material.opacity = 0;
+
+        this.scaleUpAnimation = new TWEEN.Tween();
+        this.scaleDownAnimation = new TWEEN.Tween();
+
+
+        const postLoad = function ( texture ) {
+
+            if ( !this.material ) { return; }
+
+            const ratio = texture.image.width / texture.image.height;
+            const textureScale = new THREE.Vector3();
+
+            texture.image.width = texture.image.naturalWidth || 64;
+            texture.image.height = texture.image.naturalHeight || 64;
+
+            this.scale.set( ratio * scale, scale, 1 );
+
+            textureScale.copy( this.scale );
+
+            this.scaleUpAnimation = new TWEEN.Tween( this.scale )
+                .to( { x: textureScale.x * scaleFactor, y: textureScale.y * scaleFactor }, duration )
+                .easing( TWEEN.Easing.Elastic.Out );
+
+            this.scaleDownAnimation = new TWEEN.Tween( this.scale )
+                .to( { x: textureScale.x, y: textureScale.y }, duration )
+                .easing( TWEEN.Easing.Elastic.Out );
+
+            this.material.map = texture;
+            this.material.needsUpdate = true;
+
+        }.bind( this );
+
+        // Add show and hide animations
+        this.showAnimation = new TWEEN.Tween( this.material )
+            .to( { opacity: 1 }, duration )
+            .onStart( this.enableRaycast.bind( this, true ) )
+            .easing( TWEEN.Easing.Quartic.Out );
+
+        this.hideAnimation = new TWEEN.Tween( this.material )
+            .to( { opacity: 0 }, duration )
+            .onStart( this.enableRaycast.bind( this, false ) )
+            .easing( TWEEN.Easing.Quartic.Out );
+
+        // Attach event listeners
+        this.addEventListener( 'click', this.onClick );
+        this.addEventListener( 'hover', this.onHover );
+        this.addEventListener( 'hoverenter', this.onHoverStart );
+        this.addEventListener( 'hoverleave', this.onHoverEnd );
+        this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
+        this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+        this.addEventListener( 'dismiss', this.onDismiss );
+        this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
+
+        TextureLoader.load( imageSrc, postLoad );	
+    }
 	
-    const duration = 500, scaleFactor = 1.3;
-
-    imageSrc = imageSrc || DataImage.Info;
-
-    THREE.Sprite.call( this );
-
-    this.type = 'infospot';
-
-    this.animated = animated !== undefined ? animated : true;
-    this.isHovering = false;
-
-    /*
-     * TODO: Three.js bug hotfix for sprite raycasting r104
-     * https://github.com/mrdoob/three.js/issues/14624
-     */
-    this.frustumCulled = false;
-
-    this.element = null;
-    this.toPanorama = null;
-    this.cursorStyle = null;
-
-    this.mode = MODES.NORMAL;
-
-    this.scale.set( scale, scale, 1 );
-    this.rotation.y = Math.PI;
-
-    this.container = null;
-
-    this.originalRaycast = this.raycast;
-
-    // Event Handler
-    this.HANDLER_FOCUS = null;	
-
-    this.material.side = THREE.DoubleSide;
-    this.material.depthTest = false;
-    this.material.transparent = true;
-    this.material.opacity = 0;
-
-    this.scaleUpAnimation = new TWEEN.Tween();
-    this.scaleDownAnimation = new TWEEN.Tween();
-
-
-    const postLoad = function ( texture ) {
-
-        if ( !this.material ) { return; }
-
-        const ratio = texture.image.width / texture.image.height;
-        const textureScale = new THREE.Vector3();
-
-        texture.image.width = texture.image.naturalWidth || 64;
-        texture.image.height = texture.image.naturalHeight || 64;
-
-        this.scale.set( ratio * scale, scale, 1 );
-
-        textureScale.copy( this.scale );
-
-        this.scaleUpAnimation = new TWEEN.Tween( this.scale )
-            .to( { x: textureScale.x * scaleFactor, y: textureScale.y * scaleFactor }, duration )
-            .easing( TWEEN.Easing.Elastic.Out );
-
-        this.scaleDownAnimation = new TWEEN.Tween( this.scale )
-            .to( { x: textureScale.x, y: textureScale.y }, duration )
-            .easing( TWEEN.Easing.Elastic.Out );
-
-        this.material.map = texture;
-        this.material.needsUpdate = true;
-
-    }.bind( this );
-
-    // Add show and hide animations
-    this.showAnimation = new TWEEN.Tween( this.material )
-        .to( { opacity: 1 }, duration )
-        .onStart( this.enableRaycast.bind( this, true ) )
-        .easing( TWEEN.Easing.Quartic.Out );
-
-    this.hideAnimation = new TWEEN.Tween( this.material )
-        .to( { opacity: 0 }, duration )
-        .onStart( this.enableRaycast.bind( this, false ) )
-        .easing( TWEEN.Easing.Quartic.Out );
-
-    // Attach event listeners
-    this.addEventListener( 'click', this.onClick );
-    this.addEventListener( 'hover', this.onHover );
-    this.addEventListener( 'hoverenter', this.onHoverStart );
-    this.addEventListener( 'hoverleave', this.onHoverEnd );
-    this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
-    this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
-    this.addEventListener( 'dismiss', this.onDismiss );
-    this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
-
-    TextureLoader.load( imageSrc, postLoad );	
-
-};
-
-Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
-
-    constructor: Infospot,
 
     /**
      * Set infospot container
@@ -117,30 +113,30 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    setContainer: function ( data ) {
+    setContainer ( data ) {
 
         let container;
-	
+
         if ( data instanceof HTMLElement ) {
-	
+
             container = data;
-	
+
         } else if ( data && data.container ) {
-	
+
             container = data.container;
-	
+
         }
-	
+
         // Append element if exists
         if ( container && this.element ) {
-	
+
             container.appendChild( this.element );
-	
+
         }
-	
+
         this.container = container;
-	
-    },
+
+    }
 
     /**
      * Get container
@@ -148,11 +144,11 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @instance
      * @return {HTMLElement} - The container of this infospot
      */
-    getContainer: function () {
+    getContainer () {
 
         return this.container;
 
-    },
+    }
 
     /**
      * This will be called by a click event
@@ -161,7 +157,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    onClick: function ( event ) {
+    onClick ( event ) {
 
         if ( this.element && this.getContainer() ) {
 
@@ -172,7 +168,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Dismiss current element if any
@@ -180,7 +176,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    onDismiss: function () {
+    onDismiss () {
 
         if ( this.element ) {
 
@@ -189,7 +185,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * This will be called by a mouse hover event
@@ -198,7 +194,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    onHover: function () {},
+    onHover () {}
 
     /**
      * This will be called on a mouse hover start
@@ -207,7 +203,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    onHoverStart: function ( event ) {
+    onHoverStart ( event ) {
 
         if ( !this.getContainer() ) { return; }
 
@@ -216,14 +212,14 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         this.isHovering = true;
         this.container.style.cursor = cursorStyle;
-		
+  
         if ( this.animated ) {
 
             scaleDownAnimation.stop();
             scaleUpAnimation.start();
 
         }
-		
+  
         if ( element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
 
             const { left, right, style } = element;
@@ -249,10 +245,10 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
                 element._height = element.clientHeight;
 
             }
-			
+    
         }
 
-    },
+    }
 
     /**
      * This will be called on a mouse hover end
@@ -260,7 +256,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    onHoverEnd: function () {
+    onHoverEnd () {
 
         if ( !this.getContainer() ) { return; }
 
@@ -288,7 +284,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * On dual eye effect handler
@@ -297,8 +293,8 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    onDualEyeEffect: function ( event ) {
-		
+    onDualEyeEffect ( event ) {
+  
         if ( !this.getContainer() ) { return; }
 
         let element, halfWidth, halfHeight;
@@ -343,7 +339,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
         this.container.appendChild( element.left );
         this.container.appendChild( element.right );
 
-    },
+    }
 
     /**
      * Translate the hovering element by css transform
@@ -352,7 +348,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    translateElement: function ( x, y ) {
+    translateElement ( x, y ) {
 
         if ( !this.element._width || !this.element._height || !this.getContainer() ) {
 
@@ -372,8 +368,8 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
         top = y - height - delta;
 
         if ( ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) 
-				&& element.left && element.right
-				&& !( x === container.clientWidth / 2 && y === container.clientHeight / 2 ) ) {
+      && element.left && element.right
+      && !( x === container.clientWidth / 2 && y === container.clientHeight / 2 ) ) {
 
             left = container.clientWidth / 4 - width + ( x - container.clientWidth / 2 );
             top = container.clientHeight / 2 - height - delta + ( y - container.clientHeight / 2 );
@@ -390,7 +386,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Set vendor specific css
@@ -400,7 +396,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    setElementStyle: function ( type, element, value ) {
+    setElementStyle ( type, element, value ) {
 
         const style = element.style;
 
@@ -410,7 +406,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Set hovering text content
@@ -418,7 +414,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    setText: function ( text ) {
+    setText ( text ) {
 
         if ( this.element ) {
 
@@ -426,18 +422,18 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Set cursor css style on hover
      * @memberOf Infospot
      * @instance
      */
-    setCursorHoverStyle: function ( style ) {
+    setCursorHoverStyle ( style ) {
 
         this.cursorStyle = style;
 
-    },
+    }
 
     /**
      * Add hovering text element
@@ -446,7 +442,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    addHoverText: function ( text, delta = 40 ) {
+    addHoverText ( text, delta = 40 ) {
 
         if ( !this.element ) {
 
@@ -466,7 +462,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         this.setText( text );
 
-    },
+    }
 
     /**
      * Add hovering element by cloning an element
@@ -475,7 +471,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    addHoverElement: function ( el, delta = 40 ) {
+    addHoverElement ( el, delta = 40 ) {
 
         if ( !this.element ) { 
 
@@ -488,14 +484,14 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Remove hovering element
      * @memberOf Infospot
      * @instance
      */
-    removeHoverElement: function () {
+    removeHoverElement () {
 
         if ( this.element ) { 
 
@@ -518,14 +514,14 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Lock hovering element
      * @memberOf Infospot
      * @instance
      */
-    lockHoverElement: function () {
+    lockHoverElement () {
 
         if ( this.element ) { 
 
@@ -533,14 +529,14 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Unlock hovering element
      * @memberOf Infospot
      * @instance
      */
-    unlockHoverElement: function () {
+    unlockHoverElement () {
 
         if ( this.element ) { 
 
@@ -548,7 +544,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Enable raycasting
@@ -556,7 +552,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    enableRaycast: function ( enabled = true ) {
+    enableRaycast ( enabled = true ) {
 
         if ( enabled ) {
 
@@ -568,7 +564,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Show infospot
@@ -576,7 +572,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    show: function ( delay = 0 ) {
+    show ( delay = 0 ) {
 
         const { animated, hideAnimation, showAnimation, material } = this;
 
@@ -592,7 +588,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Hide infospot
@@ -600,7 +596,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    hide: function ( delay = 0 ) {
+    hide ( delay = 0 ) {
 
         const { animated, hideAnimation, showAnimation, material, element } = this;
 
@@ -620,15 +616,15 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
             material.opacity = 0;
 
         }
-		
-    },
+  
+    }
 
     /**
      * Set focus event handler
      * @memberOf Infospot
      * @instance
      */
-    setFocusMethod: function ( event ) {
+    setFocusMethod ( event ) {
 
         if ( event ) {
 
@@ -636,7 +632,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Focus camera center to this infospot
@@ -645,7 +641,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Infospot
      * @instance
      */
-    focus: function ( duration, easing ) {
+    focus ( duration, easing ) {
 
         if ( this.HANDLER_FOCUS ) {
 
@@ -654,14 +650,14 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-    },
+    }
 
     /**
      * Dispose
      * @memberOf Infospot
      * @instance
      */
-    dispose: function () {
+    dispose () {
 
         const { geometry, material } = this;
         const { map } = material;
@@ -680,6 +676,8 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     }
 
-} );
+
+
+};
 
 export { Infospot };
