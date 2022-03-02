@@ -8,41 +8,34 @@ import * as THREE from 'three';
  * @param {boolean} [autoSelect=true] - Auto selection
  * @param {number} [dwellTime=1500] - Duration for dwelling sequence to complete
  */
+class Reticle extends THREE.Sprite {
+    constructor( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
+        const { canvas, context } = Reticle.createCanvas(window.devicePixelRatio);
+        const material = new THREE.SpriteMaterial( { color, map: Reticle.createCanvasTexture( canvas ) } );
+        super(material);
 
-function Reticle ( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
-
-    this.dpr = window.devicePixelRatio;
-
-    const { canvas, context } = this.createCanvas();
-    const material = new THREE.SpriteMaterial( { color, map: this.createCanvasTexture( canvas ) } );
-
-    THREE.Sprite.call( this, material );
-
-    this.canvasWidth = canvas.width;
-    this.canvasHeight = canvas.height;
-    this.context = context;
-    this.color = color instanceof THREE.Color ? color : new THREE.Color( color );    
-
-    this.autoSelect = autoSelect;
-    this.dwellTime = dwellTime;
-    this.rippleDuration = 500;
-    this.position.z = -10;
-    this.center.set( 0.5, 0.5 );
-    this.scale.set( 0.5, 0.5, 1 );
-
-    this.startTimestamp = null;
-    this.timerId = null;
-    this.callback = null;
-
-    this.frustumCulled = false;
-
-    this.updateCanvasArcByProgress( 0 );
-
-};
-
-Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
-
-    constructor: Reticle,
+        this.dpr = window.devicePixelRatio;
+  
+        this.canvasWidth = canvas.width;
+        this.canvasHeight = canvas.height;
+        this.context = context;
+        this.color = color instanceof THREE.Color ? color : new THREE.Color( color );    
+  
+        this.autoSelect = autoSelect;
+        this.dwellTime = dwellTime;
+        this.rippleDuration = 500;
+        this.position.z = -10;
+        this.center.set( 0.5, 0.5 );
+        this.scale.set( 0.5, 0.5, 1 );
+  
+        this.startTimestamp = null;
+        this.timerId = null;
+        this.callback = null;
+  
+        this.frustumCulled = false;
+  
+        this.updateCanvasArcByProgress( 0 );
+    }
 
     /**
      * Set material color
@@ -50,12 +43,12 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @memberOf Reticle
      * @instance
      */
-    setColor: function ( color ) {
+    setColor ( color ) {
 
         this.material.color.copy( color instanceof THREE.Color ? color : new THREE.Color( color ) );
-
-    },
-
+  
+    }
+  
     /**
      * Create canvas texture
      * @param {HTMLCanvasElement} canvas 
@@ -63,17 +56,17 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @instance
      * @returns {THREE.CanvasTexture}
      */
-    createCanvasTexture: function ( canvas ) {
-
+    static createCanvasTexture ( canvas ) {
+  
         const texture = new THREE.CanvasTexture( canvas );
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;
         texture.generateMipmaps = false;
-
+  
         return texture;
 
-    },
-
+    }
+  
     /**
      * Create canvas element
      * @memberOf Reticle
@@ -82,33 +75,30 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @returns {HTMLCanvasElement} object.canvas
      * @returns {CanvasRenderingContext2D} object.context
      */
-    createCanvas: function () {
-
+    static createCanvas (dpr) {
         const width = 32;
         const height = 32;
         const canvas = document.createElement( 'canvas' );
         const context = canvas.getContext( '2d' );
-        const dpr = this.dpr;
-
+  
         canvas.width = width * dpr;
         canvas.height = height * dpr;
         context.scale( dpr, dpr );
-
+  
         context.shadowBlur = 5;
         context.shadowColor = 'rgba(200,200,200,0.9)';
-
+  
         return { canvas, context };
-
-    },
-
+    }
+  
     /**
      * Update canvas arc by progress
      * @param {number} progress 
      * @memberOf Reticle
      * @instance
      */
-    updateCanvasArcByProgress: function ( progress ) {
-
+    updateCanvasArcByProgress ( progress ) {
+  
         const context = this.context;
         const { canvasWidth, canvasHeight, material } = this;
         const dpr = this.dpr;
@@ -117,10 +107,10 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
         const x = canvasWidth * 0.5 / dpr;
         const y = canvasHeight * 0.5 / dpr;
         const lineWidth = 3;
-        
+          
         context.clearRect( 0, 0, canvasWidth, canvasHeight );
         context.beginPath();
-
+  
         if ( progress === 0 ) {
             context.arc( x, y, canvasWidth / 16, 0, 2 * Math.PI );
             context.fillStyle = color;
@@ -131,13 +121,13 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
             context.lineWidth = lineWidth;
             context.stroke();
         }
-
+  
         context.closePath();
-
+  
         material.map.needsUpdate = true;
-
-    },
-
+  
+    }
+  
     /**
      * Ripple effect
      * @memberOf Reticle
@@ -145,8 +135,8 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @fires Reticle#reticle-ripple-start
      * @fires Reticle#reticle-ripple-end
      */
-    ripple: function () {
-
+    ripple() {
+  
         const context = this.context;
         const { canvasWidth, canvasHeight, material } = this;
         const duration = this.rippleDuration;
@@ -155,73 +145,73 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
         const dpr = this.dpr;
         const x = canvasWidth * 0.5 / dpr;
         const y = canvasHeight * 0.5 / dpr;
-
+  
         const update = () => {
-
+  
             const timerId = window.requestAnimationFrame( update );
             const elapsed = performance.now() - timestamp;
             const progress = elapsed / duration;
             const opacity = 1.0 - progress > 0 ? 1.0 - progress : 0;
             const radius = progress * canvasWidth * 0.5 / dpr;
-
+  
             context.clearRect( 0, 0, canvasWidth, canvasHeight );
             context.beginPath();
             context.arc( x, y, radius, 0, Math.PI * 2 );
             context.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${opacity})`;
             context.fill();
             context.closePath();
-
+  
             if ( progress >= 1.0 ) {
-
+  
                 window.cancelAnimationFrame( timerId );
                 this.updateCanvasArcByProgress( 0 );
-
+  
                 /**
                  * Reticle ripple end event
                  * @type {object}
                  * @event Reticle#reticle-ripple-end
                  */
                 this.dispatchEvent( { type: 'reticle-ripple-end' } );
-
+  
             }
-
+  
             material.map.needsUpdate = true;
-
+  
         };
-
+  
         /**
          * Reticle ripple start event
          * @type {object}
          * @event Reticle#reticle-ripple-start
          */
         this.dispatchEvent( { type: 'reticle-ripple-start' } );
-
+  
         update();
-
-    },
-
+  
+    }
+  
     /**
      * Make reticle visible
      * @memberOf Reticle
      * @instance
      */
-    show: function () {
-
+    show () {
+  
         this.visible = true;
-
-    },
-
+  
+    }
+  
     /**
      * Make reticle invisible
      * @memberOf Reticle
      * @instance
      */
-    hide: function () {
-
+    hide () {
+  
         this.visible = false;
-
-    },
-
+  
+    }
+  
     /**
      * Start dwelling
      * @param {function} callback 
@@ -229,86 +219,85 @@ Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @instance
      * @fires Reticle#reticle-start
      */
-    start: function ( callback ) {
-
+    start ( callback ) {
+  
         if ( !this.autoSelect ) {
-
+  
             return;
-
+  
         }
-
+  
         /**
          * Reticle start event
          * @type {object}
          * @event Reticle#reticle-start
          */
         this.dispatchEvent( { type: 'reticle-start' } );
-
+  
         this.startTimestamp = performance.now();
         this.callback = callback;
         this.update();
-
-    },
-
+  
+    }
+  
     /**
      * End dwelling
      * @memberOf Reticle
      * @instance
      * @fires Reticle#reticle-end
      */
-    end: function(){
-
+    end(){
+  
         if ( !this.startTimestamp ) { return; }
-
+  
         window.cancelAnimationFrame( this.timerId );
-
+  
         this.updateCanvasArcByProgress( 0 );
         this.callback = null;
         this.timerId = null;
         this.startTimestamp = null;
-
+  
         /**
          * Reticle end event
          * @type {object}
          * @event Reticle#reticle-end
          */
         this.dispatchEvent( { type: 'reticle-end' } );
-
-    },
-
+  
+    }
+  
     /**
      * Update dwelling
      * @memberOf Reticle
      * @instance
      * @fires Reticle#reticle-update
      */
-    update: function () {
-
+    update () {
+  
         this.timerId = window.requestAnimationFrame( this.update.bind( this ) );
-
+  
         const elapsed = performance.now() - this.startTimestamp;
         const progress = elapsed / this.dwellTime;
-
+  
         this.updateCanvasArcByProgress( progress );
-
+  
         /**
          * Reticle update event
          * @type {object}
          * @event Reticle#reticle-update
          */
         this.dispatchEvent( { type: 'reticle-update', progress } );
-
+  
         if ( progress >= 1.0 ) {
-
+  
             window.cancelAnimationFrame( this.timerId );
             if ( this.callback ) { this.callback(); }
             this.end();
             this.ripple();
-
+  
         }
-
-    }
-
-} );
+  
+    }  
+};
 
 export { Reticle };
