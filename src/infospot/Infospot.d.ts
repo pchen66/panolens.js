@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 
 export class Infospot extends THREE.Sprite {
   type: string;

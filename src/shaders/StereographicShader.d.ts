@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export namespace StereographicShader {
   const uniforms: {
     toDiffuse: { value: THREE.Texture; },

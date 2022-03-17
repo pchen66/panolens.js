@@ -1,3 +1,7 @@
+import * as THREE from 'three';
+import { Geometry } from 'three/examples/jsm/deprecated/Geometry';
+import * as TWEEN$1 from '@tweenjs/tween.js';
+
 /**
  * REVISION
  * @module REVISION
@@ -131,7 +135,7 @@ declare class Media$1 extends THREE.EventDispatcher {
   onWindowResize(event?: Event): void;
 }
 
-declare class Reticle$1 extends THREE.Sprite {
+declare class Reticle extends THREE.Sprite {
   dpr: number
   canvasWidth: number
   canvasHeight: number
@@ -168,7 +172,7 @@ declare class Reticle$1 extends THREE.Sprite {
   update(): void;
 }
 
-declare class Infospot$1 extends THREE.Sprite {
+declare class Infospot extends THREE.Sprite {
   type: string;
   animated: boolean;
   isHovering: boolean;
@@ -235,7 +239,7 @@ declare class Infospot$1 extends THREE.Sprite {
   dispose(): void;
 }
 
-declare class Widget$1 extends THREE.EventDispatcher {
+declare class Widget extends THREE.EventDispatcher {
   DEFAULT_TRANSITION: string
   TOUCH_ENABLED: boolean
   container: HTMLElement
@@ -303,9 +307,9 @@ declare class Panorama$1 extends THREE.Mesh {
   linkingImageURL: string;
   linkingImageScale: number;
   active: boolean;
-  infospotAnimation: TWEEN.Tween;
+  infospotAnimation: TWEEN$1.Tween;
 
-  constructor(geometry?: THREE.Geometry, material?: THREE.Material);
+  constructor(geometry?: Geometry, material?: THREE.Material);
 
   onClick(event?: PanoramaClickEvent): void;
 
@@ -338,11 +342,11 @@ declare class Panorama$1 extends THREE.Mesh {
   dispose(): void;
 }
 
-declare class ImagePanorama$1 extends Panorama {
+declare class ImagePanorama$1 extends Panorama$1 {
   src: string | HTMLElement;
   radius: number;
 
-  constructor(image: string | HTMLImageElement, geometry?: THREE.Geometry, material?: THREE.Material);
+  constructor(image: string | HTMLImageElement, geometry?: Geometry, material?: THREE.Material);
 
   onLoad(src?: THREE.Texture): void;
 
@@ -354,7 +358,7 @@ declare class ImagePanorama$1 extends Panorama {
 declare class EmptyPanorama {
 }
 
-declare class CubePanorama$1 extends Panorama {
+declare class CubePanorama$1 extends Panorama$1 {
   images: string[];
   edgeLength: number;
 
@@ -485,6 +489,157 @@ declare class CameraPanorama extends Panorama {
   stop(): void;
 }
 
+interface OrbitMouseButton {
+  ORBIT: THREE.MOUSE;
+  ZOOM: THREE.MOUSE;
+  PAN: THREE.MOUSE;
+}
+
+declare class OrbitControls extends THREE.EventDispatcher {
+  object: THREE.Object3D;
+  domElement: HTMLElement;
+  frameId: string;
+  enabled: boolean;
+  target: THREE.Vector3;
+  center: THREE.Vector3;
+  noZoom: boolean;
+  zoomSpeed: number;
+  minDistance: number;
+  maxDistance: number;
+  minZoom: number;
+  maxZoom: number;
+  noRotate: boolean;
+  rotateSpeed: number;
+  noPan: boolean;
+  keyPanSpeed: number;
+  autoRotate: boolean;
+  autoRotateSpeed: number;
+  minPolarAngle: number;
+  maxPolarAngle: number;
+  momentumDampingFactor: number;
+  momentumScalingFactor: number;
+  momentumKeydownFactor: number;
+  minFov: number;
+  maxFov: number;
+  minAzimuthAngle: number;
+  maxAzimuthAngle: number;
+  noKeys: boolean;
+  keys: number;
+  mouseButtons: OrbitMouseButton;
+  STATE: number;
+  target0: THREE.Vector3;
+  position0: THREE.Vector3;
+  zoom0: object;
+  changeEvent: object;
+  startEvent: object;
+  endEvent: object;
+
+  constructor(object?: THREE.Object3D, element?: HTMLElement);
+
+  setLastQuaternion(quaternion: THREE.Quaternion): void;
+
+  getLastPosition(): THREE.Vector3;
+
+  rotateLeft(angle?: number): void;
+
+  rotateUp(angle?: number): void;
+
+  panLeft(distance?: number): void;
+
+  panUp(distance?: number): void;
+
+  pan(deltaX?: number, deltaY?: number): void;
+
+  momentum(): void;
+
+  dollyIn(scale?: number): void;
+
+  dollyOut(scale?: number): void;
+
+  update(ignoreUpdate?: boolean): void;
+
+  reset(): void;
+
+  getPolarAngle(): number;
+
+  getAzimuthalAngle(): number;
+
+  getAutoRotationAngle(): number;
+
+  getZoomScale(): number;
+
+  onMouseDown(event?: MouseEvent): void;
+
+  onMouseMove(event?: MouseEvent): void;
+
+  onMouseUp(): void;
+
+  onMouseWheel(event?: MouseEvent): void;
+
+  onKeyUp(event?: KeyboardEvent): void;
+
+  onKeyDown(event?: KeyboardEvent): void;
+
+  touchstart(event?: TouchEvent): void;
+
+  touchmove(event?: TouchEvent): void;
+
+  touchend(event?: TouchEvent): void;
+
+  dispose(): void;
+}
+
+declare class DeviceOrientationControls extends THREE.EventDispatcher {
+  changeEvent: any;
+  camera: any;
+  domElement: any;
+  enabled: any;
+  deviceOrientation: any;
+  screenOrientation: any;
+  alpha: any;
+  alphaOffsetAngle: any;
+
+  constructor(camera?: THREE.Camera, element?: HTMLElement);
+
+  onDeviceOrientationChangeEvent(event: Event): void;
+
+  onScreenOrientationChangeEvent(): void;
+
+  onTouchStartEvent(event: Event): void;
+
+  onTouchMoveEvent(event: Event): void;
+
+  setCameraQuaternion(quaternion: THREE.Quaternion, alpha: number, beta: number, gamma: number, orient: number): void;
+
+  connect(): void;
+
+  disconnect(): void;
+
+  update(ignoreUpdate: boolean): void;
+
+  updateAlphaOffsetAngle(angle: number): void;
+
+  dispose(): void;
+}
+
+declare class CardboardEffect {
+  constructor(renderer: THREE.WebGLRenderer);
+
+  setSize(width: number, height: number): void;
+
+  render(scene: THREE.Scene, camera: THREE.Camera): void;
+}
+
+declare class StereoEffect {
+  constructor(renderer: THREE.WebGLRenderer);
+
+  setEyeSeparation(eyeSep: number): void;
+
+  setSize(width: number, height: number): void;
+
+  render(scene: THREE.Scene, camera: THREE.Camera): void;
+}
+
 declare class Viewer extends THREE.EventDispatcher {
   options: ViewerOptions
   container: HTMLElement
@@ -496,7 +651,7 @@ declare class Viewer extends THREE.EventDispatcher {
   reticle: Reticle
   tempEnableReticle: boolean
   mode: number
-  panorama: Panorama
+  panorama: Panorama$1
   widget: Widget
   hoverObject: HTMLElement
   infospot: Infospot
@@ -520,8 +675,8 @@ declare class Viewer extends THREE.EventDispatcher {
   HANDLER_KEY_UP: (event?: KeyboardEvent) => any
   HANDLER_TAP: (event?: MouseEvent) => any
   OUTPUT_INFOSPOT: HTMLElement
-  tweenLeftAnimation: TWEEN.Tween
-  tweenUpAnimation: TWEEN.Tween
+  tweenLeftAnimation: TWEEN$1.Tween
+  tweenUpAnimation: TWEEN$1.Tween
   OrbitControls: OrbitControls
   DeviceOrientationControls: DeviceOrientationControls
   controls: [DeviceOrientationControls, OrbitControls]
@@ -548,7 +703,7 @@ declare class Viewer extends THREE.EventDispatcher {
 
   addDefaultControlBar(array?: string[]): void;
 
-  setPanorama(pano?: Panorama): void;
+  setPanorama(pano?: Panorama$1): void;
 
   eventHandler(event?: Event): void;
 
@@ -584,7 +739,7 @@ declare class Viewer extends THREE.EventDispatcher {
 
   updateVideoPlayButton(paused?: boolean): void;
 
-  addPanoramaEventListener(pano?: Panorama): void;
+  addPanoramaEventListener(pano?: Panorama$1): void;
 
   setCameraControl(): void;
 
@@ -674,7 +829,7 @@ declare class Viewer extends THREE.EventDispatcher {
 
   destroy(): void;
 
-  onPanoramaDispose(panorama: Panorama): void;
+  onPanoramaDispose(panorama: Panorama$1): void;
 
   loadAsyncRequest(url: string, callback: (event?: ProgressEvent) => any): void;
 
@@ -685,4 +840,4 @@ declare class Viewer extends THREE.EventDispatcher {
   clearAllCache(): void;
 }
 
-export { BasicPanorama, CONTROLS, CONTROL_BUTTONS, CameraPanorama, CubePanorama$1 as CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama$1 as ImagePanorama, Infospot$1 as Infospot, LittlePlanet$1 as LittlePlanet, MODES$1 as MODES, Media$1 as Media, OUTPUTS, Panorama$1 as Panorama, REVISION, Reticle$1 as Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget$1 as Widget };
+export { BasicPanorama, CONTROLS, CONTROL_BUTTONS, CameraPanorama, CubePanorama$1 as CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama$1 as ImagePanorama, Infospot, LittlePlanet$1 as LittlePlanet, MODES$1 as MODES, Media$1 as Media, OUTPUTS, Panorama$1 as Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget };

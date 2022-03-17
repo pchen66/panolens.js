@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export class CameraPanorama extends Panorama {
   media: Media;
   radius: number;

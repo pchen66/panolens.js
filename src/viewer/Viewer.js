@@ -39,8 +39,9 @@ import TWEEN from '@tweenjs/tween.js';
  * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
  * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
  */
-class Viewer {
+class Viewer extends THREE.EventDispatcher {
     constructor( options ) {
+        super();
         let container;
 
         options = options || {};

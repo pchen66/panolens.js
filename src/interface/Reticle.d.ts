@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export class Reticle extends THREE.Sprite {
   dpr: number
   canvasWidth: number

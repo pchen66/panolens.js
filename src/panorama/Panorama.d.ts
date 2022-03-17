@@ -1,3 +1,9 @@
+import * as THREE from 'three';
+import {Geometry} from 'three/examples/jsm/deprecated/Geometry';
+
+import * as TWEEN from '@tweenjs/tween.js';
+import { Infospot } from '../infospot/Infospot';
+
 export class Panorama extends THREE.Mesh {
   type: string;
   ImageQualityLow: number;
@@ -16,7 +22,7 @@ export class Panorama extends THREE.Mesh {
   active: boolean;
   infospotAnimation: TWEEN.Tween;
 
-  constructor(geometry?: THREE.Geometry, material?: THREE.Material);
+  constructor(geometry?: Geometry, material?: THREE.Material);
 
   onClick(event?: PanoramaClickEvent): void;
 

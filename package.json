@@ -9,11 +9,13 @@
     "build/panolens.js",
     "build/panolens.min.js",
     "build/panolens.module.js",
+    "build/Panolens.d.ts",
     "LICENSE",
     "package.json",
     "README.md",
     "src"
   ],
+  "types": "build/Panolens.d.ts",
   "directories": {
     "doc": "docs",
     "test": "test"
@@ -106,6 +108,7 @@
   },
   "devDependencies": {
     "@tweenjs/tween.js": "^17.4.0",
+    "@types/three": "^0.138.0",
     "ava": "^2.1.0",
     "browser-env": "^3.2.6",
     "concurrently": "^4.1.0",

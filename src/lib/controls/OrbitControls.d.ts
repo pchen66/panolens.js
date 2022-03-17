@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export interface OrbitMouseButton {
   ORBIT: THREE.MOUSE;
   ZOOM: THREE.MOUSE;

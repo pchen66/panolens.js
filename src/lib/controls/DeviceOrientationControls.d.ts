@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export class DeviceOrientationControls extends THREE.EventDispatcher {
   changeEvent: any;
   camera: any;

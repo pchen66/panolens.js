@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export class ImageLittlePlanet extends LittlePlanet {
   constructor(source: string, size?: number, ratio?: number);
 

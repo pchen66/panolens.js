@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export class LittlePlanet extends ImagePanorama {
   size: number;
   ratio: number;

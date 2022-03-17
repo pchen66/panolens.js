@@ -1,3 +1,14 @@
+import * as THREE from 'three';
+import { Infospot } from '../infospot/Infospot';
+import { Panorama } from '../panorama/Panorama';
+import * as TWEEN from '@tweenjs/tween.js';
+import {OrbitControls} from '../lib/controls/OrbitControls';
+import {DeviceOrientationControls} from '../lib/controls/DeviceOrientationControls';
+import {CardboardEffect} from '../lib/effects/CardboardEffect';
+import {StereoEffect} from '../lib/effects/StereoEffect';
+import {Reticle} from '../interface/Reticle';
+import {Widget} from '../widget/Widget';
+
 export class Viewer extends THREE.EventDispatcher {
   options: ViewerOptions
   container: HTMLElement

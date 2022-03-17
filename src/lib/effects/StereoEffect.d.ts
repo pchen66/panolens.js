@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export class StereoEffect {
   constructor(renderer: THREE.WebGLRenderer);
 

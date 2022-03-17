@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export class Media extends THREE.EventDispatcher {
   constructor(constraints?: MediaStreamConstraints);
 

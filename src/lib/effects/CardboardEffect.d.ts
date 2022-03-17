@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export class CardboardEffect {
   constructor(renderer: THREE.WebGLRenderer);
 

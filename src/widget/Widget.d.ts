@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export class Widget extends THREE.EventDispatcher {
   DEFAULT_TRANSITION: string
   TOUCH_ENABLED: boolean
