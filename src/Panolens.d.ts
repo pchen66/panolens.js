@@ -18,4 +18,3 @@ export { LittlePlanet } from './panorama/LittlePlanet';
 export { ImageLittlePlanet } from './panorama/ImageLittlePlanet';
 export { CameraPanorama } from './panorama/CameraPanorama';
 export { Viewer } from './viewer/Viewer';
-import './Check';

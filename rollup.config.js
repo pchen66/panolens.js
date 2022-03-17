@@ -2,8 +2,9 @@ import resolve from 'rollup-plugin-node-resolve';
 import json from 'rollup-plugin-json';
 import commonjs from 'rollup-plugin-commonjs'
 import inject from 'rollup-plugin-inject';
+import dts from "rollup-plugin-dts";
 
-export default {
+export default [{
     external: ['three'],
     input: 'src/Panolens.js',
     output: [
@@ -12,7 +13,7 @@ export default {
             name: 'PANOLENS',
             file: 'build/panolens.js',
             indent: '\t',
-            globals: {three: 'THREE'}
+            globals: { three: 'THREE' }
         },
         {
             format: 'es',
@@ -25,14 +26,20 @@ export default {
         commonjs(),
         json({
             include: 'package.json',
-            exclude: [ 'node_modules/**' ],
-            preferConst: true, 
+            exclude: ['node_modules/**'],
+            preferConst: true,
             indent: '\t',
-            compact: true, 
-            namedExports: true 
+            compact: true,
+            namedExports: true
         }),
         inject({
-            THREE: [ 'three', '*' ]
+            THREE: ['three', '*']
         })
     ]
-};
+}, {
+    input: "src/Panolens.d.ts",
+    output: [{
+        file: "build/Panolens.d.ts", format: "es",
+    }],
+    plugins: [dts()]
+}];

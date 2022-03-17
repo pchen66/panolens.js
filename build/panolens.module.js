@@ -1,4 +1,4 @@
-import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
+import * as THREE from 'three';
 
 const version="0.12.1";const dependencies={three:"^0.105.2"};
 
@@ -55,6 +55,26 @@ const CONTROLS = { ORBIT: 0, DEVICEORIENTATION: 1 };
 const MODES = { UNKNOWN: 0, NORMAL: 1, CARDBOARD: 2, STEREO: 3 };
 
 /**
+ * CONTROL_BUTTONS
+ * @module CONTROL_BUTTONS
+ * @example PANOLENS.VIEWER.CONTROL_BUTTONS
+ * @property {string} FULLSCREEN
+ * @property {string} SETTING
+ * @property {string} VIDEO
+ */
+const CONTROL_BUTTONS = { FULLSCREEN: 'fullscreen', SETTING: 'setting', VIDEO: 'video' };
+
+/**
+ * OUTPUTS
+ * @module OUTPUTS
+ * @example PANOLENS.VIEWER.OUTPUTS
+ * @property {string} NONE
+ * @property {string} CONSOLE
+ * @property {string} OVERLAY
+ */
+const OUTPUTS = { NONE: 'none', CONSOLE: 'console', OVERLAY: 'overlay' };
+
+/**
  * Data URI Images
  * @module DataImage
  * @example PANOLENS.DataImage.Info
@@ -102,7 +122,7 @@ const ImageLoader = {
     load: function ( url, onLoad = () => {}, onProgress = () => {}, onError = () => {} ) {
 
         // Enable cache
-        Cache.enabled = true;
+        THREE.Cache.enabled = true;
 
         let cached, request, arrayBufferView, blob, urlCreator, image, reference;
 
@@ -118,18 +138,27 @@ const ImageLoader = {
         }
 
         // Cached
-        cached = Cache.get(reference ? reference : url);
+        cached = THREE.Cache.get(reference ? reference : url);
 
         if (cached !== undefined) {
 
             if (onLoad) {
 
-                setTimeout(function () {
+                if ( cached.complete && cached.src ) {
+                    setTimeout( function () {
 
-                    onProgress({loaded: 1, total: 1});
-                    onLoad(cached);
+                        onProgress( { loaded: 1, total: 1 } );
+                        onLoad( cached );
 
-                }, 0);
+                    }, 0 );
+                } else {
+                    cached.addEventListener( 'load', function () {
+
+                        onProgress( { loaded: 1, total: 1 } );
+                        onLoad( cached );
+
+                    }, false );
+                }
 
             }
 
@@ -142,7 +171,7 @@ const ImageLoader = {
         image = document.createElementNS('http://www.w3.org/1999/xhtml', 'img');
 
         // Add to cache
-        Cache.add(reference ? reference : url, image);
+        THREE.Cache.add(reference ? reference : url, image);
 
         const onImageLoaded = () => {
 
@@ -163,6 +192,7 @@ const ImageLoader = {
         request = new window.XMLHttpRequest();
         request.open('GET', url, true);
         if (process.env.npm_lifecycle_event !== 'test') {
+            /* istanbul ignore next */
             request.onreadystatechange = function () {
                 if (this.readyState === 4 && this.status >= 400) {
                     onError();
@@ -222,7 +252,7 @@ const TextureLoader = {
      */
     load: function ( url, onLoad = () => {}, onProgress, onError ) {
 
-        var texture = new Texture(); 
+        var texture = new THREE.Texture(); 
 
         ImageLoader.load( url, function ( image ) {
 
@@ -231,7 +261,7 @@ const TextureLoader = {
             // JPEGs can't have an alpha channel, so memory can be saved by storing them as RGB.
             const isJPEG = url.search( /\.(jpg|jpeg)$/ ) > 0 || url.search( /^data\:image\/jpeg/ ) === 0;
 
-            texture.format = isJPEG ? RGBFormat : RGBAFormat;
+            texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
             texture.needsUpdate = true;
 
             onLoad( texture );
@@ -264,7 +294,7 @@ const CubeTextureLoader = {
 
 	   var texture, loaded, progress, all, loadings;
 
-	   texture = new CubeTexture( [] );
+	   texture = new THREE.CubeTexture( [] );
 
 	   loaded = 0;
 	   progress = {};
@@ -340,7 +370,7 @@ function Media ( constraints ) {
     this.videoDeviceIndex = 0;
 
 }
-Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
+Media.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
 
     setContainer: function ( container ) {
 
@@ -584,12 +614,12 @@ Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
     createVideoTexture: function () {
 
         const video = this.element;
-        const texture = new VideoTexture( video );
+        const texture = new THREE.VideoTexture( video );
 
         texture.generateMipmaps = false;
-        texture.minFilter = LinearFilter;
-        texture.magFilter = LinearFilter;
-        texture.format = RGBFormat;
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        texture.format = THREE.RGBFormat;
         texture.center.set( 0.5, 0.5 );
 
         video.addEventListener( 'canplay', this.onWindowResize.bind( this ) );
@@ -678,14 +708,14 @@ function Reticle ( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
     this.dpr = window.devicePixelRatio;
 
     const { canvas, context } = this.createCanvas();
-    const material = new SpriteMaterial( { color, map: this.createCanvasTexture( canvas ) } );
+    const material = new THREE.SpriteMaterial( { color, map: this.createCanvasTexture( canvas ) } );
 
-    Sprite.call( this, material );
+    THREE.Sprite.call( this, material );
 
     this.canvasWidth = canvas.width;
     this.canvasHeight = canvas.height;
     this.context = context;
-    this.color = color instanceof Color ? color : new Color( color );    
+    this.color = color instanceof THREE.Color ? color : new THREE.Color( color );    
 
     this.autoSelect = autoSelect;
     this.dwellTime = dwellTime;
@@ -703,7 +733,7 @@ function Reticle ( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
     this.updateCanvasArcByProgress( 0 );
 
 }
-Reticle.prototype = Object.assign( Object.create( Sprite.prototype ), {
+Reticle.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     constructor: Reticle,
 
@@ -715,7 +745,7 @@ Reticle.prototype = Object.assign( Object.create( Sprite.prototype ), {
      */
     setColor: function ( color ) {
 
-        this.material.color.copy( color instanceof Color ? color : new Color( color ) );
+        this.material.color.copy( color instanceof THREE.Color ? color : new THREE.Color( color ) );
 
     },
 
@@ -728,9 +758,9 @@ Reticle.prototype = Object.assign( Object.create( Sprite.prototype ), {
      */
     createCanvasTexture: function ( canvas ) {
 
-        const texture = new CanvasTexture( canvas );
-        texture.minFilter = LinearFilter;
-        texture.magFilter = LinearFilter;
+        const texture = new THREE.CanvasTexture( canvas );
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
         texture.generateMipmaps = false;
 
         return texture;
@@ -1916,7 +1946,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
 
     imageSrc = imageSrc || DataImage.Info;
 
-    Sprite.call( this );
+    THREE.Sprite.call( this );
 
     this.type = 'infospot';
 
@@ -1945,7 +1975,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     // Event Handler
     this.HANDLER_FOCUS = null;	
 
-    this.material.side = DoubleSide;
+    this.material.side = THREE.DoubleSide;
     this.material.depthTest = false;
     this.material.transparent = true;
     this.material.opacity = 0;
@@ -1959,7 +1989,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
         if ( !this.material ) { return; }
 
         const ratio = texture.image.width / texture.image.height;
-        const textureScale = new Vector3();
+        const textureScale = new THREE.Vector3();
 
         texture.image.width = texture.image.naturalWidth || 64;
         texture.image.height = texture.image.naturalHeight || 64;
@@ -2005,7 +2035,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     TextureLoader.load( imageSrc, postLoad );	
 
 }
-Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
+Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
     constructor: Infospot,
 
@@ -2593,7 +2623,7 @@ function Widget ( container ) {
 
     }
 
-    EventDispatcher.call( this );
+    THREE.EventDispatcher.call( this );
 
     this.DEFAULT_TRANSITION  = 'all 0.27s ease';
     this.TOUCH_ENABLED = !!(( 'ontouchstart' in window ) || window.DocumentTouch && document instanceof DocumentTouch);
@@ -2617,7 +2647,7 @@ function Widget ( container ) {
 
 }
 
-Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
+Widget.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
 
     constructor: Widget,
 
@@ -3842,7 +3872,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
  */
 function Panorama ( geometry, material ) {
 
-    Mesh.call( this, geometry, material );
+    THREE.Mesh.call( this, geometry, material );
 
     this.type = 'panorama';
 
@@ -3867,7 +3897,7 @@ function Panorama ( geometry, material ) {
     this.linkingImageURL = undefined;
     this.linkingImageScale = undefined;
 
-    this.material.side = BackSide;
+    this.material.side = THREE.BackSide;
     this.material.opacity = 0;
 
     this.scale.x *= -1;
@@ -3885,7 +3915,7 @@ function Panorama ( geometry, material ) {
 
 }
 
-Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
+Panorama.prototype = Object.assign( Object.create( THREE.Mesh.prototype ), {
 
     constructor: Panorama,
 
@@ -3942,14 +3972,14 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
         } else {
 
             // Counter scale.x = -1 effect
-            invertedObject = new Object3D();
+            invertedObject = new THREE.Object3D();
             invertedObject.scale.x = -1;
             invertedObject.scalePlaceHolder = true;
             invertedObject.add( object );
 
         }
 
-        Object3D.prototype.add.call( this, invertedObject );
+        THREE.Object3D.prototype.add.call( this, invertedObject );
 
     },
 
@@ -4554,8 +4584,8 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 function ImagePanorama ( image, _geometry, _material ) {
 
     const radius = 5000;
-    const geometry = _geometry || new SphereBufferGeometry( radius, 60, 40 );
-    const material = _material || new MeshBasicMaterial( { opacity: 0, transparent: true } );
+    const geometry = _geometry || new THREE.SphereBufferGeometry( radius, 60, 40 );
+    const material = _material || new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
     Panorama.call( this, geometry, material );
 
@@ -4590,7 +4620,7 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         } else if ( src instanceof HTMLImageElement ) {
 
-            this.onLoad( new Texture( src ) );
+            this.onLoad( new THREE.Texture( src ) );
 
         }
 
@@ -4604,7 +4634,7 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     onLoad: function ( texture ) {
 
-        texture.minFilter = texture.magFilter = LinearFilter;
+        texture.minFilter = texture.magFilter = THREE.LinearFilter;
         texture.needsUpdate = true;
 		
         this.updateTexture( texture );
@@ -4634,7 +4664,7 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         const { material: { map } } = this;
 
         // Release cached image
-        Cache.remove( this.src );
+        THREE.Cache.remove( this.src );
 
         if ( map ) { map.dispose(); }
 
@@ -4650,10 +4680,10 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
  */
 function EmptyPanorama () {
 
-    const geometry = new BufferGeometry();
-    const material = new MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
 
-    geometry.addAttribute( 'position', new BufferAttribute( new Float32Array(), 1 ) );
+    geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(), 1 ) );
 
     Panorama.call( this, geometry, material );
 
@@ -4673,14 +4703,14 @@ EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 function CubePanorama ( images = [] ){
 
     const edgeLength = 10000;
-    const shader = Object.assign( {}, ShaderLib[ 'cube' ] );
-    const geometry = new BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
-    const material = new ShaderMaterial( {
+    const shader = Object.assign( {}, THREE.ShaderLib[ 'cube' ] );
+    const geometry = new THREE.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+    const material = new THREE.ShaderMaterial( {
 
         fragmentShader: shader.fragmentShader,
         vertexShader: shader.vertexShader,
         uniforms: shader.uniforms,
-        side: BackSide,
+        side: THREE.BackSide,
         transparent: true
 
     } );
@@ -4739,9 +4769,9 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         const { value } = this.material.uniforms.tCube;
 
-        this.images.forEach( ( image ) => { Cache.remove( image ); } );
+        this.images.forEach( ( image ) => { THREE.Cache.remove( image ); } );
 
-        if ( value instanceof CubeTexture ) {
+        if ( value instanceof THREE.CubeTexture ) {
 
             value.dispose();
 
@@ -4793,8 +4823,8 @@ BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype )
 function VideoPanorama ( src, options = {} ) {
 
     const radius = 5000;
-    const geometry = new SphereBufferGeometry( radius, 60, 40 );
-    const material = new MeshBasicMaterial( { opacity: 0, transparent: true } );
+    const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
+    const material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } );
 
     Panorama.call( this, geometry, material );
 
@@ -4986,10 +5016,10 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         if ( !video ) return;
 
-        const videoTexture = new VideoTexture( video );
-        videoTexture.minFilter = LinearFilter;
-        videoTexture.magFilter = LinearFilter;
-        videoTexture.format = RGBFormat;
+        const videoTexture = new THREE.VideoTexture( video );
+        videoTexture.minFilter = THREE.LinearFilter;
+        videoTexture.magFilter = THREE.LinearFilter;
+        videoTexture.format = THREE.RGBFormat;
 
         this.updateTexture( videoTexture );
 	
@@ -5635,7 +5665,7 @@ GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama
      */
     onLoad: function ( canvas ) {
 
-        ImagePanorama.prototype.onLoad.call( this, new Texture( canvas ) );
+        ImagePanorama.prototype.onLoad.call( this, new THREE.Texture( canvas ) );
 
     },
 
@@ -5676,9 +5706,9 @@ const StereographicShader = {
 
     uniforms: {
 
-        'tDiffuse': { value: new Texture() },
+        'tDiffuse': { value: new THREE.Texture() },
         'resolution': { value: 1.0 },
-        'transform': { value: new Matrix4() },
+        'transform': { value: new THREE.Matrix4() },
         'zoom': { value: 1.0 },
         'opacity': { value: 1.0 }
 
@@ -5757,15 +5787,15 @@ function LittlePlanet ( type = 'image', source, size = 10000, ratio = 0.5 ) {
     this.frameId = null;
 
     this.dragging = false;
-    this.userMouse = new Vector2();
+    this.userMouse = new THREE.Vector2();
 
-    this.quatA = new Quaternion();
-    this.quatB = new Quaternion();
-    this.quatCur = new Quaternion();
-    this.quatSlerp = new Quaternion();
+    this.quatA = new THREE.Quaternion();
+    this.quatB = new THREE.Quaternion();
+    this.quatCur = new THREE.Quaternion();
+    this.quatSlerp = new THREE.Quaternion();
 
-    this.vectorX = new Vector3( 1, 0, 0 );
-    this.vectorY = new Vector3( 0, 1, 0 );
+    this.vectorX = new THREE.Vector3( 1, 0, 0 );
+    this.vectorY = new THREE.Vector3( 0, 1, 0 );
 
     this.addEventListener( 'window-resize', this.onWindowResize );
 
@@ -5801,7 +5831,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     createGeometry: function ( size, ratio ) {
 
-        return new PlaneBufferGeometry( size, size * ratio );
+        return new THREE.PlaneBufferGeometry( size, size * ratio );
 
     },
 
@@ -5812,12 +5842,12 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         uniforms.zoom.value = size;
         uniforms.opacity.value = 0.0;
 
-        return new ShaderMaterial( {
+        return new THREE.ShaderMaterial( {
 
             uniforms: uniforms,
             vertexShader: shader.vertexShader,
             fragmentShader: shader.fragmentShader,
-            side: BackSide,
+            side: THREE.BackSide,
             transparent: true
 
         } );
@@ -5877,10 +5907,6 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
             break;
 
-        default:
-
-            break;
-
         }
 
         this.onUpdateCallback();
@@ -5898,8 +5924,8 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
             const x = ( event.clientX >= 0 ) ? event.clientX : event.touches[ 0 ].clientX;
             const y = ( event.clientY >= 0 ) ? event.clientY : event.touches[ 0 ].clientY;
 
-            const angleX = Math$1.degToRad( x - this.userMouse.x ) * 0.4;
-            const angleY = Math$1.degToRad( y - this.userMouse.y ) * 0.4;
+            const angleX = THREE.Math.degToRad( x - this.userMouse.x ) * 0.4;
+            const angleY = THREE.Math.degToRad( y - this.userMouse.y ) * 0.4;
 
             if ( this.dragging ) {
                 this.quatA.setFromAxisAngle( this.vectorY, angleX );
@@ -5917,10 +5943,6 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
             const distance = Math.sqrt( dx * dx + dy * dy );
 
             this.addZoomDelta( this.userMouse.pinchDistance - distance );
-
-            break;
-
-        default:
 
             break;
 
@@ -6090,7 +6112,7 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
      */
     updateTexture: function ( texture ) {
 
-        texture.minFilter = texture.magFilter = LinearFilter;
+        texture.minFilter = texture.magFilter = THREE.LinearFilter;
 		
         this.material.uniforms[ 'tDiffuse' ].value = texture;
 
@@ -6126,8 +6148,8 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
 function CameraPanorama ( constraints ) {
 
     const radius = 5000;
-    const geometry = new SphereBufferGeometry( radius, 60, 40 );
-    const material = new MeshBasicMaterial( { visible: false });
+    const geometry = new THREE.SphereBufferGeometry( radius, 60, 40 );
+    const material = new THREE.MeshBasicMaterial( { visible: false });
 
     Panorama.call( this, geometry, material );
 
@@ -6216,7 +6238,7 @@ function OrbitControls ( object, domElement ) {
      * "target" sets the location of focus, where the control orbits around
      * and where it pans with respect to.
      */
-    this.target = new Vector3();
+    this.target = new THREE.Vector3();
 
     // center is old, deprecated; use "target" instead
     this.center = this.target;
@@ -6278,7 +6300,7 @@ function OrbitControls ( object, domElement ) {
     this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
 
     // Mouse buttons
-    this.mouseButtons = { ORBIT: MOUSE.LEFT, ZOOM: MOUSE.MIDDLE, PAN: MOUSE.RIGHT };
+    this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
 
     /*
      * //////////
@@ -6290,30 +6312,30 @@ function OrbitControls ( object, domElement ) {
     var EPS = 10e-8;
     var MEPS = 10e-5;
 
-    var rotateStart = new Vector2();
-    var rotateEnd = new Vector2();
-    var rotateDelta = new Vector2();
+    var rotateStart = new THREE.Vector2();
+    var rotateEnd = new THREE.Vector2();
+    var rotateDelta = new THREE.Vector2();
 
-    var panStart = new Vector2();
-    var panEnd = new Vector2();
-    var panDelta = new Vector2();
-    var panOffset = new Vector3();
+    var panStart = new THREE.Vector2();
+    var panEnd = new THREE.Vector2();
+    var panDelta = new THREE.Vector2();
+    var panOffset = new THREE.Vector3();
 
-    var offset = new Vector3();
+    var offset = new THREE.Vector3();
 
-    var dollyStart = new Vector2();
-    var dollyEnd = new Vector2();
-    var dollyDelta = new Vector2();
+    var dollyStart = new THREE.Vector2();
+    var dollyEnd = new THREE.Vector2();
+    var dollyDelta = new THREE.Vector2();
 
     var theta = 0;
     var phi = 0;
     var phiDelta = 0;
     var thetaDelta = 0;
     var scale = 1;
-    var pan = new Vector3();
+    var pan = new THREE.Vector3();
 
-    var lastPosition = new Vector3();
-    var lastQuaternion = new Quaternion();
+    var lastPosition = new THREE.Vector3();
+    var lastQuaternion = new THREE.Quaternion();
 
     var momentumLeft = 0, momentumUp = 0;
     var eventPrevious;
@@ -6333,7 +6355,7 @@ function OrbitControls ( object, domElement ) {
 
     // so camera.up is the orbit axis
 
-    var quat = new Quaternion().setFromUnitVectors( object.up, new Vector3( 0, 1, 0 ) );
+    var quat = new THREE.Quaternion().setFromUnitVectors( object.up, new THREE.Vector3( 0, 1, 0 ) );
     var quatInverse = quat.clone().inverse();
 
     // events
@@ -6410,7 +6432,7 @@ function OrbitControls ( object, domElement ) {
 
         var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-        if ( scope.object instanceof PerspectiveCamera ) {
+        if ( scope.object instanceof THREE.PerspectiveCamera ) {
 
             // perspective
             var position = scope.object.position;
@@ -6424,7 +6446,7 @@ function OrbitControls ( object, domElement ) {
             scope.panLeft( 2 * deltaX * targetDistance / element.clientHeight );
             scope.panUp( 2 * deltaY * targetDistance / element.clientHeight );
 
-        } else if ( scope.object instanceof OrthographicCamera ) {
+        } else if ( scope.object instanceof THREE.OrthographicCamera ) {
 
             // orthographic
             scope.panLeft( deltaX * (scope.object.right - scope.object.left) / element.clientWidth );
@@ -6465,11 +6487,11 @@ function OrbitControls ( object, domElement ) {
 
         }
 
-        if ( scope.object instanceof PerspectiveCamera ) {
+        if ( scope.object instanceof THREE.PerspectiveCamera ) {
 
             scale /= dollyScale;
 
-        } else if ( scope.object instanceof OrthographicCamera ) {
+        } else if ( scope.object instanceof THREE.OrthographicCamera ) {
 
             scope.object.zoom = Math.max( this.minZoom, Math.min( this.maxZoom, this.object.zoom * dollyScale ) );
             scope.object.updateProjectionMatrix();
@@ -6491,11 +6513,11 @@ function OrbitControls ( object, domElement ) {
 
         }
 
-        if ( scope.object instanceof PerspectiveCamera ) {
+        if ( scope.object instanceof THREE.PerspectiveCamera ) {
 
             scale *= dollyScale;
 
-        } else if ( scope.object instanceof OrthographicCamera ) {
+        } else if ( scope.object instanceof THREE.OrthographicCamera ) {
 
             scope.object.zoom = Math.max( this.minZoom, Math.min( this.maxZoom, this.object.zoom / dollyScale ) );
             scope.object.updateProjectionMatrix();
@@ -7047,7 +7069,7 @@ function OrbitControls ( object, domElement ) {
     this.update();
 
 }
-OrbitControls.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
+OrbitControls.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
 
     constructor: OrbitControls
 
@@ -7110,8 +7132,8 @@ function DeviceOrientationControls ( camera, domElement ) {
         event.preventDefault();
         event.stopPropagation();
 
-        rotY += Math$1.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 );
-        rotX += Math$1.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
+        rotY += THREE.Math.degToRad( ( event.touches[ 0 ].pageX - tempX ) / 4 );
+        rotX += THREE.Math.degToRad( ( tempY - event.touches[ 0 ].pageY ) / 4 );
 
         scope.updateAlphaOffsetAngle( rotY );
 
@@ -7124,36 +7146,36 @@ function DeviceOrientationControls ( camera, domElement ) {
 
     var setCameraQuaternion = function( quaternion, alpha, beta, gamma, orient ) {
 
-        var zee = new Vector3( 0, 0, 1 );
+        var zee = new THREE.Vector3( 0, 0, 1 );
 
-        var euler = new Euler();
+        var euler = new THREE.Euler();
 
-        var q0 = new Quaternion();
+        var q0 = new THREE.Quaternion();
 
-        var q1 = new Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
+        var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
 
         var vectorFingerY;
-        var fingerQY = new Quaternion();
-        var fingerQX = new Quaternion();
+        var fingerQY = new THREE.Quaternion();
+        var fingerQX = new THREE.Quaternion();
 
         if ( scope.screenOrientation == 0 ) {
 
-            vectorFingerY = new Vector3( 1, 0, 0 );
+            vectorFingerY = new THREE.Vector3( 1, 0, 0 );
             fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
 
         } else if ( scope.screenOrientation == 180 ) {
 
-            vectorFingerY = new Vector3( 1, 0, 0 );
+            vectorFingerY = new THREE.Vector3( 1, 0, 0 );
             fingerQY.setFromAxisAngle( vectorFingerY, rotX );
 
         } else if ( scope.screenOrientation == 90 ) {
 
-            vectorFingerY = new Vector3( 0, 1, 0 );
+            vectorFingerY = new THREE.Vector3( 0, 1, 0 );
             fingerQY.setFromAxisAngle( vectorFingerY, rotX );
 
         } else if ( scope.screenOrientation == - 90) {
 
-            vectorFingerY = new Vector3( 0, 1, 0 );
+            vectorFingerY = new THREE.Vector3( 0, 1, 0 );
             fingerQY.setFromAxisAngle( vectorFingerY, -rotX );
 
         }
@@ -7203,10 +7225,10 @@ function DeviceOrientationControls ( camera, domElement ) {
 
         if ( scope.enabled === false ) return;
 
-        var alpha = scope.deviceOrientation.alpha ? Math$1.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
-        var beta = scope.deviceOrientation.beta ? Math$1.degToRad( scope.deviceOrientation.beta ) : 0; // X'
-        var gamma = scope.deviceOrientation.gamma ? Math$1.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
-        var orient = scope.screenOrientation ? Math$1.degToRad( scope.screenOrientation ) : 0; // O
+        var alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) + scope.alphaOffsetAngle : 0; // Z
+        var beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
+        var gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
+        var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
 
         setCameraQuaternion( scope.camera.quaternion, alpha, beta, gamma, orient );
         scope.alpha = alpha;
@@ -7231,7 +7253,7 @@ function DeviceOrientationControls ( camera, domElement ) {
     this.connect();
 
 }
-DeviceOrientationControls.prototype = Object.assign( Object.create( EventDispatcher.prototype), {
+DeviceOrientationControls.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype), {
 
     constructor: DeviceOrientationControls
 
@@ -7245,16 +7267,16 @@ DeviceOrientationControls.prototype = Object.assign( Object.create( EventDispatc
  */
 function CardboardEffect ( renderer ) {
 
-    var _camera = new OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+    var _camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 
-    var _scene = new Scene();
+    var _scene = new THREE.Scene();
 
-    var _stereo = new StereoCamera();
+    var _stereo = new THREE.StereoCamera();
     _stereo.aspect = 0.5;
 
-    var _params = { minFilter: LinearFilter, magFilter: NearestFilter, format: RGBAFormat };
+    var _params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
 
-    var _renderTarget = new WebGLRenderTarget( 512, 512, _params );
+    var _renderTarget = new THREE.WebGLRenderTarget( 512, 512, _params );
     _renderTarget.scissorTest = true;
     _renderTarget.texture.generateMipmaps = false;
 
@@ -7263,9 +7285,9 @@ function CardboardEffect ( renderer ) {
      * https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
      */
 
-    var distortion = new Vector2( 0.441, 0.156 );
+    var distortion = new THREE.Vector2( 0.441, 0.156 );
 
-    var geometry = new PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
+    var geometry = new THREE.PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
 
     var positions = geometry.attributes.position.array;
     var uvs = geometry.attributes.uv.array;
@@ -7282,7 +7304,7 @@ function CardboardEffect ( renderer ) {
     uvs2.set( uvs );
     uvs2.set( uvs, uvs.length );
 
-    var vector = new Vector2();
+    var vector = new THREE.Vector2();
     var length = positions.length / 3;
 
     for ( var i = 0, l = positions2.length / 3; i < l; i ++ ) {
@@ -7307,8 +7329,8 @@ function CardboardEffect ( renderer ) {
 
     //
 
-    var material = new MeshBasicMaterial( { map: _renderTarget.texture } );
-    var mesh = new Mesh( geometry, material );
+    var material = new THREE.MeshBasicMaterial( { map: _renderTarget.texture } );
+    var mesh = new THREE.Mesh( geometry, material );
     _scene.add( mesh );
 
     //
@@ -7364,9 +7386,9 @@ function CardboardEffect ( renderer ) {
  */
 const StereoEffect = function ( renderer ) {
 
-    var _stereo = new StereoCamera();
+    var _stereo = new THREE.StereoCamera();
     _stereo.aspect = 0.5;
-    var size = new Vector2();
+    var size = new THREE.Vector2();
 
     this.setEyeSeparation = function ( eyeSep ) {
 
@@ -7485,10 +7507,10 @@ function Viewer ( options ) {
 
     this.container = container;
 
-    this.camera = options.camera || new PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
-    this.scene = options.scene || new Scene();
-    this.renderer = options.renderer || new WebGLRenderer( { alpha: true, antialias: false } );
-    this.sceneReticle = new Scene();
+    this.camera = options.camera || new THREE.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
+    this.scene = options.scene || new THREE.Scene();
+    this.renderer = options.renderer || new THREE.WebGLRenderer( { alpha: true, antialias: false } );
+    this.sceneReticle = new THREE.Scene();
 
     this.viewIndicatorSize = this.options.indicatorSize;
 
@@ -7505,14 +7527,14 @@ function Viewer ( options ) {
     this.pressEntityObject = null;
     this.pressObject = null;
 
-    this.raycaster = new Raycaster();
-    this.raycasterPoint = new Vector2();
-    this.userMouse = new Vector2();
+    this.raycaster = new THREE.Raycaster();
+    this.raycasterPoint = new THREE.Vector2();
+    this.userMouse = new THREE.Vector2();
     this.updateCallbacks = [];
     this.requestAnimationId = null;
 
-    this.cameraFrustum = new Frustum();
-    this.cameraViewProjectionMatrix = new Matrix4();
+    this.cameraFrustum = new THREE.Frustum();
+    this.cameraViewProjectionMatrix = new THREE.Matrix4();
 
     this.autoRotateRequestId = null;
 
@@ -7628,7 +7650,7 @@ function Viewer ( options ) {
     this.animate.call( this );
 
 }
-Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
+Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype ), {
 
     constructor: Viewer,
 
@@ -8384,10 +8406,6 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             this.camera.position.copy( this.panorama.position );
 
             break;
-
-        default:
-
-            break;
         }
 
         this.control.update();
@@ -8512,10 +8530,10 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         scope = this;
 
-        chv = this.camera.getWorldDirection( new Vector3() );
+        chv = this.camera.getWorldDirection( new THREE.Vector3() );
         cvv = chv.clone();
 
-        vptc = this.panorama.getWorldPosition( new Vector3() ).sub( this.camera.getWorldPosition( new Vector3() ) );
+        vptc = this.panorama.getWorldPosition( new THREE.Vector3() ).sub( this.camera.getWorldPosition( new THREE.Vector3() ) );
 
         hv = vector.clone();
         // Scale effect
@@ -8581,13 +8599,13 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         if ( isUnderScalePlaceHolder ) {
 
-            const invertXVector = new Vector3( -1, 1, 1 );
+            const invertXVector = new THREE.Vector3( -1, 1, 1 );
 
-            this.tweenControlCenter( object.getWorldPosition( new Vector3() ).multiply( invertXVector ), duration, easing );
+            this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ).multiply( invertXVector ), duration, easing );
 
         } else {
 
-            this.tweenControlCenter( object.getWorldPosition( new Vector3() ), duration, easing );
+            this.tweenControlCenter( object.getWorldPosition( new THREE.Vector3() ), duration, easing );
 
         }
 
@@ -8695,8 +8713,8 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         if ( intersects.length > 0 ) {
 
             const point = intersects[ 0 ].point.clone();
-            const converter = new Vector3( -1, 1, 1 );
-            const world = this.panorama.getWorldPosition( new Vector3() );
+            const converter = new THREE.Vector3( -1, 1, 1 );
+            const world = this.panorama.getWorldPosition( new THREE.Vector3() );
             point.sub( world ).multiply( converter );
 
             const position = {
@@ -8726,9 +8744,6 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             case 'overlay':
                 this.outputDivElement.textContent = message;
-                break;
-
-            default:
                 break;
 
             }
@@ -9170,7 +9185,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 					|| (child.element.left && child.element.left.style.display !== 'none')
 					|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
                 if ( this.checkSpriteInViewport( child ) ) {
-                    const { x, y } = this.getScreenVector( child.getWorldPosition( new Vector3() ) );
+                    const { x, y } = this.getScreenVector( child.getWorldPosition( new THREE.Vector3() ) );
                     child.translateElement( x, y );
                 } else {
                     child.onDismiss();
@@ -9381,9 +9396,9 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         }
 
         // clear cache
-        if ( Cache && Cache.enabled ) {
+        if ( THREE.Cache && THREE.Cache.enabled ) {
 
-            Cache.clear();
+            THREE.Cache.clear();
 
         }
 
@@ -9470,8 +9485,8 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             const setIndicatorD = function () {
 
                 scope.radius = scope.viewIndicatorSize * 0.225;
-                scope.currentPanoAngle = scope.camera.rotation.y - Math$1.degToRad( 90 );
-                scope.fovAngle = Math$1.degToRad( scope.camera.fov ) ;
+                scope.currentPanoAngle = scope.camera.rotation.y - THREE.Math.degToRad( 90 );
+                scope.fovAngle = THREE.Math.degToRad( scope.camera.fov ) ;
                 scope.leftAngle = -scope.currentPanoAngle - scope.fovAngle / 2;
                 scope.rightAngle = -scope.currentPanoAngle + scope.fovAngle / 2;
                 scope.leftX = scope.radius * Math.cos( scope.leftAngle );
@@ -9541,13 +9556,13 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      */
     clearAllCache: function () {
 
-        Cache.clear();
+        THREE.Cache.clear();
 
     }
 
 } );
 
-if ( REVISION$1 != THREE_REVISION ) {
+if ( THREE.REVISION != THREE_REVISION ) {
 
     console.warn( `three.js version is not matched. Please consider use the target revision ${THREE_REVISION}` );
 
@@ -9560,4 +9575,4 @@ if ( REVISION$1 != THREE_REVISION ) {
  */
 window.TWEEN = Tween;
 
-export { BasicPanorama, CONTROLS, CameraPanorama, CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget };
+export { BasicPanorama, CONTROLS, CONTROL_BUTTONS, CameraPanorama, CubePanorama, CubeTextureLoader, DataImage, EmptyPanorama, GoogleStreetviewPanorama, ImageLittlePlanet, ImageLoader, ImagePanorama, Infospot, LittlePlanet, MODES, Media, OUTPUTS, Panorama, REVISION, Reticle, THREE_REVISION, THREE_VERSION, TextureLoader, VERSION, VideoPanorama, Viewer, Widget };
