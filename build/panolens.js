@@ -24,7 +24,7 @@
 
 	var THREE__namespace = /*#__PURE__*/_interopNamespace(THREE);
 
-	const version="0.12.1";const dependencies={three:"^0.105.2"};
+	const version="0.12.1";const dependencies={three:"^0.136"};
 
 	/**
 	 * REVISION
@@ -215,14 +215,6 @@
 
 	        request = new window.XMLHttpRequest();
 	        request.open('GET', url, true);
-	        if (process.env.npm_lifecycle_event !== 'test') {
-	            /* istanbul ignore next */
-	            request.onreadystatechange = function () {
-	                if (this.readyState === 4 && this.status >= 400) {
-	                    onError();
-	                }
-	            };
-	        }
 	        request.responseType = 'arraybuffer';
 	        request.addEventListener( 'error', onError );
 	        request.addEventListener( 'progress', event => {
@@ -726,40 +718,34 @@
 	 * @param {boolean} [autoSelect=true] - Auto selection
 	 * @param {number} [dwellTime=1500] - Duration for dwelling sequence to complete
 	 */
+	class Reticle extends THREE__namespace.Sprite {
+	    constructor( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
+	        const { canvas, context } = Reticle.createCanvas(window.devicePixelRatio);
+	        const material = new THREE__namespace.SpriteMaterial( { color, map: Reticle.createCanvasTexture( canvas ) } );
+	        super(material);
 
-	function Reticle ( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
-
-	    this.dpr = window.devicePixelRatio;
-
-	    const { canvas, context } = this.createCanvas();
-	    const material = new THREE__namespace.SpriteMaterial( { color, map: this.createCanvasTexture( canvas ) } );
-
-	    THREE__namespace.Sprite.call( this, material );
-
-	    this.canvasWidth = canvas.width;
-	    this.canvasHeight = canvas.height;
-	    this.context = context;
-	    this.color = color instanceof THREE__namespace.Color ? color : new THREE__namespace.Color( color );    
-
-	    this.autoSelect = autoSelect;
-	    this.dwellTime = dwellTime;
-	    this.rippleDuration = 500;
-	    this.position.z = -10;
-	    this.center.set( 0.5, 0.5 );
-	    this.scale.set( 0.5, 0.5, 1 );
-
-	    this.startTimestamp = null;
-	    this.timerId = null;
-	    this.callback = null;
-
-	    this.frustumCulled = false;
-
-	    this.updateCanvasArcByProgress( 0 );
-
-	}
-	Reticle.prototype = Object.assign( Object.create( THREE__namespace.Sprite.prototype ), {
-
-	    constructor: Reticle,
+	        this.dpr = window.devicePixelRatio;
+	  
+	        this.canvasWidth = canvas.width;
+	        this.canvasHeight = canvas.height;
+	        this.context = context;
+	        this.color = color instanceof THREE__namespace.Color ? color : new THREE__namespace.Color( color );    
+	  
+	        this.autoSelect = autoSelect;
+	        this.dwellTime = dwellTime;
+	        this.rippleDuration = 500;
+	        this.position.z = -10;
+	        this.center.set( 0.5, 0.5 );
+	        this.scale.set( 0.5, 0.5, 1 );
+	  
+	        this.startTimestamp = null;
+	        this.timerId = null;
+	        this.callback = null;
+	  
+	        this.frustumCulled = false;
+	  
+	        this.updateCanvasArcByProgress( 0 );
+	    }
 
 	    /**
 	     * Set material color
@@ -767,12 +753,12 @@
 	     * @memberOf Reticle
 	     * @instance
 	     */
-	    setColor: function ( color ) {
+	    setColor ( color ) {
 
 	        this.material.color.copy( color instanceof THREE__namespace.Color ? color : new THREE__namespace.Color( color ) );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Create canvas texture
 	     * @param {HTMLCanvasElement} canvas 
@@ -780,17 +766,17 @@
 	     * @instance
 	     * @returns {THREE.CanvasTexture}
 	     */
-	    createCanvasTexture: function ( canvas ) {
-
+	    static createCanvasTexture ( canvas ) {
+	  
 	        const texture = new THREE__namespace.CanvasTexture( canvas );
 	        texture.minFilter = THREE__namespace.LinearFilter;
 	        texture.magFilter = THREE__namespace.LinearFilter;
 	        texture.generateMipmaps = false;
-
+	  
 	        return texture;
 
-	    },
-
+	    }
+	  
 	    /**
 	     * Create canvas element
 	     * @memberOf Reticle
@@ -799,33 +785,30 @@
 	     * @returns {HTMLCanvasElement} object.canvas
 	     * @returns {CanvasRenderingContext2D} object.context
 	     */
-	    createCanvas: function () {
-
+	    static createCanvas (dpr) {
 	        const width = 32;
 	        const height = 32;
 	        const canvas = document.createElement( 'canvas' );
 	        const context = canvas.getContext( '2d' );
-	        const dpr = this.dpr;
-
+	  
 	        canvas.width = width * dpr;
 	        canvas.height = height * dpr;
 	        context.scale( dpr, dpr );
-
+	  
 	        context.shadowBlur = 5;
 	        context.shadowColor = 'rgba(200,200,200,0.9)';
-
+	  
 	        return { canvas, context };
-
-	    },
-
+	    }
+	  
 	    /**
 	     * Update canvas arc by progress
 	     * @param {number} progress 
 	     * @memberOf Reticle
 	     * @instance
 	     */
-	    updateCanvasArcByProgress: function ( progress ) {
-
+	    updateCanvasArcByProgress ( progress ) {
+	  
 	        const context = this.context;
 	        const { canvasWidth, canvasHeight, material } = this;
 	        const dpr = this.dpr;
@@ -834,10 +817,10 @@
 	        const x = canvasWidth * 0.5 / dpr;
 	        const y = canvasHeight * 0.5 / dpr;
 	        const lineWidth = 3;
-	        
+	          
 	        context.clearRect( 0, 0, canvasWidth, canvasHeight );
 	        context.beginPath();
-
+	  
 	        if ( progress === 0 ) {
 	            context.arc( x, y, canvasWidth / 16, 0, 2 * Math.PI );
 	            context.fillStyle = color;
@@ -848,13 +831,13 @@
 	            context.lineWidth = lineWidth;
 	            context.stroke();
 	        }
-
+	  
 	        context.closePath();
-
+	  
 	        material.map.needsUpdate = true;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Ripple effect
 	     * @memberOf Reticle
@@ -862,8 +845,8 @@
 	     * @fires Reticle#reticle-ripple-start
 	     * @fires Reticle#reticle-ripple-end
 	     */
-	    ripple: function () {
-
+	    ripple() {
+	  
 	        const context = this.context;
 	        const { canvasWidth, canvasHeight, material } = this;
 	        const duration = this.rippleDuration;
@@ -872,73 +855,73 @@
 	        const dpr = this.dpr;
 	        const x = canvasWidth * 0.5 / dpr;
 	        const y = canvasHeight * 0.5 / dpr;
-
+	  
 	        const update = () => {
-
+	  
 	            const timerId = window.requestAnimationFrame( update );
 	            const elapsed = performance.now() - timestamp;
 	            const progress = elapsed / duration;
 	            const opacity = 1.0 - progress > 0 ? 1.0 - progress : 0;
 	            const radius = progress * canvasWidth * 0.5 / dpr;
-
+	  
 	            context.clearRect( 0, 0, canvasWidth, canvasHeight );
 	            context.beginPath();
 	            context.arc( x, y, radius, 0, Math.PI * 2 );
 	            context.fillStyle = `rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${opacity})`;
 	            context.fill();
 	            context.closePath();
-
+	  
 	            if ( progress >= 1.0 ) {
-
+	  
 	                window.cancelAnimationFrame( timerId );
 	                this.updateCanvasArcByProgress( 0 );
-
+	  
 	                /**
 	                 * Reticle ripple end event
 	                 * @type {object}
 	                 * @event Reticle#reticle-ripple-end
 	                 */
 	                this.dispatchEvent( { type: 'reticle-ripple-end' } );
-
+	  
 	            }
-
+	  
 	            material.map.needsUpdate = true;
-
+	  
 	        };
-
+	  
 	        /**
 	         * Reticle ripple start event
 	         * @type {object}
 	         * @event Reticle#reticle-ripple-start
 	         */
 	        this.dispatchEvent( { type: 'reticle-ripple-start' } );
-
+	  
 	        update();
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Make reticle visible
 	     * @memberOf Reticle
 	     * @instance
 	     */
-	    show: function () {
-
+	    show () {
+	  
 	        this.visible = true;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Make reticle invisible
 	     * @memberOf Reticle
 	     * @instance
 	     */
-	    hide: function () {
-
+	    hide () {
+	  
 	        this.visible = false;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Start dwelling
 	     * @param {function} callback 
@@ -946,87 +929,86 @@
 	     * @instance
 	     * @fires Reticle#reticle-start
 	     */
-	    start: function ( callback ) {
-
+	    start ( callback ) {
+	  
 	        if ( !this.autoSelect ) {
-
+	  
 	            return;
-
+	  
 	        }
-
+	  
 	        /**
 	         * Reticle start event
 	         * @type {object}
 	         * @event Reticle#reticle-start
 	         */
 	        this.dispatchEvent( { type: 'reticle-start' } );
-
+	  
 	        this.startTimestamp = performance.now();
 	        this.callback = callback;
 	        this.update();
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * End dwelling
 	     * @memberOf Reticle
 	     * @instance
 	     * @fires Reticle#reticle-end
 	     */
-	    end: function(){
-
+	    end(){
+	  
 	        if ( !this.startTimestamp ) { return; }
-
+	  
 	        window.cancelAnimationFrame( this.timerId );
-
+	  
 	        this.updateCanvasArcByProgress( 0 );
 	        this.callback = null;
 	        this.timerId = null;
 	        this.startTimestamp = null;
-
+	  
 	        /**
 	         * Reticle end event
 	         * @type {object}
 	         * @event Reticle#reticle-end
 	         */
 	        this.dispatchEvent( { type: 'reticle-end' } );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Update dwelling
 	     * @memberOf Reticle
 	     * @instance
 	     * @fires Reticle#reticle-update
 	     */
-	    update: function () {
-
+	    update () {
+	  
 	        this.timerId = window.requestAnimationFrame( this.update.bind( this ) );
-
+	  
 	        const elapsed = performance.now() - this.startTimestamp;
 	        const progress = elapsed / this.dwellTime;
-
+	  
 	        this.updateCanvasArcByProgress( progress );
-
+	  
 	        /**
 	         * Reticle update event
 	         * @type {object}
 	         * @event Reticle#reticle-update
 	         */
 	        this.dispatchEvent( { type: 'reticle-update', progress } );
-
+	  
 	        if ( progress >= 1.0 ) {
-
+	  
 	            window.cancelAnimationFrame( this.timerId );
 	            if ( this.callback ) { this.callback(); }
 	            this.end();
 	            this.ripple();
-
+	  
 	        }
-
-	    }
-
-	} );
+	  
+	    }  
+	}
 
 	function createCommonjsModule(fn, module) {
 		return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -1964,104 +1946,101 @@
 	 * @param {string} [imageSrc=PANOLENS.DataImage.Info] - Image overlay info
 	 * @param {boolean} [animated=true] - Enable default hover animation
 	 */
-	function Infospot ( scale = 300, imageSrc, animated ) {
+	class Infospot extends THREE__namespace.Sprite {
+
+	    constructor( scale = 300, imageSrc, animated ) {
+	        super();
+	        const duration = 500, scaleFactor = 1.3;
+
+	        imageSrc = imageSrc || DataImage.Info;
+
+	        this.type = 'infospot';
+
+	        this.animated = animated !== undefined ? animated : true;
+	        this.isHovering = false;
+
+	        /*
+	         * TODO: Three.js bug hotfix for sprite raycasting r104
+	         * https://github.com/mrdoob/three.js/issues/14624
+	         */
+	        this.frustumCulled = false;
+
+	        this.element = null;
+	        this.toPanorama = null;
+	        this.cursorStyle = null;
+
+	        this.mode = MODES.NORMAL;
+
+	        this.scale.set( scale, scale, 1 );
+	        this.rotation.y = Math.PI;
+
+	        this.container = null;
+
+	        this.originalRaycast = this.raycast;
+
+	        // Event Handler
+	        this.HANDLER_FOCUS = null;	
+
+	        this.material.side = THREE__namespace.DoubleSide;
+	        this.material.depthTest = false;
+	        this.material.transparent = true;
+	        this.material.opacity = 0;
+
+	        this.scaleUpAnimation = new Tween.Tween();
+	        this.scaleDownAnimation = new Tween.Tween();
+
+
+	        const postLoad = function ( texture ) {
+
+	            if ( !this.material ) { return; }
+
+	            const ratio = texture.image.width / texture.image.height;
+	            const textureScale = new THREE__namespace.Vector3();
+
+	            texture.image.width = texture.image.naturalWidth || 64;
+	            texture.image.height = texture.image.naturalHeight || 64;
+
+	            this.scale.set( ratio * scale, scale, 1 );
+
+	            textureScale.copy( this.scale );
+
+	            this.scaleUpAnimation = new Tween.Tween( this.scale )
+	                .to( { x: textureScale.x * scaleFactor, y: textureScale.y * scaleFactor }, duration )
+	                .easing( Tween.Easing.Elastic.Out );
+
+	            this.scaleDownAnimation = new Tween.Tween( this.scale )
+	                .to( { x: textureScale.x, y: textureScale.y }, duration )
+	                .easing( Tween.Easing.Elastic.Out );
+
+	            this.material.map = texture;
+	            this.material.needsUpdate = true;
+
+	        }.bind( this );
+
+	        // Add show and hide animations
+	        this.showAnimation = new Tween.Tween( this.material )
+	            .to( { opacity: 1 }, duration )
+	            .onStart( this.enableRaycast.bind( this, true ) )
+	            .easing( Tween.Easing.Quartic.Out );
+
+	        this.hideAnimation = new Tween.Tween( this.material )
+	            .to( { opacity: 0 }, duration )
+	            .onStart( this.enableRaycast.bind( this, false ) )
+	            .easing( Tween.Easing.Quartic.Out );
+
+	        // Attach event listeners
+	        this.addEventListener( 'click', this.onClick );
+	        this.addEventListener( 'hover', this.onHover );
+	        this.addEventListener( 'hoverenter', this.onHoverStart );
+	        this.addEventListener( 'hoverleave', this.onHoverEnd );
+	        this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
+	        this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
+	        this.addEventListener( 'dismiss', this.onDismiss );
+	        this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
+
+	        TextureLoader.load( imageSrc, postLoad );	
+	    }
 		
-	    const duration = 500, scaleFactor = 1.3;
-
-	    imageSrc = imageSrc || DataImage.Info;
-
-	    THREE__namespace.Sprite.call( this );
-
-	    this.type = 'infospot';
-
-	    this.animated = animated !== undefined ? animated : true;
-	    this.isHovering = false;
-
-	    /*
-	     * TODO: Three.js bug hotfix for sprite raycasting r104
-	     * https://github.com/mrdoob/three.js/issues/14624
-	     */
-	    this.frustumCulled = false;
-
-	    this.element = null;
-	    this.toPanorama = null;
-	    this.cursorStyle = null;
-
-	    this.mode = MODES.NORMAL;
-
-	    this.scale.set( scale, scale, 1 );
-	    this.rotation.y = Math.PI;
-
-	    this.container = null;
-
-	    this.originalRaycast = this.raycast;
-
-	    // Event Handler
-	    this.HANDLER_FOCUS = null;	
-
-	    this.material.side = THREE__namespace.DoubleSide;
-	    this.material.depthTest = false;
-	    this.material.transparent = true;
-	    this.material.opacity = 0;
-
-	    this.scaleUpAnimation = new Tween.Tween();
-	    this.scaleDownAnimation = new Tween.Tween();
-
-
-	    const postLoad = function ( texture ) {
-
-	        if ( !this.material ) { return; }
-
-	        const ratio = texture.image.width / texture.image.height;
-	        const textureScale = new THREE__namespace.Vector3();
-
-	        texture.image.width = texture.image.naturalWidth || 64;
-	        texture.image.height = texture.image.naturalHeight || 64;
-
-	        this.scale.set( ratio * scale, scale, 1 );
-
-	        textureScale.copy( this.scale );
-
-	        this.scaleUpAnimation = new Tween.Tween( this.scale )
-	            .to( { x: textureScale.x * scaleFactor, y: textureScale.y * scaleFactor }, duration )
-	            .easing( Tween.Easing.Elastic.Out );
-
-	        this.scaleDownAnimation = new Tween.Tween( this.scale )
-	            .to( { x: textureScale.x, y: textureScale.y }, duration )
-	            .easing( Tween.Easing.Elastic.Out );
-
-	        this.material.map = texture;
-	        this.material.needsUpdate = true;
-
-	    }.bind( this );
-
-	    // Add show and hide animations
-	    this.showAnimation = new Tween.Tween( this.material )
-	        .to( { opacity: 1 }, duration )
-	        .onStart( this.enableRaycast.bind( this, true ) )
-	        .easing( Tween.Easing.Quartic.Out );
-
-	    this.hideAnimation = new Tween.Tween( this.material )
-	        .to( { opacity: 0 }, duration )
-	        .onStart( this.enableRaycast.bind( this, false ) )
-	        .easing( Tween.Easing.Quartic.Out );
-
-	    // Attach event listeners
-	    this.addEventListener( 'click', this.onClick );
-	    this.addEventListener( 'hover', this.onHover );
-	    this.addEventListener( 'hoverenter', this.onHoverStart );
-	    this.addEventListener( 'hoverleave', this.onHoverEnd );
-	    this.addEventListener( 'panolens-dual-eye-effect', this.onDualEyeEffect );
-	    this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
-	    this.addEventListener( 'dismiss', this.onDismiss );
-	    this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
-
-	    TextureLoader.load( imageSrc, postLoad );	
-
-	}
-	Infospot.prototype = Object.assign( Object.create( THREE__namespace.Sprite.prototype ), {
-
-	    constructor: Infospot,
 
 	    /**
 	     * Set infospot container
@@ -2069,30 +2048,30 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    setContainer: function ( data ) {
+	    setContainer ( data ) {
 
 	        let container;
-		
+
 	        if ( data instanceof HTMLElement ) {
-		
+
 	            container = data;
-		
+
 	        } else if ( data && data.container ) {
-		
+
 	            container = data.container;
-		
+
 	        }
-		
+
 	        // Append element if exists
 	        if ( container && this.element ) {
-		
+
 	            container.appendChild( this.element );
-		
+
 	        }
-		
+
 	        this.container = container;
-		
-	    },
+
+	    }
 
 	    /**
 	     * Get container
@@ -2100,11 +2079,11 @@
 	     * @instance
 	     * @return {HTMLElement} - The container of this infospot
 	     */
-	    getContainer: function () {
+	    getContainer () {
 
 	        return this.container;
 
-	    },
+	    }
 
 	    /**
 	     * This will be called by a click event
@@ -2113,7 +2092,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    onClick: function ( event ) {
+	    onClick ( event ) {
 
 	        if ( this.element && this.getContainer() ) {
 
@@ -2124,7 +2103,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Dismiss current element if any
@@ -2132,7 +2111,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    onDismiss: function () {
+	    onDismiss () {
 
 	        if ( this.element ) {
 
@@ -2141,7 +2120,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * This will be called by a mouse hover event
@@ -2150,7 +2129,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    onHover: function () {},
+	    onHover () {}
 
 	    /**
 	     * This will be called on a mouse hover start
@@ -2159,7 +2138,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    onHoverStart: function ( event ) {
+	    onHoverStart ( event ) {
 
 	        if ( !this.getContainer() ) { return; }
 
@@ -2168,14 +2147,14 @@
 
 	        this.isHovering = true;
 	        this.container.style.cursor = cursorStyle;
-			
+	  
 	        if ( this.animated ) {
 
 	            scaleDownAnimation.stop();
 	            scaleUpAnimation.start();
 
 	        }
-			
+	  
 	        if ( element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
 
 	            const { left, right, style } = element;
@@ -2201,10 +2180,10 @@
 	                element._height = element.clientHeight;
 
 	            }
-				
+	    
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * This will be called on a mouse hover end
@@ -2212,7 +2191,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    onHoverEnd: function () {
+	    onHoverEnd () {
 
 	        if ( !this.getContainer() ) { return; }
 
@@ -2240,7 +2219,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * On dual eye effect handler
@@ -2249,8 +2228,8 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    onDualEyeEffect: function ( event ) {
-			
+	    onDualEyeEffect ( event ) {
+	  
 	        if ( !this.getContainer() ) { return; }
 
 	        let element, halfWidth, halfHeight;
@@ -2295,7 +2274,7 @@
 	        this.container.appendChild( element.left );
 	        this.container.appendChild( element.right );
 
-	    },
+	    }
 
 	    /**
 	     * Translate the hovering element by css transform
@@ -2304,7 +2283,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    translateElement: function ( x, y ) {
+	    translateElement ( x, y ) {
 
 	        if ( !this.element._width || !this.element._height || !this.getContainer() ) {
 
@@ -2324,8 +2303,8 @@
 	        top = y - height - delta;
 
 	        if ( ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) 
-					&& element.left && element.right
-					&& !( x === container.clientWidth / 2 && y === container.clientHeight / 2 ) ) {
+	      && element.left && element.right
+	      && !( x === container.clientWidth / 2 && y === container.clientHeight / 2 ) ) {
 
 	            left = container.clientWidth / 4 - width + ( x - container.clientWidth / 2 );
 	            top = container.clientHeight / 2 - height - delta + ( y - container.clientHeight / 2 );
@@ -2342,7 +2321,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Set vendor specific css
@@ -2352,7 +2331,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    setElementStyle: function ( type, element, value ) {
+	    setElementStyle ( type, element, value ) {
 
 	        const style = element.style;
 
@@ -2362,7 +2341,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Set hovering text content
@@ -2370,7 +2349,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    setText: function ( text ) {
+	    setText ( text ) {
 
 	        if ( this.element ) {
 
@@ -2378,18 +2357,18 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Set cursor css style on hover
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    setCursorHoverStyle: function ( style ) {
+	    setCursorHoverStyle ( style ) {
 
 	        this.cursorStyle = style;
 
-	    },
+	    }
 
 	    /**
 	     * Add hovering text element
@@ -2398,7 +2377,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    addHoverText: function ( text, delta = 40 ) {
+	    addHoverText ( text, delta = 40 ) {
 
 	        if ( !this.element ) {
 
@@ -2418,7 +2397,7 @@
 
 	        this.setText( text );
 
-	    },
+	    }
 
 	    /**
 	     * Add hovering element by cloning an element
@@ -2427,7 +2406,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    addHoverElement: function ( el, delta = 40 ) {
+	    addHoverElement ( el, delta = 40 ) {
 
 	        if ( !this.element ) { 
 
@@ -2440,14 +2419,14 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Remove hovering element
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    removeHoverElement: function () {
+	    removeHoverElement () {
 
 	        if ( this.element ) { 
 
@@ -2470,14 +2449,14 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Lock hovering element
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    lockHoverElement: function () {
+	    lockHoverElement () {
 
 	        if ( this.element ) { 
 
@@ -2485,14 +2464,14 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Unlock hovering element
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    unlockHoverElement: function () {
+	    unlockHoverElement () {
 
 	        if ( this.element ) { 
 
@@ -2500,7 +2479,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Enable raycasting
@@ -2508,7 +2487,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    enableRaycast: function ( enabled = true ) {
+	    enableRaycast ( enabled = true ) {
 
 	        if ( enabled ) {
 
@@ -2520,7 +2499,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Show infospot
@@ -2528,7 +2507,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    show: function ( delay = 0 ) {
+	    show ( delay = 0 ) {
 
 	        const { animated, hideAnimation, showAnimation, material } = this;
 
@@ -2544,7 +2523,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Hide infospot
@@ -2552,7 +2531,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    hide: function ( delay = 0 ) {
+	    hide ( delay = 0 ) {
 
 	        const { animated, hideAnimation, showAnimation, material, element } = this;
 
@@ -2572,15 +2551,15 @@
 	            material.opacity = 0;
 
 	        }
-			
-	    },
+	  
+	    }
 
 	    /**
 	     * Set focus event handler
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    setFocusMethod: function ( event ) {
+	    setFocusMethod ( event ) {
 
 	        if ( event ) {
 
@@ -2588,7 +2567,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Focus camera center to this infospot
@@ -2597,7 +2576,7 @@
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    focus: function ( duration, easing ) {
+	    focus ( duration, easing ) {
 
 	        if ( this.HANDLER_FOCUS ) {
 
@@ -2606,14 +2585,14 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Dispose
 	     * @memberOf Infospot
 	     * @instance
 	     */
-	    dispose: function () {
+	    dispose () {
 
 	        const { geometry, material } = this;
 	        const { map } = material;
@@ -2632,55 +2611,52 @@
 
 	    }
 
-	} );
+
+
+	}
 
 	/**
 	 * @classdesc Widget for controls
 	 * @constructor
 	 * @param {HTMLElement} container - A domElement where default control widget will be attached to
 	 */
-	function Widget ( container ) {
+	class Widget extends THREE__namespace.EventDispatcher {
 
-	    if ( !container ) {
+	    constructor( container ) {
+	        super();
+	        if ( !container ) {
 
-	        console.warn( 'PANOLENS.Widget: No container specified' );
+	            console.warn( 'PANOLENS.Widget: No container specified' );
 
+	        }
+
+	        this.DEFAULT_TRANSITION  = 'all 0.27s ease';
+	        this.TOUCH_ENABLED = !!(( 'ontouchstart' in window ) || window.DocumentTouch && document instanceof DocumentTouch);
+	        this.PREVENT_EVENT_HANDLER = function ( event ) {
+	            event.preventDefault();
+	            event.stopPropagation();
+	        };
+
+	        this.container = container;
+
+	        this.barElement = null;
+	        this.fullscreenElement = null;
+	        this.videoElement = null;
+	        this.settingElement = null;
+
+	        this.mainMenu = null;
+
+	        this.activeMainItem = null;
+	        this.activeSubMenu = null;
+	        this.mask = null;
 	    }
-
-	    THREE__namespace.EventDispatcher.call( this );
-
-	    this.DEFAULT_TRANSITION  = 'all 0.27s ease';
-	    this.TOUCH_ENABLED = !!(( 'ontouchstart' in window ) || window.DocumentTouch && document instanceof DocumentTouch);
-	    this.PREVENT_EVENT_HANDLER = function ( event ) {
-	        event.preventDefault();
-	        event.stopPropagation();
-	    };
-
-	    this.container = container;
-
-	    this.barElement = null;
-	    this.fullscreenElement = null;
-	    this.videoElement = null;
-	    this.settingElement = null;
-
-	    this.mainMenu = null;
-
-	    this.activeMainItem = null;
-	    this.activeSubMenu = null;
-	    this.mask = null;
-
-	}
-
-	Widget.prototype = Object.assign( Object.create( THREE__namespace.EventDispatcher.prototype ), {
-
-	    constructor: Widget,
 
 	    /**
 	     * Add control bar
 	     * @memberOf Widget
 	     * @instance
 	     */
-	    addControlBar: function () {
+	    addControlBar () {
 
 	        if ( !this.container ) {
 
@@ -2773,14 +2749,14 @@
 
 	        this.barElement = bar;
 
-	    },
+	    }
 
 	    /**
 	     * Create default menu
 	     * @memberOf Widget
 	     * @instance
 	     */
-	    createDefaultMenu: function () {
+	    createDefaultMenu () {
 
 	        var scope = this, handler;
 
@@ -2836,7 +2812,7 @@
 
 	        ];
 
-	    },
+	    }
 
 	    /**
 	     * Add buttons on top of control bar
@@ -2844,7 +2820,7 @@
 	     * @memberOf Widget
 	     * @instance
 	     */
-	    addControlButton: function ( name ) {
+	    addControlButton ( name ) {
 
 	        let element;
 
@@ -2885,14 +2861,14 @@
 
 	        this.barElement.appendChild( element );
 
-	    },
+	    }
 
 	    /**
 	     * Create modal mask
 	     * @memberOf Widget
 	     * @instance
 	     */
-	    createMask: function () {
+	    createMask () {
 
 	        const element = document.createElement( 'div' );
 	        element.style.position = 'absolute';
@@ -2917,14 +2893,14 @@
 
 	        return element;
 
-	    },
+	    }
 
 	    /**
 	     * Create Setting button to toggle menu
 	     * @memberOf Widget
 	     * @instance
 	     */
-	    createSettingButton: function () {
+	    createSettingButton () {
 
 	        let scope = this, item;
 
@@ -2936,7 +2912,7 @@
 	            scope.mainMenu.toggle();
 
 	            if ( this.activated ) {
-		
+
 	                this.deactivate();
 
 	            } else {
@@ -2978,7 +2954,7 @@
 	            if ( scope.mainMenu && scope.mainMenu.visible ) {
 
 	                scope.mainMenu.hide();
-					
+	      
 	            }
 
 	            if ( scope.activeSubMenu && scope.activeSubMenu.visible ) {
@@ -2993,14 +2969,14 @@
 	                scope.mainMenu.unslideAll();
 
 	            }
-				
+	    
 	        };
 
 	        item.activated = false;
 
 	        return item;
 
-	    },
+	    }
 
 	    /**
 	     * Create Fullscreen button
@@ -3009,7 +2985,7 @@
 	     * @instance
 	     * @fires Widget#panolens-viewer-handler
 	     */
-	    createFullscreenButton: function () {
+	    createFullscreenButton () {
 
 	        let scope = this, item, isFullscreen = false, tapSkipped = true, stylesheetId;
 
@@ -3019,9 +2995,9 @@
 
 	        // Don't create button if no support
 	        if ( !document.fullscreenEnabled       && 
-				!document.webkitFullscreenEnabled &&
-				!document.mozFullScreenEnabled    &&
-				!document.msFullscreenEnabled ) {
+	    !document.webkitFullscreenEnabled &&
+	    !document.mozFullScreenEnabled    &&
+	    !document.msFullscreenEnabled ) {
 	            return;
 	        }
 
@@ -3038,7 +3014,7 @@
 	                if ( container.msRequestFullscreen ) { container.msRequestFullscreen(); }
 	                if ( container.mozRequestFullScreen ) { container.mozRequestFullScreen(); }
 	                if ( container.webkitRequestFullscreen ) { container.webkitRequestFullscreen( Element.ALLOW_KEYBOARD_INPUT ); }
-	              
+	            
 	                isFullscreen = true;
 
 	            } else {
@@ -3106,10 +3082,10 @@
 	            sheet.innerHTML = ':-webkit-full-screen { width: 100% !important; height: 100% !important }';
 	            document.body.appendChild( sheet );
 	        }
-			
+	  
 	        return item;
 
-	    },
+	    }
 
 	    /**
 	     * Create video control container
@@ -3117,7 +3093,7 @@
 	     * @instance
 	     * @return {HTMLSpanElement} - The dom element icon for video control
 	     */
-	    createVideoControl: function () {
+	    createVideoControl () {
 
 	        const item = document.createElement( 'span' );
 	        item.style.display = 'none';
@@ -3137,7 +3113,7 @@
 
 	        item.controlButton = this.createVideoControlButton();
 	        item.seekBar = this.createVideoControlSeekbar();
-			
+	  
 	        item.appendChild( item.controlButton );
 	        item.appendChild( item.seekBar );
 
@@ -3159,7 +3135,7 @@
 
 	        return item;
 
-	    },
+	    }
 
 	    /**
 	     * Create video control button
@@ -3168,7 +3144,7 @@
 	     * @return {HTMLSpanElement} - The dom element icon for video control
 	     * @fires Widget#panolens-viewer-handler
 	     */
-	    createVideoControlButton: function () {
+	    createVideoControlButton () {
 
 	        const scope = this;
 
@@ -3217,7 +3193,7 @@
 
 	        return item;
 
-	    },
+	    }
 
 	    /**
 	     * Create video seekbar
@@ -3226,7 +3202,7 @@
 	     * @return {HTMLSpanElement} - The dom element icon for video seekbar
 	     * @fires Widget#panolens-viewer-handler
 	     */
-	    createVideoControlSeekbar: function () {
+	    createVideoControlSeekbar () {
 
 	        let scope = this, item, progressElement, progressElementControl,
 	            isDragging = false, mouseX, percentageNow, percentageNext;
@@ -3250,9 +3226,9 @@
 	        function onMouseDown ( event ) {
 
 	            event.stopPropagation();
-				
+	    
 	            isDragging = true;
-				
+	    
 	            mouseX = event.clientX || ( event.changedTouches && event.changedTouches[0].clientX );
 
 	            percentageNow = parseInt( progressElement.style.width ) / 100;
@@ -3265,7 +3241,7 @@
 	            if( isDragging ){
 
 	                const clientX = event.clientX || ( event.changedTouches && event.changedTouches[0].clientX );
-					
+	      
 	                percentageNext = ( clientX - mouseX ) / item.clientWidth;
 
 	                percentageNext = percentageNow + percentageNext;
@@ -3384,7 +3360,7 @@
 
 	        return item;
 
-	    },
+	    }
 
 	    /**
 	     * Create menu item
@@ -3393,7 +3369,7 @@
 	     * @instance
 	     * @return {HTMLElement} - An anchor tag element
 	     */
-	    createMenuItem: function ( title ) {
+	    createMenuItem ( title ) {
 
 	        const scope = this; 
 	        const item = document.createElement( 'a' );
@@ -3438,7 +3414,7 @@
 	        };
 
 	        item.addSelection = function ( name ) {
-				
+	    
 	            const selection = document.createElement( 'span' );
 	            selection.style.fontSize = '13px';
 	            selection.style.fontWeight = '300';
@@ -3447,13 +3423,13 @@
 	            this.selection = selection;
 	            this.setSelectionTitle( name );
 	            this.appendChild( selection );
-				
+	    
 	            return this;
 
 	        };
 
 	        item.addIcon = function ( url = DataImage.ChevronRight, left = false, flip = false ) {
-				
+	    
 	            const element = document.createElement( 'span' );
 	            element.style.float = left ? 'left' : 'right';
 	            element.style.width = '17px';
@@ -3484,20 +3460,20 @@
 	        };
 
 	        item.addEventListener( 'mouseenter', function () {
-				
+	    
 	            this.style.backgroundColor = '#e0e0e0';
 
 	        }, false );
 
 	        item.addEventListener( 'mouseleave', function () {
-				
+	    
 	            this.style.backgroundColor = '#fafafa';
 
 	        }, false );
 
 	        return item;
 
-	    },
+	    }
 
 	    /**
 	     * Create menu item header
@@ -3506,7 +3482,7 @@
 	     * @instance
 	     * @return {HTMLElement} - An anchor tag element
 	     */
-	    createMenuItemHeader: function ( title ) {
+	    createMenuItemHeader ( title ) {
 
 	        const header = this.createMenuItem( title );
 
@@ -3515,7 +3491,7 @@
 
 	        return header;
 
-	    },
+	    }
 
 	    /**
 	     * Create main menu
@@ -3524,8 +3500,8 @@
 	     * @instance
 	     * @return {HTMLElement} - A span element
 	     */
-	    createMainMenu: function ( menus ) {
-			
+	    createMainMenu ( menus ) {
+	  
 	        let scope = this, menu = this.createMenu();
 
 	        menu._width = 200;
@@ -3578,7 +3554,7 @@
 
 	        return menu;
 
-	    },
+	    }
 
 	    /**
 	     * Create sub menu
@@ -3588,7 +3564,7 @@
 	     * @instance
 	     * @return {HTMLElement} - A span element
 	     */
-	    createSubMenu: function ( title, items ) {
+	    createSubMenu ( title, items ) {
 
 	        let scope = this, menu, subMenu = this.createMenu();
 
@@ -3640,8 +3616,8 @@
 	        subMenu.slideAll( true );
 
 	        return subMenu;
-			
-	    },
+	  
+	    }
 
 	    /**
 	     * Create general menu
@@ -3649,7 +3625,7 @@
 	     * @instance
 	     * @return {HTMLElement} - A span element
 	     */
-	    createMenu: function () {
+	    createMenu () {
 
 	        const scope = this;
 	        const menu = document.createElement( 'span' );
@@ -3789,7 +3765,7 @@
 
 	        return menu;
 
-	    },
+	    }
 
 	    /**
 	     * Create custom item element
@@ -3797,7 +3773,7 @@
 	     * @instance
 	     * @return {HTMLSpanElement} - The dom element icon
 	     */
-	    createCustomItem: function ( options = {} ) {
+	    createCustomItem ( options = {} ) {
 
 	        const scope = this;
 	        const item = options.element || document.createElement( 'span' );
@@ -3811,19 +3787,19 @@
 	        item.style.backgroundRepeat = 'no-repeat';
 	        item.style.backgroundPosition = 'center';
 	        item.style.webkitUserSelect = 
-			item.style.MozUserSelect = 
-			item.style.userSelect = 'none';
+	  item.style.MozUserSelect = 
+	  item.style.userSelect = 'none';
 	        item.style.position = 'relative';
 	        item.style.pointerEvents = 'auto';
 
 	        // White glow on icon
 	        item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
 	            item.style.filter = 
-				item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
+	    item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
 	        }, { passive: true });
 	        item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'mouseleave', function() {
 	            item.style.filter = 
-				item.style.webkitFilter = '';
+	    item.style.webkitFilter = '';
 	        }, { passive: true });
 
 	        this.mergeStyleOptions( item, options.style );
@@ -3841,10 +3817,10 @@
 	            if ( onDispose ) { options.onDispose(); }
 
 	        };
-			
+	  
 	        return item;
 
-	    },
+	    }
 
 	    /**
 	     * Merge item css style
@@ -3854,7 +3830,7 @@
 	     * @instance
 	     * @return {HTMLElement} - The same element with merged styles
 	     */
-	    mergeStyleOptions: function ( element, options = {} ) {
+	    mergeStyleOptions ( element, options = {} ) {
 
 	        for ( let property in options ){
 
@@ -3868,14 +3844,14 @@
 
 	        return element;
 
-	    },
+	    }
 
 	    /**
 	     * Dispose widgets by detaching dom elements from container
 	     * @memberOf Widget
 	     * @instance
 	     */
-	    dispose: function () {
+	    dispose () {
 
 	        if ( this.barElement ) {
 	            this.container.removeChild( this.barElement );
@@ -3885,8 +3861,8 @@
 	        }
 
 	    }
-		
-	} );
+
+	}
 
 	/**
 	 * @classdesc Base Panorama
@@ -3894,72 +3870,59 @@
 	 * @param {THREE.Geometry} geometry - The geometry for this panorama
 	 * @param {THREE.Material} material - The material for this panorama
 	 */
-	function Panorama ( geometry, material ) {
+	class Panorama extends THREE__namespace.Mesh {
+	    constructor(geometry, material) {
+	        super(geometry, material);
 
-	    THREE__namespace.Mesh.call( this, geometry, material );
+	        this.type = 'panorama';
 
-	    this.type = 'panorama';
+	        this.ImageQualityLow = 1;
+	        this.ImageQualityFair = 2;
+	        this.ImageQualityMedium = 3;
+	        this.ImageQualityHigh = 4;
+	        this.ImageQualitySuperHigh = 5;
 
-	    this.ImageQualityLow = 1;
-	    this.ImageQualityFair = 2;
-	    this.ImageQualityMedium = 3;
-	    this.ImageQualityHigh = 4;
-	    this.ImageQualitySuperHigh = 5;
+	        this.animationDuration = 1000;
 
-	    this.animationDuration = 1000;
+	        this.defaultInfospotSize = 350;
 
-	    this.defaultInfospotSize = 350;
+	        this.container = undefined;
 
-	    this.container = undefined;
+	        this.loaded = false;
 
-	    this.loaded = false;
+	        this.linkedSpots = [];
 
-	    this.linkedSpots = [];
+	        this.isInfospotVisible = false;
 
-	    this.isInfospotVisible = false;
-		
-	    this.linkingImageURL = undefined;
-	    this.linkingImageScale = undefined;
+	        this.linkingImageURL = undefined;
+	        this.linkingImageScale = undefined;
 
-	    this.material.side = THREE__namespace.BackSide;
-	    this.material.opacity = 0;
+	        this.material.side = THREE__namespace.BackSide;
+	        this.material.opacity = 0;
 
-	    this.scale.x *= -1;
-	    this.renderOrder = -1;
+	        this.scale.x *= -1;
+	        this.renderOrder = -1;
 
-	    this.active = false;
+	        this.active = false;
 
-	    this.infospotAnimation = new Tween.Tween( this ).to( {}, this.animationDuration / 2 );
+	        this.infospotAnimation = new Tween.Tween(this).to({}, this.animationDuration / 2);
 
-	    this.addEventListener( 'load', this.fadeIn.bind( this ) );
-	    this.addEventListener( 'panolens-container', this.setContainer.bind( this ) );
-	    this.addEventListener( 'click', this.onClick.bind( this ) );
+	        this.addEventListener('load', this.fadeIn.bind(this));
+	        this.addEventListener('panolens-container', this.setContainer.bind(this));
+	        this.addEventListener('click', this.onClick.bind(this));
 
-	    this.setupTransitions();
+	        this.setupTransitions();
+	    }
 
-	}
-
-	Panorama.prototype = Object.assign( Object.create( THREE__namespace.Mesh.prototype ), {
-
-	    constructor: Panorama,
-
-	    /**
-	     * Adding an object
-	     * To counter the scale.x = -1, it will automatically add an 
-	     * empty object with inverted scale on x
-	     * @memberOf Panorama
-	     * @instance
-	     * @param {THREE.Object3D} object - The object to be added
-	     */
-	    add: function ( object ) {
+	    add(object) {
 
 	        let invertedObject;
 
-	        if ( arguments.length > 1 ) {
+	        if (arguments.length > 1) {
 
-	            for ( var i = 0; i < arguments.length; i ++ ) {
+	            for (var i = 0; i < arguments.length; i++) {
 
-	                this.add( arguments[ i ] );
+	                this.add(arguments[i]);
 
 	            }
 
@@ -3968,29 +3931,31 @@
 	        }
 
 	        // In case of infospots
-	        if ( object instanceof Infospot ) {
+	        if (object instanceof Infospot) {
 
 	            invertedObject = object;
 
-	            if ( object.dispatchEvent ) {
+	            if (object.dispatchEvent) {
 
 	                const { container } = this;
 
-	                if ( container ) { object.dispatchEvent( { type: 'panolens-container', container } ); }
-					
-	                object.dispatchEvent( { type: 'panolens-infospot-focus', method: function ( vector, duration, easing ) {
+	                if (container) { object.dispatchEvent({ type: 'panolens-container', container }); }
 
-	                    /**
-	                     * Infospot focus handler event
-	                     * @type {object}
-	                     * @event Panorama#panolens-viewer-handler
-	                     * @property {string} method - Viewer function name
-	                     * @property {*} data - The argument to be passed into the method
-	                     */
-	                    this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'tweenControlCenter', data: [ vector, duration, easing ] } );
+	                object.dispatchEvent({
+	                    type: 'panolens-infospot-focus', method: function (vector, duration, easing) {
+
+	                        /**
+	                         * Infospot focus handler event
+	                         * @type {object}
+	                         * @event Panorama#panolens-viewer-handler
+	                         * @property {string} method - Viewer function name
+	                         * @property {*} data - The argument to be passed into the method
+	                         */
+	                        this.dispatchEvent({ type: 'panolens-viewer-handler', method: 'tweenControlCenter', data: [vector, duration, easing] });
 
 
-	                }.bind( this ) } );
+	                    }.bind(this)
+	                });
 	            }
 
 	        } else {
@@ -3999,19 +3964,19 @@
 	            invertedObject = new THREE__namespace.Object3D();
 	            invertedObject.scale.x = -1;
 	            invertedObject.scalePlaceHolder = true;
-	            invertedObject.add( object );
+	            invertedObject.add(object);
 
 	        }
 
-	        THREE__namespace.Object3D.prototype.add.call( this, invertedObject );
+	        THREE__namespace.Object3D.prototype.add.call(this, invertedObject);
 
-	    },
+	    }
 
-	    load: function () {
+	    load() {
 
 	        this.onLoad();
-			
-	    },
+
+	    }
 
 	    /**
 	     * Click event handler
@@ -4020,24 +3985,24 @@
 	     * @instance
 	     * @fires Infospot#dismiss
 	     */
-	    onClick: function ( event ) {
+	    onClick(event) {
 
-	        if ( event.intersects && event.intersects.length === 0 ) {
+	        if (event.intersects && event.intersects.length === 0) {
 
-	            this.traverse( function ( object ) {
+	            this.traverse(function (object) {
 
 	                /**
 	                 * Dimiss event
 	                 * @type {object}
 	                 * @event Infospot#dismiss
 	                 */
-	                object.dispatchEvent( { type: 'dismiss' } );
+	                object.dispatchEvent({ type: 'dismiss' });
 
-	            } );
+	            });
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Set container of this panorama 
@@ -4046,25 +4011,25 @@
 	     * @instance
 	     * @fires Infospot#panolens-container
 	     */
-	    setContainer: function ( data ) {
+	    setContainer(data) {
 
 	        let container;
 
-	        if ( data instanceof HTMLElement ) {
+	        if (data instanceof HTMLElement) {
 
 	            container = data;
 
-	        } else if ( data && data.container ) {
+	        } else if (data && data.container) {
 
 	            container = data.container;
 
 	        }
 
-	        if ( container ) {
+	        if (container) {
 
-	            this.children.forEach( function ( child ) {
+	            this.children.forEach(function (child) {
 
-	                if ( child instanceof Infospot && child.dispatchEvent ) {
+	                if (child instanceof Infospot && child.dispatchEvent) {
 
 	                    /**
 	                     * Set container event
@@ -4072,17 +4037,17 @@
 	                     * @event Infospot#panolens-container
 	                     * @property {HTMLElement} container - The container of this panorama
 	                     */
-	                    child.dispatchEvent( { type: 'panolens-container', container: container } );
+	                    child.dispatchEvent({ type: 'panolens-container', container: container });
 
 	                }
 
-	            } );
+	            });
 
 	            this.container = container;
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * This will be called when panorama is loaded
@@ -4090,7 +4055,7 @@
 	     * @instance
 	     * @fires Panorama#load
 	     */
-	    onLoad: function () {
+	    onLoad() {
 
 	        this.loaded = true;
 
@@ -4099,9 +4064,9 @@
 	         * @type {object}
 	         * @event Panorama#load
 	         */
-	        this.dispatchEvent( { type: 'load' } );
+	        this.dispatchEvent({ type: 'load' });
 
-	    },
+	    }
 
 	    /**
 	     * This will be called when panorama is in progress
@@ -4109,7 +4074,7 @@
 	     * @instance
 	     * @fires Panorama#progress
 	     */
-	    onProgress: function ( progress ) {
+	    onProgress(progress) {
 
 	        /**
 	         * Loading panorama progress event
@@ -4117,26 +4082,25 @@
 	         * @event Panorama#progress
 	         * @property {object} progress - The progress object containing loaded and total amount
 	         */
-	        this.dispatchEvent( { type: 'progress', progress: progress } );
+	        this.dispatchEvent({ type: 'progress', progress: progress });
 
-	    },
-
+	    }
 	    /**
 	     * This will be called when panorama loading has error
 	     * @memberOf Panorama
 	     * @instance
 	     * @fires Panorama#error
 	     */
-	    onError: function () {
+	    onError() {
 
 	        /**
 	         * Loading panorama error event
 	         * @type {object}
 	         * @event Panorama#error
 	         */
-	        this.dispatchEvent( { type: 'error' } );
+	        this.dispatchEvent({ type: 'error' });
 
-	    },
+	    }
 
 	    /**
 	     * Get zoom level based on window width
@@ -4144,23 +4108,23 @@
 	     * @instance
 	     * @return {number} zoom level indicating image quality
 	     */
-	    getZoomLevel: function () {
+	    getZoomLevel() {
 
 	        let zoomLevel;
 
-	        if ( window.innerWidth <= 800 ) {
+	        if (window.innerWidth <= 800) {
 
 	            zoomLevel = this.ImageQualityFair;
 
-	        } else if ( window.innerWidth > 800 &&  window.innerWidth <= 1280 ) {
+	        } else if (window.innerWidth > 800 && window.innerWidth <= 1280) {
 
 	            zoomLevel = this.ImageQualityMedium;
 
-	        } else if ( window.innerWidth > 1280 && window.innerWidth <= 1920 ) {
+	        } else if (window.innerWidth > 1280 && window.innerWidth <= 1920) {
 
 	            zoomLevel = this.ImageQualityHigh;
 
-	        } else if ( window.innerWidth > 1920 ) {
+	        } else if (window.innerWidth > 1920) {
 
 	            zoomLevel = this.ImageQualitySuperHigh;
 
@@ -4172,7 +4136,7 @@
 
 	        return zoomLevel;
 
-	    },
+	    }
 
 	    /**
 	     * Update texture of a panorama
@@ -4180,12 +4144,12 @@
 	     * @instance
 	     * @param {THREE.Texture} texture - Texture to be updated
 	     */
-	    updateTexture: function ( texture ) {
+	    updateTexture(texture) {
 
 	        this.material.map = texture;
 	        this.material.needsUpdate = true;
 
-	    },
+	    }
 
 	    /**
 	     * Toggle visibility of infospots in this panorama
@@ -4195,45 +4159,45 @@
 	     * @instance
 	     * @fires Panorama#infospot-animation-complete
 	     */
-	    toggleInfospotVisibility: function ( isVisible, delay ) {
+	    toggleInfospotVisibility(isVisible, delay) {
 
-	        delay = ( delay !== undefined ) ? delay : 0;
+	        delay = (delay !== undefined) ? delay : 0;
 
-	        const visible = ( isVisible !== undefined ) ? isVisible : ( this.isInfospotVisible ? false : true );
+	        const visible = (isVisible !== undefined) ? isVisible : (this.isInfospotVisible ? false : true);
 
-	        this.traverse( function ( object ) {
+	        this.traverse(function (object) {
 
-	            if ( object instanceof Infospot ) {
+	            if (object instanceof Infospot) {
 
-	                if ( visible ) {
+	                if (visible) {
 
-	                    object.show( delay );
+	                    object.show(delay);
 
 	                } else {
 
-	                    object.hide( delay );
+	                    object.hide(delay);
 
 	                }
 
 	            }
 
-	        } );
+	        });
 
 	        this.isInfospotVisible = visible;
 
 	        // Animation complete event
-	        this.infospotAnimation.onComplete( function () {
+	        this.infospotAnimation.onComplete(function () {
 
 	            /**
 	             * Complete toggling infospot visibility
 	             * @event Panorama#infospot-animation-complete
 	             * @type {object} 
 	             */
-	            this.dispatchEvent( { type: 'infospot-animation-complete', visible: visible } );
+	            this.dispatchEvent({ type: 'infospot-animation-complete', visible: visible });
 
-	        }.bind( this ) ).delay( delay ).start();
+	        }.bind(this)).delay(delay).start();
 
-	    },
+	    }
 
 	    /**
 	     * Set image of this panorama's linking infospot
@@ -4242,12 +4206,12 @@
 	     * @param {string} url   - Url to the image asset
 	     * @param {number} scale - Scale factor of the infospot
 	     */
-	    setLinkingImage: function ( url, scale ) {
+	    setLinkingImage(url, scale) {
 
 	        this.linkingImageURL = url;
 	        this.linkingImageScale = scale;
 
-	    },
+	    }
 
 	    /**
 	     * Link one-way panorama
@@ -4258,26 +4222,26 @@
 	     * @memberOf Panorama
 	     * @instance
 	     */
-	    link: function ( pano, position, imageScale, imageSrc ) {
+	    link(pano, position, imageScale, imageSrc) {
 
 	        let scale, img;
 
 	        this.visible = true;
 
-	        if ( !position ) {
+	        if (!position) {
 
-	            console.warn( 'Please specify infospot position for linking' );
+	            console.warn('Please specify infospot position for linking');
 
 	            return;
 
 	        }
 
 	        // Infospot scale
-	        if ( imageScale !== undefined ) {
+	        if (imageScale !== undefined) {
 
 	            scale = imageScale;
 
-	        } else if ( pano.linkingImageScale !== undefined ) {
+	        } else if (pano.linkingImageScale !== undefined) {
 
 	            scale = pano.linkingImageScale;
 
@@ -4289,11 +4253,11 @@
 
 
 	        // Infospot image
-	        if ( imageSrc ) {
+	        if (imageSrc) {
 
 	            img = imageSrc;
 
-	        } else if ( pano.linkingImageURL ) {
+	        } else if (pano.linkingImageURL) {
 
 	            img = pano.linkingImageURL;
 
@@ -4304,10 +4268,10 @@
 	        }
 
 	        // Creates a new infospot
-	        const spot = new Infospot( scale, img );
-	        spot.position.copy( position );
+	        const spot = new Infospot(scale, img);
+	        spot.position.copy(position);
 	        spot.toPanorama = pano;
-	        spot.addEventListener( 'click', function () {
+	        spot.addEventListener('click', function () {
 
 	            /**
 	             * Viewer handler event
@@ -4316,29 +4280,29 @@
 	             * @property {string} method - Viewer function name
 	             * @property {*} data - The argument to be passed into the method
 	             */
-	            this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'setPanorama', data: pano } );
+	            this.dispatchEvent({ type: 'panolens-viewer-handler', method: 'setPanorama', data: pano });
 
-	        }.bind( this ) );
+	        }.bind(this));
 
-	        this.linkedSpots.push( spot );
+	        this.linkedSpots.push(spot);
 
-	        this.add( spot );
+	        this.add(spot);
 
 	        this.visible = false;
 
-	    },
+	    }
 
-	    reset: function () {
+	    reset() {
 
-	        this.children.length = 0;	
+	        this.children.length = 0;
 
-	    },
+	    }
 
-	    setupTransitions: function () {
+	    setupTransitions() {
 
-	        this.fadeInAnimation = new Tween.Tween( this.material )
-	            .easing( Tween.Easing.Quartic.Out )
-	            .onStart( function () {
+	        this.fadeInAnimation = new Tween.Tween(this.material)
+	            .easing(Tween.Easing.Quartic.Out)
+	            .onStart(function () {
 
 	                this.visible = true;
 	                // this.material.visible = true;
@@ -4348,13 +4312,13 @@
 	                 * @event Panorama#enter-fade-start
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'enter-fade-start' } );
+	                this.dispatchEvent({ type: 'enter-fade-start' });
 
-	            }.bind( this ) );
+	            }.bind(this));
 
-	        this.fadeOutAnimation = new Tween.Tween( this.material )
-	            .easing( Tween.Easing.Quartic.Out )
-	            .onComplete( function () {
+	        this.fadeOutAnimation = new Tween.Tween(this.material)
+	            .easing(Tween.Easing.Quartic.Out)
+	            .onComplete(function () {
 
 	                this.visible = false;
 	                // this.material.visible = true;
@@ -4364,39 +4328,38 @@
 	                 * @event Panorama#leave-complete
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'leave-complete' } );
+	                this.dispatchEvent({ type: 'leave-complete' });
 
-	            }.bind( this ) );
+	            }.bind(this));
 
-	        this.enterTransition = new Tween.Tween( this )
-	            .easing( Tween.Easing.Quartic.Out )
-	            .onComplete( function () {
+	        this.enterTransition = new Tween.Tween(this)
+	            .easing(Tween.Easing.Quartic.Out)
+	            .onComplete(function () {
 
 	                /**
 	                 * Enter panorama and animation complete event
 	                 * @event Panorama#enter-complete
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'enter-complete' } );
+	                this.dispatchEvent({ type: 'enter-complete' });
 
-	            }.bind ( this ) )
+	            }.bind(this))
 	            .start();
 
-	        this.leaveTransition = new Tween.Tween( this )
-	            .easing( Tween.Easing.Quartic.Out );
+	        this.leaveTransition = new Tween.Tween(this)
+	            .easing(Tween.Easing.Quartic.Out);
 
-	    },
-
-	    onFadeAnimationUpdate: function () {
+	    }
+	    onFadeAnimationUpdate() {
 
 	        const alpha = this.material.opacity;
 	        const { uniforms } = this.material;
 
-	        if ( uniforms && uniforms.opacity ) {
+	        if (uniforms && uniforms.opacity) {
 	            uniforms.opacity.value = alpha;
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Start fading in animation
@@ -4404,46 +4367,46 @@
 	     * @instance
 	     * @fires Panorama#enter-fade-complete
 	     */
-	    fadeIn: function ( duration ) {
+	    fadeIn(duration) {
 
 	        duration = duration >= 0 ? duration : this.animationDuration;
 
 	        this.fadeOutAnimation.stop();
 	        this.fadeInAnimation
-	            .to( { opacity: 1 }, duration )
-	            .onUpdate( this.onFadeAnimationUpdate.bind( this ) )
-	            .onComplete( function () {
+	            .to({ opacity: 1 }, duration)
+	            .onUpdate(this.onFadeAnimationUpdate.bind(this))
+	            .onComplete(function () {
 
-	                this.toggleInfospotVisibility( true, duration / 2 );
+	                this.toggleInfospotVisibility(true, duration / 2);
 
 	                /**
 	                 * Enter panorama fade complete event
 	                 * @event Panorama#enter-fade-complete
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'enter-fade-complete' } );			
+	                this.dispatchEvent({ type: 'enter-fade-complete' });
 
-	            }.bind( this ) )
+	            }.bind(this))
 	            .start();
 
-	    },
+	    }
 
 	    /**
 	     * Start fading out animation
 	     * @memberOf Panorama
 	     * @instance
 	     */
-	    fadeOut: function ( duration ) {
+	    fadeOut(duration) {
 
 	        duration = duration >= 0 ? duration : this.animationDuration;
 
 	        this.fadeInAnimation.stop();
 	        this.fadeOutAnimation
-	            .to( { opacity: 0 }, duration )
-	            .onUpdate( this.onFadeAnimationUpdate.bind( this ) )
+	            .to({ opacity: 0 }, duration)
+	            .onUpdate(this.onFadeAnimationUpdate.bind(this))
 	            .start();
 
-	    },
+	    }
 
 	    /**
 	     * This will be called when entering a panorama 
@@ -4452,33 +4415,33 @@
 	     * @fires Panorama#enter
 	     * @fires Panorama#enter-start
 	     */
-	    onEnter: function () {
+	    onEnter() {
 
 	        const duration = this.animationDuration;
 
 	        this.leaveTransition.stop();
 	        this.enterTransition
-	            .to( {}, duration )
-	            .onStart( function () {
+	            .to({}, duration)
+	            .onStart(function () {
 
 	                /**
 	                 * Enter panorama and animation starting event
 	                 * @event Panorama#enter-start
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'enter-start' } );
-					
-	                if ( this.loaded ) {
+	                this.dispatchEvent({ type: 'enter-start' });
 
-	                    this.fadeIn( duration );
+	                if (this.loaded) {
+
+	                    this.fadeIn(duration);
 
 	                } else {
 
 	                    this.load();
 
 	                }
-					
-	            }.bind( this ) )
+
+	            }.bind(this))
 	            .start();
 
 	        /**
@@ -4486,17 +4449,17 @@
 	         * @event Panorama#enter
 	         * @type {object} 
 	         */
-	        this.dispatchEvent( { type: 'enter' } );
+	        this.dispatchEvent({ type: 'enter' });
 
-	        this.children.forEach( child => {
+	        this.children.forEach(child => {
 
-	            child.dispatchEvent( { type: 'panorama-enter' } );
+	            child.dispatchEvent({ type: 'panorama-enter' });
 
-	        } );
+	        });
 
 	        this.active = true;
 
-	    },
+	    }
 
 	    /**
 	     * This will be called when leaving a panorama
@@ -4504,26 +4467,26 @@
 	     * @instance
 	     * @fires Panorama#leave
 	     */
-	    onLeave: function () {
+	    onLeave() {
 
 	        const duration = this.animationDuration;
 
 	        this.enterTransition.stop();
 	        this.leaveTransition
-	            .to( {}, duration )
-	            .onStart( function () {
+	            .to({}, duration)
+	            .onStart(function () {
 
 	                /**
 	                 * Leave panorama and animation starting event
 	                 * @event Panorama#leave-start
 	                 * @type {object} 
 	                 */
-	                this.dispatchEvent( { type: 'leave-start' } );
+	                this.dispatchEvent({ type: 'leave-start' });
 
-	                this.fadeOut( duration );
-	                this.toggleInfospotVisibility( false );
+	                this.fadeOut(duration);
+	                this.toggleInfospotVisibility(false);
 
-	            }.bind( this ) )
+	            }.bind(this))
 	            .start();
 
 	        /**
@@ -4531,24 +4494,24 @@
 	         * @event Panorama#leave
 	         * @type {object} 
 	         */
-	        this.dispatchEvent( { type: 'leave' } );
+	        this.dispatchEvent({ type: 'leave' });
 
-	        this.children.forEach( child => {
+	        this.children.forEach(child => {
 
-	            child.dispatchEvent( { type: 'panorama-leave' } );
+	            child.dispatchEvent({ type: 'panorama-leave' });
 
-	        } );
+	        });
 
 	        this.active = false;
 
-	    },
+	    }
 
 	    /**
 	     * Dispose panorama
 	     * @memberOf Panorama
 	     * @instance
 	     */
-	    dispose: function () {
+	    dispose() {
 
 	        this.infospotAnimation.stop();
 	        this.fadeInAnimation.stop();
@@ -4563,72 +4526,58 @@
 	         * @property {string} method - Viewer function name
 	         * @property {*} data - The argument to be passed into the method
 	         */
-	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'onPanoramaDispose', data: this } );
+	        this.dispatchEvent({ type: 'panolens-viewer-handler', method: 'onPanoramaDispose', data: this });
 
 	        // recursive disposal on 3d objects
-	        function recursiveDispose ( object ) {
+	        function recursiveDispose(object) {
 
 	            const { geometry, material } = object;
 
-	            for ( var i = object.children.length - 1; i >= 0; i-- ) {
+	            for (var i = object.children.length - 1; i >= 0; i--) {
 
-	                recursiveDispose( object.children[i] );
-	                object.remove( object.children[i] );
+	                recursiveDispose(object.children[i]);
+	                object.remove(object.children[i]);
 
 	            }
 
-	            if ( object instanceof Infospot ) {
+	            if (object instanceof Infospot) {
 
 	                object.dispose();
 
 	            }
-				
-	            if ( geometry ) { geometry.dispose(); object.geometry = null; }
-	            if ( material ) { material.dispose(); object.material = null; }
+
+	            if (geometry) { geometry.dispose(); object.geometry = null; }
+	            if (material) { material.dispose(); object.material = null; }
 
 	        }
 
-	        recursiveDispose( this );
+	        recursiveDispose(this);
 
-	        if ( this.parent ) {
+	        if (this.parent) {
 
-	            this.parent.remove( this );
+	            this.parent.remove(this);
 
 	        }
-
 	    }
-
-	} );
+	}
 
 	/**
 	 * @classdesc Equirectangular based image panorama
 	 * @constructor
 	 * @param {string} image - Image url or HTMLImageElement
 	 */
-	function ImagePanorama ( image, _geometry, _material ) {
+	class ImagePanorama extends Panorama {
+	    constructor( image, _geometry, _material ) {
+	        const radius = 5000;
+	        const geometry = _geometry || new THREE__namespace.SphereBufferGeometry( radius, 60, 40 );
+	        const material = _material || new THREE__namespace.MeshBasicMaterial( { opacity: 0, transparent: true } );
+	        super(geometry, material);
 
-	    const radius = 5000;
-	    const geometry = _geometry || new THREE__namespace.SphereBufferGeometry( radius, 60, 40 );
-	    const material = _material || new THREE__namespace.MeshBasicMaterial( { opacity: 0, transparent: true } );
+	        this.src = image;
+	        this.radius = radius;
+	    }
 
-	    Panorama.call( this, geometry, material );
-
-	    this.src = image;
-	    this.radius = radius;
-
-	}
-
-	ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
-
-	    constructor: ImagePanorama,
-
-	    /**
-	     * Load image asset
-	     * @param  {*} src - Url or image element
-	     * @memberOf ImagePanorama
-	     * @instance
-	     */
-	    load: function ( src ) {
+	    load ( src ) {
 
 	        src = src || this.src;
 
@@ -4648,7 +4597,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * This will be called when image is loaded
@@ -4656,34 +4605,34 @@
 	     * @memberOf ImagePanorama
 	     * @instance
 	     */
-	    onLoad: function ( texture ) {
+	    onLoad( texture ) {
 
 	        texture.minFilter = texture.magFilter = THREE__namespace.LinearFilter;
 	        texture.needsUpdate = true;
-			
+
 	        this.updateTexture( texture );
 
 	        window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
 
-	    },
+	    }
 
 	    /**
 	     * Reset
 	     * @memberOf ImagePanorama
 	     * @instance
 	     */
-	    reset: function () {
+	    reset() {
 
 	        Panorama.prototype.reset.call( this );
 
-	    },
+	    }
 
 	    /**
 	     * Dispose
 	     * @memberOf ImagePanorama
 	     * @instance
 	     */
-	    dispose: function () {
+	    dispose() {
 
 	        const { material: { map } } = this;
 
@@ -4695,68 +4644,56 @@
 	        Panorama.prototype.dispose.call( this );
 
 	    }
-
-	} );
+	}
 
 	/**
 	 * @classdesc Empty panorama
 	 * @constructor
 	 */
-	function EmptyPanorama () {
-
-	    const geometry = new THREE__namespace.BufferGeometry();
-	    const material = new THREE__namespace.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
-
-	    geometry.addAttribute( 'position', new THREE__namespace.BufferAttribute( new Float32Array(), 1 ) );
-
-	    Panorama.call( this, geometry, material );
-
+	class EmptyPanorama extends Panorama {
+	    constructor() {
+	        const geometry = new THREE__namespace.BufferGeometry();
+	        const material = new THREE__namespace.MeshBasicMaterial( { color: 0x000000, opacity: 0, transparent: true } );
+	        super(geometry, material);
+	        geometry.setAttribute( 'position', new THREE__namespace.BufferAttribute( new Float32Array(), 1 ) );
+	    }
 	}
-
-	EmptyPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
-
-	    constructor: EmptyPanorama
-
-	} );
 
 	/**
 	 * @classdesc Cubemap-based panorama
 	 * @constructor
 	 * @param {array} images - Array of 6 urls to images, one for each side of the CubeTexture. The urls should be specified in the following order: pos-x, neg-x, pos-y, neg-y, pos-z, neg-z
 	 */
-	function CubePanorama ( images = [] ){
+	class CubePanorama extends Panorama {
+	    constructor ( images = [] ) {
 
-	    const edgeLength = 10000;
-	    const shader = Object.assign( {}, THREE__namespace.ShaderLib[ 'cube' ] );
-	    const geometry = new THREE__namespace.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
-	    const material = new THREE__namespace.ShaderMaterial( {
+	        const edgeLength = 10000;
+	        const shader = Object.assign( {}, THREE__namespace.ShaderLib[ 'cube' ] );
+	        const geometry = new THREE__namespace.BoxBufferGeometry( edgeLength, edgeLength, edgeLength );
+	        const material = new THREE__namespace.ShaderMaterial( {
 
-	        fragmentShader: shader.fragmentShader,
-	        vertexShader: shader.vertexShader,
-	        uniforms: shader.uniforms,
-	        side: THREE__namespace.BackSide,
-	        transparent: true
+	            fragmentShader: shader.fragmentShader,
+	            vertexShader: shader.vertexShader,
+	            uniforms: shader.uniforms,
+	            side: THREE__namespace.BackSide,
+	            transparent: true
 
-	    } );
+	        } );
 
-	    Panorama.call( this, geometry, material );
+	        super(geometry, material);
 
-	    this.images = images;
-	    this.edgeLength = edgeLength;
-	    this.material.uniforms.opacity.value = 0;
+	        this.images = images;
+	        this.edgeLength = edgeLength;
+	        this.material.uniforms.opacity.value = 0;
 
-	}
-
-	CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
-
-	    constructor: CubePanorama,
+	    }
 
 	    /**
 	     * Load 6 images and bind listeners
 	     * @memberOf CubePanorama
 	     * @instance
 	     */
-	    load: function () {
+	    load () {
 
 	        CubeTextureLoader.load( 	
 
@@ -4768,7 +4705,7 @@
 
 	        );
 
-	    },
+	    }
 
 	    /**
 	     * This will be called when 6 textures are ready
@@ -4776,20 +4713,20 @@
 	     * @memberOf CubePanorama
 	     * @instance
 	     */
-	    onLoad: function ( texture ) {
+	    onLoad ( texture ) {
 			
 	        this.material.uniforms[ 'tCube' ].value = texture;
 
 	        Panorama.prototype.onLoad.call( this );
 
-	    },
+	    }
 
 	    /**
 	     * Dispose
 	     * @memberOf CubePanorama
 	     * @instance
 	     */
-	    dispose: function () {	
+	    dispose () {	
 
 	        const { value } = this.material.uniforms.tCube;
 
@@ -4804,32 +4741,23 @@
 	        Panorama.prototype.dispose.call( this );
 
 	    }
-
-	} );
+	}
 
 	/**
 	 * @classdesc Basic panorama with 6 pre-defined grid images
 	 * @constructor
 	 */
-	function BasicPanorama () {
+	class BasicPanorama extends CubePanorama {
 
-	    const images = [];
+	    constructor() {
+	        super();
+	        const images = [];
 
-	    for ( let i = 0; i < 6; i++ ) {
-
-	        images.push( DataImage.WhiteTile );
-
+	        for ( let i = 0; i < 6; i++ ) {
+	            images.push( DataImage.WhiteTile );
+	        }
 	    }
-
-	    CubePanorama.call( this, images );
-
 	}
-
-	BasicPanorama.prototype = Object.assign( Object.create( CubePanorama.prototype ), {
-
-	    constructor: BasicPanorama
-
-	} );
 
 	/**
 	 * @classdesc Video Panorama
@@ -4844,50 +4772,45 @@
 	 * @param {string} [options.crossOrigin="anonymous"] - Sets the cross-origin attribute for the video, which allows for cross-origin videos in some browsers (Firefox, Chrome). Set to either "anonymous" or "use-credentials".
 	 * @param {number} [radius=5000] - The minimum radius for this panoram
 	 */
-	function VideoPanorama ( src, options = {} ) {
+	class VideoPanorama extends Panorama {
 
-	    const radius = 5000;
-	    const geometry = new THREE__namespace.SphereBufferGeometry( radius, 60, 40 );
-	    const material = new THREE__namespace.MeshBasicMaterial( { opacity: 0, transparent: true } );
+	    constructor( src, options = {} ) {
+	        const radius = 5000;
+	        const geometry = new THREE__namespace.SphereBufferGeometry( radius, 60, 40 );
+	        const material = new THREE__namespace.MeshBasicMaterial( { opacity: 0, transparent: true } );
+	        super(geometry, material);
 
-	    Panorama.call( this, geometry, material );
+	        this.src = src;
 
-	    this.src = src;
+	        this.options = {
+	            videoElement: document.createElement( 'video' ),
+	            loop: true,
+	            muted: true,
+	            autoplay: false,
+	            playsinline: true,
+	            crossOrigin: 'anonymous'
+	        };
 
-	    this.options = {
+	        Object.assign( this.options, options );
 
-	        videoElement: document.createElement( 'video' ),
-	        loop: true,
-	        muted: true,
-	        autoplay: false,
-	        playsinline: true,
-	        crossOrigin: 'anonymous'
+	        this.videoElement = this.options.videoElement;
+	        this.videoProgress = 0;
+	        this.radius = radius;
 
-	    };
+	        this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
+	        this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
+	        this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
+	        this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
+	    }
 
-	    Object.assign( this.options, options );
 
-	    this.videoElement = this.options.videoElement;
-	    this.videoProgress = 0;
-	    this.radius = radius;
-
-	    this.addEventListener( 'leave', this.pauseVideo.bind( this ) );
-	    this.addEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
-	    this.addEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
-	    this.addEventListener( 'video-time', this.setVideoCurrentTime.bind( this ) );
-
-	}
-	VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
-
-	    constructor: VideoPanorama,
-
-	    isMobile: function () {
+	    isMobile () {
 
 	        let check = false;
 	        (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})( window.navigator.userAgent || window.navigator.vendor || window.opera );
 	        return check;
 
-	    },
+	    }
 
 	    /**
 	     * Load video panorama
@@ -4895,7 +4818,7 @@
 	     * @instance
 	     * @fires  Panorama#panolens-viewer-handler
 	     */
-	    load: function () {
+	    load () {
 
 	        const { muted, loop, autoplay, playsinline, crossOrigin } = this.options;
 	        const video = this.videoElement;
@@ -4908,7 +4831,7 @@
 	        video.playsinline = playsinline;
 	        video.crossOrigin = crossOrigin;
 	        video.muted = muted;
-			
+
 	        if ( playsinline ) {
 
 	            video.setAttribute( 'playsinline', '' );
@@ -4958,7 +4881,7 @@
 	                    this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
 	                }
-					
+	    
 	            }
 
 	            const loaded = () => {
@@ -4972,7 +4895,7 @@
 	            };
 
 	            window.requestAnimationFrame( loaded );
-				
+	  
 	        };
 
 	        /**
@@ -5001,7 +4924,7 @@
 	        }
 
 	        video.addEventListener( 'loadeddata', onloadeddata.bind( this ) );
-			
+
 	        video.addEventListener( 'timeupdate', function () {
 
 	            this.videoProgress = video.duration >= 0 ? video.currentTime / video.duration : 0;
@@ -5017,7 +4940,7 @@
 	        }.bind( this ) );
 
 	        video.addEventListener( 'ended', function () {
-				
+	  
 	            if ( !loop ) {
 
 	                this.resetVideo();
@@ -5027,7 +4950,7 @@
 
 	        }.bind( this ), false ); 
 
-	    },
+	    }
 
 	    /**
 	     * Set video texture
@@ -5036,7 +4959,7 @@
 	     * @param {HTMLVideoElement} video  - The html5 video element
 	     * @fires Panorama#panolens-viewer-handler
 	     */
-	    setVideoTexture: function ( video ) {
+	    setVideoTexture ( video ) {
 
 	        if ( !video ) return;
 
@@ -5046,21 +4969,21 @@
 	        videoTexture.format = THREE__namespace.RGBFormat;
 
 	        this.updateTexture( videoTexture );
-		
-	    },
+
+	    }
 
 	    /**
 	     * Reset
 	     * @memberOf VideoPanorama
 	     * @instance
 	     */
-	    reset: function () {
+	    reset () {
 
 	        this.videoElement = undefined;	
 
 	        Panorama.prototype.reset.call( this );
 
-	    },
+	    }
 
 	    /**
 	     * Check if video is paused
@@ -5068,18 +4991,18 @@
 	     * @instance
 	     * @return {boolean} - is video paused or not
 	     */
-	    isVideoPaused: function () {
+	    isVideoPaused () {
 
 	        return this.videoElement.paused;
 
-	    },
+	    }
 
 	    /**
 	     * Toggle video to play or pause
 	     * @memberOf VideoPanorama
 	     * @instance
 	     */
-	    toggleVideo: function () {
+	    toggleVideo () {
 
 	        const video = this.videoElement;
 
@@ -5087,7 +5010,7 @@
 
 	        video[ video.paused ? 'play' : 'pause' ]();
 
-	    },
+	    }
 
 	    /**
 	     * Set video currentTime
@@ -5095,7 +5018,7 @@
 	     * @instance
 	     * @param {object} event - Event contains percentage. Range from 0.0 to 1.0
 	     */
-	    setVideoCurrentTime: function ( { percentage } ) {
+	    setVideoCurrentTime ( { percentage } ) {
 
 	        const video = this.videoElement;
 
@@ -5107,7 +5030,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Play video
@@ -5116,7 +5039,7 @@
 	     * @fires VideoPanorama#play
 	     * @fires VideoPanorama#play-error
 	     */
-	    playVideo: function () {
+	    playVideo () {
 
 	        const video = this.videoElement;
 	        const playVideo = this.playVideo.bind( this );
@@ -5153,7 +5076,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Pause video
@@ -5161,7 +5084,7 @@
 	     * @instance
 	     * @fires VideoPanorama#pause
 	     */
-	    pauseVideo: function () {
+	    pauseVideo () {
 
 	        const video = this.videoElement;
 
@@ -5179,14 +5102,14 @@
 	         */
 	        this.dispatchEvent( { type: 'pause' } );
 
-	    },
+	    }
 
 	    /**
 	     * Resume video
 	     * @memberOf VideoPanorama
 	     * @instance
 	     */
-	    resumeVideoProgress: function () {
+	    resumeVideoProgress () {
 
 	        const video = this.videoElement;
 
@@ -5218,14 +5141,14 @@
 
 	        this.setVideoCurrentTime( { percentage: this.videoProgress } );
 
-	    },
+	    }
 
 	    /**
 	     * Reset video at stating point
 	     * @memberOf VideoPanorama
 	     * @instance
 	     */
-	    resetVideo: function () {
+	    resetVideo () {
 
 	        const video = this.videoElement;
 
@@ -5235,7 +5158,7 @@
 
 	        }
 
-	    },
+	    }
 
 	    /**
 	     * Check if video is muted
@@ -5243,18 +5166,18 @@
 	     * @instance
 	     * @return {boolean} - is video muted or not
 	     */
-	    isVideoMuted: function () {
+	    isVideoMuted () {
 
 	        return this.videoElement.muted;
 
-	    },
+	    }
 
 	    /**
 	     * Mute video
 	     * @memberOf VideoPanorama
 	     * @instance
 	     */
-	    muteVideo: function () {
+	    muteVideo () {
 
 	        const video = this.videoElement;
 
@@ -5266,14 +5189,14 @@
 
 	        this.dispatchEvent( { type: 'volumechange' } );
 
-	    },
+	    }
 
 	    /**
 	     * Unmute video
 	     * @memberOf VideoPanorama
 	     * @instance
 	     */
-	    unmuteVideo: function () {
+	    unmuteVideo () {
 
 	        const video = this.videoElement;
 
@@ -5285,7 +5208,7 @@
 
 	        this.dispatchEvent( { type: 'volumechange' } );
 
-	    },
+	    }
 
 	    /**
 	     * Returns the video element
@@ -5293,23 +5216,23 @@
 	     * @instance
 	     * @returns {HTMLElement}
 	     */
-	    getVideoElement: function () {
+	    getVideoElement () {
 
 	        return this.videoElement;
 
-	    },
+	    }
 
 	    /**
 	     * Dispose video panorama
 	     * @memberOf VideoPanorama
 	     * @instance
 	     */
-	    dispose: function () {
+	    dispose () {
 
 	        const { material: { map } } = this;
 
 	        this.pauseVideo();
-			
+
 	        this.removeEventListener( 'leave', this.pauseVideo.bind( this ) );
 	        this.removeEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
 	        this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
@@ -5320,8 +5243,8 @@
 	        Panorama.prototype.dispose.call( this );
 
 	    }
-
-	} );
+	   
+	}
 
 	/**
 	 * @classdesc Google Street View Loader
@@ -5575,23 +5498,18 @@
 	 * @param {string} panoId - Panorama id from Google Streetview 
 	 * @param {string} [apiKey] - Google Street View API Key
 	 */
-	function GoogleStreetviewPanorama ( panoId, apiKey ) {
+	class GoogleStreetviewPanorama extends ImagePanorama {
+	    
+	    constructor( panoId, apiKey ) {
+	        super();
+	        this.panoId = panoId;
 
-	    ImagePanorama.call( this );
-
-	    this.panoId = panoId;
-
-	    this.gsvLoader = null;
-
-	    this.loadRequested = false;
-
-	    this.setupGoogleMapAPI( apiKey );
-
-	}
-
-	GoogleStreetviewPanorama.prototype = Object.assign( Object.create( ImagePanorama.prototype ), {
-
-	    constructor: GoogleStreetviewPanorama,
+	        this.gsvLoader = null;
+	  
+	        this.loadRequested = false;
+	  
+	        this.setupGoogleMapAPI( apiKey );
+	    }
 
 	    /**
 	     * Load Google Street View by panorama id
@@ -5599,114 +5517,113 @@
 	     * @memberOf GoogleStreetviewPanorama
 	     * @instance
 	     */
-	    load: function ( panoId ) {
+	    load ( panoId ) {
 
 	        this.loadRequested = true;
-
+	  
 	        panoId = ( panoId || this.panoId ) || {};
-
+	  
 	        if ( panoId && this.gsvLoader ) {
-
+	  
 	            this.loadGSVLoader( panoId );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Setup Google Map API
 	     * @param {string}  apiKey
 	     * @memberOf GoogleStreetviewPanorama
 	     * @instance
 	     */
-	    setupGoogleMapAPI: function ( apiKey ) {
-
+	    setupGoogleMapAPI ( apiKey ) {
+	  
 	        const script = document.createElement( 'script' );
 	        script.src = 'https://maps.googleapis.com/maps/api/js?';
 	        script.src += apiKey ? 'key=' + apiKey : '';
 	        script.onreadystatechange = this.setGSVLoader.bind( this );
 	        script.onload = this.setGSVLoader.bind( this );
-
+	  
 	        document.querySelector( 'head' ).appendChild( script );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Set GSV Loader
 	     * @memberOf GoogleStreetviewPanorama
 	     * @instance
 	     */
-	    setGSVLoader: function () {
-
+	    setGSVLoader () {
+	  
 	        this.gsvLoader = new GoogleStreetviewLoader();
-
+	  
 	        if ( this.loadRequested ) {
-
+	  
 	            this.load();
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Get GSV Loader
 	     * @memberOf GoogleStreetviewPanorama
 	     * @instance
 	     * @return {GoogleStreetviewLoader} GSV Loader instance
 	     */
-	    getGSVLoader: function () {
-
+	    getGSVLoader () {
+	  
 	        return this.gsvLoader;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Load GSV Loader
 	     * @param  {string} panoId - Gogogle Street View panorama id
 	     * @memberOf GoogleStreetviewPanorama
 	     * @instance
 	     */
-	    loadGSVLoader: function ( panoId ) {
-
+	    loadGSVLoader ( panoId ) {
+	  
 	        this.loadRequested = false;
-
+	  
 	        this.gsvLoader.onProgress = this.onProgress.bind( this );
-
+	  
 	        this.gsvLoader.onPanoramaLoad = this.onLoad.bind( this );
-
+	  
 	        this.gsvLoader.setZoom( this.getZoomLevel() );
-
+	  
 	        this.gsvLoader.load( panoId );
-
+	  
 	        this.gsvLoader.loaded = true;
-	    },
-
+	    }
+	  
 	    /**
 	     * This will be called when panorama is loaded
 	     * @param  {HTMLCanvasElement} canvas - Canvas where the tiles have been drawn
 	     * @memberOf GoogleStreetviewPanorama
 	     * @instance
 	     */
-	    onLoad: function ( canvas ) {
-
+	    onLoad ( canvas ) {
+	  
 	        ImagePanorama.prototype.onLoad.call( this, new THREE__namespace.Texture( canvas ) );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Reset
 	     * @memberOf GoogleStreetviewPanorama
 	     * @instance
 	     */
-	    reset: function () {
-
+	    reset () {
+	  
 	        this.gsvLoader = undefined;
-
+	  
 	        ImagePanorama.prototype.reset.call( this );
-
+	  
 	    }
-
-	} );
+	}
 
 	/**
 	 * Stereographic projection shader
@@ -5797,42 +5714,38 @@
 	 * @param {number} [size=10000] - Size of plane geometry
 	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
 	 */
-	function LittlePlanet ( type = 'image', source, size = 10000, ratio = 0.5 ) {
+	class LittlePlanet extends ImagePanorama {
+	    constructor( type = 'image', source, size = 10000, ratio = 0.5 ) {
+	        if ( type === 'image' ) {
+	            super(source, LittlePlanet.createGeometry( size, ratio ), LittlePlanet.createMaterial( size ) );
+	        }
+	        else {
+	            super();
+	        }
 
-	    if ( type === 'image' ) {
+	        this.size = size;
+	        this.ratio = ratio;
+	        this.EPS = 0.000001;
+	        this.frameId = null;
 
-	        ImagePanorama.call( this, source, this.createGeometry( size, ratio ), this.createMaterial( size ) );
+	        this.dragging = false;
+	        this.userMouse = new THREE__namespace.Vector2();
 
+	        this.quatA = new THREE__namespace.Quaternion();
+	        this.quatB = new THREE__namespace.Quaternion();
+	        this.quatCur = new THREE__namespace.Quaternion();
+	        this.quatSlerp = new THREE__namespace.Quaternion();
+
+	        this.vectorX = new THREE__namespace.Vector3( 1, 0, 0 );
+	        this.vectorY = new THREE__namespace.Vector3( 0, 1, 0 );
+
+	        this.addEventListener( 'window-resize', this.onWindowResize );
 	    }
 
-	    this.size = size;
-	    this.ratio = ratio;
-	    this.EPS = 0.000001;
-	    this.frameId = null;
-
-	    this.dragging = false;
-	    this.userMouse = new THREE__namespace.Vector2();
-
-	    this.quatA = new THREE__namespace.Quaternion();
-	    this.quatB = new THREE__namespace.Quaternion();
-	    this.quatCur = new THREE__namespace.Quaternion();
-	    this.quatSlerp = new THREE__namespace.Quaternion();
-
-	    this.vectorX = new THREE__namespace.Vector3( 1, 0, 0 );
-	    this.vectorY = new THREE__namespace.Vector3( 0, 1, 0 );
-
-	    this.addEventListener( 'window-resize', this.onWindowResize );
-
-	}
-
-	LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype ), {
-
-	    constructor: LittlePlanet,
-
-	    add: function ( object ) {
+	    add ( object ) {
 
 	        if ( arguments.length > 1 ) {
-				
+	  
 	            for ( let i = 0; i < arguments.length; i ++ ) {
 
 	                this.add( arguments[ i ] );
@@ -5846,20 +5759,20 @@
 	        if ( object instanceof Infospot ) {
 
 	            object.material.depthTest = false;
-				
+	  
 	        }
 
 	        ImagePanorama.prototype.add.call( this, object );
 
-	    },
+	    }
 
-	    createGeometry: function ( size, ratio ) {
+	    static createGeometry ( size, ratio ) {
 
 	        return new THREE__namespace.PlaneBufferGeometry( size, size * ratio );
 
-	    },
+	    }
 
-	    createMaterial: function ( size ) {
+	    static createMaterial ( size ) {
 
 	        const shader = Object.assign( {}, StereographicShader ), uniforms = shader.uniforms;
 
@@ -5875,10 +5788,10 @@
 	            transparent: true
 
 	        } );
-			
-	    },
 
-	    registerMouseEvents: function () {
+	    }
+
+	    registerMouseEvents () {
 
 	        this.container.addEventListener( 'mousedown', this.onMouseDown.bind( this ), { passive: true } );
 	        this.container.addEventListener( 'mousemove', this.onMouseMove.bind( this ), { passive: true } );
@@ -5889,10 +5802,10 @@
 	        this.container.addEventListener( 'mousewheel', this.onMouseWheel.bind( this ), { passive: false } );
 	        this.container.addEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), { passive: false } );
 	        this.container.addEventListener( 'contextmenu', this.onContextMenu.bind( this ), { passive: true } );
-			
-	    },
 
-	    unregisterMouseEvents: function () {
+	    }
+
+	    unregisterMouseEvents () {
 
 	        this.container.removeEventListener( 'mousedown', this.onMouseDown.bind( this ), false );
 	        this.container.removeEventListener( 'mousemove', this.onMouseMove.bind( this ), false );
@@ -5903,10 +5816,10 @@
 	        this.container.removeEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
 	        this.container.removeEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
 	        this.container.removeEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
-			
-	    },
 
-	    onMouseDown: function ( event ) {
+	    }
+
+	    onMouseDown ( event ) {
 
 	        const inputCount = ( event.touches && event.touches.length ) || 1 ;
 
@@ -5935,9 +5848,9 @@
 
 	        this.onUpdateCallback();
 
-	    },
+	    }
 
-	    onMouseMove: function ( event ) {
+	    onMouseMove ( event ) {
 
 	        const inputCount = ( event.touches && event.touches.length ) || 1 ;
 
@@ -5972,15 +5885,15 @@
 
 	        }
 
-	    },
+	    }
 
-	    onMouseUp: function () {
+	    onMouseUp () {
 
 	        this.dragging = false;
 
-	    },
+	    }
 
-	    onMouseWheel: function ( event ) {
+	    onMouseWheel ( event ) {
 
 	        event.preventDefault();
 	        event.stopPropagation();
@@ -6000,9 +5913,9 @@
 	        this.addZoomDelta( delta );
 	        this.onUpdateCallback();
 
-	    },
+	    }
 
-	    addZoomDelta: function ( delta ) {
+	    addZoomDelta ( delta ) {
 
 	        const uniforms = this.material.uniforms;
 	        const lowerBound = this.size * 0.1;
@@ -6019,10 +5932,9 @@
 	            uniforms.zoom.value = upperBound;
 
 	        }
+	    }
 
-	    },
-
-	    onUpdateCallback: function () {
+	    onUpdateCallback () {
 
 	        this.frameId = window.requestAnimationFrame( this.onUpdateCallback.bind( this ) );
 
@@ -6033,37 +5945,37 @@
 	            this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
 
 	        }
-	        
+	    
 	        if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
-				
+	  
 	            window.cancelAnimationFrame( this.frameId );
 
 	        }
 
-	    },
+	    }
 
-	    reset: function () {
+	    reset () {
 
 	        this.quatCur.set( 0, 0, 0, 1 );
 	        this.quatSlerp.set( 0, 0, 0, 1 );
 	        this.onUpdateCallback();
 
-	    },
+	    }
 
-	    onLoad: function ( texture ) {
+	    onLoad ( texture ) {
 
 	        this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
 
 	        this.registerMouseEvents();
 	        this.onUpdateCallback();
-			
+
 	        this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' } );
 
 	        ImagePanorama.prototype.onLoad.call( this, texture );
-			
-	    },
 
-	    onLeave: function () {
+	    }
+
+	    onLeave () {
 
 	        this.unregisterMouseEvents();
 
@@ -6072,22 +5984,20 @@
 	        window.cancelAnimationFrame( this.frameId );
 
 	        ImagePanorama.prototype.onLeave.call( this );
-			
-	    },
 
-	    onWindowResize: function () {
+	    }
 
+	    onWindowResize () {
 	        this.material.uniforms.resolution.value = this.container.clientWidth / this.container.clientHeight;
+	    }
 
-	    },
-
-	    onContextMenu: function () {
+	    onContextMenu () {
 
 	        this.dragging = false;
 
-	    },
+	    }
 
-	    dispose: function () {	
+	    dispose () {	
 
 	        this.unregisterMouseEvents();
 
@@ -6095,7 +6005,9 @@
 
 	    }
 
-	});
+	 
+
+	}
 
 	/**
 	 * @classdesc Image Little Planet
@@ -6104,15 +6016,11 @@
 	 * @param {number} [size=10000] - Size of plane geometry
 	 * @param {number} [ratio=0.5]  - Ratio of plane geometry's height against width
 	 */
-	function ImageLittlePlanet ( source, size, ratio ) {
+	class ImageLittlePlanet extends LittlePlanet {
+	    constructor( source, size, ratio ) {
+	        super(source, size, ratio);
+	    }
 
-	    LittlePlanet.call( this, 'image', source, size, ratio );
-
-	}
-
-	ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototype ), {
-
-	    constructor: ImageLittlePlanet,
 
 	    /**
 	     * On loaded with texture
@@ -6120,34 +6028,33 @@
 	     * @memberOf ImageLittlePlanet
 	     * @instance
 	     */
-	    onLoad: function ( texture ) {
+	    onLoad ( texture ) {
 
 	        this.updateTexture( texture );
 
 	        LittlePlanet.prototype.onLoad.call( this, texture );
-
-	    },
-	    
+	    }
+	  
 	    /**
 	     * Update texture
 	     * @param {THREE.Texture} texture 
 	     * @memberOf ImageLittlePlanet
 	     * @instance
 	     */
-	    updateTexture: function ( texture ) {
+	    updateTexture ( texture ) {
 
 	        texture.minFilter = texture.magFilter = THREE__namespace.LinearFilter;
-			
+	  
 	        this.material.uniforms[ 'tDiffuse' ].value = texture;
 
-	    },
+	    }
 
 	    /**
 	     * Dispose
 	     * @memberOf ImageLittlePlanet
 	     * @instance
 	     */
-	    dispose: function () {
+	    dispose () {
 
 	        const tDiffuse = this.material.uniforms[ 'tDiffuse' ];
 
@@ -6160,8 +6067,7 @@
 	        LittlePlanet.prototype.dispose.call( this );
 
 	    }
-
-	} );
+	}
 
 	/**
 	 * @classdesc Camera panorama
@@ -6169,27 +6075,23 @@
 	 * @param {object} - camera constraints
 	 * @constructor
 	 */
-	function CameraPanorama ( constraints ) {
+	class CameraPanorama extends Panorama {
+	    constructor( constraints ) {
+	        const radius = 5000;
+	        const geometry = new THREE__namespace.SphereBufferGeometry( radius, 60, 40 );
+	        const material = new THREE__namespace.MeshBasicMaterial( { visible: false });
+	    
+	        super(geometry, material);
 
-	    const radius = 5000;
-	    const geometry = new THREE__namespace.SphereBufferGeometry( radius, 60, 40 );
-	    const material = new THREE__namespace.MeshBasicMaterial( { visible: false });
+	        this.media = new Media( constraints );
+	        this.radius = radius;
 
-	    Panorama.call( this, geometry, material );
+	        this.addEventListener( 'enter', this.start.bind( this ) );
+	        this.addEventListener( 'leave', this.stop.bind( this ) );
+	        this.addEventListener( 'panolens-container', this.onPanolensContainer.bind( this ) );
+	        this.addEventListener( 'panolens-scene', this.onPanolensScene.bind( this ) );
 
-	    this.media = new Media( constraints );
-	    this.radius = radius;
-
-	    this.addEventListener( 'enter', this.start.bind( this ) );
-	    this.addEventListener( 'leave', this.stop.bind( this ) );
-	    this.addEventListener( 'panolens-container', this.onPanolensContainer.bind( this ) );
-	    this.addEventListener( 'panolens-scene', this.onPanolensScene.bind( this ) );
-
-	}
-
-	CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
-
-	    constructor: CameraPanorama,
+	    }
 
 	    /**
 	     * On container event
@@ -6197,11 +6099,9 @@
 	     * @memberOf CameraPanorama
 	     * @instance
 	     */
-	    onPanolensContainer: function ( { container } ) {
-
+	    onPanolensContainer ( { container } ) {
 	        this.media.setContainer( container );
-
-	    },
+	    }
 
 	    /**
 	     * On scene event
@@ -6209,11 +6109,9 @@
 	     * @memberOf CameraPanorama
 	     * @instance
 	     */
-	    onPanolensScene: function ( { scene } ) {
-
+	    onPanolensScene( { scene } ) {
 	        this.media.setScene( scene );
-
-	    },
+	    }
 
 	    /**
 	     * Start camera streaming
@@ -6221,24 +6119,19 @@
 	     * @instance
 	     * @returns {Promise}
 	     */
-	    start: function () {
-
+	    start() {
 	        return this.media.start();
-
-	    },
+	    }
 
 	    /**
 	     * Stop camera streaming
 	     * @memberOf CameraPanorama
 	     * @instance
 	     */
-	    stop: function () {
-
+	    stop() {
 	        this.media.stop();
-
-	    },
-
-	} );
+	    }
+	}
 
 	/**
 	 * @classdesc Orbit Controls
@@ -6380,7 +6273,7 @@
 	    // so camera.up is the orbit axis
 
 	    var quat = new THREE__namespace.Quaternion().setFromUnitVectors( object.up, new THREE__namespace.Vector3( 0, 1, 0 ) );
-	    var quatInverse = quat.clone().inverse();
+	    var quatInverse = quat.clone().invert();
 
 	    // events
 
@@ -7289,117 +7182,118 @@
 	 * @external CardboardEffect
 	 * @param {THREE.WebGLRenderer} renderer 
 	 */
-	function CardboardEffect ( renderer ) {
+	class CardboardEffect {
 
-	    var _camera = new THREE__namespace.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+	    constructor( renderer ) {
+	        var _camera = new THREE__namespace.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 
-	    var _scene = new THREE__namespace.Scene();
-
-	    var _stereo = new THREE__namespace.StereoCamera();
-	    _stereo.aspect = 0.5;
-
-	    var _params = { minFilter: THREE__namespace.LinearFilter, magFilter: THREE__namespace.NearestFilter, format: THREE__namespace.RGBAFormat };
-
-	    var _renderTarget = new THREE__namespace.WebGLRenderTarget( 512, 512, _params );
-	    _renderTarget.scissorTest = true;
-	    _renderTarget.texture.generateMipmaps = false;
-
-	    /*
-	     * Distortion Mesh ported from:
-	     * https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
-	     */
-
-	    var distortion = new THREE__namespace.Vector2( 0.441, 0.156 );
-
-	    var geometry = new THREE__namespace.PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
-
-	    var positions = geometry.attributes.position.array;
-	    var uvs = geometry.attributes.uv.array;
-
-	    // duplicate
-	    geometry.attributes.position.count *= 2;
-	    geometry.attributes.uv.count *= 2;
-
-	    var positions2 = new Float32Array( positions.length * 2 );
-	    positions2.set( positions );
-	    positions2.set( positions, positions.length );
-
-	    var uvs2 = new Float32Array( uvs.length * 2 );
-	    uvs2.set( uvs );
-	    uvs2.set( uvs, uvs.length );
-
-	    var vector = new THREE__namespace.Vector2();
-	    var length = positions.length / 3;
-
-	    for ( var i = 0, l = positions2.length / 3; i < l; i ++ ) {
-
-	        vector.x = positions2[ i * 3 + 0 ];
-	        vector.y = positions2[ i * 3 + 1 ];
-
-	        var dot = vector.dot( vector );
-	        var scalar = 1.5 + ( distortion.x + distortion.y * dot ) * dot;
-
-	        var offset = i < length ? 0 : 1;
-
-	        positions2[ i * 3 + 0 ] = ( vector.x / scalar ) * 1.5 - 0.5 + offset;
-	        positions2[ i * 3 + 1 ] = ( vector.y / scalar ) * 3.0;
-
-	        uvs2[ i * 2 ] = ( uvs2[ i * 2 ] + offset ) * 0.5;
-
+	        var _scene = new THREE__namespace.Scene();
+	  
+	        var _stereo = new THREE__namespace.StereoCamera();
+	        _stereo.aspect = 0.5;
+	  
+	        var _params = { minFilter: THREE__namespace.LinearFilter, magFilter: THREE__namespace.NearestFilter, format: THREE__namespace.RGBAFormat };
+	  
+	        var _renderTarget = new THREE__namespace.WebGLRenderTarget( 512, 512, _params );
+	        _renderTarget.scissorTest = true;
+	        _renderTarget.texture.generateMipmaps = false;
+	  
+	        /*
+	         * Distortion Mesh ported from:
+	         * https://github.com/borismus/webvr-boilerplate/blob/master/src/distortion/barrel-distortion-fragment.js
+	         */
+	  
+	        var distortion = new THREE__namespace.Vector2( 0.441, 0.156 );
+	  
+	        var geometry = new THREE__namespace.PlaneBufferGeometry( 1, 1, 10, 20 ).removeAttribute( 'normal' ).toNonIndexed();
+	  
+	        var positions = geometry.attributes.position.array;
+	        var uvs = geometry.attributes.uv.array;
+	  
+	        // duplicate
+	        geometry.attributes.position.count *= 2;
+	        geometry.attributes.uv.count *= 2;
+	  
+	        var positions2 = new Float32Array( positions.length * 2 );
+	        positions2.set( positions );
+	        positions2.set( positions, positions.length );
+	  
+	        var uvs2 = new Float32Array( uvs.length * 2 );
+	        uvs2.set( uvs );
+	        uvs2.set( uvs, uvs.length );
+	  
+	        var vector = new THREE__namespace.Vector2();
+	        var length = positions.length / 3;
+	  
+	        for ( var i = 0, l = positions2.length / 3; i < l; i ++ ) {
+	  
+	            vector.x = positions2[ i * 3 + 0 ];
+	            vector.y = positions2[ i * 3 + 1 ];
+	  
+	            var dot = vector.dot( vector );
+	            var scalar = 1.5 + ( distortion.x + distortion.y * dot ) * dot;
+	  
+	            var offset = i < length ? 0 : 1;
+	  
+	            positions2[ i * 3 + 0 ] = ( vector.x / scalar ) * 1.5 - 0.5 + offset;
+	            positions2[ i * 3 + 1 ] = ( vector.y / scalar ) * 3.0;
+	  
+	            uvs2[ i * 2 ] = ( uvs2[ i * 2 ] + offset ) * 0.5;
+	  
+	        }
+	  
+	        geometry.attributes.position.array = positions2;
+	        geometry.attributes.uv.array = uvs2;
+	  
+	        //
+	  
+	        var material = new THREE__namespace.MeshBasicMaterial( { map: _renderTarget.texture } );
+	        var mesh = new THREE__namespace.Mesh( geometry, material );
+	        _scene.add( mesh );
+	  
+	        //
+	  
+	        this.setSize = function ( width, height ) {
+	  
+	            renderer.setSize( width, height );
+	  
+	            var pixelRatio = renderer.getPixelRatio();
+	  
+	            _renderTarget.setSize( width * pixelRatio, height * pixelRatio );
+	  
+	        };
+	  
+	        this.render = function ( scene, camera ) {
+	  
+	            scene.updateMatrixWorld();
+	  
+	            if ( camera.parent === null ) camera.updateMatrixWorld();
+	  
+	            _stereo.update( camera );
+	  
+	            var width = _renderTarget.width / 2;
+	            var height = _renderTarget.height;
+	  
+	            if ( renderer.autoClear ) renderer.clear();
+	  
+	            _renderTarget.scissor.set( 0, 0, width, height );
+	            _renderTarget.viewport.set( 0, 0, width, height );
+	            renderer.setRenderTarget( _renderTarget );
+	            renderer.render( scene, _stereo.cameraL );
+	  
+	            renderer.clearDepth();
+	  
+	            _renderTarget.scissor.set( width, 0, width, height );
+	            _renderTarget.viewport.set( width, 0, width, height );
+	            renderer.setRenderTarget( _renderTarget );
+	            renderer.render( scene, _stereo.cameraR );
+	  
+	            renderer.clearDepth();
+	  
+	            renderer.setRenderTarget( null );
+	            renderer.render( _scene, _camera );
+	        };
 	    }
-
-	    geometry.attributes.position.array = positions2;
-	    geometry.attributes.uv.array = uvs2;
-
-	    //
-
-	    var material = new THREE__namespace.MeshBasicMaterial( { map: _renderTarget.texture } );
-	    var mesh = new THREE__namespace.Mesh( geometry, material );
-	    _scene.add( mesh );
-
-	    //
-
-	    this.setSize = function ( width, height ) {
-
-	        renderer.setSize( width, height );
-
-	        var pixelRatio = renderer.getPixelRatio();
-
-	        _renderTarget.setSize( width * pixelRatio, height * pixelRatio );
-
-	    };
-
-	    this.render = function ( scene, camera ) {
-
-	        scene.updateMatrixWorld();
-
-	        if ( camera.parent === null ) camera.updateMatrixWorld();
-
-	        _stereo.update( camera );
-
-	        var width = _renderTarget.width / 2;
-	        var height = _renderTarget.height;
-
-	        if ( renderer.autoClear ) renderer.clear();
-
-	        _renderTarget.scissor.set( 0, 0, width, height );
-	        _renderTarget.viewport.set( 0, 0, width, height );
-	        renderer.setRenderTarget( _renderTarget );
-	        renderer.render( scene, _stereo.cameraL );
-
-	        renderer.clearDepth();
-
-	        _renderTarget.scissor.set( width, 0, width, height );
-	        _renderTarget.viewport.set( width, 0, width, height );
-	        renderer.setRenderTarget( _renderTarget );
-	        renderer.render( scene, _stereo.cameraR );
-
-	        renderer.clearDepth();
-
-	        renderer.setRenderTarget( null );
-	        renderer.render( _scene, _camera );
-	    };
-
 	}
 
 	/**
@@ -7408,50 +7302,51 @@
 	 * @external StereoEffect
 	 * @param {THREE.WebGLRenderer} renderer 
 	 */
-	const StereoEffect = function ( renderer ) {
+	class StereoEffect {
+	    constructor ( renderer ) {
+	        var _stereo = new THREE__namespace.StereoCamera();
+	        _stereo.aspect = 0.5;
+	        var size = new THREE__namespace.Vector2();
 
-	    var _stereo = new THREE__namespace.StereoCamera();
-	    _stereo.aspect = 0.5;
-	    var size = new THREE__namespace.Vector2();
+	        this.setEyeSeparation = function ( eyeSep ) {
 
-	    this.setEyeSeparation = function ( eyeSep ) {
+	            _stereo.eyeSep = eyeSep;
 
-	        _stereo.eyeSep = eyeSep;
+	        };
 
-	    };
+	        this.setSize = function ( width, height ) {
 
-	    this.setSize = function ( width, height ) {
+	            renderer.setSize( width, height );
 
-	        renderer.setSize( width, height );
+	        };
 
-	    };
+	        this.render = function ( scene, camera ) {
 
-	    this.render = function ( scene, camera ) {
+	            scene.updateMatrixWorld();
 
-	        scene.updateMatrixWorld();
+	            if ( camera.parent === null ) camera.updateMatrixWorld();
 
-	        if ( camera.parent === null ) camera.updateMatrixWorld();
+	            _stereo.update( camera );
 
-	        _stereo.update( camera );
+	            renderer.getSize( size );
 
-	        renderer.getSize( size );
+	            if ( renderer.autoClear ) renderer.clear();
+	            renderer.setScissorTest( true );
 
-	        if ( renderer.autoClear ) renderer.clear();
-	        renderer.setScissorTest( true );
+	            renderer.setScissor( 0, 0, size.width / 2, size.height );
+	            renderer.setViewport( 0, 0, size.width / 2, size.height );
+	            renderer.render( scene, _stereo.cameraL );
 
-	        renderer.setScissor( 0, 0, size.width / 2, size.height );
-	        renderer.setViewport( 0, 0, size.width / 2, size.height );
-	        renderer.render( scene, _stereo.cameraL );
+	            renderer.setScissor( size.width / 2, 0, size.width / 2, size.height );
+	            renderer.setViewport( size.width / 2, 0, size.width / 2, size.height );
+	            renderer.render( scene, _stereo.cameraR );
 
-	        renderer.setScissor( size.width / 2, 0, size.width / 2, size.height );
-	        renderer.setViewport( size.width / 2, 0, size.width / 2, size.height );
-	        renderer.render( scene, _stereo.cameraR );
+	            renderer.setScissorTest( false );
 
-	        renderer.setScissorTest( false );
-
-	    };
-
-	};
+	        };
+	    }
+	  
+	}
 
 	/**
 	 * @classdesc Viewer contains pre-defined scene, camera and renderer
@@ -7479,205 +7374,201 @@
 	 * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
 	 * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
 	 */
-	function Viewer ( options ) {
+	class Viewer {
+	    constructor( options ) {
+	        let container;
 
-	    let container;
-
-	    options = options || {};
-	    options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
-	    options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
-	    options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
-	    options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
-	    options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
-	    options.clickTolerance = options.clickTolerance || 10;
-	    options.cameraFov = options.cameraFov || 60;
-	    options.reverseDragging = options.reverseDragging || false;
-	    options.enableReticle = options.enableReticle || false;
-	    options.dwellTime = options.dwellTime || 1500;
-	    options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
-	    options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
-	    options.indicatorSize = options.indicatorSize || 30;
-	    options.output = options.output ? options.output : 'none';
-	    options.autoRotate = options.autoRotate || false;
-	    options.autoRotateSpeed = options.autoRotateSpeed || 2.0;
-	    options.autoRotateActivationDuration = options.autoRotateActivationDuration || 5000;
-
-	    this.options = options;
-
-	    /*
-	     * CSS Icon
-	     * const styleLoader = new StyleLoader();
-	     * styleLoader.inject( 'icono' );
-	     */
-
-	    // Container
-	    if ( options.container ) {
-
-	        container = options.container;
-	        container._width = container.clientWidth;
-	        container._height = container.clientHeight;
-
-	    } else {
-
-	        container = document.createElement( 'div' );
-	        container.classList.add( 'panolens-container' );
-	        container.style.width = '100%';
-	        container.style.height = '100%';
-	        container._width = window.innerWidth;
-	        container._height = window.innerHeight;
-	        document.body.appendChild( container );
-
+	        options = options || {};
+	        options.controlBar = options.controlBar !== undefined ? options.controlBar : true;
+	        options.controlButtons = options.controlButtons || [ 'fullscreen', 'setting', 'video' ];
+	        options.autoHideControlBar = options.autoHideControlBar !== undefined ? options.autoHideControlBar : false;
+	        options.autoHideInfospot = options.autoHideInfospot !== undefined ? options.autoHideInfospot : true;
+	        options.horizontalView = options.horizontalView !== undefined ? options.horizontalView : false;
+	        options.clickTolerance = options.clickTolerance || 10;
+	        options.cameraFov = options.cameraFov || 60;
+	        options.reverseDragging = options.reverseDragging || false;
+	        options.enableReticle = options.enableReticle || false;
+	        options.dwellTime = options.dwellTime || 1500;
+	        options.autoReticleSelect = options.autoReticleSelect !== undefined ? options.autoReticleSelect : true;
+	        options.viewIndicator = options.viewIndicator !== undefined ? options.viewIndicator : false;
+	        options.indicatorSize = options.indicatorSize || 30;
+	        options.output = options.output ? options.output : 'none';
+	        options.autoRotate = options.autoRotate || false;
+	        options.autoRotateSpeed = options.autoRotateSpeed || 2.0;
+	        options.autoRotateActivationDuration = options.autoRotateActivationDuration || 5000;
+	  
+	        this.options = options;
+	  
+	        /*
+	         * CSS Icon
+	         * const styleLoader = new StyleLoader();
+	         * styleLoader.inject( 'icono' );
+	         */
+	  
+	        // Container
+	        if ( options.container ) {
+	  
+	            container = options.container;
+	            container._width = container.clientWidth;
+	            container._height = container.clientHeight;
+	  
+	        } else {
+	  
+	            container = document.createElement( 'div' );
+	            container.classList.add( 'panolens-container' );
+	            container.style.width = '100%';
+	            container.style.height = '100%';
+	            container._width = window.innerWidth;
+	            container._height = window.innerHeight;
+	            document.body.appendChild( container );
+	  
+	        }
+	  
+	        this.container = container;
+	  
+	        this.camera = options.camera || new THREE__namespace.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
+	        this.scene = options.scene || new THREE__namespace.Scene();
+	        this.renderer = options.renderer || new THREE__namespace.WebGLRenderer( { alpha: true, antialias: false } );
+	        this.sceneReticle = new THREE__namespace.Scene();
+	  
+	        this.viewIndicatorSize = this.options.indicatorSize;
+	  
+	        this.reticle = {};
+	        this.tempEnableReticle = this.options.enableReticle;
+	  
+	        this.mode = MODES.NORMAL;
+	  
+	        this.panorama = null;
+	        this.widget = null;
+	  
+	        this.hoverObject = null;
+	        this.infospot = null;
+	        this.pressEntityObject = null;
+	        this.pressObject = null;
+	  
+	        this.raycaster = new THREE__namespace.Raycaster();
+	        this.raycasterPoint = new THREE__namespace.Vector2();
+	        this.userMouse = new THREE__namespace.Vector2();
+	        this.updateCallbacks = [];
+	        this.requestAnimationId = null;
+	  
+	        this.cameraFrustum = new THREE__namespace.Frustum();
+	        this.cameraViewProjectionMatrix = new THREE__namespace.Matrix4();
+	  
+	        this.autoRotateRequestId = null;
+	  
+	        this.outputDivElement = null;
+	  
+	        this.touchSupported = 'ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch;
+	  
+	        // Handler references
+	        this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
+	        this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
+	        this.HANDLER_MOUSE_MOVE = this.onMouseMove.bind( this );
+	        this.HANDLER_WINDOW_RESIZE = this.onWindowResize.bind( this );
+	        this.HANDLER_KEY_DOWN = this.onKeyDown.bind( this );
+	        this.HANDLER_KEY_UP = this.onKeyUp.bind( this );
+	        this.HANDLER_TAP = this.onTap.bind( this, {
+	            clientX: this.container.clientWidth / 2,
+	            clientY: this.container.clientHeight / 2
+	        } );
+	  
+	        // Flag for infospot output
+	        this.OUTPUT_INFOSPOT = false;
+	  
+	        // Animations
+	        this.tweenLeftAnimation = new Tween.Tween();
+	        this.tweenUpAnimation = new Tween.Tween();
+	  
+	        // Renderer
+	        this.renderer.setPixelRatio( window.devicePixelRatio );
+	        this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
+	        this.renderer.setClearColor( 0x000000, 0 );
+	        this.renderer.autoClear = false;
+	  
+	        // Append Renderer Element to container
+	        this.renderer.domElement.classList.add( 'panolens-canvas' );
+	        this.renderer.domElement.style.display = 'block';
+	        this.container.style.backgroundColor = '#000';
+	        this.container.appendChild( this.renderer.domElement );
+	  
+	        // Camera Controls
+	        this.OrbitControls = new OrbitControls( this.camera, this.container );
+	        this.OrbitControls.id = 'orbit';
+	        this.OrbitControls.minDistance = 1;
+	        this.OrbitControls.noPan = true;
+	        this.OrbitControls.autoRotate = this.options.autoRotate;
+	        this.OrbitControls.autoRotateSpeed = this.options.autoRotateSpeed;
+	  
+	        this.DeviceOrientationControls = new DeviceOrientationControls( this.camera, this.container );
+	        this.DeviceOrientationControls.id = 'device-orientation';
+	        this.DeviceOrientationControls.enabled = false;
+	        this.camera.position.z = 1;
+	  
+	        // Register change event if passiveRenering
+	        if ( this.options.passiveRendering ) {
+	  
+	            console.warn( 'passiveRendering is now deprecated' );
+	  
+	        }
+	  
+	        // Controls
+	        this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
+	        this.control = this.OrbitControls;
+	  
+	        // Cardboard effect
+	        this.CardboardEffect = new CardboardEffect( this.renderer );
+	        this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+	  
+	        // Stereo effect
+	        this.StereoEffect = new StereoEffect( this.renderer );
+	        this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
+	  
+	        this.effect = this.CardboardEffect;
+	  
+	        // Add default hidden reticle
+	        this.addReticle();
+	  
+	        // Lock horizontal view
+	        if ( this.options.horizontalView ) {
+	            this.OrbitControls.minPolarAngle = Math.PI / 2;
+	            this.OrbitControls.maxPolarAngle = Math.PI / 2;
+	        }
+	  
+	        // Add Control UI
+	        if ( this.options.controlBar !== false ) {
+	            this.addDefaultControlBar( this.options.controlButtons );
+	        }
+	  
+	        // Add View Indicator
+	        if ( this.options.viewIndicator ) {
+	            this.addViewIndicator();
+	        }
+	  
+	        // Reverse dragging direction
+	        if ( this.options.reverseDragging ) {
+	            this.reverseDraggingDirection();
+	        }
+	  
+	        // Register event if reticle is enabled, otherwise defaults to mouse
+	        if ( this.options.enableReticle ) {
+	            this.enableReticleControl();
+	        } else {
+	            this.registerMouseAndTouchEvents();
+	        }
+	  
+	        // Output infospot position to an overlay container if specified
+	        if ( this.options.output === 'overlay' ) {
+	            this.addOutputElement();
+	        }
+	  
+	        // Register dom event listeners
+	        this.registerEventListeners();
+	  
+	        // Animate
+	        this.animate.call( this );
 	    }
-
-	    this.container = container;
-
-	    this.camera = options.camera || new THREE__namespace.PerspectiveCamera( this.options.cameraFov, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
-	    this.scene = options.scene || new THREE__namespace.Scene();
-	    this.renderer = options.renderer || new THREE__namespace.WebGLRenderer( { alpha: true, antialias: false } );
-	    this.sceneReticle = new THREE__namespace.Scene();
-
-	    this.viewIndicatorSize = this.options.indicatorSize;
-
-	    this.reticle = {};
-	    this.tempEnableReticle = this.options.enableReticle;
-
-	    this.mode = MODES.NORMAL;
-
-	    this.panorama = null;
-	    this.widget = null;
-
-	    this.hoverObject = null;
-	    this.infospot = null;
-	    this.pressEntityObject = null;
-	    this.pressObject = null;
-
-	    this.raycaster = new THREE__namespace.Raycaster();
-	    this.raycasterPoint = new THREE__namespace.Vector2();
-	    this.userMouse = new THREE__namespace.Vector2();
-	    this.updateCallbacks = [];
-	    this.requestAnimationId = null;
-
-	    this.cameraFrustum = new THREE__namespace.Frustum();
-	    this.cameraViewProjectionMatrix = new THREE__namespace.Matrix4();
-
-	    this.autoRotateRequestId = null;
-
-	    this.outputDivElement = null;
-
-	    this.touchSupported = 'ontouchstart' in window || window.DocumentTouch && document instanceof DocumentTouch;
-
-	    // Handler references
-	    this.HANDLER_MOUSE_DOWN = this.onMouseDown.bind( this );
-	    this.HANDLER_MOUSE_UP = this.onMouseUp.bind( this );
-	    this.HANDLER_MOUSE_MOVE = this.onMouseMove.bind( this );
-	    this.HANDLER_WINDOW_RESIZE = this.onWindowResize.bind( this );
-	    this.HANDLER_KEY_DOWN = this.onKeyDown.bind( this );
-	    this.HANDLER_KEY_UP = this.onKeyUp.bind( this );
-	    this.HANDLER_TAP = this.onTap.bind( this, {
-	        clientX: this.container.clientWidth / 2,
-	        clientY: this.container.clientHeight / 2
-	    } );
-
-	    // Flag for infospot output
-	    this.OUTPUT_INFOSPOT = false;
-
-	    // Animations
-	    this.tweenLeftAnimation = new Tween.Tween();
-	    this.tweenUpAnimation = new Tween.Tween();
-
-	    // Renderer
-	    this.renderer.setPixelRatio( window.devicePixelRatio );
-	    this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
-	    this.renderer.setClearColor( 0x000000, 0 );
-	    this.renderer.autoClear = false;
-
-	    // Append Renderer Element to container
-	    this.renderer.domElement.classList.add( 'panolens-canvas' );
-	    this.renderer.domElement.style.display = 'block';
-	    this.container.style.backgroundColor = '#000';
-	    this.container.appendChild( this.renderer.domElement );
-
-	    // Camera Controls
-	    this.OrbitControls = new OrbitControls( this.camera, this.container );
-	    this.OrbitControls.id = 'orbit';
-	    this.OrbitControls.minDistance = 1;
-	    this.OrbitControls.noPan = true;
-	    this.OrbitControls.autoRotate = this.options.autoRotate;
-	    this.OrbitControls.autoRotateSpeed = this.options.autoRotateSpeed;
-
-	    this.DeviceOrientationControls = new DeviceOrientationControls( this.camera, this.container );
-	    this.DeviceOrientationControls.id = 'device-orientation';
-	    this.DeviceOrientationControls.enabled = false;
-	    this.camera.position.z = 1;
-
-	    // Register change event if passiveRenering
-	    if ( this.options.passiveRendering ) {
-
-	        console.warn( 'passiveRendering is now deprecated' );
-
-	    }
-
-	    // Controls
-	    this.controls = [ this.OrbitControls, this.DeviceOrientationControls ];
-	    this.control = this.OrbitControls;
-
-	    // Cardboard effect
-	    this.CardboardEffect = new CardboardEffect( this.renderer );
-	    this.CardboardEffect.setSize( this.container.clientWidth, this.container.clientHeight );
-
-	    // Stereo effect
-	    this.StereoEffect = new StereoEffect( this.renderer );
-	    this.StereoEffect.setSize( this.container.clientWidth, this.container.clientHeight );
-
-	    this.effect = this.CardboardEffect;
-
-	    // Add default hidden reticle
-	    this.addReticle();
-
-	    // Lock horizontal view
-	    if ( this.options.horizontalView ) {
-	        this.OrbitControls.minPolarAngle = Math.PI / 2;
-	        this.OrbitControls.maxPolarAngle = Math.PI / 2;
-	    }
-
-	    // Add Control UI
-	    if ( this.options.controlBar !== false ) {
-	        this.addDefaultControlBar( this.options.controlButtons );
-	    }
-
-	    // Add View Indicator
-	    if ( this.options.viewIndicator ) {
-	        this.addViewIndicator();
-	    }
-
-	    // Reverse dragging direction
-	    if ( this.options.reverseDragging ) {
-	        this.reverseDraggingDirection();
-	    }
-
-	    // Register event if reticle is enabled, otherwise defaults to mouse
-	    if ( this.options.enableReticle ) {
-	        this.enableReticleControl();
-	    } else {
-	        this.registerMouseAndTouchEvents();
-	    }
-
-	    // Output infospot position to an overlay container if specified
-	    if ( this.options.output === 'overlay' ) {
-	        this.addOutputElement();
-	    }
-
-	    // Register dom event listeners
-	    this.registerEventListeners();
-
-	    // Animate
-	    this.animate.call( this );
-
-	}
-	Viewer.prototype = Object.assign( Object.create( THREE__namespace.EventDispatcher.prototype ), {
-
-	    constructor: Viewer,
-
+	   
 	    /**
 	     * Add an object to the scene
 	     * Automatically hookup with panolens-viewer-handler listener
@@ -7686,170 +7577,170 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    add: function ( object ) {
+	    add ( object ) {
 
 	        if ( arguments.length > 1 ) {
-
+	  
 	            for ( let i = 0; i < arguments.length; i ++ ) {
-
+	  
 	                this.add( arguments[ i ] );
-
+	  
 	            }
-
+	  
 	            return this;
-
+	  
 	        }
-
+	  
 	        this.scene.add( object );
-
+	  
 	        // All object added to scene has 'panolens-viewer-handler' event to handle viewer communication
 	        if ( object.addEventListener ) {
-
+	  
 	            object.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
-
+	  
 	        }
-
+	  
 	        // All object added to scene being passed with container
 	        if ( object instanceof Panorama && object.dispatchEvent ) {
-
+	  
 	            object.dispatchEvent( { type: 'panolens-container', container: this.container } );
-
+	  
 	        }
-
+	  
 	        if ( object instanceof CameraPanorama ) {
-
+	  
 	            object.dispatchEvent( { type: 'panolens-scene', scene: this.scene } );
-
+	  
 	        }
-
+	  
 	        // Hookup default panorama event listeners
 	        if ( object.type === 'panorama' ) {
-
+	  
 	            this.addPanoramaEventListener( object );
-
+	  
 	            if ( !this.panorama ) {
-
+	  
 	                this.setPanorama( object );
-
+	  
 	            }
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Remove an object from the scene
 	     * @param  {THREE.Object3D} object - Object to be removed
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    remove: function ( object ) {
-
+	    remove ( object ) {
+	  
 	        if ( object.removeEventListener ) {
-
+	  
 	            object.removeEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
-
+	  
 	        }
-
+	  
 	        this.scene.remove( object );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Add default control bar
 	     * @param {array} array - The control buttons array
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    addDefaultControlBar: function ( array ) {
-
+	    addDefaultControlBar ( array ) {
+	  
 	        if ( this.widget ) {
-
+	  
 	            console.warn( 'Default control bar exists' );
 	            return;
-
+	  
 	        }
-
+	  
 	        const widget = new Widget( this.container );
 	        widget.addEventListener( 'panolens-viewer-handler', this.eventHandler.bind( this ) );
 	        widget.addControlBar();
 	        array.forEach( buttonName => {
-
+	  
 	            widget.addControlButton( buttonName );
-
+	  
 	        } );
-
+	  
 	        this.widget = widget;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Set a panorama to be the current one
 	     * @param {Panorama} pano - Panorama to be set
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    setPanorama: function ( pano ) {
-
+	    setPanorama ( pano ) {
+	  
 	        const leavingPanorama = this.panorama;
-
+	  
 	        if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
-
+	  
 	            // Clear exisiting infospot
 	            this.hideInfospot();
-
+	  
 	            const afterEnterComplete = function () {
-
+	  
 	                if ( leavingPanorama ) { leavingPanorama.onLeave(); }
 	                pano.removeEventListener( 'enter-fade-start', afterEnterComplete );
-
+	  
 	            };
-
+	  
 	            pano.addEventListener( 'enter-fade-start', afterEnterComplete );
-
+	  
 	            // Assign and enter panorama
 	            (this.panorama = pano).onEnter();
-				
+	        
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Event handler to execute commands from child objects
 	     * @param {object} event - The dispatched event with method as function name and data as an argument
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    eventHandler: function ( event ) {
-
+	    eventHandler ( event ) {
+	  
 	        if ( event.method && this[ event.method ] ) {
-
+	  
 	            this[ event.method ]( event.data );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Dispatch event to all descendants
 	     * @param  {object} event - Event to be passed along
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    dispatchEventToChildren: function ( event ) {
-
+	    dispatchEventToChildren ( event ) {
+	  
 	        this.scene.traverse( function ( object ) {
-
+	  
 	            if ( object.dispatchEvent ) {
-
+	  
 	                object.dispatchEvent( event );
-
+	  
 	            }
-
+	  
 	        });
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Set widget content
 	     * @method activateWidgetItem
@@ -7858,114 +7749,114 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    activateWidgetItem: function ( controlIndex, mode ) {
-
+	    activateWidgetItem ( controlIndex, mode ) {
+	  
 	        const mainMenu = this.widget.mainMenu;
 	        const ControlMenuItem = mainMenu.children[ 0 ];
 	        const ModeMenuItem = mainMenu.children[ 1 ];
-
+	  
 	        let item;
-
+	  
 	        if ( controlIndex !== undefined ) {
-
+	  
 	            switch ( controlIndex ) {
-
+	  
 	            case 0:
-
+	  
 	                item = ControlMenuItem.subMenu.children[ 1 ];
-
+	  
 	                break;
-
+	  
 	            case 1:
-
+	  
 	                item = ControlMenuItem.subMenu.children[ 2 ];
-
+	  
 	                break;
-						
+	            
 	            default:
-
+	  
 	                item = ControlMenuItem.subMenu.children[ 1 ];
-
+	  
 	                break;	
-
+	  
 	            }
-
+	  
 	            ControlMenuItem.subMenu.setActiveItem( item );
 	            ControlMenuItem.setSelectionTitle( item.textContent );
-
+	  
 	        }
-
+	  
 	        if ( mode !== undefined ) {
-
+	  
 	            switch( mode ) {
-
+	  
 	            case MODES.CARDBOARD:
-
+	  
 	                item = ModeMenuItem.subMenu.children[ 2 ];
-
+	  
 	                break;
-
+	  
 	            case MODES.STEREO:
-
+	  
 	                item = ModeMenuItem.subMenu.children[ 3 ];
-						
+	            
 	                break;
-
+	  
 	            default:
-
+	  
 	                item = ModeMenuItem.subMenu.children[ 1 ];
-
+	  
 	                break;
 	            }
-
+	  
 	            ModeMenuItem.subMenu.setActiveItem( item );
 	            ModeMenuItem.setSelectionTitle( item.textContent );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Enable rendering effect
 	     * @param  {MODES} mode - Modes for effects
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    enableEffect: function ( mode ) {
-
+	    enableEffect ( mode ) {
+	  
 	        if ( this.mode === mode ) { return; }
 	        if ( mode === MODES.NORMAL ) { this.disableEffect(); return; }
 	        else { this.mode = mode; }
-
+	  
 	        const fov = this.camera.fov;
-
+	  
 	        switch( mode ) {
-
+	  
 	        case MODES.CARDBOARD:
-
+	  
 	            this.effect = this.CardboardEffect;
 	            this.enableReticleControl();
-
+	  
 	            break;
-
+	  
 	        case MODES.STEREO:
-
+	  
 	            this.effect = this.StereoEffect;
 	            this.enableReticleControl();
-					
+	          
 	            break;
-
+	  
 	        default:
-
+	  
 	            this.effect = null;
 	            this.disableReticleControl();
-
+	  
 	            break;
-
+	  
 	        }
-
+	  
 	        this.activateWidgetItem( undefined, this.mode );
-
+	  
 	        /**
 	         * Dual eye effect event
 	         * @type {object}
@@ -7973,13 +7864,13 @@
 	         * @property {MODES} mode - Current display mode
 	         */
 	        this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
-
+	  
 	        // Force effect stereo camera to update by refreshing fov
 	        this.camera.fov = fov + 10e-3;
 	        this.effect.setSize( this.container.clientWidth, this.container.clientHeight );
 	        this.render();
 	        this.camera.fov = fov;
-
+	  
 	        /**
 	         * Dispatch mode change event
 	         * @type {object}
@@ -7987,23 +7878,23 @@
 	         * @property {MODES} mode - Current display mode
 	         */
 	        this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Disable additional rendering effect
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    disableEffect: function () {
-
+	    disableEffect () {
+	  
 	        if ( this.mode === MODES.NORMAL ) { return; }
-
+	  
 	        this.mode = MODES.NORMAL;
 	        this.disableReticleControl();
-
+	  
 	        this.activateWidgetItem( undefined, this.mode );
-
+	  
 	        /**
 	         * Dual eye effect event
 	         * @type {object}
@@ -8011,10 +7902,10 @@
 	         * @property {MODES} mode - Current display mode
 	         */
 	        this.dispatchEventToChildren( { type: 'panolens-dual-eye-effect', mode: this.mode } );
-
+	  
 	        this.renderer.setSize( this.container.clientWidth, this.container.clientHeight );
 	        this.render();
-
+	  
 	        /**
 	         * Dispatch mode change event
 	         * @type {object}
@@ -8022,76 +7913,75 @@
 	         * @property {MODES} mode - Current display mode
 	         */
 	        this.dispatchEvent( { type: 'mode-change', mode: this.mode } );
-	    },
-
+	    }
+	  
 	    /**
 	     * Enable reticle control
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    enableReticleControl: function () {
-
+	    enableReticleControl () {
+	  
 	        if ( this.reticle.visible ) { return; }
-
+	  
 	        this.tempEnableReticle = true;
-
+	  
 	        // Register reticle event and unregister mouse event
 	        this.unregisterMouseAndTouchEvents();
 	        this.reticle.show();
 	        this.registerReticleEvent();
 	        this.updateReticleEvent();
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Disable reticle control
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    disableReticleControl: function () {
-
+	    disableReticleControl () {
+	  
 	        this.tempEnableReticle = false;
-
+	  
 	        // Register mouse event and unregister reticle event
 	        if ( !this.options.enableReticle ) {
-
+	  
 	            this.reticle.hide();
 	            this.unregisterReticleEvent();
 	            this.registerMouseAndTouchEvents();
-
+	  
 	        } else {
-
+	  
 	            this.updateReticleEvent();
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Enable auto rotation
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    enableAutoRate: function () {
-
+	    enableAutoRate () {
+	  
 	        this.options.autoRotate = true;
 	        this.OrbitControls.autoRotate = true;
-
-	    },
-
+	    }
+	  
 	    /**
 	     * Disable auto rotation
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    disableAutoRate: function () {
-
+	    disableAutoRate () {
+	  
 	        clearTimeout( this.autoRotateRequestId );
 	        this.options.autoRotate = false;
 	        this.OrbitControls.autoRotate = false;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Toggle video play or stop
 	     * @param {boolean} pause
@@ -8099,21 +7989,21 @@
 	     * @instance
 	     * @fires Viewer#video-toggle
 	     */
-	    toggleVideoPlay: function ( pause ) {
-
+	    toggleVideoPlay ( pause ) {
+	  
 	        if ( this.panorama instanceof VideoPanorama ) {
-
+	  
 	            /**
 	             * Toggle video event
 	             * @type {object}
 	             * @event Viewer#video-toggle
 	             */
 	            this.panorama.dispatchEvent( { type: 'video-toggle', pause: pause } );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Set currentTime in a video
 	     * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
@@ -8121,10 +8011,10 @@
 	     * @instance
 	     * @fires Viewer#video-time
 	     */
-	    setVideoCurrentTime: function ( percentage ) {
-
+	    setVideoCurrentTime ( percentage ) {
+	  
 	        if ( this.panorama instanceof VideoPanorama ) {
-
+	  
 	            /**
 	             * Setting video time event
 	             * @type {object}
@@ -8132,11 +8022,11 @@
 	             * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
 	             */
 	            this.panorama.dispatchEvent( { type: 'video-time', percentage: percentage } );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * This will be called when video updates if an widget is present
 	     * @param {number} percentage - Percentage of a video. Range from 0.0 to 1.0
@@ -8144,10 +8034,10 @@
 	     * @instance
 	     * @fires Viewer#video-update
 	     */
-	    onVideoUpdate: function ( percentage ) {
-
+	    onVideoUpdate ( percentage ) {
+	  
 	        const { widget } = this;
-
+	  
 	        /**
 	         * Video update event
 	         * @type {object}
@@ -8155,137 +8045,136 @@
 	         * @property {number} percentage - Percentage of a video. Range from 0.0 to 1.0
 	         */
 	        if( widget ) { widget.dispatchEvent( { type: 'video-update', percentage: percentage } ); }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Add update callback to be called every animation frame
 	     * @param {function} callback
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    addUpdateCallback: function ( fn ) {
-
+	    addUpdateCallback ( fn ) {
+	  
 	        if ( fn ) {
-
+	  
 	            this.updateCallbacks.push( fn );
-
+	  
 	        }
-
-	    },
-
+	    }
+	  
 	    /**
 	     * Remove update callback
 	     * @param  {function} fn - The function to be removed
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    removeUpdateCallback: function ( fn ) {
-
+	    removeUpdateCallback ( fn ) {
+	  
 	        const index = this.updateCallbacks.indexOf( fn );
-
+	  
 	        if ( fn && index >= 0 ) {
-
+	  
 	            this.updateCallbacks.splice( index, 1 );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Show video widget
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    showVideoWidget: function () {
-
+	    showVideoWidget () {
+	  
 	        const { widget } = this;
-
+	  
 	        /**
 	         * Show video widget event
 	         * @type {object}
 	         * @event Viewer#video-control-show
 	         */
 	        if( widget ) { widget.dispatchEvent( { type: 'video-control-show' } ); }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Hide video widget
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    hideVideoWidget: function () {
-
+	    hideVideoWidget () {
+	  
 	        const { widget } = this;
-
+	  
 	        /**
 	         * Hide video widget
 	         * @type {object}
 	         * @event Viewer#video-control-hide
 	         */
 	        if( widget ) { widget.dispatchEvent( { type: 'video-control-hide' } ); }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Update video play button
 	     * @param {boolean} paused 
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    updateVideoPlayButton: function ( paused ) {
-
+	    updateVideoPlayButton ( paused ) {
+	  
 	        const { widget } = this;
-
+	  
 	        if ( widget && widget.videoElement && widget.videoElement.controlButton ) {
-
+	  
 	            widget.videoElement.controlButton.update( paused );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Add default panorama event listeners
 	     * @param {Panorama} pano - The panorama to be added with event listener
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    addPanoramaEventListener: function ( pano ) {
-
+	    addPanoramaEventListener ( pano ) {
+	  
 	        // Set camera control on every panorama
 	        pano.addEventListener( 'enter-fade-start', this.setCameraControl.bind( this ) );
-
+	  
 	        // Show and hide widget event only when it's VideoPanorama
 	        if ( pano instanceof VideoPanorama ) {
-
+	  
 	            pano.addEventListener( 'enter-fade-start', this.showVideoWidget.bind( this ) );
 	            pano.addEventListener( 'leave', function () {
-
+	  
 	                if ( !(this.panorama instanceof VideoPanorama) ) {
-
+	  
 	                    this.hideVideoWidget.call( this );
-
+	  
 	                }
-					
+	          
 	            }.bind( this ) );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Set camera control
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    setCameraControl: function () {
-
+	    setCameraControl () {
+	  
 	        this.OrbitControls.target.copy( this.panorama.position );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Get current camera control
 	     * @return {object} - Current navigation control
@@ -8293,235 +8182,234 @@
 	     * @instance
 	     * @returns {THREE.OrbitControls|THREE.DeviceOrientationControls}
 	     */
-	    getControl: function () {
-
+	    getControl () {
+	  
 	        return this.control;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Get scene
 	     * @memberOf Viewer
 	     * @instance
 	     * @return {THREE.Scene} - Current scene which the viewer is built on
 	     */
-	    getScene: function () {
-
+	    getScene () {
+	  
 	        return this.scene;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Get camera
 	     * @memberOf Viewer
 	     * @instance
 	     * @return {THREE.Camera} - The scene camera
 	     */
-	    getCamera: function () {
-
+	    getCamera () {
+	  
 	        return this.camera;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Get renderer
 	     * @memberOf Viewer
 	     * @instance
 	     * @return {THREE.WebGLRenderer} - The renderer using webgl
 	     */
-	    getRenderer: function () {
-
+	    getRenderer () {
+	  
 	        return this.renderer;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Get container
 	     * @memberOf Viewer
 	     * @instance
 	     * @return {HTMLElement} - The container holds rendererd canvas
 	     */
-	    getContainer: function () {
-
+	    getContainer () {
+	  
 	        return this.container;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Get control id
 	     * @memberOf Viewer
 	     * @instance
 	     * @return {string} - Control id. 'orbit' or 'device-orientation'
 	     */
-	    getControlId: function () {
-
+	    getControlId () {
+	  
 	        return this.control.id;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Get next navigation control id
 	     * @memberOf Viewer
 	     * @instance
 	     * @return {string} - Next control id
 	     */
-	    getNextControlId: function () {
-
+	    getNextControlId () {
+	  
 	        return this.controls[ this.getNextControlIndex() ].id;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Get next navigation control index
 	     * @memberOf Viewer
 	     * @instance
 	     * @return {number} - Next control index
 	     */
-	    getNextControlIndex: function () {
-
+	    getNextControlIndex () {
+	  
 	        const controls = this.controls;
 	        const control = this.control;
 	        const nextIndex = controls.indexOf( control ) + 1;
-
+	  
 	        return ( nextIndex >= controls.length ) ? 0 : nextIndex;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Set field of view of camera
 	     * @param {number} fov
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    setCameraFov: function ( fov ) {
-
+	    setCameraFov ( fov ) {
+	  
 	        this.camera.fov = fov;
 	        this.camera.updateProjectionMatrix();
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Enable control by index
 	     * @param  {CONTROLS} index - Index of camera control
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    enableControl: function ( index ) {
-
+	    enableControl ( index ) {
+	  
 	        index = ( index >= 0 && index < this.controls.length ) ? index : 0;
-
+	  
 	        this.control.enabled = false;
-
+	  
 	        this.control = this.controls[ index ];
-
+	  
 	        this.control.enabled = true;
-
+	  
 	        switch ( index ) {
-
+	  
 	        case CONTROLS.ORBIT:
-
+	  
 	            this.camera.position.copy( this.panorama.position );
 	            this.camera.position.z += 1;
-
+	  
 	            break;
-
+	  
 	        case CONTROLS.DEVICEORIENTATION:
-
+	  
 	            this.camera.position.copy( this.panorama.position );
-
+	  
 	            break;
 	        }
-
+	  
 	        this.control.update();
-
+	  
 	        this.activateWidgetItem( index, undefined );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Disable current control
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    disableControl: function () {
-
+	    disableControl () {
+	  
 	        this.control.enabled = false;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Toggle next control
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    toggleNextControl: function () {
-
+	    toggleNextControl () {
+	  
 	        this.enableControl( this.getNextControlIndex() );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Screen Space Projection
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    getScreenVector: function ( worldVector ) {
-
+	    getScreenVector ( worldVector ) {
+	  
 	        const vector = worldVector.clone();
 	        const widthHalf = ( this.container.clientWidth ) / 2;
 	        const heightHalf = this.container.clientHeight / 2;
-
+	  
 	        vector.project( this.camera );
-
+	  
 	        vector.x = ( vector.x * widthHalf ) + widthHalf;
 	        vector.y = - ( vector.y * heightHalf ) + heightHalf;
 	        vector.z = 0;
-
+	  
 	        return vector;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Check Sprite in Viewport
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    checkSpriteInViewport: function ( sprite ) {
-
+	    checkSpriteInViewport ( sprite ) {
+	  
 	        this.camera.matrixWorldInverse.getInverse( this.camera.matrixWorld );
 	        this.cameraViewProjectionMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse );
 	        this.cameraFrustum.setFromMatrix( this.cameraViewProjectionMatrix );
-
+	  
 	        return sprite.visible && this.cameraFrustum.intersectsSprite( sprite );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Reverse dragging direction
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    reverseDraggingDirection: function () {
+	    reverseDraggingDirection () {
 
 	        this.OrbitControls.rotateSpeed *= -1;
 	        this.OrbitControls.momentumScalingFactor *= -1;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Add reticle 
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    addReticle: function () {
-
+	    addReticle () {
+	  
 	        this.reticle = new Reticle( 0xffffff, true, this.options.dwellTime );
 	        this.reticle.hide();
 	        this.camera.add( this.reticle );
 	        this.sceneReticle.add( this.camera );
-
-	    },
-
+	    }
+	  
 	    /**
 	     * Tween control looking center
 	     * @param {THREE.Vector3} vector - Vector to be looked at the center
@@ -8530,56 +8418,56 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    tweenControlCenter: function ( vector, duration, easing ) {
-
+	    tweenControlCenter ( vector, duration, easing ) {
+	  
 	        if ( this.control !== this.OrbitControls ) {
-
+	  
 	            return;
-
+	  
 	        }
-
+	  
 	        // Pass in arguments as array
 	        if ( vector instanceof Array ) {
-
+	  
 	            duration = vector[ 1 ];
 	            easing = vector[ 2 ];
 	            vector = vector[ 0 ];
-
+	  
 	        }
-
+	  
 	        duration = duration !== undefined ? duration : 1000;
 	        easing = easing || Tween.Easing.Exponential.Out;
-
+	  
 	        let scope, ha, va, chv, cvv, hv, vv, vptc, ov, nv;
-
+	  
 	        scope = this;
-
+	  
 	        chv = this.camera.getWorldDirection( new THREE__namespace.Vector3() );
 	        cvv = chv.clone();
-
+	  
 	        vptc = this.panorama.getWorldPosition( new THREE__namespace.Vector3() ).sub( this.camera.getWorldPosition( new THREE__namespace.Vector3() ) );
-
+	  
 	        hv = vector.clone();
 	        // Scale effect
 	        hv.x *= -1;
 	        hv.add( vptc ).normalize();
 	        vv = hv.clone();
-
+	  
 	        chv.y = 0;
 	        hv.y = 0;
-
+	  
 	        ha = Math.atan2( hv.z, hv.x ) - Math.atan2( chv.z, chv.x );
 	        ha = ha > Math.PI ? ha - 2 * Math.PI : ha;
 	        ha = ha < -Math.PI ? ha + 2 * Math.PI : ha;
 	        va = Math.abs( cvv.angleTo( chv ) + ( cvv.y * vv.y <= 0 ? vv.angleTo( hv ) : -vv.angleTo( hv ) ) );
 	        va *= vv.y < cvv.y ? 1 : -1;
-
+	  
 	        ov = { left: 0, up: 0 };
 	        nv = { left: 0, up: 0 };
-
+	  
 	        this.tweenLeftAnimation.stop();
 	        this.tweenUpAnimation.stop();
-
+	  
 	        this.tweenLeftAnimation = new Tween.Tween( ov )
 	            .to( { left: ha }, duration )
 	            .easing( easing )
@@ -8588,7 +8476,7 @@
 	                nv.left = ov.left;
 	            })
 	            .start();
-
+	  
 	        this.tweenUpAnimation = new Tween.Tween( ov )
 	            .to( { up: va }, duration )
 	            .easing( easing )
@@ -8597,9 +8485,9 @@
 	                nv.up = ov.up;
 	            })
 	            .start();
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Tween control looking center by object
 	     * @param {THREE.Object3D} object - Object to be looked at the center
@@ -8608,33 +8496,33 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    tweenControlCenterByObject: function ( object, duration, easing ) {
-
+	    tweenControlCenterByObject ( object, duration, easing ) {
+	  
 	        let isUnderScalePlaceHolder = false;
-
+	  
 	        object.traverseAncestors( function ( ancestor ) {
-
+	  
 	            if ( ancestor.scalePlaceHolder ) {
-
+	  
 	                isUnderScalePlaceHolder = true;
-
+	  
 	            }
 	        } );
-
+	  
 	        if ( isUnderScalePlaceHolder ) {
-
+	  
 	            const invertXVector = new THREE__namespace.Vector3( -1, 1, 1 );
-
+	  
 	            this.tweenControlCenter( object.getWorldPosition( new THREE__namespace.Vector3() ).multiply( invertXVector ), duration, easing );
-
+	  
 	        } else {
-
+	  
 	            this.tweenControlCenter( object.getWorldPosition( new THREE__namespace.Vector3() ), duration, easing );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * This is called when window size is changed
 	     * @fires Viewer#window-resize
@@ -8643,51 +8531,51 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    onWindowResize: function ( windowWidth, windowHeight ) {
-
+	    onWindowResize ( windowWidth, windowHeight ) {
+	  
 	        let width, height;
-
+	  
 	        const expand = this.container.classList.contains( 'panolens-container' ) || this.container.isFullscreen;
-
+	  
 	        if ( windowWidth !== undefined && windowHeight !== undefined ) {
-
+	  
 	            width = windowWidth;
 	            height = windowHeight;
 	            this.container._width = windowWidth;
 	            this.container._height = windowHeight;
-
+	  
 	        } else {
-
+	  
 	            const isAndroid = /(android)/i.test(window.navigator.userAgent);
-
+	  
 	            const adjustWidth = isAndroid 
 	                ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 
 	                : Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-
+	  
 	            const adjustHeight = isAndroid 
 	                ? Math.min(document.documentElement.clientHeight, window.innerHeight || 0) 
 	                : Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-
+	  
 	            width = expand ? adjustWidth : this.container.clientWidth;
 	            height = expand ? adjustHeight : this.container.clientHeight;
-
+	  
 	            this.container._width = width;
 	            this.container._height = height;
-
+	  
 	        }
-
+	  
 	        this.camera.aspect = width / height;
 	        this.camera.updateProjectionMatrix();
-
+	  
 	        this.renderer.setSize( width, height );
-
+	  
 	        // Update reticle
 	        if ( this.options.enableReticle || this.tempEnableReticle ) {
-
+	  
 	            this.updateReticleEvent();
-
+	  
 	        }
-
+	  
 	        /**
 	         * Window resizing event
 	         * @type {object}
@@ -8697,24 +8585,24 @@
 	         */
 	        this.dispatchEvent( { type: 'window-resize', width: width, height: height });
 	        this.scene.traverse( function ( object ) {
-
+	  
 	            if ( object.dispatchEvent ) {
-
+	  
 	                object.dispatchEvent( { type: 'window-resize', width: width, height: height });
-
+	  
 	            }
-
+	  
 	        } );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Add output element
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    addOutputElement: function () {
-
+	    addOutputElement () {
+	  
 	        const element = document.createElement( 'div' );
 	        element.style.position = 'absolute';
 	        element.style.right = '10px';
@@ -8722,37 +8610,37 @@
 	        element.style.color = '#fff';
 	        this.container.appendChild( element );
 	        this.outputDivElement = element;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Output position in developer console by holding down Ctrl button
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    outputPosition: function () {
-
+	    outputPosition () {
+	  
 	        const intersects = this.raycaster.intersectObject( this.panorama, true );
-
+	  
 	        if ( intersects.length > 0 ) {
-
+	  
 	            const point = intersects[ 0 ].point.clone();
 	            const converter = new THREE__namespace.Vector3( -1, 1, 1 );
 	            const world = this.panorama.getWorldPosition( new THREE__namespace.Vector3() );
 	            point.sub( world ).multiply( converter );
-
+	  
 	            const position = {
 	                x: point.x.toFixed(2),
 	                y: point.y.toFixed(2),
 	                z: point.z.toFixed(2),
 	            };
-
+	  
 	            const message = `${position.x}, ${position.y}, ${position.z}`;
-
+	  
 	            if ( point.length() === 0 ) { return; }
-
+	  
 	            switch ( this.options.output ) {
-
+	  
 	            case 'event':
 	                /**
 	                 * Dispatch raycast position as event
@@ -8761,118 +8649,116 @@
 	                 */
 	                this.dispatchEvent( { type: 'position-output', position: position } );
 	                break;
-
+	  
 	            case 'console':
 	                console.info( message );
 	                break;
-
+	  
 	            case 'overlay':
 	                this.outputDivElement.textContent = message;
 	                break;
-
+	  
 	            }
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * On mouse down
 	     * @param {MouseEvent} event 
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    onMouseDown: function ( event ) {
-
+	    onMouseDown ( event ) {
+	  
 	        event.preventDefault();
-
+	  
 	        this.userMouse.x = ( event.clientX >= 0 ) ? event.clientX : event.touches[0].clientX;
 	        this.userMouse.y = ( event.clientY >= 0 ) ? event.clientY : event.touches[0].clientY;
 	        this.userMouse.type = 'mousedown';
 	        this.onTap( event );
-
-	    },
-
+	    }
+	  
 	    /**
 	     * On mouse move
 	     * @param {MouseEvent} event 
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    onMouseMove: function ( event ) {
-
+	    onMouseMove ( event ) {
+	  
 	        event.preventDefault();
 	        this.userMouse.type = 'mousemove';
 	        this.onTap( event );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * On mouse up
 	     * @param {MouseEvent} event 
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    onMouseUp: function ( event ) {
-
+	    onMouseUp ( event ) {
+	  
 	        let onTarget = false;
-
+	  
 	        this.userMouse.type = 'mouseup';
-
+	  
 	        const type = ( this.userMouse.x >= event.clientX - this.options.clickTolerance 
-					&& this.userMouse.x <= event.clientX + this.options.clickTolerance
-					&& this.userMouse.y >= event.clientY - this.options.clickTolerance
-					&& this.userMouse.y <= event.clientY + this.options.clickTolerance ) 
-					||  ( event.changedTouches 
-					&& this.userMouse.x >= event.changedTouches[0].clientX - this.options.clickTolerance
-					&& this.userMouse.x <= event.changedTouches[0].clientX + this.options.clickTolerance 
-					&& this.userMouse.y >= event.changedTouches[0].clientY - this.options.clickTolerance
-					&& this.userMouse.y <= event.changedTouches[0].clientY + this.options.clickTolerance ) 
+	          && this.userMouse.x <= event.clientX + this.options.clickTolerance
+	          && this.userMouse.y >= event.clientY - this.options.clickTolerance
+	          && this.userMouse.y <= event.clientY + this.options.clickTolerance ) 
+	          ||  ( event.changedTouches 
+	          && this.userMouse.x >= event.changedTouches[0].clientX - this.options.clickTolerance
+	          && this.userMouse.x <= event.changedTouches[0].clientX + this.options.clickTolerance 
+	          && this.userMouse.y >= event.changedTouches[0].clientY - this.options.clickTolerance
+	          && this.userMouse.y <= event.changedTouches[0].clientY + this.options.clickTolerance ) 
 	            ? 'click' : undefined;
-
+	  
 	        // Event should happen on canvas
 	        if ( event && event.target && !event.target.classList.contains( 'panolens-canvas' ) ) { return; }
-
+	  
 	        event.preventDefault();
-
+	  
 	        if ( event.changedTouches && event.changedTouches.length === 1 ) {
-
+	  
 	            onTarget = this.onTap( { clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY }, type );
-			
+	      
 	        } else {
-
+	  
 	            onTarget = this.onTap( event, type );
-
+	  
 	        }
-
+	  
 	        this.userMouse.type = 'none';
-
+	  
 	        if ( onTarget ) { 
-
+	  
 	            return; 
-
+	  
 	        }
-
+	  
 	        if ( type === 'click' ) {
-
+	  
 	            const { options: { autoHideInfospot, autoHideControlBar }, panorama, toggleControlBar } = this;
-
+	  
 	            if ( autoHideInfospot && panorama ) {
-
+	  
 	                panorama.toggleInfospotVisibility();
-
+	  
 	            }
-
+	  
 	            if ( autoHideControlBar ) {
-
+	  
 	                toggleControlBar();
-
+	  
 	            }
-
+	  
 	        }
-
-	    },
-
+	    }
+	  
 	    /**
 	     * On tap eveny frame
 	     * @param {MouseEvent} event 
@@ -8880,228 +8766,228 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    onTap: function ( event, type ) {
-
+	    onTap ( event, type ) {
+	  
 	        const { left, top } = this.container.getBoundingClientRect();
 	        const { clientWidth, clientHeight } = this.container;
-
+	  
 	        this.raycasterPoint.x = ( ( event.clientX - left ) / clientWidth ) * 2 - 1;
 	        this.raycasterPoint.y = - ( ( event.clientY - top ) / clientHeight ) * 2 + 1;
-
+	  
 	        this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
-
+	  
 	        // Return if no panorama 
 	        if ( !this.panorama ) { 
-
+	  
 	            return; 
-
+	  
 	        }
-
+	  
 	        // output infospot information
 	        if ( event.type !== 'mousedown' && this.touchSupported || this.OUTPUT_INFOSPOT ) { 
-
+	  
 	            this.outputPosition(); 
-
+	  
 	        }
-
-
+	  
+	  
 	        const intersects = this.raycaster.intersectObjects( this.panorama.children, true );
 	        const intersect_entity = this.getConvertedIntersect( intersects );
 	        const intersect = ( intersects.length > 0 ) ? intersects[0].object : undefined;
-
+	  
 	        if ( this.userMouse.type === 'mouseup'  ) {
-
+	  
 	            if ( intersect_entity && this.pressEntityObject === intersect_entity && this.pressEntityObject.dispatchEvent ) {
-
+	  
 	                this.pressEntityObject.dispatchEvent( { type: 'pressstop-entity', mouseEvent: event } );
-
+	  
 	            }
-
+	  
 	            this.pressEntityObject = undefined;
-
+	  
 	        }
-
+	  
 	        if ( this.userMouse.type === 'mouseup'  ) {
-
+	  
 	            if ( intersect && this.pressObject === intersect && this.pressObject.dispatchEvent ) {
-
+	  
 	                this.pressObject.dispatchEvent( { type: 'pressstop', mouseEvent: event } );
-
+	  
 	            }
-
+	  
 	            this.pressObject = undefined;
-
+	  
 	        }
-
+	  
 	        if ( type === 'click' ) {
-
+	  
 	            this.panorama.dispatchEvent( { type: 'click', intersects: intersects, mouseEvent: event } );
-
+	  
 	            if ( intersect_entity && intersect_entity.dispatchEvent ) {
-
+	  
 	                intersect_entity.dispatchEvent( { type: 'click-entity', mouseEvent: event } );
-
+	  
 	            }
-
+	  
 	            if ( intersect && intersect.dispatchEvent ) {
-
+	  
 	                intersect.dispatchEvent( { type: 'click', mouseEvent: event } );
-
+	  
 	            }
-
+	  
 	        } else {
-
+	  
 	            this.panorama.dispatchEvent( { type: 'hover', intersects: intersects, mouseEvent: event } );
-
+	  
 	            if ( ( this.hoverObject && intersects.length > 0 && this.hoverObject !== intersect_entity )
-					|| ( this.hoverObject && intersects.length === 0 ) ){
-
+	          || ( this.hoverObject && intersects.length === 0 ) ){
+	  
 	                if ( this.hoverObject.dispatchEvent ) {
-
+	  
 	                    this.hoverObject.dispatchEvent( { type: 'hoverleave', mouseEvent: event } );
-
+	  
 	                    this.reticle.end();
-
+	  
 	                }
-
+	  
 	                this.hoverObject = undefined;
-
+	  
 	            }
-
+	  
 	            if ( intersect_entity && intersects.length > 0 ) {
-
+	  
 	                if ( this.hoverObject !== intersect_entity ) {
-
+	  
 	                    this.hoverObject = intersect_entity;
-
+	  
 	                    if ( this.hoverObject.dispatchEvent ) {
-
+	  
 	                        this.hoverObject.dispatchEvent( { type: 'hoverenter', mouseEvent: event } );
-
+	  
 	                        // Start reticle timer
 	                        if ( this.options.autoReticleSelect && this.options.enableReticle || this.tempEnableReticle ) {
 	                            this.reticle.start( this.onTap.bind( this, event, 'click' ) );
 	                        }
-
+	  
 	                    }
-
+	  
 	                }
-
+	  
 	                if ( this.userMouse.type === 'mousedown' && this.pressEntityObject != intersect_entity ) {
-
+	  
 	                    this.pressEntityObject = intersect_entity;
-
+	  
 	                    if ( this.pressEntityObject.dispatchEvent ) {
-
+	  
 	                        this.pressEntityObject.dispatchEvent( { type: 'pressstart-entity', mouseEvent: event } );
-
+	  
 	                    }
-
+	  
 	                }
-
+	  
 	                if ( this.userMouse.type === 'mousedown' && this.pressObject != intersect ) {
-
+	  
 	                    this.pressObject = intersect;
-
+	  
 	                    if ( this.pressObject.dispatchEvent ) {
-
+	  
 	                        this.pressObject.dispatchEvent( { type: 'pressstart', mouseEvent: event } );
-
+	  
 	                    }
-
+	  
 	                }
-
+	  
 	                if ( this.userMouse.type === 'mousemove' || this.options.enableReticle ) {
-
+	  
 	                    if ( intersect && intersect.dispatchEvent ) {
-
+	  
 	                        intersect.dispatchEvent( { type: 'hover', mouseEvent: event } );
-
+	  
 	                    }
-
+	  
 	                    if ( this.pressEntityObject && this.pressEntityObject.dispatchEvent ) {
-
+	  
 	                        this.pressEntityObject.dispatchEvent( { type: 'pressmove-entity', mouseEvent: event } );
-
+	  
 	                    }
-
+	  
 	                    if ( this.pressObject && this.pressObject.dispatchEvent ) {
-
+	  
 	                        this.pressObject.dispatchEvent( { type: 'pressmove', mouseEvent: event } );
-
+	  
 	                    }
-
+	  
 	                }
-
+	  
 	            }
-
+	  
 	            if ( !intersect_entity && this.pressEntityObject && this.pressEntityObject.dispatchEvent ) {
-
+	  
 	                this.pressEntityObject.dispatchEvent( { type: 'pressstop-entity', mouseEvent: event } );
-
+	  
 	                this.pressEntityObject = undefined;
-
+	  
 	            }
-
+	  
 	            if ( !intersect && this.pressObject && this.pressObject.dispatchEvent ) {
-
+	  
 	                this.pressObject.dispatchEvent( { type: 'pressstop', mouseEvent: event } );
-
+	  
 	                this.pressObject = undefined;
-
+	  
 	            }
-
+	  
 	        }
-
+	  
 	        // Infospot handler
 	        if ( intersect && intersect instanceof Infospot ) {
-
+	  
 	            this.infospot = intersect;
-				
+	        
 	            if ( type === 'click' ) {
-
+	  
 	                return true;
-
+	  
 	            }
-				
-
+	        
+	  
 	        } else if ( this.infospot ) {
-
+	  
 	            this.hideInfospot();
-
+	  
 	        }
-
+	  
 	        // Auto rotate
 	        if ( this.options.autoRotate && this.userMouse.type !== 'mousemove' ) {
-
+	  
 	            // Auto-rotate idle timer
 	            clearTimeout( this.autoRotateRequestId );
-
+	  
 	            if ( this.control === this.OrbitControls ) {
-
+	  
 	                this.OrbitControls.autoRotate = false;
 	                this.autoRotateRequestId = window.setTimeout( this.enableAutoRate.bind( this ), this.options.autoRotateActivationDuration );
-
+	  
 	            }
-
+	  
 	        }		
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Get converted intersect
 	     * @param {array} intersects 
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    getConvertedIntersect: function ( intersects ) {
-
+	    getConvertedIntersect ( intersects ) {
+	  
 	        let intersect;
-
+	  
 	        for ( let i = 0; i < intersects.length; i++ ) {
-
+	  
 	            if ( intersects[i].distance >= 0 && intersects[i].object && !intersects[i].object.passThrough ) {
-
+	  
 	                if ( intersects[i].object.entity && intersects[i].object.entity.passThrough ) {
 	                    continue;
 	                } else if ( intersects[i].object.entity && !intersects[i].object.entity.passThrough ) {
@@ -9111,357 +8997,347 @@
 	                    intersect = intersects[i].object;
 	                    break;
 	                }
-
+	  
 	            }
-
+	  
 	        }
-
+	  
 	        return intersect;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Hide infospot
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    hideInfospot: function () {
-
+	    hideInfospot () {
+	  
 	        if ( this.infospot ) {
-
+	  
 	            this.infospot.onHoverEnd();
-
+	  
 	            this.infospot = undefined;
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Toggle control bar
 	     * @memberOf Viewer
 	     * @instance
 	     * @fires Viewer#control-bar-toggle
 	     */
-	    toggleControlBar: function () {
-
+	    toggleControlBar () {
+	  
 	        const { widget } = this;
-
+	  
 	        /**
 	         * Toggle control bar event
 	         * @type {object}
 	         * @event Viewer#control-bar-toggle
 	         */
 	        if ( widget ) {
-
+	  
 	            widget.dispatchEvent( { type: 'control-bar-toggle' } );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * On key down
 	     * @param {KeyboardEvent} event 
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    onKeyDown: function ( event ) {
-
+	    onKeyDown ( event ) {
+	  
 	        if ( this.options.output && this.options.output !== 'none' && event.key === 'Control' ) {
-
+	  
 	            this.OUTPUT_INFOSPOT = true;
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * On key up
 	     * @param {KeyboardEvent} event 
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    onKeyUp: function () {
-
+	    onKeyUp () {
+	  
 	        this.OUTPUT_INFOSPOT = false;
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Update control and callbacks
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    update: function () {
-
+	    update () {
+	  
 	        Tween.update();
-
+	  
 	        this.updateCallbacks.forEach( function( callback ){ callback(); } );
-
+	  
 	        this.control.update();
-
+	  
 	        this.scene.traverse( function( child ){
 	            if ( child instanceof Infospot 
-					&& child.element 
-					&& ( this.hoverObject === child 
-						|| child.element.style.display !== 'none' 
-						|| (child.element.left && child.element.left.style.display !== 'none')
-						|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
+	          && child.element 
+	          && ( this.hoverObject === child 
+	            || child.element.style.display !== 'none' 
+	            || (child.element.left && child.element.left.style.display !== 'none')
+	            || (child.element.right && child.element.right.style.display !== 'none') ) ) {
 	                if ( this.checkSpriteInViewport( child ) ) {
 	                    const { x, y } = this.getScreenVector( child.getWorldPosition( new THREE__namespace.Vector3() ) );
 	                    child.translateElement( x, y );
 	                } else {
 	                    child.onDismiss();
 	                }
-					
+	          
 	            }
 	        }.bind( this ) );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Rendering function to be called on every animation frame
 	     * Render reticle last
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    render: function () {
-
+	    render () {
+	  
 	        if ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) {
-
+	  
 	            this.renderer.clear();
 	            this.effect.render( this.scene, this.camera );
 	            this.effect.render( this.sceneReticle, this.camera );
-				
-
+	        
+	  
 	        } else {
-
+	  
 	            this.renderer.clear();
 	            this.renderer.render( this.scene, this.camera );
 	            this.renderer.clearDepth();
 	            this.renderer.render( this.sceneReticle, this.camera );
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Animate
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    animate: function () {
-
+	    animate () {
+	  
 	        this.requestAnimationId = window.requestAnimationFrame( this.animate.bind( this ) );
-
+	  
 	        this.onChange();
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * On change
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    onChange: function () {
-
+	    onChange () {
+	  
 	        this.update();
 	        this.render();
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Register mouse and touch event on container
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    registerMouseAndTouchEvents: function () {
-
+	    registerMouseAndTouchEvents () {
+	  
 	        const options = { passive: false };
-
+	  
 	        this.container.addEventListener( 'mousedown' , 	this.HANDLER_MOUSE_DOWN, options );
 	        this.container.addEventListener( 'mousemove' , 	this.HANDLER_MOUSE_MOVE, options );
 	        this.container.addEventListener( 'mouseup'	 , 	this.HANDLER_MOUSE_UP  , options );
 	        this.container.addEventListener( 'touchstart', 	this.HANDLER_MOUSE_DOWN, options );
 	        this.container.addEventListener( 'touchend'  , 	this.HANDLER_MOUSE_UP  , options );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Unregister mouse and touch event on container
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    unregisterMouseAndTouchEvents: function () {
-
+	    unregisterMouseAndTouchEvents () {
+	  
 	        this.container.removeEventListener( 'mousedown' ,  this.HANDLER_MOUSE_DOWN, false );
 	        this.container.removeEventListener( 'mousemove' ,  this.HANDLER_MOUSE_MOVE, false );
 	        this.container.removeEventListener( 'mouseup'	,  this.HANDLER_MOUSE_UP  , false );
 	        this.container.removeEventListener( 'touchstart',  this.HANDLER_MOUSE_DOWN, false );
 	        this.container.removeEventListener( 'touchend'  ,  this.HANDLER_MOUSE_UP  , false );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Register reticle event
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    registerReticleEvent: function () {
-
+	    registerReticleEvent () {
+	  
 	        this.addUpdateCallback( this.HANDLER_TAP );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Unregister reticle event
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    unregisterReticleEvent: function () {
-
+	    unregisterReticleEvent () {
+	  
 	        this.removeUpdateCallback( this.HANDLER_TAP );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Update reticle event
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    updateReticleEvent: function () {
-
+	    updateReticleEvent () {
+	  
 	        const clientX = this.container.clientWidth / 2 + this.container.offsetLeft;
 	        const clientY = this.container.clientHeight / 2;
-
+	  
 	        this.removeUpdateCallback( this.HANDLER_TAP );
 	        this.HANDLER_TAP = this.onTap.bind( this, { clientX, clientY } );
 	        this.addUpdateCallback( this.HANDLER_TAP );
-
-	    },
-
+	    }
+	  
 	    /**
 	     * Register container and window listeners
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    registerEventListeners: function () {
-
+	    registerEventListeners () {
+	  
 	        // Resize Event
 	        window.addEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
-
+	  
 	        // Keyboard Event
 	        window.addEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
 	        window.addEventListener( 'keyup'  , this.HANDLER_KEY_UP	 , true );
-
-	    },
-
+	  
+	    }
 	    /**
 	     * Unregister container and window listeners
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    unregisterEventListeners: function () {
-
+	    unregisterEventListeners () {
+	  
 	        // Resize Event
 	        window.removeEventListener( 'resize' , this.HANDLER_WINDOW_RESIZE, true );
-
+	  
 	        // Keyboard Event
 	        window.removeEventListener( 'keydown', this.HANDLER_KEY_DOWN, true );
 	        window.removeEventListener( 'keyup'  , this.HANDLER_KEY_UP  , true );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Dispose all scene objects and clear cache
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    dispose: function () {
-
+	    dispose () {
+	  
 	        this.tweenLeftAnimation.stop();
 	        this.tweenUpAnimation.stop();
-
+	  
 	        // Unregister dom event listeners
 	        this.unregisterEventListeners();
-
+	  
 	        // recursive disposal on 3d objects
 	        function recursiveDispose ( object ) {
-
+	  
 	            for ( let i = object.children.length - 1; i >= 0; i-- ) {
-
+	  
 	                recursiveDispose( object.children[i] );
 	                object.remove( object.children[i] );
-
+	  
 	            }
-
+	  
 	            if ( object instanceof Panorama || object instanceof Infospot ) {
-
+	  
 	                object.dispose();
 	                object = null;
-
+	  
 	            } else if ( object.dispatchEvent ){
-
+	  
 	                object.dispatchEvent( 'dispose' );
-
+	  
 	            }
-
+	  
 	        }
-
+	  
 	        recursiveDispose( this.scene );
-
+	  
 	        // dispose widget
 	        if ( this.widget ) {
-
+	  
 	            this.widget.dispose();
 	            this.widget = null;
-
+	  
 	        }
-
+	  
 	        // clear cache
 	        if ( THREE__namespace.Cache && THREE__namespace.Cache.enabled ) {
-
+	  
 	            THREE__namespace.Cache.clear();
-
+	  
 	        }
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * Destroy viewer by disposing and stopping requestAnimationFrame
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    destroy: function () {
-
+	    destroy () {
 	        this.dispose();
 	        this.render();
 	        window.cancelAnimationFrame( this.requestAnimationId );		
-
-	    },
-
+	    }
+	  
 	    /**
 	     * On panorama dispose
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    onPanoramaDispose: function ( panorama ) {
-
+	    onPanoramaDispose ( panorama ) {
 	        if ( panorama instanceof VideoPanorama ) {
-
 	            this.hideVideoWidget();
-
 	        }
-
+	  
 	        if ( panorama === this.panorama ) {
-
 	            this.panorama = null;
-
 	        }
-
-	    },
-
+	    }
+	  
 	    /**
 	     * Load ajax call
 	     * @param {string} url - URL to be requested
@@ -9469,30 +9345,28 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    loadAsyncRequest: function ( url, callback = () => {} ) {
-
+	    loadAsyncRequest( url, callback = () => {} ) {
 	        const request = new window.XMLHttpRequest();
 	        request.onloadend = function ( event ) {
 	            callback( event );
 	        };
 	        request.open( 'GET', url, true );
 	        request.send( null );
-
-	    },
-
+	  
+	    }
+	  
 	    /**
 	     * View indicator in upper left
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    addViewIndicator: function () {
-
+	    addViewIndicator () {
+	  
 	        const scope = this;
-
+	  
 	        function loadViewIndicator ( asyncEvent ) {
-
 	            if ( asyncEvent.loaded === 0 ) return;
-
+	  
 	            const viewIndicatorDiv = asyncEvent.target.responseXML.documentElement;
 	            viewIndicatorDiv.style.width = scope.viewIndicatorSize + 'px';
 	            viewIndicatorDiv.style.height = scope.viewIndicatorSize + 'px';
@@ -9502,12 +9376,11 @@
 	            viewIndicatorDiv.style.opacity = '0.5';
 	            viewIndicatorDiv.style.cursor = 'pointer';
 	            viewIndicatorDiv.id = 'panolens-view-indicator-container';
-
+	  
 	            scope.container.appendChild( viewIndicatorDiv );
-
+	  
 	            const indicator = viewIndicatorDiv.querySelector( '#indicator' );
 	            const setIndicatorD = function () {
-
 	                scope.radius = scope.viewIndicatorSize * 0.225;
 	                scope.currentPanoAngle = scope.camera.rotation.y - THREE__namespace.Math.degToRad( 90 );
 	                scope.fovAngle = THREE__namespace.Math.degToRad( scope.camera.fov ) ;
@@ -9518,36 +9391,34 @@
 	                scope.rightX = scope.radius * Math.cos( scope.rightAngle );
 	                scope.rightY = scope.radius * Math.sin( scope.rightAngle );
 	                scope.indicatorD = 'M ' + scope.leftX + ' ' + scope.leftY + ' A ' + scope.radius + ' ' + scope.radius + ' 0 0 1 ' + scope.rightX + ' ' + scope.rightY;
-
+	  
 	                if ( scope.leftX && scope.leftY && scope.rightX && scope.rightY && scope.radius ) {
-
 	                    indicator.setAttribute( 'd', scope.indicatorD );
-
 	                }
-
+	  
 	            };
-
+	  
 	            scope.addUpdateCallback( setIndicatorD );
-
+	  
 	            const indicatorOnMouseEnter = function () {
-
+	  
 	                this.style.opacity = '1';
-
+	  
 	            };
-
+	  
 	            const indicatorOnMouseLeave = function () {
-
+	  
 	                this.style.opacity = '0.5';
-
+	  
 	            };
-
+	  
 	            viewIndicatorDiv.addEventListener( 'mouseenter', indicatorOnMouseEnter );
 	            viewIndicatorDiv.addEventListener( 'mouseleave', indicatorOnMouseLeave );
 	        }
-
+	  
 	        this.loadAsyncRequest( DataImage.ViewIndicator, loadViewIndicator );
-
-	    },
+	  
+	    }
 
 	    /**
 	     * Append custom control item to existing control bar
@@ -9555,36 +9426,28 @@
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    appendControlItem: function ( option ) {
-
+	    appendControlItem ( option ) {
 	        const item = this.widget.createCustomItem( option );		
-
 	        if ( option.group === 'video' ) {
-
 	            this.widget.videoElement.appendChild( item );
-
 	        } else {
-
 	            this.widget.barElement.appendChild( item );
-
 	        }
-
+	  
 	        return item;
 
-	    },
-
+	    }
+	  
 	    /**
 	     * Clear all cached files
 	     * @memberOf Viewer
 	     * @instance
 	     */
-	    clearAllCache: function () {
-
+	    clearAllCache() {
 	        THREE__namespace.Cache.clear();
-
 	    }
 
-	} );
+	}
 
 	if ( THREE__namespace.REVISION != THREE_REVISION ) {
 
