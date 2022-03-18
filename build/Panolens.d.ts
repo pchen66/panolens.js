@@ -640,6 +640,30 @@ declare class StereoEffect {
   render(scene: THREE.Scene, camera: THREE.Camera): void;
 }
 
+type ViewerOptions = {
+  container?: HTMLElement,
+  scene?: THREE.Scene,
+  camera?: THREE.Camera,
+  renderer?: THREE.WebGLRenderer,
+  controlBar?: boolean,
+  controlButtons?: string[],
+  autoHideControlBar?: boolean,
+  autoHideInfoSpot?: boolean,
+  horizontalView?: boolean,
+  clickTolerance?: number,
+  cameraFov?: number,
+  reverseDragging?: boolean,
+  enableReticle?: boolean,
+  dwellTime?: number,
+  autoReticleSelect?: boolean,
+  viewIndicator?: boolean,
+  indicatorSize?: number,
+  output?: 'event' | 'console' | 'overlay',
+  autoRotate?: boolean,
+  autoRotateSpeed?: number,
+  autoRotateActivationDuration?: number
+};
+
 declare class Viewer extends THREE.EventDispatcher {
   options: ViewerOptions
   container: HTMLElement

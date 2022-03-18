@@ -2,12 +2,36 @@ import * as THREE from 'three';
 import { Infospot } from '../infospot/Infospot';
 import { Panorama } from '../panorama/Panorama';
 import * as TWEEN from '@tweenjs/tween.js';
-import {OrbitControls} from '../lib/controls/OrbitControls';
-import {DeviceOrientationControls} from '../lib/controls/DeviceOrientationControls';
-import {CardboardEffect} from '../lib/effects/CardboardEffect';
-import {StereoEffect} from '../lib/effects/StereoEffect';
-import {Reticle} from '../interface/Reticle';
-import {Widget} from '../widget/Widget';
+import { OrbitControls } from '../lib/controls/OrbitControls';
+import { DeviceOrientationControls } from '../lib/controls/DeviceOrientationControls';
+import { CardboardEffect } from '../lib/effects/CardboardEffect';
+import { StereoEffect } from '../lib/effects/StereoEffect';
+import { Reticle } from '../interface/Reticle';
+import { Widget } from '../widget/Widget';
+
+type ViewerOptions = {
+  container?: HTMLElement,
+  scene?: THREE.Scene,
+  camera?: THREE.Camera,
+  renderer?: THREE.WebGLRenderer,
+  controlBar?: boolean,
+  controlButtons?: string[],
+  autoHideControlBar?: boolean,
+  autoHideInfoSpot?: boolean,
+  horizontalView?: boolean,
+  clickTolerance?: number,
+  cameraFov?: number,
+  reverseDragging?: boolean,
+  enableReticle?: boolean,
+  dwellTime?: number,
+  autoReticleSelect?: boolean,
+  viewIndicator?: boolean,
+  indicatorSize?: number,
+  output?: 'event' | 'console' | 'overlay',
+  autoRotate?: boolean,
+  autoRotateSpeed?: number,
+  autoRotateActivationDuration?: number
+};
 
 export class Viewer extends THREE.EventDispatcher {
   options: ViewerOptions
