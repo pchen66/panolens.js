@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-const version="0.0.1";const dependencies={three:"^0.136"};
+const version="0.0.3";const dependencies={three:"^0.136"};
 
 /**
  * REVISION

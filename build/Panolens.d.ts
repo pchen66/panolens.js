@@ -648,7 +648,7 @@ type ViewerOptions = {
   controlBar?: boolean,
   controlButtons?: string[],
   autoHideControlBar?: boolean,
-  autoHideInfoSpot?: boolean,
+  autoHideInfospot?: boolean,
   horizontalView?: boolean,
   clickTolerance?: number,
   cameraFov?: number,
