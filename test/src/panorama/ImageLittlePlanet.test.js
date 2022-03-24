@@ -6,7 +6,7 @@ const localImageFolder = '../../../example/asset/textures/equirectangular';
 const cabinImageURL = join( __dirname, localImageFolder, 'cabin.jpg' );
 const container = document.createElement( 'div' );
 
-test.cb('Load Event', t => {
+test.skip('Load Event', t => {
     const panorama = new ImageLittlePlanet( cabinImageURL );
     panorama.setContainer( container );
     panorama.addEventListener( 'load', ()=>{
@@ -15,7 +15,7 @@ test.cb('Load Event', t => {
     panorama.load();
 });
 
-test.cb('Dispose', t => {
+test.skip('Dispose', t => {
     const panorama = new ImageLittlePlanet( cabinImageURL );
     panorama.setContainer( container );
     panorama.addEventListener( 'load', ()=>{
