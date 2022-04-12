@@ -7727,7 +7727,8 @@ class Viewer extends THREE.EventDispatcher {
      * @instance
      */
     activateWidgetItem ( controlIndex, mode ) {
-  
+        if (!this.widget) return;
+
         const mainMenu = this.widget.mainMenu;
         const ControlMenuItem = mainMenu.children[ 0 ];
         const ModeMenuItem = mainMenu.children[ 1 ];
