@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-const version="0.0.6";const dependencies={three:"^0.136"};
+const version="0.0.7";const dependencies={three:"^0.136"};
 
 /**
  * REVISION
@@ -6142,6 +6142,7 @@ function OrbitControls ( object, domElement ) {
      */
     this.noZoom = false;
     this.zoomSpeed = 1.0;
+    this.revertZoomScrollDirection = false;
 
     // Limits to how far you can dolly in and out ( PerspectiveCamera only )
     this.minDistance = 0;
@@ -6683,8 +6684,10 @@ function OrbitControls ( object, domElement ) {
             delta = - event.detail;
 
         }
+        const zoomIn = delta > 0;
+        const zoomOut = delta < 0;
 
-        if ( delta > 0 ) {
+        if ( this.revertZoomScrollDirection ? !zoomIn : zoomIn ) {
 
             // scope.dollyOut();
             scope.object.fov = ( scope.object.fov < scope.maxFov ) 
@@ -6692,7 +6695,7 @@ function OrbitControls ( object, domElement ) {
                 : scope.maxFov;
             scope.object.updateProjectionMatrix();
 
-        } else if ( delta < 0 ) {
+        } else if ( this.revertZoomScrollDirection ? !zoomOut : zoomOut ) {
 
             // scope.dollyIn();
             scope.object.fov = ( scope.object.fov > scope.minFov ) 
