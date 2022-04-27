@@ -15,6 +15,7 @@ export class OrbitControls extends THREE.EventDispatcher {
   center: THREE.Vector3;
   noZoom: boolean;
   zoomSpeed: number;
+  revertZoomScrollDirection: boolean;
   minDistance: number;
   maxDistance: number;
   minZoom: number;
@@ -85,7 +86,7 @@ export class OrbitControls extends THREE.EventDispatcher {
 
   onMouseUp(): void;
 
-  onMouseWheel(event?: MouseEvent): void;
+  onMouseWheel(event?: WheelEvent): void;
 
   onKeyUp(event?: KeyboardEvent): void;
 
