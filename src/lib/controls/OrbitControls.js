@@ -586,7 +586,7 @@ function OrbitControls ( object, domElement ) {
                 : scope.maxFov;
             scope.object.updateProjectionMatrix();
 
-        } else if ( !scope.revertZoomScrollDirection ? zoomIn : zoomIn ) {
+        } else if ( !scope.revertZoomScrollDirection ? zoomIn : !zoomIn ) {
 
             // scope.dollyIn();
             scope.object.fov = ( scope.object.fov > scope.minFov ) 
