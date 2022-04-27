@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-const version="0.0.8";const dependencies={three:"^0.136"};
+const version="0.0.9";const dependencies={three:"^0.136"};
 
 /**
  * REVISION
@@ -6695,7 +6695,7 @@ function OrbitControls ( object, domElement ) {
                 : scope.maxFov;
             scope.object.updateProjectionMatrix();
 
-        } else if ( !scope.revertZoomScrollDirection ? zoomIn : zoomIn ) {
+        } else if ( !scope.revertZoomScrollDirection ? zoomIn : !zoomIn ) {
 
             // scope.dollyIn();
             scope.object.fov = ( scope.object.fov > scope.minFov ) 

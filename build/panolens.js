@@ -24,7 +24,7 @@
 
 	var THREE__namespace = /*#__PURE__*/_interopNamespace(THREE);
 
-	const version="0.0.8";const dependencies={three:"^0.136"};
+	const version="0.0.9";const dependencies={three:"^0.136"};
 
 	/**
 	 * REVISION
@@ -6719,7 +6719,7 @@
 	                : scope.maxFov;
 	            scope.object.updateProjectionMatrix();
 
-	        } else if ( !scope.revertZoomScrollDirection ? zoomIn : zoomIn ) {
+	        } else if ( !scope.revertZoomScrollDirection ? zoomIn : !zoomIn ) {
 
 	            // scope.dollyIn();
 	            scope.object.fov = ( scope.object.fov > scope.minFov ) 
