@@ -575,8 +575,8 @@ function OrbitControls ( object, domElement ) {
             delta = - event.detail;
 
         }
-        const zoomIn = delta > 0
-        const zoomOut = delta < 0
+        const zoomIn = delta > 0;
+        const zoomOut = delta < 0;
 
         if ( this.revertZoomScrollDirection ? !zoomIn : zoomIn ) {
 
