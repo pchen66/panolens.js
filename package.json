@@ -1,6 +1,6 @@
 {
   "name": "@enra-gmbh/panolens",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Javascript panorama viewer",
   "main": "build/panolens.js",
   "jsnext:main": "build/panolens.module.js",

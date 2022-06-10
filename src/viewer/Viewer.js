@@ -1048,7 +1048,7 @@ class Viewer extends THREE.EventDispatcher {
      */
     checkSpriteInViewport ( sprite ) {
   
-        this.camera.matrixWorldInverse.copy(  this.camera.matrixWorld  ).invert()
+        this.camera.matrixWorldInverse.copy(  this.camera.matrixWorld  ).invert();
         this.cameraViewProjectionMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse );
         this.cameraFrustum.setFromProjectionMatrix( this.cameraViewProjectionMatrix );
   
