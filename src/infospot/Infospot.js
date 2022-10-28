@@ -24,6 +24,8 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     this.animated = animated !== undefined ? animated : true;
     this.isHovering = false;
 
+    this.showHoverElement = true;
+
     /*
      * TODO: Three.js bug hotfix for sprite raycasting r104
      * https://github.com/mrdoob/three.js/issues/14624
@@ -155,76 +157,18 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
     },
 
     /**
-     * This will be called by a click event
-     * Translate and lock the hovering element if any
+     * Show click or hover element 
      * @param  {object} event - Event containing mouseEvent with clientX and clientY
      * @memberOf Infospot
      * @instance
      */
-    onClick: function ( event ) {
-
-        if ( this.element && this.getContainer() ) {
-
-            this.onHoverStart( event );
-
-            // Lock element
-            this.lockHoverElement();
-
-        }
-
-    },
-
-    /**
-     * Dismiss current element if any
-     * @param  {object} event - Dismiss event
-     * @memberOf Infospot
-     * @instance
-     */
-    onDismiss: function () {
-
-        if ( this.element ) {
-
-            this.unlockHoverElement();
-            this.onHoverEnd();
-
-        }
-
-    },
-
-    /**
-     * This will be called by a mouse hover event
-     * Translate the hovering element if any
-     * @param  {object} event - Event containing mouseEvent with clientX and clientY
-     * @memberOf Infospot
-     * @instance
-     */
-    onHover: function () {},
-
-    /**
-     * This will be called on a mouse hover start
-     * Sets cursor style to 'pointer', display the element and scale up the infospot
-     * @param {object} event
-     * @memberOf Infospot
-     * @instance
-     */
-    onHoverStart: function ( event ) {
+    showElement: function ( event ) {
 
         if ( !this.getContainer() ) { return; }
 
-        const cursorStyle = this.cursorStyle || ( this.mode === MODES.NORMAL ? 'pointer' : 'default' );
-        const { scaleDownAnimation, scaleUpAnimation, element } = this;
+        const { element } = this;
 
-        this.isHovering = true;
-        this.container.style.cursor = cursorStyle;
-		
-        if ( this.animated ) {
-
-            scaleDownAnimation.stop();
-            scaleUpAnimation.start();
-
-        }
-		
-        if ( element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
+        if ( this.getContainer() && element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
 
             const { left, right, style } = element;
 
@@ -251,6 +195,102 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
             }
 			
         }
+        
+    },
+
+    /**
+     * Hide click or hover element 
+     * @memberOf Infospot
+     * @instance
+     */
+    hideElement: function () {
+
+        if ( !this.getContainer() ) { return; }
+
+        if ( element && !this.element.locked ) {
+
+            const { left, right, style } = element;
+
+            style.display = 'none';
+            if ( left ) { left.style.display = 'none'; }
+            if ( right ) { right.style.display = 'none'; }
+
+            this.unlockHoverElement();
+
+        }
+    },
+
+    /**
+     * This will be called by a click event
+     * Translate and lock the hovering element if any
+     * @param  {object} event - Event containing mouseEvent with clientX and clientY
+     * @memberOf Infospot
+     * @instance
+     */
+    onClick: function ( event ) {
+
+        if ( this.element && this.getContainer() ) {
+
+            this.showElement( event );
+
+            // Lock element
+            this.lockHoverElement();
+
+        }
+
+    },
+
+    /**
+     * Dismiss current element if any
+     * @param  {object} event - Dismiss event
+     * @memberOf Infospot
+     * @instance
+     */
+    onDismiss: function () {
+
+        if ( this.element ) {
+
+            this.unlockHoverElement();
+            this.hideElement();
+
+        }
+
+    },
+
+    /**
+     * This will be called by a mouse hover event
+     * Translate the hovering element if any
+     * @param  {object} event - Event containing mouseEvent with clientX and clientY
+     * @memberOf Infospot
+     * @instance
+     */
+    onHover: function () {},
+
+    /**
+     * This will be called on a mouse hover start
+     * Sets cursor style to 'pointer', display the element and scale up the infospot
+     * @param {object} event
+     * @memberOf Infospot
+     * @instance
+     */
+    onHoverStart: function ( event ) {
+
+        if ( !this.getContainer() ) { return; }
+
+        const cursorStyle = this.cursorStyle || ( this.mode === MODES.NORMAL ? 'pointer' : 'default' );
+        const { scaleDownAnimation, scaleUpAnimation } = this;
+
+        this.isHovering = true;
+        this.container.style.cursor = cursorStyle;
+		
+        if ( this.animated ) {
+
+            scaleDownAnimation.stop();
+            scaleUpAnimation.start();
+
+        }
+
+        this.showContainer( event );
 
     },
 
@@ -276,17 +316,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-        if ( element && !this.element.locked ) {
-
-            const { left, right, style } = element;
-
-            style.display = 'none';
-            if ( left ) { left.style.display = 'none'; }
-            if ( right ) { right.style.display = 'none'; }
-
-            this.unlockHoverElement();
-
-        }
+        this.hideElement();
 
     },
 
@@ -477,6 +507,45 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      */
     addHoverElement: function ( el, delta = 40 ) {
 
+        this.addElement(el, delta)
+
+    },
+
+    /**
+     * Remove hovering element
+     * @memberOf Infospot
+     * @instance
+     * @deprecated Use removeElement()
+     */
+    removeHoverElement: function () {
+
+        this.removeElement()
+
+    },
+
+    /**
+     * Add hovering element by cloning an element
+     * @param {HTMLDOMElement} el - Element to be cloned and displayed
+     * @param {number} [delta=40] - Vertical delta to the infospot
+     * @memberOf Infospot
+     * @instance
+     */
+    addClickElement: function ( el, delta = 40 ) {
+
+        this.addElement(el, delta)
+        this.showHoverElement = false;
+
+    },
+
+    /**
+     * Add element by cloning an element
+     * @param {HTMLDOMElement} el - Element to be cloned and displayed
+     * @param {number} [delta=40] - Vertical delta to the infospot
+     * @memberOf Infospot
+     * @instance
+     */
+    addElement: function( el, delta = 40) {
+
         if ( !this.element ) { 
 
             this.element = el.cloneNode( true );
@@ -487,15 +556,15 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
             this.element.verticalDelta = delta;
 
         }
-
+        
     },
 
     /**
-     * Remove hovering element
+     * Remove element
      * @memberOf Infospot
      * @instance
      */
-    removeHoverElement: function () {
+    removeElement: function () {
 
         if ( this.element ) { 
 
@@ -517,7 +586,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
             this.element = null;
 
         }
-
+        
     },
 
     /**
