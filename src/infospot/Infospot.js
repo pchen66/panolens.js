@@ -290,6 +290,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
+	if(this.)
         this.showContainer( event );
 
     },
