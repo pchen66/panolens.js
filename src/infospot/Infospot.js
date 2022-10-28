@@ -308,7 +308,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         if ( !this.getContainer() ) { return; }
 
-        const { scaleDownAnimation, scaleUpAnimation, element } = this;
+        const { scaleDownAnimation, scaleUpAnimation } = this;
 
         this.isHovering = false;
         this.container.style.cursor = 'default';
