@@ -290,8 +290,11 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-	if(this.)
-        this.showContainer( event );
+        if(this.showHoverElement){
+        
+            this.showContainer( event );
+
+        }
 
     },
 
@@ -317,7 +320,11 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
 
         }
 
-        this.hideElement();
+        if(this.showHoverElement){
+
+            this.hideElement();
+            
+        }
 
     },
 
@@ -475,9 +482,36 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @param {string} text - Text to be displayed
      * @param {number} [delta=40] - Vertical delta to the infospot
      * @memberOf Infospot
+     * @deprecated Use addTextElement()
      * @instance
      */
     addHoverText: function ( text, delta = 40 ) {
+
+        this.addTextElement(text, delta);
+
+    },
+
+    /**
+     * Add click text element
+     * @param {string} text - Text to be displayed
+     * @param {number} [delta=40] - Vertical delta to the infospot
+     * @memberOf Infospot
+     * @instance
+     */
+    addClickText: function ( text, delta = 40 ) {
+
+        this.addTextElement(text, delta);
+
+    },
+
+    /**
+     * Add text element
+     * @param {string} text - Text to be displayed
+     * @param {number} [delta=40] - Vertical delta to the infospot
+     * @memberOf Infospot
+     * @instance
+     */
+    addTextElement: function ( text, delta = 40 ) {
 
         if ( !this.element ) {
 
@@ -504,6 +538,7 @@ Infospot.prototype = Object.assign( Object.create( THREE.Sprite.prototype ), {
      * @param {HTMLDOMElement} el - Element to be cloned and displayed
      * @param {number} [delta=40] - Vertical delta to the infospot
      * @memberOf Infospot
+     * @deprecated Use addTextElement()
      * @instance
      */
     addHoverElement: function ( el, delta = 40 ) {
