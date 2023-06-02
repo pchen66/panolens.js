@@ -106,7 +106,7 @@
   },
   "devDependencies": {
     "@tweenjs/tween.js": "^17.4.0",
-    "ava": "^2.1.0",
+    "ava": "^5.2.0",
     "browser-env": "^3.2.6",
     "concurrently": "^4.1.0",
     "coveralls": "^3.0.4",
