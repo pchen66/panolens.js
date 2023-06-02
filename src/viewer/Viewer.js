@@ -356,7 +356,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
 
         if ( pano.type === 'panorama' && leavingPanorama !== pano ) {
 
-            // Clear exisiting infospot
+            // Clear existing infospot
             this.hideInfospot();
 
             const afterEnterComplete = function () {
@@ -900,7 +900,7 @@ Viewer.prototype = Object.assign( Object.create( THREE.EventDispatcher.prototype
      * Get container
      * @memberOf Viewer
      * @instance
-     * @return {HTMLElement} - The container holds rendererd canvas
+     * @return {HTMLElement} - The container holds rendered canvas
      */
     getContainer: function () {
 
