@@ -1,3 +1,25 @@
+# Deprecated
+
+This repository will be deprecated due to the rapidly evolving JavaScript ecosystem and the increasing difficulty of keeping up with the changes in the Three.js API.
+
+Over the years, the Three.js library has undergone significant updates and improvements, introducing new features and optimizations. However, these advancements have also led to changes in the API, making it challenging for us to maintain this repository effectively.
+
+We understand that this may be disappointing news for those who have relied on this repository for their projects. We apologize for any inconvenience this may cause.
+
+To ensure that you can continue to benefit from the latest updates and improvements in the Three.js library, we recommend using the official Three.js documentation and resources. The official documentation provides comprehensive guides, examples, and API references to help you leverage the full potential of Three.js in your projects.
+
+Here are some alternative resources that we recommend:
+
+- [Official Three.js Documentation](https://threejs.org/docs/)
+- [Three.js GitHub Repository](https://github.com/mrdoob/three.js/)
+- [Three.js Discourse](https://discourse.threejs.org/)
+
+We want to express our gratitude to the community for your support and contributions to this repository. We encourage you to migrate your projects to alternative solutions as there are many more Javascript-based panorama viewer nowadays compared to 2015.
+
+This repository will remain available for historical purposes, but no further updates or bug fixes will be provided. We encourage you to fork this repository if you wish to continue maintaining it independently.
+
+Thank you for your understanding and continued support.
+
 # Panolens.js
 
 [![NPM package][npm]][npm-url]
