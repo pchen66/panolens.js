@@ -1,6 +1,6 @@
 import { Cache, Texture, RGBFormat, RGBAFormat, CubeTexture, EventDispatcher, VideoTexture, LinearFilter, SpriteMaterial, Sprite, Color, CanvasTexture, DoubleSide, Vector3, Mesh, BackSide, Object3D, SphereBufferGeometry, MeshBasicMaterial, BufferGeometry, BufferAttribute, ShaderLib, BoxBufferGeometry, ShaderMaterial, Matrix4, Vector2, Quaternion, PlaneBufferGeometry, Math as Math$1, MOUSE, PerspectiveCamera, OrthographicCamera, Euler, Scene, StereoCamera, WebGLRenderTarget, NearestFilter, WebGLRenderer, Raycaster, Frustum, REVISION as REVISION$1 } from 'three';
 
-const version="0.12.1";const dependencies={three:"^0.105.2"};
+const version="0.11.0";const dependencies={three:"^0.105.2"};
 
 /**
  * REVISION
@@ -71,7 +71,7 @@ const MODES = { UNKNOWN: 0, NORMAL: 1, CARDBOARD: 2, STEREO: 3 };
  * @property {string} ViewIndicator View Indicator Icon
  */
 const DataImage = {
-    Info: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAADBklEQVR42u2bP08UQRiHnzFaSYCI/xoksdBIqGwIiYWRUBISExpCQ0ej38FWOmlIKKhoMPEbaCxsrrHiYrQgOSlQEaICrT+LHSPZzNzt3s3c3Hn7lHvLzvv82L2dm30XKioqKgYY062BJF0HpoA7wARwBbhsPz4DjoEG8AnYNcZ8Sx1Op8IXJM1KWpdUV3nq9m9nJV1I7VNGfEzSM0mNNqR9NOwxx1L7NRMflbQm6SSgeJ4TO8Zoat+8/LKkg4jieQ4kLaf2RtKwpJ0uiufZkTScSn5S0l5C+b/sSZrstvyMpKPU5uc4kjTTjkvpeYCkaeA1/+7hvcIZMGuMqUULQNIU8Aa4ltrWwyHwyBizGzwASSPAe+B2assW7AH3jTE/i+xcZoa12Qfy2Bo3i+5cKABl99zF1GYlWFTBeULLS0DZrOsDcDNggTXgc27bLWA64BhfgHvGmB8dHUXZ1DM0S45xliKMs9bKr+klIOkqsBrwv9JtVq1DewEAT4Ch1BYdMGQdygeg7Df4SmqDAKyoyXpCszPgITCeuvoAjFuX0gE8jljUdv7bCtiOOJ7XpdUZ8L/gdXHOA5QtYH5NXXVgbrgWWn1nwFTqaiPgdPIFcDd1tRFwOl307DwRuZgXwLvctgfA04hjOp18AcReZ6sZY16e3yDpUuQxnU6+S2AkcjEpcDr1zxOXSPgCKLSa0mc4nXwB/EpdbQScTr4AGqmrjYDTyRfAx9TVRsDp5Aug8LJyH+F0cgZg58z11BUHpO5ruGh2G3ybuuqAeF2aBfAqddUB8bq0OgP2U1cegH3aOQOMMb+BrdTVB2DLupQLwLIOnKY26IBT6+ClaQDGmO/ARmqLDtiwDn7HVkcY+EdjNoTlCI+tYhO2iUppm6HKslPUq2qQKHpUe8AFsjaUXuUQWCgqXyoAG8IuME/WkNRrnAHzZfqDSgdgQ6gBc2Td3b3CMTBXtkOsIzTIjZLnQhjcVtlcEIPZLJ0LoVvt8s/Va+3yuSAG84UJRxB98cpM9dJURUVFxSDzBxKde4Lk3/h2AAAAAElFTkSuQmCC', 
+    Info: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAADBklEQVR42u2bP08UQRiHnzFaSYCI/xoksdBIqGwIiYWRUBISExpCQ0ej38FWOmlIKKhoMPEbaCxsrrHiYrQgOSlQEaICrT+LHSPZzNzt3s3c3Hn7lHvLzvv82L2dm30XKioqKgYY062BJF0HpoA7wARwBbhsPz4DjoEG8AnYNcZ8Sx1Op8IXJM1KWpdUV3nq9m9nJV1I7VNGfEzSM0mNNqR9NOwxx1L7NRMflbQm6SSgeJ4TO8Zoat+8/LKkg4jieQ4kLaf2RtKwpJ0uiufZkTScSn5S0l5C+b/sSZrstvyMpKPU5uc4kjTTjkvpeYCkaeA1/+7hvcIZMGuMqUULQNIU8Aa4ltrWwyHwyBizGzwASSPAe+B2assW7AH3jTE/i+xcZoa12Qfy2Bo3i+5cKABl99zF1GYlWFTBeULLS0DZrOsDcDNggTXgc27bLWA64BhfgHvGmB8dHUXZ1DM0S45xliKMs9bKr+klIOkqsBrwv9JtVq1DewEAT4Ch1BYdMGQdygeg7Df4SmqDAKyoyXpCszPgITCeuvoAjFuX0gE8jljUdv7bCtiOOJ7XpdUZ8L/gdXHOA5QtYH5NXXVgbrgWWn1nwFTqaiPgdPIFcDd1tRFwOl307DwRuZgXwLvctgfA04hjOp18AcReZ6sZY16e3yDpUuQxnU6+S2AkcjEpcDr1zxOXSPgCKLSa0mc4nXwB/EpdbQScTr4AGqmrjYDTyRfAx9TVRsDp5Aug8LJyH+F0cgZg58z11BUHpO5ruGh2G3ybuuqAeF2aBfAqddUB8bq0OgP2U1cegH3aOQOMMb+BrdTVB2DLupQLwLIOnKY26IBT6+ClaQDGmO/ARmqLDtiwDn7HVkcY+EdjNoTlCI+tYhO2iUppm6HKslPUq2qQKHpUe8AFsjaUXuUQWCgqXyoAG8IuME/WkNRrnAHzZfqDSgdgQ6gBc2Td3b3CMTBXtkOsIzTIjZLnQhjcVtlcEIPZLJ0LoVvt8s/Va+3yuSAG84UJRxB98cpM9dJURUVFxSDzBxKde4Lk3/h2AAAAAElFTkSuQmCC',
     Arrow: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAABAAAAAQADq8/hgAAADPklEQVR42u2bMUscQRiG30/SRaJEI1ZKUiRErNIELRUbQYSAnX8hpVUgkDYp0wgWVjYW+QcJaQzYpLojJIXhtDDEKBpj65ti58ixmdmb2ZvZ7+T2AUHudmfmeXf2bnb3O6CmpqZmgJGqOiI5AWAWwEMA0wDuArht3r4CcAagBeAbgIaI/NQOp1fhIZKLJN+SbDKcptl3keSQtk+I+BjJVyRbJaRdtEybY9p+ReKjJN+QvIwonufS9DGq7ZuXXyd5nFA8zzHJdW1vkLxDcrdC8Ty7JO9oyc+QPFCUb3NAcqZq+TmSp9rmHZySnCvjErwOIPkUwHv8+w7vF64ALIrIfrIASM4C+ADgnratgxMACyLSiB4AyREAnwE80LbswgGAJyJy4bNxyApr6wbIw4xxy3djrwCYfeeuaZsFsEbPdULXU4DZqusLgMkEA21P05EEbf8A8FhEzos28pkBLxLKL5s/r/M1kEkz9vKQHGeatf05yfmOfubNa7G5JDle5NhtBjwHMBz5yFwAWBaRT+0XzP8pZsKwcQiH2fX8Ycojb+kzxUw4ZJn7CSQXqpRPHMKCq7+iZJ71Mvdy/DftXSQ6HcJdSDaqPPKW/mPOBO+lcbvzCU35RCFM2PpwnQKzZQfdgfe0dxH5dLA6uQJ4pC2fIASrkyuA6X6QjxyC1ckVQNn7bNHlI4ZgdXIFUObiJJl8pBCsTjGfuIwA2Cv4FN7xbYjkjqsRAHuIePXoCiDF1Zk2VidXAL+1R5sAq5MrgJb2aBNgdXIF8FV7tAmwOrkCCFs73wysTtYATHFCU3vEEWm6Ci6KvgY/ao86Ik6XogDeaY86Ik6XbjPgSHvkEThCwQy45XpDRK5JbgN4GWkgUyR9H65MRQxgW0SunZ5FezK7pfwd8e8MV8UfAPdF5Jdrg8JrAbPjprZFD2wWyQP6j8ZSEufRmGlgQ9umBBvd5IOgbjFUKLu+XnWBhG+rpsFVZGUo/coJgFVf+aAATAgNACvICpL6jSsAKyH1QcEBmBD2ASwhq+7uF84ALIVWiPUEB7lQsiOEwS2VzQUxmMXSuRCqKpd/zX4rl88FMZg/mLAEcSN+MlP/aKqmpqZmkPkL0hSjwOpNKxwAAAAASUVORK5CYII=',
     FullscreenEnter: 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz4KICAgIDxwYXRoIGQ9Ik03IDE0SDV2NWg1di0ySDd2LTN6bS0yLTRoMlY3aDNWNUg1djV6bTEyIDdoLTN2Mmg1di01aC0ydjN6TTE0IDV2MmgzdjNoMlY1aC01eiIvPgo8L3N2Zz4=',
     FullscreenLeave: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggc3R5bGU9ImZpbGw6I2ZmZiIgZD0iTTE0LDE0SDE5VjE2SDE2VjE5SDE0VjE0TTUsMTRIMTBWMTlIOFYxNkg1VjE0TTgsNUgxMFYxMEg1VjhIOFY1TTE5LDhWMTBIMTRWNUgxNlY4SDE5WiIgLz48L3N2Zz4=',
@@ -107,9 +107,9 @@ const ImageLoader = {
         let cached, request, arrayBufferView, blob, urlCreator, image, reference;
 
         // Reference key
-        for (let iconName in DataImage) {
+        for ( let iconName in DataImage ) {
 
-            if (DataImage.hasOwnProperty(iconName) && url === DataImage[iconName]) {
+            if ( DataImage.hasOwnProperty( iconName ) && url === DataImage[ iconName ] ) {
 
                 reference = iconName;
 
@@ -118,18 +118,18 @@ const ImageLoader = {
         }
 
         // Cached
-        cached = Cache.get(reference ? reference : url);
+        cached = Cache.get( reference ? reference : url );
 
-        if (cached !== undefined) {
+        if ( cached !== undefined ) {
 
-            if (onLoad) {
+            if ( onLoad ) {
 
-                setTimeout(function () {
+                setTimeout( function () {
 
-                    onProgress({loaded: 1, total: 1});
-                    onLoad(cached);
+                    onProgress( { loaded: 1, total: 1 } );
+                    onLoad( cached );
 
-                }, 0);
+                }, 0 );
 
             }
 
@@ -139,21 +139,21 @@ const ImageLoader = {
 
         // Construct a new XMLHttpRequest
         urlCreator = window.URL || window.webkitURL;
-        image = document.createElementNS('http://www.w3.org/1999/xhtml', 'img');
+        image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
 
         // Add to cache
-        Cache.add(reference ? reference : url, image);
+        Cache.add( reference ? reference : url, image );
 
         const onImageLoaded = () => {
 
-            urlCreator.revokeObjectURL(image.src);
-            onLoad(image);
+            urlCreator.revokeObjectURL( image.src );
+            onLoad( image );
 
         };
 
-        if (url.indexOf('data:') === 0) {
+        if ( url.indexOf( 'data:' ) === 0 ) {
 
-            image.addEventListener('load', onImageLoaded, false);
+            image.addEventListener( 'load', onImageLoaded, false );
             image.src = url;
             return image;
         }
@@ -161,14 +161,7 @@ const ImageLoader = {
         image.crossOrigin = this.crossOrigin !== undefined ? this.crossOrigin : '';
 
         request = new window.XMLHttpRequest();
-        request.open('GET', url, true);
-        if (process.env.npm_lifecycle_event !== 'test') {
-            request.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status >= 400) {
-                    onError();
-                }
-            };
-        }
+        request.open( 'GET', url, true );
         request.responseType = 'arraybuffer';
         request.addEventListener( 'error', onError );
         request.addEventListener( 'progress', event => {
@@ -176,15 +169,15 @@ const ImageLoader = {
             if  ( !event ) return;
 
             const { loaded, total, lengthComputable } = event;
-            
+
             if ( lengthComputable ) {
-	
+
                 onProgress( { loaded, total } );
-	
+
             }
-	
+
         } );
-        
+
         request.addEventListener( 'loadend', event => {
 
             if  ( !event ) return;
@@ -192,14 +185,14 @@ const ImageLoader = {
 
             arrayBufferView = new Uint8Array( response );
             blob = new window.Blob( [ arrayBufferView ] );
-				
+
             image.addEventListener( 'load', onImageLoaded, false );
             image.src = urlCreator.createObjectURL( blob );
-	
+
         } );
-	
+
         request.send(null);
-	
+
     }
 
 };
@@ -222,7 +215,7 @@ const TextureLoader = {
      */
     load: function ( url, onLoad = () => {}, onProgress, onError ) {
 
-        var texture = new Texture(); 
+        var texture = new Texture();
 
         ImageLoader.load( url, function ( image ) {
 
@@ -394,7 +387,7 @@ Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
                 }
 
                 start( devices[ index ] );
-            
+
 
             } );
 
@@ -411,13 +404,13 @@ Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         const devices = this.devices;
         const validate = _devices => {
 
-            return _devices.map( device => { 
-                
+            return _devices.map( device => {
+
                 if ( !devices.includes( device ) ) { devices.push( device ); }
-                return device; 
-            
+                return device;
+
             } );
-            
+
         };
         const filter = _devices => {
 
@@ -453,7 +446,7 @@ Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     /**
      * Set video device index
-     * @param {number} index 
+     * @param {number} index
      * @memberOf Media
      * @instance
      */
@@ -520,7 +513,7 @@ Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     /**
      * Set media stream
-     * @param {MediaStream} stream 
+     * @param {MediaStream} stream
      * @memberOf Media
      * @instance
      */
@@ -534,7 +527,7 @@ Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             this.scene.background = this.createVideoTexture();
 
         }
-        
+
         window.addEventListener( 'resize', this.onWindowResize.bind( this ) );
 
     },
@@ -616,7 +609,7 @@ Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
          * @event Media#canplay
          */
         const canPlay = () => dispatchEvent( { type: 'canplay' } );
-        
+
         video.setAttribute( 'autoplay', '' );
         video.setAttribute( 'muted', '' );
         video.setAttribute( 'playsinline', '' );
@@ -638,7 +631,7 @@ Media.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     /**
      * On window resize event
-     * @param {Event} event 
+     * @param {Event} event
      * @memberOf Media
      * @instance
      */
@@ -685,7 +678,7 @@ function Reticle ( color = 0xffffff, autoSelect = true, dwellTime = 1500 ) {
     this.canvasWidth = canvas.width;
     this.canvasHeight = canvas.height;
     this.context = context;
-    this.color = color instanceof Color ? color : new Color( color );    
+    this.color = color instanceof Color ? color : new Color( color );
 
     this.autoSelect = autoSelect;
     this.dwellTime = dwellTime;
@@ -709,7 +702,7 @@ Reticle.prototype = Object.assign( Object.create( Sprite.prototype ), {
 
     /**
      * Set material color
-     * @param {THREE.Color} color 
+     * @param {THREE.Color} color
      * @memberOf Reticle
      * @instance
      */
@@ -721,7 +714,7 @@ Reticle.prototype = Object.assign( Object.create( Sprite.prototype ), {
 
     /**
      * Create canvas texture
-     * @param {HTMLCanvasElement} canvas 
+     * @param {HTMLCanvasElement} canvas
      * @memberOf Reticle
      * @instance
      * @returns {THREE.CanvasTexture}
@@ -766,7 +759,7 @@ Reticle.prototype = Object.assign( Object.create( Sprite.prototype ), {
 
     /**
      * Update canvas arc by progress
-     * @param {number} progress 
+     * @param {number} progress
      * @memberOf Reticle
      * @instance
      */
@@ -780,7 +773,7 @@ Reticle.prototype = Object.assign( Object.create( Sprite.prototype ), {
         const x = canvasWidth * 0.5 / dpr;
         const y = canvasHeight * 0.5 / dpr;
         const lineWidth = 3;
-        
+
         context.clearRect( 0, 0, canvasWidth, canvasHeight );
         context.beginPath();
 
@@ -887,7 +880,7 @@ Reticle.prototype = Object.assign( Object.create( Sprite.prototype ), {
 
     /**
      * Start dwelling
-     * @param {function} callback 
+     * @param {function} callback
      * @memberOf Reticle
      * @instance
      * @fires Reticle#reticle-start
@@ -1911,7 +1904,7 @@ TWEEN.Interpolation = {
  * @param {boolean} [animated=true] - Enable default hover animation
  */
 function Infospot ( scale = 300, imageSrc, animated ) {
-	
+
     const duration = 500, scaleFactor = 1.3;
 
     imageSrc = imageSrc || DataImage.Info;
@@ -1943,7 +1936,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     this.originalRaycast = this.raycast;
 
     // Event Handler
-    this.HANDLER_FOCUS = null;	
+    this.HANDLER_FOCUS = null;
 
     this.material.side = DoubleSide;
     this.material.depthTest = false;
@@ -2002,7 +1995,7 @@ function Infospot ( scale = 300, imageSrc, animated ) {
     this.addEventListener( 'dismiss', this.onDismiss );
     this.addEventListener( 'panolens-infospot-focus', this.setFocusMethod );
 
-    TextureLoader.load( imageSrc, postLoad );	
+    TextureLoader.load( imageSrc, postLoad );
 
 }
 Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
@@ -2018,26 +2011,26 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
     setContainer: function ( data ) {
 
         let container;
-	
+
         if ( data instanceof HTMLElement ) {
-	
+
             container = data;
-	
+
         } else if ( data && data.container ) {
-	
+
             container = data.container;
-	
+
         }
-	
+
         // Append element if exists
         if ( container && this.element ) {
-	
+
             container.appendChild( this.element );
-	
+
         }
-	
+
         this.container = container;
-	
+
     },
 
     /**
@@ -2114,14 +2107,14 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
 
         this.isHovering = true;
         this.container.style.cursor = cursorStyle;
-		
+
         if ( this.animated ) {
 
             scaleDownAnimation.stop();
             scaleUpAnimation.start();
 
         }
-		
+
         if ( element && event.mouseEvent.clientX >= 0 && event.mouseEvent.clientY >= 0 ) {
 
             const { left, right, style } = element;
@@ -2147,7 +2140,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
                 element._height = element.clientHeight;
 
             }
-			
+
         }
 
     },
@@ -2196,7 +2189,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      * @instance
      */
     onDualEyeEffect: function ( event ) {
-		
+
         if ( !this.getContainer() ) { return; }
 
         let element, halfWidth, halfHeight;
@@ -2269,7 +2262,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
         left = x - width;
         top = y - height - delta;
 
-        if ( ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO ) 
+        if ( ( this.mode === MODES.CARDBOARD || this.mode === MODES.STEREO )
 				&& element.left && element.right
 				&& !( x === container.clientWidth / 2 && y === container.clientHeight / 2 ) ) {
 
@@ -2350,7 +2343,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
 
             this.element = document.createElement( 'div' );
             this.element.style.display = 'none';
-            this.element.style.color = '#fff';
+            this.element.style.color = 'red';
             this.element.style.top = 0;
             this.element.style.maxWidth = '50%';
             this.element.style.maxHeight = '50%';
@@ -2374,16 +2367,41 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      * @instance
      */
     addHoverElement: function ( el, delta = 40 ) {
+        //console.log('addddhovvv:',el)
+        console.log('addddhovvv: 1',this.element)
 
-        if ( !this.element ) { 
-
-            this.element = el.cloneNode( true );
+        if ( !this.element ) {
+            this.element =  createElementFromHTML( el); 
             this.element.style.display = 'none';
-            this.element.style.top = 0;
             this.element.style.position = 'absolute';
-            this.element.classList.add( 'panolens-infospot' );
+            this.element.style.top = 0;
+            this.element.style.zIndex = 1;
+            //this.element.classList.add( 'panolens-infospot' );
             this.element.verticalDelta = delta;
+        }
 
+    },
+
+    /**
+     * Add hovering element by cloning an element
+     * @param {HTMLDOMElement} el - Element to be cloned and displayed
+     * @param {number} [delta=40] - Vertical delta to the infospot
+     * @memberOf Infospot
+     * @instance
+     */
+     editHoverElement: function ( el, delta = 40 ) {
+        //console.log('addddhovvv:',el)
+        //this.container.removeChild( this.element );
+        //this.element = null;
+        console.log('edit elem ',this.element,!this.element)
+        if ( !this.element ) {
+            this.element =  createElementFromHTML( el); 
+            this.element.style.display = 'none';
+            this.element.style.position = 'absolute';
+            this.element.style.top = 0;
+            this.element.style.zIndex = 1;
+            //this.element.classList.add( 'panolens-infospot' );
+            this.element.verticalDelta = delta;
         }
 
     },
@@ -2395,7 +2413,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      */
     removeHoverElement: function () {
 
-        if ( this.element ) { 
+        if ( this.element ) {
 
             if ( this.element.left ) {
 
@@ -2425,7 +2443,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      */
     lockHoverElement: function () {
 
-        if ( this.element ) { 
+        if ( this.element ) {
 
             this.element.locked = true;
 
@@ -2440,7 +2458,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      */
     unlockHoverElement: function () {
 
-        if ( this.element ) { 
+        if ( this.element ) {
 
             this.element.locked = false;
 
@@ -2500,12 +2518,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
      */
     hide: function ( delay = 0 ) {
 
-        const { animated, hideAnimation, showAnimation, material, element } = this;
-
-        if ( element ) {
-            const { style } = element;
-            style.display = 'none';
-        }
+        const { animated, hideAnimation, showAnimation, material } = this;
 
         if ( animated ) {
 
@@ -2518,7 +2531,7 @@ Infospot.prototype = Object.assign( Object.create( Sprite.prototype ), {
             material.opacity = 0;
 
         }
-		
+
     },
 
     /**
@@ -2630,8 +2643,8 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         if ( !this.container ) {
 
-            console.warn( 'Widget container not set' ); 
-            return; 
+            console.warn( 'Widget container not set' );
+            return;
         }
 
         var scope = this, bar, styleTranslate, styleOpacity, gradientStyle;
@@ -2734,13 +2747,13 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             return function () {
 
-                scope.dispatchEvent( { 
+                scope.dispatchEvent( {
 
-                    type: 'panolens-viewer-handler', 
-                    method: method, 
-                    data: data 
+                    type: 'panolens-viewer-handler',
+                    method: method,
+                    data: data
 
-                } ); 
+                } );
 
             };
 
@@ -2748,32 +2761,32 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         return [
 
-            { 
-                title: 'Control', 
-                subMenu: [ 
-                    { 
-                        title: this.TOUCH_ENABLED ? 'Touch' : 'Mouse', 
+            {
+                title: 'Control',
+                subMenu: [
+                    {
+                        title: this.TOUCH_ENABLED ? 'Touch' : 'Mouse',
                         handler: handler( 'enableControl', CONTROLS.ORBIT )
                     },
-                    { 
-                        title: 'Sensor', 
-                        handler: handler( 'enableControl', CONTROLS.DEVICEORIENTATION ) 
-                    } 
+                    {
+                        title: 'Sensor',
+                        handler: handler( 'enableControl', CONTROLS.DEVICEORIENTATION )
+                    }
                 ]
             },
 
-            { 
-                title: 'Mode', 
-                subMenu: [ 
-                    { 
+            {
+                title: 'Mode',
+                subMenu: [
+                    {
                         title: 'Normal',
                         handler: handler( 'disableEffect' )
-                    }, 
-                    { 
+                    },
+                    {
                         title: 'Cardboard',
                         handler: handler( 'enableEffect', MODES.CARDBOARD )
                     },
-                    { 
+                    {
                         title: 'Stereoscopic',
                         handler: handler( 'enableEffect', MODES.STEREO )
                     }
@@ -2799,7 +2812,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         case 'fullscreen':
 
             element = this.createFullscreenButton();
-            this.fullscreenElement = element; 
+            this.fullscreenElement = element;
 
             break;
 
@@ -2882,7 +2895,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             scope.mainMenu.toggle();
 
             if ( this.activated ) {
-	
+
                 this.deactivate();
 
             } else {
@@ -2893,9 +2906,9 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         }
 
-        item = this.createCustomItem( { 
+        item = this.createCustomItem( {
 
-            style: { 
+            style: {
 
                 backgroundImage: 'url("' + DataImage.Setting + '")',
                 webkitTransition: this.DEFAULT_TRANSITION,
@@ -2924,7 +2937,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             if ( scope.mainMenu && scope.mainMenu.visible ) {
 
                 scope.mainMenu.hide();
-				
+
             }
 
             if ( scope.activeSubMenu && scope.activeSubMenu.visible ) {
@@ -2939,7 +2952,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
                 scope.mainMenu.unslideAll();
 
             }
-			
+
         };
 
         item.activated = false;
@@ -2964,7 +2977,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         stylesheetId = 'panolens-style-addon';
 
         // Don't create button if no support
-        if ( !document.fullscreenEnabled       && 
+        if ( !document.fullscreenEnabled       &&
 			!document.webkitFullscreenEnabled &&
 			!document.mozFullScreenEnabled    &&
 			!document.msFullscreenEnabled ) {
@@ -2984,7 +2997,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
                 if ( container.msRequestFullscreen ) { container.msRequestFullscreen(); }
                 if ( container.mozRequestFullScreen ) { container.mozRequestFullScreen(); }
                 if ( container.webkitRequestFullscreen ) { container.webkitRequestFullscreen( Element.ALLOW_KEYBOARD_INPUT ); }
-              
+
                 isFullscreen = true;
 
             } else {
@@ -2998,8 +3011,8 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             }
 
-            this.style.backgroundImage = ( isFullscreen ) 
-                ? 'url("' + DataImage.FullscreenLeave + '")' 
+            this.style.backgroundImage = ( isFullscreen )
+                ? 'url("' + DataImage.FullscreenLeave + '")'
                 : 'url("' + DataImage.FullscreenEnter + '")';
 
         }
@@ -3008,10 +3021,10 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             if ( tapSkipped ) {
 
-                isFullscreen = !isFullscreen; 
+                isFullscreen = !isFullscreen;
 
-                item.style.backgroundImage = ( isFullscreen ) 
-                    ? 'url("' + DataImage.FullscreenLeave + '")' 
+                item.style.backgroundImage = ( isFullscreen )
+                    ? 'url("' + DataImage.FullscreenLeave + '")'
                     : 'url("' + DataImage.FullscreenEnter + '")';
 
             }
@@ -3033,11 +3046,11 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         document.addEventListener( 'mozfullscreenchange', onFullScreenChange, false );
         document.addEventListener( 'MSFullscreenChange', onFullScreenChange, false );
 
-        item = this.createCustomItem( { 
+        item = this.createCustomItem( {
 
-            style: { 
+            style: {
 
-                backgroundImage: 'url("' + DataImage.FullscreenEnter + '")' 
+                backgroundImage: 'url("' + DataImage.FullscreenEnter + '")'
 
             },
 
@@ -3052,7 +3065,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             sheet.innerHTML = ':-webkit-full-screen { width: 100% !important; height: 100% !important }';
             document.body.appendChild( sheet );
         }
-		
+
         return item;
 
     },
@@ -3067,13 +3080,13 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         const item = document.createElement( 'span' );
         item.style.display = 'none';
-        item.show = function () { 
+        item.show = function () {
 
             item.style.display = '';
 
         };
 
-        item.hide = function () { 
+        item.hide = function () {
 
             item.style.display = 'none';
             item.controlButton.paused = true;
@@ -3083,7 +3096,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         item.controlButton = this.createVideoControlButton();
         item.seekBar = this.createVideoControlSeekbar();
-		
+
         item.appendChild( item.controlButton );
         item.appendChild( item.seekBar );
 
@@ -3136,9 +3149,9 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             item.update();
 
         }
-        const item = this.createCustomItem( { 
+        const item = this.createCustomItem( {
 
-            style: { 
+            style: {
 
                 float: 'left',
                 backgroundImage: 'url("' + DataImage.VideoPlay + '")'
@@ -3155,8 +3168,8 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             this.paused = paused !== undefined ? paused : this.paused;
 
-            this.style.backgroundImage = 'url("' + ( this.paused 
-                ? DataImage.VideoPlay 
+            this.style.backgroundImage = 'url("' + ( this.paused
+                ? DataImage.VideoPlay
                 : DataImage.VideoPause ) + '")';
 
         };
@@ -3196,9 +3209,9 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         function onMouseDown ( event ) {
 
             event.stopPropagation();
-			
+
             isDragging = true;
-			
+
             mouseX = event.clientX || ( event.changedTouches && event.changedTouches[0].clientX );
 
             percentageNow = parseInt( progressElement.style.width ) / 100;
@@ -3211,7 +3224,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             if( isDragging ){
 
                 const clientX = event.clientX || ( event.changedTouches && event.changedTouches[0].clientX );
-				
+
                 percentageNext = ( clientX - mouseX ) / item.clientWidth;
 
                 percentageNext = percentageNow + percentageNext;
@@ -3296,7 +3309,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         item = this.createCustomItem( {
 
-            style: { 
+            style: {
 
                 float: 'left',
                 width: '30%',
@@ -3317,11 +3330,11 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             progressElement.style.width = percentage * 100 + '%';
 
-        };		
+        };
 
-        this.addEventListener( 'video-update', function ( event ) { 
+        this.addEventListener( 'video-update', function ( event ) {
 
-            item.setProgress( event.percentage ); 
+            item.setProgress( event.percentage );
 
         } );
 
@@ -3341,7 +3354,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      */
     createMenuItem: function ( title ) {
 
-        const scope = this; 
+        const scope = this;
         const item = document.createElement( 'a' );
         item.textContent = title;
         item.style.display = 'block';
@@ -3384,7 +3397,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         };
 
         item.addSelection = function ( name ) {
-			
+
             const selection = document.createElement( 'span' );
             selection.style.fontSize = '13px';
             selection.style.fontWeight = '300';
@@ -3393,13 +3406,13 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             this.selection = selection;
             this.setSelectionTitle( name );
             this.appendChild( selection );
-			
+
             return this;
 
         };
 
         item.addIcon = function ( url = DataImage.ChevronRight, left = false, flip = false ) {
-			
+
             const element = document.createElement( 'span' );
             element.style.float = left ? 'left' : 'right';
             element.style.width = '17px';
@@ -3430,13 +3443,13 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         };
 
         item.addEventListener( 'mouseenter', function () {
-			
+
             this.style.backgroundColor = '#e0e0e0';
 
         }, false );
 
         item.addEventListener( 'mouseleave', function () {
-			
+
             this.style.backgroundColor = '#fafafa';
 
         }, false );
@@ -3471,7 +3484,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      * @return {HTMLElement} - A span element
      */
     createMainMenu: function ( menus ) {
-		
+
         let scope = this, menu = this.createMenu();
 
         menu._width = 200;
@@ -3586,7 +3599,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         subMenu.slideAll( true );
 
         return subMenu;
-		
+
     },
 
     /**
@@ -3756,19 +3769,19 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         item.style.backgroundSize = '60%';
         item.style.backgroundRepeat = 'no-repeat';
         item.style.backgroundPosition = 'center';
-        item.style.webkitUserSelect = 
-		item.style.MozUserSelect = 
+        item.style.webkitUserSelect =
+		item.style.MozUserSelect =
 		item.style.userSelect = 'none';
         item.style.position = 'relative';
         item.style.pointerEvents = 'auto';
 
         // White glow on icon
         item.addEventListener( scope.TOUCH_ENABLED ? 'touchstart' : 'mouseenter', function() {
-            item.style.filter = 
+            item.style.filter =
 			item.style.webkitFilter = 'drop-shadow(0 0 5px rgba(255,255,255,1))';
         }, { passive: true });
         item.addEventListener( scope.TOUCH_ENABLED ? 'touchend' : 'mouseleave', function() {
-            item.style.filter = 
+            item.style.filter =
 			item.style.webkitFilter = '';
         }, { passive: true });
 
@@ -3787,7 +3800,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             if ( onDispose ) { options.onDispose(); }
 
         };
-		
+
         return item;
 
     },
@@ -3831,7 +3844,7 @@ Widget.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         }
 
     }
-	
+
 } );
 
 /**
@@ -3863,7 +3876,7 @@ function Panorama ( geometry, material ) {
     this.linkedSpots = [];
 
     this.isInfospotVisible = false;
-	
+
     this.linkingImageURL = undefined;
     this.linkingImageScale = undefined;
 
@@ -3891,7 +3904,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 
     /**
      * Adding an object
-     * To counter the scale.x = -1, it will automatically add an 
+     * To counter the scale.x = -1, it will automatically add an
      * empty object with inverted scale on x
      * @memberOf Panorama
      * @instance
@@ -3923,7 +3936,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                 const { container } = this;
 
                 if ( container ) { object.dispatchEvent( { type: 'panolens-container', container } ); }
-				
+
                 object.dispatchEvent( { type: 'panolens-infospot-focus', method: function ( vector, duration, easing ) {
 
                     /**
@@ -3956,7 +3969,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
     load: function () {
 
         this.onLoad();
-		
+
     },
 
     /**
@@ -3986,7 +3999,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
     },
 
     /**
-     * Set container of this panorama 
+     * Set container of this panorama
      * @param {HTMLElement|object} data - Data with container information
      * @memberOf Panorama
      * @instance
@@ -4173,7 +4186,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
             /**
              * Complete toggling infospot visibility
              * @event Panorama#infospot-animation-complete
-             * @type {object} 
+             * @type {object}
              */
             this.dispatchEvent( { type: 'infospot-animation-complete', visible: visible } );
 
@@ -4276,7 +4289,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
 
     reset: function () {
 
-        this.children.length = 0;	
+        this.children.length = 0;
 
     },
 
@@ -4292,7 +4305,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                 /**
                  * Enter panorama fade in start event
                  * @event Panorama#enter-fade-start
-                 * @type {object} 
+                 * @type {object}
                  */
                 this.dispatchEvent( { type: 'enter-fade-start' } );
 
@@ -4308,7 +4321,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                 /**
                  * Leave panorama complete event
                  * @event Panorama#leave-complete
-                 * @type {object} 
+                 * @type {object}
                  */
                 this.dispatchEvent( { type: 'leave-complete' } );
 
@@ -4321,7 +4334,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                 /**
                  * Enter panorama and animation complete event
                  * @event Panorama#enter-complete
-                 * @type {object} 
+                 * @type {object}
                  */
                 this.dispatchEvent( { type: 'enter-complete' } );
 
@@ -4365,9 +4378,9 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                 /**
                  * Enter panorama fade complete event
                  * @event Panorama#enter-fade-complete
-                 * @type {object} 
+                 * @type {object}
                  */
-                this.dispatchEvent( { type: 'enter-fade-complete' } );			
+                this.dispatchEvent( { type: 'enter-fade-complete' } );
 
             }.bind( this ) )
             .start();
@@ -4392,7 +4405,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
     },
 
     /**
-     * This will be called when entering a panorama 
+     * This will be called when entering a panorama
      * @memberOf Panorama
      * @instance
      * @fires Panorama#enter
@@ -4410,10 +4423,10 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                 /**
                  * Enter panorama and animation starting event
                  * @event Panorama#enter-start
-                 * @type {object} 
+                 * @type {object}
                  */
                 this.dispatchEvent( { type: 'enter-start' } );
-				
+
                 if ( this.loaded ) {
 
                     this.fadeIn( duration );
@@ -4423,14 +4436,14 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                     this.load();
 
                 }
-				
+
             }.bind( this ) )
             .start();
 
         /**
          * Enter panorama event
          * @event Panorama#enter
-         * @type {object} 
+         * @type {object}
          */
         this.dispatchEvent( { type: 'enter' } );
 
@@ -4462,7 +4475,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                 /**
                  * Leave panorama and animation starting event
                  * @event Panorama#leave-start
-                 * @type {object} 
+                 * @type {object}
                  */
                 this.dispatchEvent( { type: 'leave-start' } );
 
@@ -4475,7 +4488,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
         /**
          * Leave panorama event
          * @event Panorama#leave
-         * @type {object} 
+         * @type {object}
          */
         this.dispatchEvent( { type: 'leave' } );
 
@@ -4528,7 +4541,7 @@ Panorama.prototype = Object.assign( Object.create( Mesh.prototype ), {
                 object.dispose();
 
             }
-			
+
             if ( geometry ) { geometry.dispose(); object.geometry = null; }
             if ( material ) { material.dispose(); object.material = null; }
 
@@ -4578,11 +4591,11 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         src = src || this.src;
 
-        if ( !src ) { 
+        if ( !src ) {
 
             console.warn( 'Image source undefined' );
 
-            return; 
+            return;
 
         } else if ( typeof src === 'string' ) {
 
@@ -4606,7 +4619,7 @@ ImagePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
         texture.minFilter = texture.magFilter = LinearFilter;
         texture.needsUpdate = true;
-		
+
         this.updateTexture( texture );
 
         window.requestAnimationFrame( Panorama.prototype.onLoad.bind( this ) );
@@ -4704,13 +4717,13 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     load: function () {
 
-        CubeTextureLoader.load( 	
+        CubeTextureLoader.load(
 
-            this.images, 
+            this.images,
 
-            this.onLoad.bind( this ), 
-            this.onProgress.bind( this ), 
-            this.onError.bind( this ) 
+            this.onLoad.bind( this ),
+            this.onProgress.bind( this ),
+            this.onError.bind( this )
 
         );
 
@@ -4723,7 +4736,7 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @instance
      */
     onLoad: function ( texture ) {
-		
+
         this.material.uniforms[ 'tCube' ].value = texture;
 
         Panorama.prototype.onLoad.call( this );
@@ -4735,7 +4748,7 @@ CubePanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      * @memberOf CubePanorama
      * @instance
      */
-    dispose: function () {	
+    dispose: function () {
 
         const { value } = this.material.uniforms.tCube;
 
@@ -4854,13 +4867,13 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         video.playsinline = playsinline;
         video.crossOrigin = crossOrigin;
         video.muted = muted;
-		
+
         if ( playsinline ) {
 
             video.setAttribute( 'playsinline', '' );
             video.setAttribute( 'webkit-playsinline', '' );
 
-        } 
+        }
 
         const onloadeddata = function() {
 
@@ -4904,7 +4917,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
                     this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'updateVideoPlayButton', data: true } );
 
                 }
-				
+
             }
 
             const loaded = () => {
@@ -4918,7 +4931,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
             };
 
             window.requestAnimationFrame( loaded );
-			
+
         };
 
         /**
@@ -4947,7 +4960,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         }
 
         video.addEventListener( 'loadeddata', onloadeddata.bind( this ) );
-		
+
         video.addEventListener( 'timeupdate', function () {
 
             this.videoProgress = video.duration >= 0 ? video.currentTime / video.duration : 0;
@@ -4963,7 +4976,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         }.bind( this ) );
 
         video.addEventListener( 'ended', function () {
-			
+
             if ( !loop ) {
 
                 this.resetVideo();
@@ -4971,7 +4984,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
             }
 
-        }.bind( this ), false ); 
+        }.bind( this ), false );
 
     },
 
@@ -4992,7 +5005,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         videoTexture.format = RGBFormat;
 
         this.updateTexture( videoTexture );
-	
+
     },
 
     /**
@@ -5002,7 +5015,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
      */
     reset: function () {
 
-        this.videoElement = undefined;	
+        this.videoElement = undefined;
 
         Panorama.prototype.reset.call( this );
 
@@ -5255,7 +5268,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
         const { material: { map } } = this;
 
         this.pauseVideo();
-		
+
         this.removeEventListener( 'leave', this.pauseVideo.bind( this ) );
         this.removeEventListener( 'enter-fade-start', this.resumeVideoProgress.bind( this ) );
         this.removeEventListener( 'video-toggle', this.toggleVideo.bind( this ) );
@@ -5272,7 +5285,7 @@ VideoPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 /**
  * @classdesc Google Street View Loader
  * @constructor
- * @param {object} parameters 
+ * @param {object} parameters
  */
 function GoogleStreetviewLoader ( parameters = {} ) {
 
@@ -5331,8 +5344,8 @@ Object.assign( GoogleStreetviewLoader.prototype, {
 
     /**
      * Set progress
-     * @param {number} loaded 
-     * @param {number} total 
+     * @param {number} loaded
+     * @param {number} total
      * @memberOf GoogleStreetviewLoader
      * @instance
      */
@@ -5343,7 +5356,7 @@ Object.assign( GoogleStreetviewLoader.prototype, {
             this.onProgress( { loaded: loaded, total: total } );
 
         }
-		
+
     },
 
     /**
@@ -5376,9 +5389,9 @@ Object.assign( GoogleStreetviewLoader.prototype, {
 
     /**
      * Compose from tile
-     * @param {number} x 
-     * @param {number} y 
-     * @param {*} texture 
+     * @param {number} x
+     * @param {number} y
+     * @param {*} texture
      * @memberOf GoogleStreetviewLoader
      * @instance
      */
@@ -5399,7 +5412,7 @@ Object.assign( GoogleStreetviewLoader.prototype, {
         this._ctx[ py * this._wc + px ].drawImage( texture, 0, 0, texture.width, texture.height, x, y, 512, 512 );
 
         this.progress();
-		
+
     },
 
     /**
@@ -5410,9 +5423,9 @@ Object.assign( GoogleStreetviewLoader.prototype, {
     progress: function() {
 
         this._count++;
-		
+
         this.setProgress( this._count, this._total );
-		
+
         if ( this._count === this._total) {
 
             this.canvas = this._canvas;
@@ -5436,11 +5449,11 @@ Object.assign( GoogleStreetviewLoader.prototype, {
     composePanorama: function () {
 
         this.setProgress( 0, 1 );
-		
+
         const w = this.levelsW[ this._zoom ];
         const h = this.levelsH[ this._zoom ];
         const self = this;
-			
+
         this._count = 0;
         this._total = w * h;
 
@@ -5449,7 +5462,7 @@ Object.assign( GoogleStreetviewLoader.prototype, {
         for( let y = 0; y < h; y++ ) {
             for( let x = 0; x < w; x++ ) {
                 const url = 'https://geo0.ggpht.com/cbk?cb_client=maps_sv.tactile&authuser=0&hl=en&output=tile&zoom=' + this._zoom + '&x=' + x + '&y=' + y + '&panoid=' + this._panoId + '&nbt&fover=2';
-                ( function( x, y ) { 
+                ( function( x, y ) {
                     if( useWebGL ) {
                         const texture = TextureLoader.load( url, null, function() {
                             self.composeFromTile( x, y, texture );
@@ -5457,7 +5470,7 @@ Object.assign( GoogleStreetviewLoader.prototype, {
                     } else {
                         const img = new Image();
                         img.addEventListener( 'load', function() {
-                            self.composeFromTile( x, y, this );			
+                            self.composeFromTile( x, y, this );
                         } );
                         img.crossOrigin = '';
                         img.src = url;
@@ -5465,12 +5478,12 @@ Object.assign( GoogleStreetviewLoader.prototype, {
                 } )( x, y );
             }
         }
-		
+
     },
 
     /**
      * Load
-     * @param {string} panoid 
+     * @param {string} panoid
      * @memberOf GoogleStreetviewLoader
      * @instance
      */
@@ -5497,12 +5510,12 @@ Object.assign( GoogleStreetviewLoader.prototype, {
                 self.composePanorama();
             }
         });
-		
+
     },
 
     /**
      * Set zoom level
-     * @param {number} z 
+     * @param {number} z
      * @memberOf GoogleStreetviewLoader
      * @instance
      */
@@ -5511,14 +5524,14 @@ Object.assign( GoogleStreetviewLoader.prototype, {
         this._zoom = z;
         this.adaptTextureToZoom();
     }
-	
+
 } );
 
 /**
  * @classdesc Google streetview panorama
  * @description [How to get Panorama ID]{@link http://stackoverflow.com/questions/29916149/google-maps-streetview-how-to-get-panorama-id}
  * @constructor
- * @param {string} panoId - Panorama id from Google Streetview 
+ * @param {string} panoId - Panorama id from Google Streetview
  * @param {string} [apiKey] - Google Street View API Key
  */
 function GoogleStreetviewPanorama ( panoId, apiKey ) {
@@ -5693,7 +5706,7 @@ const StereographicShader = {
         'vUv = uv;',
         'gl_Position = vec4( position, 1.0 );',
 
-        '}' 
+        '}'
 
     ].join( '\n' ),
 
@@ -5778,7 +5791,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
     add: function ( object ) {
 
         if ( arguments.length > 1 ) {
-			
+
             for ( let i = 0; i < arguments.length; i ++ ) {
 
                 this.add( arguments[ i ] );
@@ -5792,7 +5805,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         if ( object instanceof Infospot ) {
 
             object.material.depthTest = false;
-			
+
         }
 
         ImagePanorama.prototype.add.call( this, object );
@@ -5821,7 +5834,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
             transparent: true
 
         } );
-		
+
     },
 
     registerMouseEvents: function () {
@@ -5835,7 +5848,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         this.container.addEventListener( 'mousewheel', this.onMouseWheel.bind( this ), { passive: false } );
         this.container.addEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), { passive: false } );
         this.container.addEventListener( 'contextmenu', this.onContextMenu.bind( this ), { passive: true } );
-		
+
     },
 
     unregisterMouseEvents: function () {
@@ -5849,7 +5862,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         this.container.removeEventListener( 'mousewheel', this.onMouseWheel.bind( this ), false );
         this.container.removeEventListener( 'DOMMouseScroll', this.onMouseWheel.bind( this ), false );
         this.container.removeEventListener( 'contextmenu', this.onContextMenu.bind( this ), false );
-		
+
     },
 
     onMouseDown: function ( event ) {
@@ -5987,9 +6000,9 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
             this.material.uniforms.transform.value.makeRotationFromQuaternion( this.quatSlerp );
 
         }
-        
+
         if ( !this.dragging && 1.0 - this.quatSlerp.clone().dot( this.quatCur ) < this.EPS ) {
-			
+
             window.cancelAnimationFrame( this.frameId );
 
         }
@@ -6010,11 +6023,11 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
         this.registerMouseEvents();
         this.onUpdateCallback();
-		
+
         this.dispatchEvent( { type: 'panolens-viewer-handler', method: 'disableControl' } );
 
         ImagePanorama.prototype.onLoad.call( this, texture );
-		
+
     },
 
     onLeave: function () {
@@ -6026,7 +6039,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
         window.cancelAnimationFrame( this.frameId );
 
         ImagePanorama.prototype.onLeave.call( this );
-		
+
     },
 
     onWindowResize: function () {
@@ -6041,7 +6054,7 @@ LittlePlanet.prototype = Object.assign( Object.create( ImagePanorama.prototype )
 
     },
 
-    dispose: function () {	
+    dispose: function () {
 
         this.unregisterMouseEvents();
 
@@ -6081,17 +6094,17 @@ ImageLittlePlanet.prototype = Object.assign( Object.create( LittlePlanet.prototy
         LittlePlanet.prototype.onLoad.call( this, texture );
 
     },
-    
+
     /**
      * Update texture
-     * @param {THREE.Texture} texture 
+     * @param {THREE.Texture} texture
      * @memberOf ImageLittlePlanet
      * @instance
      */
     updateTexture: function ( texture ) {
 
         texture.minFilter = texture.magFilter = LinearFilter;
-		
+
         this.material.uniforms[ 'tDiffuse' ].value = texture;
 
     },
@@ -6159,7 +6172,7 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
 
     /**
      * On scene event
-     * @param {object} event 
+     * @param {object} event
      * @memberOf CameraPanorama
      * @instance
      */
@@ -6198,8 +6211,8 @@ CameraPanorama.prototype = Object.assign( Object.create( Panorama.prototype ), {
  * @classdesc Orbit Controls
  * @constructor
  * @external OrbitControls
- * @param {THREE.Object} object 
- * @param {HTMLElement} domElement 
+ * @param {THREE.Object} object
+ * @param {HTMLElement} domElement
  */
 function OrbitControls ( object, domElement ) {
 
@@ -6440,12 +6453,12 @@ function OrbitControls ( object, domElement ) {
     };
 
     this.momentum = function(){
-		
+
         if ( !momentumOn ) return;
 
-        if ( Math.abs( momentumLeft ) < MEPS && Math.abs( momentumUp ) < MEPS ) { 
+        if ( Math.abs( momentumLeft ) < MEPS && Math.abs( momentumUp ) < MEPS ) {
 
-            momentumOn = false; 
+            momentumOn = false;
             return;
         }
 
@@ -6772,7 +6785,7 @@ function OrbitControls ( object, domElement ) {
         if ( delta > 0 ) {
 
             // scope.dollyOut();
-            scope.object.fov = ( scope.object.fov < scope.maxFov ) 
+            scope.object.fov = ( scope.object.fov < scope.maxFov )
                 ? scope.object.fov + 1
                 : scope.maxFov;
             scope.object.updateProjectionMatrix();
@@ -6780,7 +6793,7 @@ function OrbitControls ( object, domElement ) {
         } else if ( delta < 0 ) {
 
             // scope.dollyIn();
-            scope.object.fov = ( scope.object.fov > scope.minFov ) 
+            scope.object.fov = ( scope.object.fov > scope.minFov )
                 ? scope.object.fov - 1
                 : scope.minFov;
             scope.object.updateProjectionMatrix();
@@ -6960,14 +6973,14 @@ function OrbitControls ( object, domElement ) {
 
             if ( dollyDelta.y < 0 ) {
 
-                scope.object.fov = ( scope.object.fov < scope.maxFov ) 
+                scope.object.fov = ( scope.object.fov < scope.maxFov )
                     ? scope.object.fov + 1
                     : scope.maxFov;
                 scope.object.updateProjectionMatrix();
 
             } else if ( dollyDelta.y > 0 ) {
 
-                scope.object.fov = ( scope.object.fov > scope.minFov ) 
+                scope.object.fov = ( scope.object.fov > scope.minFov )
                     ? scope.object.fov - 1
                     : scope.minFov;
                 scope.object.updateProjectionMatrix();
@@ -7057,8 +7070,8 @@ OrbitControls.prototype = Object.assign( Object.create( EventDispatcher.prototyp
  * @classdesc Device Orientation Control
  * @constructor
  * @external DeviceOrientationControls
- * @param {THREE.Camera} camera 
- * @param {HTMLElement} domElement 
+ * @param {THREE.Camera} camera
+ * @param {HTMLElement} domElement
  */
 function DeviceOrientationControls ( camera, domElement ) {
 
@@ -7241,7 +7254,7 @@ DeviceOrientationControls.prototype = Object.assign( Object.create( EventDispatc
  * @classdesc Google Cardboard Effect Composer
  * @constructor
  * @external CardboardEffect
- * @param {THREE.WebGLRenderer} renderer 
+ * @param {THREE.WebGLRenderer} renderer
  */
 function CardboardEffect ( renderer ) {
 
@@ -7360,7 +7373,7 @@ function CardboardEffect ( renderer ) {
  * @classdesc Stereo Effect Composer
  * @constructor
  * @external StereoEffect
- * @param {THREE.WebGLRenderer} renderer 
+ * @param {THREE.WebGLRenderer} renderer
  */
 const StereoEffect = function ( renderer ) {
 
@@ -7428,7 +7441,7 @@ const StereoEffect = function ( renderer ) {
  * @param {boolean} [options.autoReticleSelect=true] - Auto select a clickable target after dwellTime
  * @param {boolean} [options.viewIndicator=false] - Adds an angle view indicator in upper left corner
  * @param {number}  [options.indicatorSize=30] - Size of View Indicator
- * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'event', 'console' or 'overlay'.
+ * @param {string}  [options.output='none'] - Whether and where to output raycast position. Could be 'console' or 'overlay'
  * @param {boolean} [options.autoRotate=false] - Auto rotate
  * @param {number}  [options.autoRotateSpeed=2.0] - Auto rotate speed as in degree per second. Positive is counter-clockwise and negative is clockwise.
  * @param {number}  [options.autoRotateActivationDuration=5000] - Duration before auto rotatation when no user interactivity in ms
@@ -7763,7 +7776,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             // Assign and enter panorama
             (this.panorama = pano).onEnter();
-			
+
         }
 
     },
@@ -7835,12 +7848,12 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
                 item = ControlMenuItem.subMenu.children[ 2 ];
 
                 break;
-					
+
             default:
 
                 item = ControlMenuItem.subMenu.children[ 1 ];
 
-                break;	
+                break;
 
             }
 
@@ -7862,7 +7875,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             case MODES.STEREO:
 
                 item = ModeMenuItem.subMenu.children[ 3 ];
-					
+
                 break;
 
             default:
@@ -7906,7 +7919,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             this.effect = this.StereoEffect;
             this.enableReticleControl();
-				
+
             break;
 
         default:
@@ -8184,7 +8197,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     /**
      * Update video play button
-     * @param {boolean} paused 
+     * @param {boolean} paused
      * @memberOf Viewer
      * @instance
      */
@@ -8222,7 +8235,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
                     this.hideVideoWidget.call( this );
 
                 }
-				
+
             }.bind( this ) );
 
         }
@@ -8446,7 +8459,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      */
     checkSpriteInViewport: function ( sprite ) {
 
-        this.camera.matrixWorldInverse.getInverse( this.camera.matrixWorld );
+        //this.camera.matrixWorldInverse.matrixInv.copy( sprite ).invert( this.camera.matrixWorld );
         this.cameraViewProjectionMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse );
         this.cameraFrustum.setFromMatrix( this.cameraViewProjectionMatrix );
 
@@ -8467,7 +8480,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
     },
 
     /**
-     * Add reticle 
+     * Add reticle
      * @memberOf Viewer
      * @instance
      */
@@ -8618,12 +8631,12 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             const isAndroid = /(android)/i.test(window.navigator.userAgent);
 
-            const adjustWidth = isAndroid 
-                ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0) 
+            const adjustWidth = isAndroid
+                ? Math.min(document.documentElement.clientWidth, window.innerWidth || 0)
                 : Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 
-            const adjustHeight = isAndroid 
-                ? Math.min(document.documentElement.clientHeight, window.innerHeight || 0) 
+            const adjustHeight = isAndroid
+                ? Math.min(document.documentElement.clientHeight, window.innerHeight || 0)
                 : Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 
             width = expand ? adjustWidth : this.container.clientWidth;
@@ -8699,26 +8712,11 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             const world = this.panorama.getWorldPosition( new Vector3() );
             point.sub( world ).multiply( converter );
 
-            const position = {
-                x: point.x.toFixed(2),
-                y: point.y.toFixed(2),
-                z: point.z.toFixed(2),
-            };
-
-            const message = `${position.x}, ${position.y}, ${position.z}`;
+            const message = `${point.x.toFixed(2)}, ${point.y.toFixed(2)}, ${point.z.toFixed(2)}`;
 
             if ( point.length() === 0 ) { return; }
 
             switch ( this.options.output ) {
-
-            case 'event':
-                /**
-                 * Dispatch raycast position as event
-                 * @type {object}
-                 * @event Viewer#position-output
-                 */
-                this.dispatchEvent( { type: 'position-output', position: position } );
-                break;
 
             case 'console':
                 console.info( message );
@@ -8739,7 +8737,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     /**
      * On mouse down
-     * @param {MouseEvent} event 
+     * @param {MouseEvent} event
      * @memberOf Viewer
      * @instance
      */
@@ -8756,7 +8754,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     /**
      * On mouse move
-     * @param {MouseEvent} event 
+     * @param {MouseEvent} event
      * @memberOf Viewer
      * @instance
      */
@@ -8770,7 +8768,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     /**
      * On mouse up
-     * @param {MouseEvent} event 
+     * @param {MouseEvent} event
      * @memberOf Viewer
      * @instance
      */
@@ -8780,15 +8778,15 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         this.userMouse.type = 'mouseup';
 
-        const type = ( this.userMouse.x >= event.clientX - this.options.clickTolerance 
+        const type = ( this.userMouse.x >= event.clientX - this.options.clickTolerance
 				&& this.userMouse.x <= event.clientX + this.options.clickTolerance
 				&& this.userMouse.y >= event.clientY - this.options.clickTolerance
-				&& this.userMouse.y <= event.clientY + this.options.clickTolerance ) 
-				||  ( event.changedTouches 
+				&& this.userMouse.y <= event.clientY + this.options.clickTolerance )
+				||  ( event.changedTouches
 				&& this.userMouse.x >= event.changedTouches[0].clientX - this.options.clickTolerance
-				&& this.userMouse.x <= event.changedTouches[0].clientX + this.options.clickTolerance 
+				&& this.userMouse.x <= event.changedTouches[0].clientX + this.options.clickTolerance
 				&& this.userMouse.y >= event.changedTouches[0].clientY - this.options.clickTolerance
-				&& this.userMouse.y <= event.changedTouches[0].clientY + this.options.clickTolerance ) 
+				&& this.userMouse.y <= event.changedTouches[0].clientY + this.options.clickTolerance )
             ? 'click' : undefined;
 
         // Event should happen on canvas
@@ -8799,7 +8797,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         if ( event.changedTouches && event.changedTouches.length === 1 ) {
 
             onTarget = this.onTap( { clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY }, type );
-		
+
         } else {
 
             onTarget = this.onTap( event, type );
@@ -8808,9 +8806,9 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         this.userMouse.type = 'none';
 
-        if ( onTarget ) { 
+        if ( onTarget ) {
 
-            return; 
+            return;
 
         }
 
@@ -8836,8 +8834,8 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     /**
      * On tap eveny frame
-     * @param {MouseEvent} event 
-     * @param {string} type 
+     * @param {MouseEvent} event
+     * @param {string} type
      * @memberOf Viewer
      * @instance
      */
@@ -8851,20 +8849,19 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         this.raycaster.setFromCamera( this.raycasterPoint, this.camera );
 
-        // Return if no panorama 
-        if ( !this.panorama ) { 
+        // Return if no panorama
+        if ( !this.panorama ) {
 
-            return; 
+            return;
 
         }
 
         // output infospot information
-        if ( event.type !== 'mousedown' && this.touchSupported || this.OUTPUT_INFOSPOT ) { 
+        if ( event.type !== 'mousedown' && this.touchSupported || this.OUTPUT_INFOSPOT ) {
 
-            this.outputPosition(); 
+            this.outputPosition();
 
         }
-
 
         const intersects = this.raycaster.intersectObjects( this.panorama.children, true );
         const intersect_entity = this.getConvertedIntersect( intersects );
@@ -9018,13 +9015,13 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         if ( intersect && intersect instanceof Infospot ) {
 
             this.infospot = intersect;
-			
+
             if ( type === 'click' ) {
 
                 return true;
 
             }
-			
+
 
         } else if ( this.infospot ) {
 
@@ -9045,13 +9042,13 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
             }
 
-        }		
+        }
 
     },
 
     /**
      * Get converted intersect
-     * @param {array} intersects 
+     * @param {array} intersects
      * @memberOf Viewer
      * @instance
      */
@@ -9106,24 +9103,24 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      */
     toggleControlBar: function () {
 
-        const { widget } = this;
+        //const { widget } = this;
 
         /**
          * Toggle control bar event
          * @type {object}
          * @event Viewer#control-bar-toggle
          */
-        if ( widget ) {
+        // if ( widget ) {
 
-            widget.dispatchEvent( { type: 'control-bar-toggle' } );
+        //     widget.dispatchEvent( { type: 'control-bar-toggle' } );
 
-        }
+        // }
 
     },
 
     /**
      * On key down
-     * @param {KeyboardEvent} event 
+     * @param {KeyboardEvent} event
      * @memberOf Viewer
      * @instance
      */
@@ -9139,7 +9136,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
     /**
      * On key up
-     * @param {KeyboardEvent} event 
+     * @param {KeyboardEvent} event
      * @memberOf Viewer
      * @instance
      */
@@ -9163,10 +9160,10 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
         this.control.update();
 
         this.scene.traverse( function( child ){
-            if ( child instanceof Infospot 
-				&& child.element 
-				&& ( this.hoverObject === child 
-					|| child.element.style.display !== 'none' 
+            if ( child instanceof Infospot
+				&& child.element
+				&& ( this.hoverObject === child
+					|| child.element.style.display !== 'none'
 					|| (child.element.left && child.element.left.style.display !== 'none')
 					|| (child.element.right && child.element.right.style.display !== 'none') ) ) {
                 if ( this.checkSpriteInViewport( child ) ) {
@@ -9175,7 +9172,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
                 } else {
                     child.onDismiss();
                 }
-				
+
             }
         }.bind( this ) );
 
@@ -9194,7 +9191,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
             this.renderer.clear();
             this.effect.render( this.scene, this.camera );
             this.effect.render( this.sceneReticle, this.camera );
-			
+
 
         } else {
 
@@ -9398,7 +9395,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
 
         this.dispose();
         this.render();
-        window.cancelAnimationFrame( this.requestAnimationId );		
+        window.cancelAnimationFrame( this.requestAnimationId );
 
     },
 
@@ -9518,7 +9515,7 @@ Viewer.prototype = Object.assign( Object.create( EventDispatcher.prototype ), {
      */
     appendControlItem: function ( option ) {
 
-        const item = this.widget.createCustomItem( option );		
+        const item = this.widget.createCustomItem( option );
 
         if ( option.group === 'video' ) {
 
@@ -9552,6 +9549,15 @@ if ( REVISION$1 != THREE_REVISION ) {
     console.warn( `three.js version is not matched. Please consider use the target revision ${THREE_REVISION}` );
 
 }
+
+function createElementFromHTML(htmlString) {
+    var div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
+  
+    // Change this to div.childNodes to support multiple top-level nodes
+    return div.firstChild; 
+  }
+  
 
 /**
  * Panolens.js
